@@ -1,113 +1,125 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">src/app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+import AnimatedText from 'react-animated-text-content';
+import { AnimatePresence, motion } from "framer-motion"
+import { Button, Snippet } from '@nextui-org/react';
+import { BookOpenIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/react/20/solid';
+import { useState } from 'react';
+import { useInterval } from 'react-use';
+import Link from 'next/link';
+
+const phrases = [
+  "You write amazing things; we make them happen.",
+  "Reach the Zenith of development around Discord.",
+  "Unlock the infinite possibilities of bot creation in Discord."
+]
+
+/**
+ * TODO:
+ * <div className='my-10'>
+      <Marquee gradient gradientColor="#09090b" pauseOnHover>
+        <div className='gap-3 flex items-center'>
+          {[...Array(9)].map(() => <div className='w-32 h-20 rounded-lg bg-default-50 flex items-center justify-center'>
+            <BoltIcon className='w-6 h-6 mr-2' />Bolt
+          </div>)}
         </div>
-      </div>
+      </Marquee>
+    </div>
+ */
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
+export default function Page() {
+  const [currentPhrase, setCurrentPhrase] = useState(phrases[0])
 
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+  useInterval(
+    () => {
+      setCurrentPhrase(phrases[Math.floor(Math.random() * phrases.length)])
+    },
+    5000
   );
+  return <div className='p-40'>
+    <div className='flex justify-between items-start gap-14'>
+      <div className='flex flex-col gap-2'>
+        <motion.span className='uppercase font-bold text-sm text-default-500' initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 100 }}
+          transition={{
+            duration: 0.5,
+            delay: 0
+          }}>
+          Meet seyfert...
+        </motion.span>
+        <AnimatedText
+          type="words" // animate words or chars
+          animation={{
+            scale: 1.1,
+          }}
+          animationType={"lights"}
+          interval={0.04}
+          duration={0.8}
+          tag="h1"
+          className="text-5xl font-black duration-150"
+          includeWhiteSpaces
+          threshold={0.1}
+          rootMargin="20%"
+        >
+          {currentPhrase}
+        </AnimatedText>
+        <motion.p className='text-default-500 duration-200' initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 100 }}
+          transition={{
+            duration: 0.5,
+            delay: 1
+          }}>
+          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Facere, ipsam? Sed, minima nemo deserunt id commodi quod aliquid hic consequuntur numquam? Maiores sit quod reprehenderit optio rem esse consequuntur eveniet.
+        </motion.p>
+        <motion.div className='flex items-center gap-2' initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 100 }}
+          transition={{
+            duration: 0.5,
+            delay: 2
+          }}>
+          <Link href='https://seyfert-docs.vercel.app/'><Button variant="solid" startContent={<BookOpenIcon className='w-5 h-5' />}>Get started</Button></Link>
+          <Link href='https://discord.com/invite/RmW54ShzMA'><Button variant="faded" startContent={<ChatBubbleLeftEllipsisIcon className='w-5 h-5' />}>Support</Button></Link>
+        </motion.div>
+        <motion.div className='mt-5' initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 100 }}
+          transition={{
+            duration: 0.5,
+            delay: 2.5
+          }}>
+          <Snippet>pnpm add seyfert</Snippet>
+        </motion.div>
+      </div>
+      <AnimatePresence>
+        <motion.div className='max-w-xl w-full h-80' initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 100 }}
+          transition={{
+            duration: 0.5,
+            delay: 1.5
+          }}>
+          <div className='bg-default-100 h-full rounded-xl'>
+            <div className='w-full h-12 bg-default-50 rounded-t-xl p-3 flex items-center justify-between'>
+              <div className='flex gap-2 items-center'>
+                <div className='w-5 h-5 rounded-full bg-red-500' />
+                <div className='w-5 h-5 rounded-full bg-amber-500' />
+                <div className='w-5 h-5 rounded-full bg-green-500' />
+              </div>
+              <img alt="logo" src="/logo.svg" className='w-8 h-8' />
+            </div>
+
+            <div className='p-3 font-mono flex flex-col gap-0'>
+              <span>~/dev/seybot $ <strong className='text-emerald-500'>bun add seyfert</strong></span>
+              <span>Packages: <strong className='text-emerald-500'>+182</strong></span>
+              <span><strong className='text-emerald-500'>++++++++++++++++++++++++++++++++++++++++++++++++++++</strong></span>
+              <span>Progress: resolved <strong className='text-blue-500'>542</strong>, reused <strong className='text-blue-500'>454</strong>, downloaded <strong className='text-blue-500'>79</strong>, added <strong className='text-blue-500'>182</strong>, done</span>
+              <span>~/dev/seybot $ <strong className='text-emerald-500'>bun dev</strong></span>
+              <span><strong className='text-blue-500'>[LOGGER] INFO -</strong> Starting...</span>
+              <span><strong className='text-violet-500'>[LOGGER] DEBUG -</strong> Memory usage: ~78mb</span>
+              <span><strong className='text-violet-500'>[LOGGER] DEBUG -</strong> Shard count: 3</span>
+              <span><strong className='text-emerald-500'>[LOGGER] SUCCESS -</strong> Bot is now online in all shards.</span>
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  </div>
 }
