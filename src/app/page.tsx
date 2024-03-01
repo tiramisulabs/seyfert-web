@@ -56,14 +56,14 @@ export default function Page() {
           interval={0.04}
           duration={0.8}
           tag="h1"
-          className="text-5xl font-black duration-150"
+          className="lg:text-5xl text-4xl font-black duration-150"
           includeWhiteSpaces
           threshold={0.1}
           rootMargin="20%"
         >
           {currentPhrase}
         </AnimatedText>
-        <motion.p className='text-default-500 duration-200' initial={{ y: 10, opacity: 0 }}
+        <motion.p className='text-default-500 duration-200 lg:text-base text-sm' initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 100 }}
           transition={{
             duration: 0.5,
@@ -86,7 +86,7 @@ export default function Page() {
             duration: 0.5,
             delay: 2.5
           }}>
-          <Snippet className='lg:w-fit w-full'>pnpm add seyfert</Snippet>
+          <Snippet>pnpm add seyfert</Snippet>
         </motion.div>
       </div>
       <AnimatePresence>
