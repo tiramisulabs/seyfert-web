@@ -28,11 +28,12 @@ const phrases = [
  */
 
 export default function Page() {
-  const [currentPhrase, setCurrentPhrase] = useState(phrases[0])
+  const [index, setIndex] = useState(0)
 
   useInterval(
     () => {
-      setCurrentPhrase(phrases[Math.floor(Math.random() * phrases.length)])
+      if (index === 2) setIndex(0)
+      else setIndex(index + 1)
     },
     5000
   );
@@ -61,7 +62,7 @@ export default function Page() {
           threshold={0.1}
           rootMargin="20%"
         >
-          {currentPhrase}
+          {phrases[index]}
         </AnimatedText>
         <motion.p className='text-default-500 duration-200 lg:text-base text-sm' initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 100 }}
