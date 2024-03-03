@@ -8,16 +8,16 @@ import Link from 'next/link';
 const credits = {
     main: [
         {
+            social: "https://github.com/marcrock22",
+            name: "Marcrock22"
+        },
+        {
             social: "https://github.com/socram09",
             name: "Socram09"
         },
         {
             social: "https://github.com/freeaoi",
             name: "FreeAoi"
-        },
-        {
-            social: "https://github.com/marcrock22",
-            name: "Marcrock22"
         }
     ],
     web: [
@@ -25,11 +25,6 @@ const credits = {
             social: "https://github.com/simxnet",
             name: "Simxnet",
             quote: "Me, lol"
-        },
-        {
-            social: "https://github.com/sawa_ko",
-            name: "Sawako",
-            quote: "Legacy website"
         }
     ],
     extra: [
