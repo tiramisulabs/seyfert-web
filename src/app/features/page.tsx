@@ -45,7 +45,7 @@ export default function Page() {
             <SpotlightCard icon={<BeakerIcon className='w-10 h-10' />} title="Latest features" description="Seyfert is in development and it has the latest Discord features" />
             <SpotlightCard icon={<FaceSmileIcon className='w-10 h-10' />} title="Dev experience" description="Seyfert is made entirely in Typescript to build scalabe bots at the speed of light" />
             <SpotlightCard icon={<HeartIcon className='w-10 h-10' />} title="24/4 Support" description="Seyfert has a good support team who will assist you in your code" />
-            <SpotlightCard icon={<LightBulbIcon className='w-10 h-10' />} title="Modular" description="Seyfert is modular, forget about spaggheti libraries" />
+            <SpotlightCard icon={<LightBulbIcon className='w-10 h-10' />} title="Written from 0" description="Seyfert is 100% written by us, no dependencies of others libs" />
             <SpotlightCard icon={<PaintBrushIcon className='w-10 h-10' />} title="Type-safe" description="Seyfert is fully type-safed, never worry about a wrong type again" />
         </motion.div>
     </div>
