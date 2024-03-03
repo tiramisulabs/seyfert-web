@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Sora } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import Header from "@/components/common/header";
 
 const font = Sora({ subsets: ["latin"] });
 
@@ -19,7 +20,10 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={font.className}>
         <Providers>
-          {children}
+          <Header />
+          <div className="p-12 lg:p-40">
+            {children}
+          </div>
         </Providers>
       </body>
     </html>

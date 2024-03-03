@@ -3,16 +3,8 @@
 import AnimatedText from 'react-animated-text-content';
 import { AnimatePresence, motion } from "framer-motion"
 import { Button, Snippet } from '@nextui-org/react';
-import { BookOpenIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/react/20/solid';
-import { useState } from 'react';
-import { useInterval } from 'react-use';
+import { ArrowRightIcon, BookOpenIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
-
-const phrases = [
-  "You write amazing things; we make them happen.",
-  "Reach the Zenith of development around Discord.",
-  "Unlock the infinite possibilities of bot creation in Discord."
-]
 
 /**
  * TODO:
@@ -28,16 +20,7 @@ const phrases = [
  */
 
 export default function Page() {
-  const [index, setIndex] = useState(0)
-
-  useInterval(
-    () => {
-      if (index === 2) setIndex(0)
-      else setIndex(index + 1)
-    },
-    5000
-  );
-  return <div className='p-12 lg:p-40'>
+  return <div className=''>
     <div className='flex justify-between items-start gap-14'>
       <div className='flex flex-col gap-2'>
         <motion.span className='uppercase font-bold text-sm text-default-500' initial={{ y: 10, opacity: 0 }}
@@ -49,7 +32,7 @@ export default function Page() {
           Meet seyfert...
         </motion.span>
         <AnimatedText
-          type="words" // animate words or chars
+          type="words"
           animation={{
             scale: 1.1,
           }}
@@ -62,7 +45,7 @@ export default function Page() {
           threshold={0.1}
           rootMargin="20%"
         >
-          {phrases[index]}
+          You write amazing things; we make them happen.
         </AnimatedText>
         <motion.p className='text-default-500 duration-200 lg:text-base text-sm' initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 100 }}
