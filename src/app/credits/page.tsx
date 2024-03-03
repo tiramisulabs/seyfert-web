@@ -2,23 +2,54 @@
 
 import AnimatedText from 'react-animated-text-content';
 import { motion } from "framer-motion"
-import { Button } from '@nextui-org/react';
-import { ArrowLeftIcon, ArrowRightIcon, BanknotesIcon, BeakerIcon, FaceSmileIcon, FingerPrintIcon, HeartIcon, LightBulbIcon, PaintBrushIcon } from '@heroicons/react/20/solid';
+import { HeartIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
-import SpotlightCard from '@/components/common/spotlight-card';
 
-/**
- * TODO:
- * <div className='my-10'>
-      <Marquee gradient gradientColor="#09090b" pauseOnHover>
-        <div className='gap-3 flex items-center'>
-          {[...Array(9)].map(() => <div className='w-32 h-20 rounded-lg bg-default-50 flex items-center justify-center'>
-            <BoltIcon className='w-6 h-6 mr-2' />Bolt
-          </div>)}
-        </div>
-      </Marquee>
-    </div>
- */
+const credits = {
+    main: [
+        {
+            social: "https://github.com/socram09",
+            name: "Socram09"
+        },
+        {
+            social: "https://github.com/freeaoi",
+            name: "FreeAoi"
+        },
+        {
+            social: "https://github.com/marcrock22",
+            name: "Marcrock22"
+        }
+    ],
+    web: [
+        {
+            social: "https://github.com/simxnet",
+            name: "Simxnet",
+            quote: "Me, lol"
+        },
+        {
+            social: "https://github.com/sawa_ko",
+            name: "Sawako",
+            quote: "Legacy website"
+        }
+    ],
+    extra: [
+        {
+            social: "https://github.com/yuzudev",
+            name: "Yuzu",
+            quote: "Main idea, founder"
+        },
+        {
+            social: "https://github.com/miiadev",
+            name: "Miia",
+            quote: "Domain registration, etc"
+        },
+        {
+            social: "https://github.com/drylozu",
+            name: "David",
+            quote: "Cat officer 🐈"
+        }
+    ]
+}
 
 export default function Page() {
     return <div className=''>
@@ -58,25 +89,28 @@ export default function Page() {
             }}>
             <div className='flex flex-col gap-2'>
                 <h3 className='font-bold text-2xl'>Main development</h3>
-                <div className='flex flex-col gap-1'>
-                    <span>FreeAoi</span>
-                    <span>Marcrock</span>
-                    <span>Socram09</span>
+                <div className='flex flex-col gap-1 w-fit'>
+                    {credits.main.map(u => <Link href={u.social} key={u.name}>
+                        <div className="relative before:absolute before:bg-primary before:bottom-0 before:left-0 before:h-full before:w-full before:origin-bottom before:scale-y-[0.35] hover:before:scale-y-100 before:transition-transform before:ease-in-out before:duration-500">
+                            <span className="relative">{u.name}</span>
+                        </div>
+                    </Link>)}
                 </div>
             </div>
-            <div className='flex flex-col gap-2'>
+            <div className='flex flex-col gap-2 opacity-70'>
                 <h3 className='font-bold text-2xl'>Web development</h3>
                 <div className='flex flex-col gap-1'>
-                    <span>Simxnet <span className='text-default-500'>— Moi</span></span>
-                    <span>Sawako <span className='text-default-500'>— Legacy website</span></span>
+                    {credits.web.map(u => <Link href={u.social} key={u.name}>
+                        <span>{u.name} <span className='text-default-500'>— {u.quote}</span></span>
+                    </Link>)}
                 </div>
             </div>
-            <div className='flex flex-col gap-2'>
+            <div className='flex flex-col gap-2 opacity-50'>
                 <h3 className='font-bold text-2xl'>Extras</h3>
                 <div className='flex flex-col gap-1'>
-                    <span>Yuzuru <span className='text-default-500'>— Main idea</span></span>
-                    <span>Miia <span className='text-default-500'>— Extra codes</span></span>
-                    <span>David <span className='text-default-500 italic'>— Cat officer</span></span>
+                    {credits.extra.map(u => <Link href={u.social} key={u.name}>
+                        <span>{u.name} <span className='text-default-500'>— {u.quote}</span></span>
+                    </Link>)}
                 </div>
             </div>
         </motion.div>

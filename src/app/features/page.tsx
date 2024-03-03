@@ -2,23 +2,8 @@
 
 import AnimatedText from 'react-animated-text-content';
 import { motion } from "framer-motion"
-import { Button } from '@nextui-org/react';
-import { ArrowLeftIcon, ArrowRightIcon, BanknotesIcon, BeakerIcon, FaceSmileIcon, FingerPrintIcon, HeartIcon, LightBulbIcon, PaintBrushIcon } from '@heroicons/react/20/solid';
-import Link from 'next/link';
+import { BeakerIcon, FaceSmileIcon, FingerPrintIcon, HeartIcon, LightBulbIcon, PaintBrushIcon } from '@heroicons/react/20/solid';
 import SpotlightCard from '@/components/common/spotlight-card';
-
-/**
- * TODO:
- * <div className='my-10'>
-      <Marquee gradient gradientColor="#09090b" pauseOnHover>
-        <div className='gap-3 flex items-center'>
-          {[...Array(9)].map(() => <div className='w-32 h-20 rounded-lg bg-default-50 flex items-center justify-center'>
-            <BoltIcon className='w-6 h-6 mr-2' />Bolt
-          </div>)}
-        </div>
-      </Marquee>
-    </div>
- */
 
 export default function Page() {
     return <div className=''>
