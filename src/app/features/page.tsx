@@ -43,7 +43,7 @@ export default function Page() {
             }}>
             <SpotlightCard icon={<FingerPrintIcon className='w-10 h-10' />} title="RAM saver" description="Seyfert is amazingly lightweight" />
             <SpotlightCard icon={<BeakerIcon className='w-10 h-10' />} title="Latest features" description="Seyfert is in development and it has the latest Discord features" />
-            <SpotlightCard icon={<FaceSmileIcon className='w-10 h-10' />} title="Dev experience" description="Seyfert is made entirely in Typescript to build scalabe bots at the speed of light" />
+            <SpotlightCard icon={<FaceSmileIcon className='w-10 h-10' />} title="Dev experience" description="Seyfert is made entirely in Typescript to build scalable bots at the speed of light" />
             <SpotlightCard icon={<HeartIcon className='w-10 h-10' />} title="24/4 Support" description="Seyfert has a good support team who will assist you in your code" />
             <SpotlightCard icon={<LightBulbIcon className='w-10 h-10' />} title="Written from scratch" description="Seyfert is 100% written from scratch, no external dependencies." />
             <SpotlightCard icon={<PaintBrushIcon className='w-10 h-10' />} title="Type-safe" description="Seyfert is fully type-safed, never worry about a wrong type again" />
