@@ -74,7 +74,7 @@ export default function Page() {
             duration: 0.5,
             delay: 2
           }}>
-          <Link href='https://seyfert-docs.vercel.app/'><Button variant="solid" startContent={<BookOpenIcon className='w-5 h-5' />}>Get started</Button></Link>
+          <Link href='https://docs.seyfert.dev/'><Button variant="solid" startContent={<BookOpenIcon className='w-5 h-5' />}>Get started</Button></Link>
           <Link href='https://discord.com/invite/RmW54ShzMA'><Button variant="faded" startContent={<ChatBubbleLeftEllipsisIcon className='w-5 h-5' />}>Support</Button></Link>
         </motion.div>
         <motion.div className='mt-5' initial={{ y: 10, opacity: 0 }}
