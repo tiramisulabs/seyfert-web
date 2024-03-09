@@ -36,12 +36,12 @@ const credits = {
         {
             social: "https://github.com/yuzudev",
             name: "Yuzu",
-            quote: "Main idea, founder"
+            quote: "Biscuit.js founder"
         },
         {
             social: "https://github.com/miiadev",
             name: "Miia",
-            quote: "Domain registration, etc"
+            quote: "Domain registration, consuntalcy, etc"
         },
         {
             social: "https://github.com/drylozu",

@@ -44,11 +44,11 @@ export default function SpotlightCard({ icon, title, description }: SpotlightCar
             <div>
                 {icon}
                 <div className="mt-2 flex items-center gap-x-2">
-                    <h1 className="text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-default-500">
+                    <h1 className="text-xl lg:text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-white to-default-500">
                         {title}
                     </h1>
                 </div>
-                {description && <p className="mt-6 text-base truncate leading-7 text-default-500">
+                {description && <p className="mt-6 text-sm lg:text-base truncate leading-7 text-default-500">
                     {description}
                 </p>}
             </div>

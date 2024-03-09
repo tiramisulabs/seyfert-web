@@ -25,17 +25,17 @@ export default function Page() {
                 >
                     Why choose Seyfert for your next project?
                 </AnimatedText>
-                <motion.p className='text-default-500 duration-200 lg:text-base text-sm' initial={{ y: 10, opacity: 0 }}
+                <motion.p className='text-default-500 duration-200 lg:text-base text-sm max-w-3xl w-full' initial={{ y: 10, opacity: 0 }}
                     animate={{ y: 0, opacity: 100 }}
                     transition={{
                         duration: 0.5,
                         delay: 0.5
                     }}>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Facere, ipsam? Sed, minima nemo deserunt id commodi quod aliquid hic consequuntur numquam? Maiores sit quod reprehenderit optio rem esse consequuntur eveniet.
+                    There is a lot of reasons to use Seyfert, but we cannot put them all in this page so here are a few of them!
                 </motion.p>
             </div>
         </div>
-        <motion.div className='grid grid-cols-2 gap-2 my-5' initial={{ y: 10, opacity: 0 }}
+        <motion.div className='grid grid-cols-1 lg:grid-cols-2 gap-2 my-5' initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 100 }}
             transition={{
                 duration: 0.5,

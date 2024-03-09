@@ -5,6 +5,9 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Button, Snippet } from '@nextui-org/react';
 import { ArrowRightIcon, BookOpenIcon, ChatBubbleLeftEllipsisIcon } from '@heroicons/react/20/solid';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { PrefetchKind } from 'next/dist/client/components/router-reducer/router-reducer-types';
 
 /**
  * TODO:
@@ -20,6 +23,16 @@ import Link from 'next/link';
  */
 
 export default function Page() {
+  const router = useRouter()
+
+  useEffect(() => {
+    router.prefetch("/features", {
+      kind: PrefetchKind.FULL
+    })
+    router.prefetch("/credits", {
+      kind: PrefetchKind.FULL
+    })
+  })
   return <div className=''>
     <div className='flex justify-between items-start gap-14'>
       <div className='flex flex-col gap-2'>
@@ -53,7 +66,7 @@ export default function Page() {
             duration: 0.5,
             delay: 1
           }}>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Facere, ipsam? Sed, minima nemo deserunt id commodi quod aliquid hic consequuntur numquam? Maiores sit quod reprehenderit optio rem esse consequuntur eveniet.
+          We make easy to interact with the Discord API, big cache control, scalable code and a pretty dev experience.
         </motion.p>
         <motion.div className='flex items-center gap-2' initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 100 }}

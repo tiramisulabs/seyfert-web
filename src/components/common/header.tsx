@@ -13,7 +13,11 @@ const tourRoutes = [
 export default function Header() {
     const pathname = usePathname()
     const router = useRouter()
-    let [activeTab, setActiveTab] = useState(pathname ?? tourRoutes[0].id);
+    let [activeTab, setActiveTab] = useState(tourRoutes[0].id);
+
+    useEffect(() => {
+        setActiveTab(pathname)
+    }, [pathname])
 
     useEffect(() => {
         router.push(activeTab)
@@ -24,8 +28,8 @@ export default function Header() {
                 <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`${activeTab === tab.id ? "" : "hover:text-white/60"
-                        } relative rounded-full px-3 py-1.5 text-sm font-medium text-white outline-sky-400 transition focus-visible:outline-2`}
+                    className={`${activeTab === tab.id ? "" : "hover:text-default-600"
+                        } relative rounded-full px-3 py-1.5 text-sm font-medium text-white outline-none transition focus-visible:outline-2`}
                     style={{
                         WebkitTapHighlightColor: "transparent",
                     }}
@@ -33,9 +37,8 @@ export default function Header() {
                     {activeTab === tab.id && (
                         <motion.span
                             layoutId="bubble"
-                            className="absolute inset-0 z-10 bg-white mix-blend-difference"
-                            style={{ borderRadius: 9999 }}
-                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                            className="absolute inset-0 z-10 bg-white mix-blend-difference rounded-full"
+                            transition={{ type: "spring", bounce: 0.4, duration: 0.9 }}
                         />
                     )}
                     {tab.label}
