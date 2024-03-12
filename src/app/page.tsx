@@ -104,11 +104,11 @@ export default function Page() {
             </div>
 
             <div className='p-3 font-mono flex flex-col gap-0'>
-              <span>~/dev/seybot $ <strong className='text-emerald-500'>bun add seyfert</strong></span>
+              <span>~/dev/seybot $ <strong className='text-emerald-500'>pnpm add seyfert</strong></span>
               <span>Packages: <strong className='text-emerald-500'>+182</strong></span>
               <span><strong className='text-emerald-500'>++++++++++++++++++++++++++++++++++++++++++++++++++++</strong></span>
               <span>Progress: resolved <strong className='text-blue-500'>542</strong>, reused <strong className='text-blue-500'>454</strong>, downloaded <strong className='text-blue-500'>79</strong>, added <strong className='text-blue-500'>182</strong>, done</span>
-              <span>~/dev/seybot $ <strong className='text-emerald-500'>bun dev</strong></span>
+              <span>~/dev/seybot $ <strong className='text-emerald-500'>pnpm dev</strong></span>
               <span><strong className='text-blue-500'>[LOGGER] INFO -</strong> Starting...</span>
               <span><strong className='text-violet-500'>[LOGGER] DEBUG -</strong> Memory usage: ~78mb</span>
               <span><strong className='text-violet-500'>[LOGGER] DEBUG -</strong> Shard count: 3</span>
