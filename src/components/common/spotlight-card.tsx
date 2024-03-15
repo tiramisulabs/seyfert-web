@@ -48,7 +48,7 @@ export default function SpotlightCard({ icon, title, description }: SpotlightCar
                         {title}
                     </h1>
                 </div>
-                {description && <p className="mt-6 text-sm lg:text-base truncate leading-7 text-default-500">
+                {description && <p className="mt-6 text-sm lg:text-base text-wrap leading-7 text-default-500">
                     {description}
                 </p>}
             </div>
