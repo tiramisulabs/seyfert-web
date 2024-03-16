@@ -74,6 +74,15 @@ export default function Page() {
                     }}>
                     Thanks to these amazing people, Seyfert is possible <HeartIcon className='w-5 h-5 text-rose-500' />
                 </motion.p>
+                <motion.p className='text-default-500 duration-200 gap-1 lg:text-base text-sm' initial={{ y: 10, opacity: 0 }}
+                    animate={{ y: 0, opacity: 100 }}
+                    transition={{
+                        duration: 0.5,
+                        delay: 0.6
+                    }}>
+                    Hey, this is a message from Simxnet, the creator of this website. I just wanted to say that I also made a Discord botlist if you want to check it out you know...
+                    <Link className='underline ml-1 text-default-800 hover:text-default-700' target="_blank" referrerPolicy='origin' href="https://dbots.fun?ref=seyfert.dev">dbots.fun</Link>
+                </motion.p>
             </div>
         </div>
         <motion.div className='my-5 flex flex-col gap-4' initial={{ y: 10, opacity: 0 }}
