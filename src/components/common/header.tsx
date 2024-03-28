@@ -7,7 +7,8 @@ import { useEffect, useState } from "react";
 const tourRoutes = [
     { id: "/", label: "Home" },
     { id: "/features", label: "Features" },
-    { id: "/credits", label: "Credits" },
+    { id: "/benchmarks", label: "Benchmarks" },
+    { id: "/credits", label: "Credits" }
 ];
 
 export default function Header() {
