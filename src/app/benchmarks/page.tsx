@@ -31,39 +31,39 @@ ChartJS.register(
 );
 
 const data = {
-  labels: seyfertData.map((_, i) => `${i} minute`),
+  labels: seyfertData.map((_, i) => `${i} minutes`),
   datasets: [
     {
       label: "Seyfert",
-      data: seyfertData.map((_, i) => _.rss / 1024 / 1024),
+      data: seyfertData.map((_) => _.rss / 1024 / 1024),
       fill: false,
       borderColor: "rgb(75, 192, 192)",
       tension: 0.1,
     },
     {
       label: "Discord.js",
-      data: discordjsData.map((_, i) => _.rss / 1024 / 1024),
+      data: discordjsData.map((_) => _.rss / 1024 / 1024),
       fill: false,
       borderColor: "rgb(54, 162, 235)",
       tension: 0.1,
     },
     {
       label: "Oceanic.js",
-      data: oceanicData.map((_, i) => _.rss / 1024 / 1024),
+      data: oceanicData.map((_) => _.rss / 1024 / 1024),
       fill: false,
       borderColor: "rgb(255, 99, 132)",
       tension: 0.1,
     },
     {
       label: "Eris",
-      data: erisData.map((_, i) => _.rss / 1024 / 1024),
+      data: erisData.map((_) => _.rss / 1024 / 1024),
       fill: false,
       borderColor: "rgb(153, 102, 255)",
       tension: 0.1,
     },
     {
       label: "Detritus",
-      data: detritusData.map((_, i) => _.rss / 1024 / 1024),
+      data: detritusData.map((_) => _.rss / 1024 / 1024),
       fill: false,
       borderColor: "rgb(255, 159, 64)",
       tension: 0.1,
@@ -90,7 +90,7 @@ export default function Benchmark() {
             threshold={0.1}
             rootMargin="20%"
           >
-            Benchmark
+            Benchmarks
           </AnimatedText>
           <motion.p className='text-default-500 duration-200 lg:text-base text-sm' initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 100 }}
@@ -103,14 +103,14 @@ export default function Benchmark() {
         </div>
 
       </div>
-      <div className='min-h-screen'>
-        <Line data={data} options={{
+      <div className="max-h-[26em]">
+        <Line className="h-[26em]" data={data} options={{
           maintainAspectRatio: false,
           scales: {
             y: {
               ticks: {
-                callback: function (value, index, values) {
-                  return `${value} MB`
+                callback: function (value) {
+                  return `${value}MB`
                 }
               }
             }
