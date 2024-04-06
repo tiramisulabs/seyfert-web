@@ -23,7 +23,7 @@ export default function Header() {
     useEffect(() => {
         router.push(activeTab)
     }, [activeTab])
-    return <header className="w-fit mx-auto bg-default-50/50 backdrop-blur rounded-xl p-5 top-5 sticky z-10">
+    return <header className="w-fit mx-auto bg-default-50/50 backdrop-blur rounded-xl lg:p-5 p-3 top-5 sticky z-10">
         <div className="flex space-x-1 mx-auto w-fit">
             {tourRoutes.map((tab) => (
                 <button
