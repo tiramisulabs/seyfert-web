@@ -98,7 +98,7 @@ export default function Benchmark() {
               duration: 0.5,
               delay: 0.5
             }}>
-            As you can see below, Seyfert is the most efficient in terms of memory usage at long runtime. All libraries has been ran in a discord bot with a 3,000 discord servers and all non-privileged intents activated , you can see the code used to benchmark the libraries <a href="https://github.com/tiramisulabs/benchmark" className="font-bold text-indigo-600">here</a>.
+            As you can see below, Seyfert is the most efficient in terms of memory usage at long runtime. All libraries were run on a Discord bot within 3,000 servers and with all non-privileged intents enabled, you can see the code used to benchmark the libraries <a href="https://github.com/tiramisulabs/benchmark" className="font-bold text-indigo-600">here</a>.
           </motion.p>
         </div>
 
