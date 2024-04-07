@@ -31,7 +31,7 @@ export default function Page() {
                         duration: 0.5,
                         delay: 0.5
                     }}>
-                    There is a lot of reasons to use Seyfert, but we cannot put them all in this page so here are a few of them!
+                    There are many reasons to use Seyfert, but we cannot put them all on this page, so here are a few of them!
                 </motion.p>
             </div>
         </div>
