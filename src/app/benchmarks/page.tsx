@@ -2,22 +2,22 @@
 
 import AnimatedText from "react-animated-text-content"
 import { Line } from "react-chartjs-2"
-import seyfertData from "../../../public/data/seyfert-98045.json"
-import discordjsData from "../../../public/data/discord_js-98045.json"
-import oceanicData from "../../../public/data/oceanic_js-98045.json"
-import erisData from "../../../public/data/eris-98045.json"
 import detritusData from "../../../public/data/detritus-client-98045.json"
+import discordjsData from "../../../public/data/discord_js-98045.json"
+import erisData from "../../../public/data/eris-98045.json"
+import oceanicData from "../../../public/data/oceanic_js-98045.json"
+import seyfertData from "../../../public/data/seyfert-98045.json"
 
 import {
-  Chart as ChartJS,
   CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LineElement,
   LinearScale,
   PointElement,
-  LineElement,
   Title,
   Tooltip,
-  Legend,
-} from "chart.js";
+} from "chart.js"
 import { motion } from "framer-motion"
 
 ChartJS.register(
@@ -29,6 +29,38 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+const totalDuration = 2e3;
+const delayBetweenPoints = totalDuration / seyfertData.length;
+const previousY = (ctx:any) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(100) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
+const animation = {
+  x: {
+    type: 'number',
+    easing: 'linear',
+    duration: delayBetweenPoints,
+    from: NaN, // the point is initially skipped
+    delay(ctx:any) {
+      if (ctx.type !== 'data' || ctx.xStarted) {
+        return 0;
+      }
+      ctx.xStarted = true;
+      return ctx.index * delayBetweenPoints;
+    }
+  },
+  y: {
+    type: 'number',
+    easing: 'linear',
+    duration: delayBetweenPoints,
+    from: previousY,
+    delay(ctx:any) {
+      if (ctx.type !== 'data' || ctx.yStarted) {
+        return 0;
+      }
+      ctx.yStarted = true;
+      return ctx.index * delayBetweenPoints;
+    }
+  }
+};
 
 const data = {
   labels: seyfertData.map((_, i) => `${i} minutes`),
@@ -44,28 +76,28 @@ const data = {
       label: "Discord.js",
       data: discordjsData.map((_) => _.rss / 1024 / 1024),
       fill: false,
-      borderColor: "rgb(54, 162, 235)",
+      borderColor: "rgb(88, 101, 242)",
       tension: 0.1,
     },
     {
       label: "Oceanic.js",
       data: oceanicData.map((_) => _.rss / 1024 / 1024),
       fill: false,
-      borderColor: "rgb(255, 99, 132)",
+      borderColor: "rgb(153, 102, 255)",
       tension: 0.1,
     },
     {
       label: "Eris",
       data: erisData.map((_) => _.rss / 1024 / 1024),
       fill: false,
-      borderColor: "rgb(153, 102, 255)",
+      borderColor: "rgb(255, 99, 132)",
       tension: 0.1,
     },
     {
       label: "Detritus",
       data: detritusData.map((_) => _.rss / 1024 / 1024),
       fill: false,
-      borderColor: "rgb(255, 159, 64)",
+      borderColor: "rgb(255, 183, 79)",
       tension: 0.1,
     }
   ],
@@ -105,6 +137,8 @@ export default function Benchmark() {
       </div>
       <div className="max-h-[26em]">
         <Line className="h-[26em]" data={data} options={{
+          //@ts-expect-error
+          animation,
           maintainAspectRatio: false,
           scales: {
             y: {
