@@ -27,18 +27,6 @@ const credits = {
             quote: "Me, lol"
         }
     ],
-    docs: [
-        {
-            social: "https://github.com/FabrizioCoder",
-            name: "Fabrizio Santana",
-            quote: "falling in love with a... biscuit? 🍪"
-        },
-        {
-            social: "https://github.com/PabloRNC",
-            name: "PabloRNC",
-            quote: "cool guy 😎"
-        }
-    ],
     extra: [
         {
             social: "https://github.com/yuzudev",
@@ -117,14 +105,6 @@ export default function Page() {
                 <h3 className='font-bold text-2xl'>Web development</h3>
                 <div className='flex flex-col gap-1'>
                     {credits.web.map(u => <Link href={u.social} key={u.name}>
-                        <span>{u.name} <span className='text-default-500'>— {u.quote}</span></span>
-                    </Link>)}
-                </div>
-            </div>
-            <div className='flex flex-col gap-2 opacity-70'>
-                <h3 className='font-bold text-2xl'>Docs development</h3>
-                <div className='flex flex-col gap-1'>
-                    {credits.docs.map(u => <Link href={u.social} key={u.name}>
                         <span>{u.name} <span className='text-default-500'>— {u.quote}</span></span>
                     </Link>)}
                 </div>
