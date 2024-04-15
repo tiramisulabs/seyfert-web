@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     url: 'https://seyfert.dev',
     images: [
       {
-        url: 'https://i.imgur.com/gckZdDB.png',
+        url: '/seyfert4k.png',
         width: 1280,
         height: 640,
         alt: 'Seyfert | Discord library',
