@@ -36,7 +36,7 @@ const credits = {
         {
             social: "https://github.com/dragurimu",
             name: "Miia",
-            quote: "Domain registration, consultancy, etc"
+            quote: "Domain registration, consultancy, etc."
         },
         {
             social: "https://github.com/drylozu",
