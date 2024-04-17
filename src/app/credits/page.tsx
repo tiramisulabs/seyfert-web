@@ -34,9 +34,9 @@ const credits = {
             quote: "Biscuit.js founder"
         },
         {
-            social: "https://github.com/miiadev",
+            social: "https://github.com/dragurimu",
             name: "Miia",
-            quote: "Domain registration, consuntalcy, etc"
+            quote: "Domain registration, consultancy, etc"
         },
         {
             social: "https://github.com/drylozu",
