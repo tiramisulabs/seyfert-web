@@ -26,6 +26,7 @@ export default function Header() {
 	return (
 		<header className="w-fit mx-auto bg-default-50/50 backdrop-blur rounded-xl lg:p-5 p-3 top-5 sticky z-10">
 			<div className="flex items-center gap-2 mx-auto w-fit">
+				{/* biome-ignore lint/a11y/useKeyWithClickEvents: too lazy for this */}
 				<img
 					src={uwu ? "/brand/seyfert-uwu.png" : "/brand/seyfert.svg"}
 					className="w-10 h-10 cursor-pointer"
