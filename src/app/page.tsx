@@ -12,18 +12,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import AnimatedText from "react-animated-text-content";
 
-/**
- * TODO:
- * <div className='my-10'>
-      <Marquee gradient gradientColor="#09090b" pauseOnHover>
-        <div className='gap-3 flex items-center'>
-          {[...Array(9)].map(() => <div className='w-32 h-20 rounded-lg bg-default-50 flex items-center justify-center'>
-            <BoltIcon className='w-6 h-6 mr-2' />Bolt
-          </div>)}
-        </div>
-      </Marquee>
-    </div>
- */
+import SeyfertLogo from "../../public/brand/seyfert.svg";
+import SeyfertKawaiiLogo from "../../public/brand/seyfert-uwu.png";
 
 export default function Page() {
 	const router = useRouter();
@@ -40,21 +30,9 @@ export default function Page() {
 		});
 	});
 	return (
-		<div className="">
-			<div className="flex justify-between items-start gap-14">
+		<div>
+			<div className="flex justify-between items-center gap-14">
 				<div className="flex flex-col gap-2">
-					{uwu && (
-						<motion.img
-							initial={{ y: 10, opacity: 0 }}
-							animate={{ y: 0, opacity: 100 }}
-							transition={{
-								duration: 0.5,
-								delay: 0,
-							}}
-							src="/seyfertuwu.png"
-							className="-mt-[135px] w-72 h-72"
-						/>
-					)}
 					<motion.span
 						className="uppercase font-bold text-sm text-default-500"
 						initial={{ y: 10, opacity: 0 }}
@@ -135,70 +113,93 @@ export default function Page() {
 					</motion.div>
 				</div>
 				<AnimatePresence>
-					<motion.div
-						className="max-w-xl w-full h-80 lg:flex hidden"
-						initial={{ y: 10, opacity: 0 }}
-						animate={{ y: 0, opacity: 100 }}
-						transition={{
-							duration: 0.5,
-							delay: 1.5,
-						}}
-					>
-						<div className="bg-default-100 h-full rounded-xl">
-							<div className="w-full h-12 bg-default-50 rounded-t-xl p-3 flex items-center justify-between">
-								<div className="flex gap-2 items-center">
-									<div className="w-5 h-5 rounded-full bg-red-500" />
-									<div className="w-5 h-5 rounded-full bg-amber-500" />
-									<div className="w-5 h-5 rounded-full bg-green-500" />
+					{uwu ? (
+						<motion.img
+							initial={{ y: 10, opacity: 0 }}
+							animate={{ y: 0, opacity: 100 }}
+							transition={{
+								duration: 0.5,
+								delay: 0,
+							}}
+							src={SeyfertKawaiiLogo.src}
+							className="w-[70%]"
+						/>
+					) : (
+						<motion.div
+							className="max-w-xl w-full h-80 lg:flex hidden"
+							initial={{ y: 10, opacity: 0 }}
+							animate={{ y: 0, opacity: 100 }}
+							transition={{
+								duration: 0.5,
+								delay: 1.5,
+							}}
+						>
+							<div className="bg-default-100 h-full rounded-xl">
+								<div className="w-full h-12 bg-default-50 rounded-t-xl p-3 flex items-center justify-between">
+									<div className="flex gap-2 items-center">
+										<div className="w-5 h-5 rounded-full bg-red-500" />
+										<div className="w-5 h-5 rounded-full bg-amber-500" />
+										<div className="w-5 h-5 rounded-full bg-green-500" />
+									</div>
+									<img
+										alt="Seyfert Logo"
+										src={SeyfertLogo.src}
+										className="w-8 h-8"
+									/>
 								</div>
-								<img alt="logo" src="/logo.svg" className="w-8 h-8" />
-							</div>
 
-							<div className="p-3 font-mono flex flex-col gap-0">
-								<span>
-									~/dev/seybot ${" "}
-									<strong className="text-emerald-500">pnpm add seyfert</strong>
-								</span>
-								<span>
-									Packages: <strong className="text-emerald-500">+182</strong>
-								</span>
-								<span>
-									<strong className="text-emerald-500">
-										++++++++++++++++++++++++++++++++++++++++++++++++++++
-									</strong>
-								</span>
-								<span>
-									Progress: resolved{" "}
-									<strong className="text-blue-500">542</strong>, reused{" "}
-									<strong className="text-blue-500">454</strong>, downloaded{" "}
-									<strong className="text-blue-500">79</strong>, added{" "}
-									<strong className="text-blue-500">182</strong>, done
-								</span>
-								<span>
-									~/dev/seybot ${" "}
-									<strong className="text-emerald-500">pnpm dev</strong>
-								</span>
-								<span>
-									<strong className="text-blue-500">[LOGGER] INFO -</strong>{" "}
-									Starting...
-								</span>
-								<span>
-									<strong className="text-violet-500">[LOGGER] DEBUG -</strong>{" "}
-									Memory usage: ~78mb
-								</span>
-								<span>
-									<strong className="text-violet-500">[LOGGER] DEBUG -</strong>{" "}
-									Shard count: 3
-								</span>
-								<span>
-									<strong className="text-emerald-500">
-										[LOGGER] SUCCESS -
-									</strong>{" "}
-									Bot is now online in all shards.
-								</span>
+								<div className="p-3 font-mono flex flex-col gap-0">
+									<span>
+										~/dev/seybot ${" "}
+										<strong className="text-emerald-500">
+											pnpm add seyfert
+										</strong>
+									</span>
+									<span>
+										Packages: <strong className="text-emerald-500">+182</strong>
+									</span>
+									<span>
+										<strong className="text-emerald-500">
+											++++++++++++++++++++++++++++++++++++++++++++++++++++
+										</strong>
+									</span>
+									<span>
+										Progress: resolved{" "}
+										<strong className="text-blue-500">542</strong>, reused{" "}
+										<strong className="text-blue-500">454</strong>, downloaded{" "}
+										<strong className="text-blue-500">79</strong>, added{" "}
+										<strong className="text-blue-500">182</strong>, done
+									</span>
+									<span>
+										~/dev/seybot ${" "}
+										<strong className="text-emerald-500">pnpm dev</strong>
+									</span>
+									<span>
+										<strong className="text-blue-500">[LOGGER] INFO -</strong>{" "}
+										Starting...
+									</span>
+									<span>
+										<strong className="text-violet-500">
+											[LOGGER] DEBUG -
+										</strong>{" "}
+										Memory usage: ~78mb
+									</span>
+									<span>
+										<strong className="text-violet-500">
+											[LOGGER] DEBUG -
+										</strong>{" "}
+										Shard count: 3
+									</span>
+									<span>
+										<strong className="text-emerald-500">
+											[LOGGER] SUCCESS -
+										</strong>{" "}
+										Bot is now online in all shards.
+									</span>
+								</div>
 							</div>
-						</div>
-					</motion.div>
+						</motion.div>
+					)}
 				</AnimatePresence>
 			</div>
 		</div>

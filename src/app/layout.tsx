@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 		url: "https://seyfert.dev",
 		images: [
 			{
-				url: "/seyfert4k.png",
+				url: "/brand/og-image.png",
 				width: 1280,
 				height: 640,
 				alt: "Seyfert | Discord library",
@@ -36,7 +36,7 @@ export default function RootLayout({
 			<body className={font.className}>
 				<Providers>
 					<Header />
-					<div className="p-12 lg:p-40">{children}</div>
+					<div className="p-12 lg:px-24 lg:py-24">{children}</div>
 				</Providers>
 			</body>
 		</html>
