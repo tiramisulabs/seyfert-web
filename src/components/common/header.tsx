@@ -23,8 +23,9 @@ export default function Header() {
 
   useEffect(() => {
     const queryString = new URLSearchParams(query).toString();
-    router.replace(`${activeTab}?${queryString}`);
-  }, [activeTab, router, query]);
+    router.push(`${activeTab}?${queryString}`);
+  }, [activeTab, pathname, query, router]);
+
   return (
     <header className="w-fit mx-auto bg-default-50/50 backdrop-blur rounded-xl lg:p-5 p-3 top-5 sticky z-10">
       <div className="flex space-x-1 mx-auto w-fit">

@@ -43,7 +43,7 @@ export default function Page() {
     <div className="">
       <div className="flex justify-between items-start gap-14">
         <div className="flex flex-col gap-2">
-          {uwu ? (
+          {uwu && (
             <motion.img
               initial={{ y: 10, opacity: 0 }}
               animate={{ y: 0, opacity: 100 }}
@@ -54,7 +54,7 @@ export default function Page() {
               src="/seyfertuwu.png"
               className="-mt-[135px] w-72 h-72"
             />
-          ) : null}
+          )}
           <motion.span
             className="uppercase font-bold text-sm text-default-500"
             initial={{ y: 10, opacity: 0 }}
