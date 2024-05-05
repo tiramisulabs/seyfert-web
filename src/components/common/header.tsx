@@ -16,26 +16,31 @@ export default function Header() {
 	const query = useSearchParams();
 	const router = useRouter();
 	const [activeTab, setActiveTab] = useState(tourRoutes[0].id);
+	const uwu = query.get("uwu");
+	const queryString = new URLSearchParams(query).toString();
 
 	useEffect(() => {
 		setActiveTab(pathname);
 	}, [pathname]);
 
-	useEffect(() => {
-		const queryString = new URLSearchParams(query).toString();
-		router.push(`${activeTab}?${queryString}`);
-	}, [activeTab, pathname, query, router]);
-
 	return (
 		<header className="w-fit mx-auto bg-default-50/50 backdrop-blur rounded-xl lg:p-5 p-3 top-5 sticky z-10">
-			<div className="flex space-x-1 mx-auto w-fit">
+			<div className="flex items-center gap-2 mx-auto w-fit">
+				<img
+					src={uwu ? "/brand/seyfert-uwu.png" : "/brand/seyfert.svg"}
+					className="w-10 h-10 cursor-pointer"
+					alt="Seyfert Logo"
+					onClick={() => router.replace(`/?${queryString}`)}
+				/>
+				<div className="h-10 w-px rotate-12 bg-content3" />
 				{tourRoutes.map((tab) => (
 					<button
+						type="button"
 						key={tab.id}
-						onClick={() => setActiveTab(tab.id)}
+						onClick={() => router.replace(`${tab.id}?${queryString}`)}
 						className={`${
 							activeTab === tab.id ? "" : "hover:text-default-600"
-						} relative rounded-full px-3 py-1.5 text-sm font-medium text-white outline-none transition focus-visible:outline-2`}
+						} relative rounded-full px-2 py-1 text-sm font-medium text-white outline-none transition focus-visible:outline-2`}
 						style={{
 							WebkitTapHighlightColor: "transparent",
 						}}
