@@ -72,10 +72,10 @@ const animation = {
 
 const data = {
 	labels: seyfertData.map((_, i) => {
-		const secs = 6 * 60 * (i)
-		const hours = Math.floor(secs / (60 * 60)); 
-    	const minutes = Math.floor(secs % (60 * 60) / 60);
-		return `${hours ? `${hours}h ` : ''}${minutes}m`
+		const secs = 6 * 60 * i;
+		const hours = Math.floor(secs / (60 * 60));
+		const minutes = Math.floor((secs % (60 * 60)) / 60);
+		return `${hours ? `${hours}h ` : ""}${minutes}m`;
 	}),
 	datasets: [
 		{
@@ -146,8 +146,8 @@ export default function Benchmark() {
 							delay: 0.5,
 						}}
 					>
-						As you can see below, Seyfert is one of the most efficient in terms of
-						memory usage at long runtime. All libraries were run on a Discord
+						As you can see below, Seyfert is one of the most efficient in terms
+						of memory usage at long runtime. All libraries were run on a Discord
 						bot within ~3,000 servers and with all non-privileged intents
 						enabled, you can see the code used to benchmark the libraries{" "}
 						<a
