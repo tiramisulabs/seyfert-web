@@ -30,7 +30,7 @@ ChartJS.register(
 	Legend,
 );
 
-const totalDuration = 2e3;
+const totalDuration = 2.5e3;
 const delayBetweenPoints = totalDuration / seyfertData.length;
 // biome-ignore lint/suspicious/noExplicitAny: idk free stuff
 const previousY = (ctx: any) =>
@@ -71,7 +71,12 @@ const animation = {
 };
 
 const data = {
-	labels: seyfertData.map((_, i) => `${i} minutes`),
+	labels: seyfertData.map((_, i) => {
+		const secs = 6 * 60 * (i)
+		const hours = Math.floor(secs / (60 * 60)); 
+    	const minutes = Math.floor(secs % (60 * 60) / 60);
+		return `${hours ? `${hours}h ` : ''}${minutes}m`
+	}),
 	datasets: [
 		{
 			label: "Seyfert",
@@ -102,7 +107,7 @@ const data = {
 			tension: 0.1,
 		},
 		{
-			label: "Detritus",
+			label: "Detritus-client",
 			data: detritusData.map((_) => _.rss / 1024 / 1024),
 			fill: false,
 			borderColor: "rgb(255, 183, 79)",
@@ -141,9 +146,9 @@ export default function Benchmark() {
 							delay: 0.5,
 						}}
 					>
-						As you can see below, Seyfert is the most efficient in terms of
+						As you can see below, Seyfert is one of the most efficient in terms of
 						memory usage at long runtime. All libraries were run on a Discord
-						bot within 3,000 servers and with all non-privileged intents
+						bot within ~3,000 servers and with all non-privileged intents
 						enabled, you can see the code used to benchmark the libraries{" "}
 						<a
 							href="https://github.com/tiramisulabs/benchmark"
@@ -155,9 +160,9 @@ export default function Benchmark() {
 					</motion.p>
 				</div>
 			</div>
-			<div className="max-h-[26em]">
+			<div className="max-h-[32em]">
 				<Line
-					className="h-[26em]"
+					className="h-[32em]"
 					data={data}
 					options={{
 						//@ts-expect-error
