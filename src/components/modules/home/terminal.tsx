@@ -8,7 +8,7 @@ export default function HomeTerminal() {
 			rounded="xl"
 			borderWidth={1}
 			borderColor={"background.600"}
-			w={"1/2"}
+			w={{ lg: "1/2", base: "full" }}
 			bg={"background.800"}
 			fontSize={"sm"}
 			fontFamily={"monospace"}

@@ -15,7 +15,11 @@ import Link from "next/link";
 
 export default function Page() {
 	return (
-		<Flex justifyContent={"space-between"}>
+		<Flex
+			flexDir={{ lg: "row", base: "column" }}
+			justifyContent={"space-between"}
+			gap={5}
+		>
 			<Flex maxW={"3xl"} flexDir={"column"} gap={4}>
 				<Badge color="brand">
 					Seyfert 2.0 is coming soon!
