@@ -24,13 +24,19 @@ const haters = [
         displayName: "FreeAoi",
         username: "freeaoi",
         avatar: "87c010308e281f2c32e54c41167d2ff1",
-        content: <>viva dapa</>
+        content: <>I use discord.js btw</>
     },
     {
         displayName: "JustEvil",
         username: "justevil",
         avatar: "0f7fcc364251c08e705dfffed8182091",
         content: <>discord.js better already had this a long ago 💀</>
+    },
+    {
+        displayName: "Sawako",
+        username: "sawa_ko",
+        avatar: "3cfd56ea7764ac48aa1b33874edc8d64",
+        content: <>Sapphire already has all of that 🙄</>
     },
 ];
 

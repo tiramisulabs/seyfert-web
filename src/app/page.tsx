@@ -41,8 +41,7 @@ export default function Page() {
 						you
 					</Heading>
 					<Text>
-						Seyfert is a brand-new Discord library made entirely in TypeScript
-						for TypeScript.
+						Seyfert is a brand new, edge-bleeding Discord framework made with scalability and performance in mind.
 					</Text>
 					<Flex
 						css={{
