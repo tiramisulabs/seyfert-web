@@ -10,11 +10,14 @@ export default function Header() {
 			className={css({
 				top: 0,
 				position: "sticky",
-				bg: "background.900",
+				bg: "background.800/50",
 				w: "full",
-				py: 4,
-				borderBottom: 2,
-				borderColor: "background.800",
+				py: 5,
+				borderBottomWidth: 2,
+				borderColor: "background.600",
+				zIndex: 100,
+				backdropFilter: "auto",
+				backdropBlur: "sm",
 			})}
 		>
 			<Container w={"full"}>

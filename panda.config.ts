@@ -1,7 +1,7 @@
 import { defineConfig } from "@pandacss/dev";
 import { getColors } from "theme-colors";
 
-const brandColors = getColors("#0ba2c5");
+const brandColors = getColors("#1e90ff");
 const backgroundColors = getColors("#051721");
 
 function generateColorScheme(color: Record<string, string>) {
@@ -42,6 +42,9 @@ export default defineConfig({
 
 	// Global css
 	globalCss: {
+		html: {
+			overflowX: "clip",
+		},
 		extend: {
 			body: {
 				bg: "background.950",

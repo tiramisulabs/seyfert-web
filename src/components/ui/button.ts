@@ -8,7 +8,7 @@ export const button = cva({
 		justifyContent: "center",
 		position: "relative",
 		whiteSpace: "nowrap",
-		borderRadius: "lg",
+		borderRadius: "full",
 		cursor: "pointer",
 		transitionDuration: "slow",
 		fontWeight: 500,

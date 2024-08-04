@@ -4,7 +4,7 @@ import { styled } from "@/styled-system/jsx";
 export const badge = cva({
 	base: {
 		fontWeight: "medium",
-		borderRadius: "lg",
+		borderRadius: "md",
 		w: "fit",
 		display: "inline-flex",
 		alignItems: "center",
