@@ -30,7 +30,7 @@ export default function RootLayout({
 							position: "absolute",
 							inset: 0,
 						})}
-						quantity={100}
+						quantity={300}
 						ease={80}
 						refresh
 					/>

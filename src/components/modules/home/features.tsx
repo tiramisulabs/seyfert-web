@@ -45,10 +45,10 @@ export default function HomeFeatures() {
 					<Card>
 						<VStack alignItems={"start"}>
 							<IconMoodHappyFilled className={css({ w: 9, h: 9 })} />
-							<Heading>Easy DX</Heading>
+							<Heading>Effortless Development</Heading>
 							<Text>
-								Seyfert is made for pro and new devs so you can get going with
-								Seyfert real quick! Unique requirement: know js and ts basics.
+								Developer experience is at the core of Seyfert, with a focus on
+								easy setup to only worry about your bot's logic.
 							</Text>
 						</VStack>
 					</Card>
@@ -58,7 +58,7 @@ export default function HomeFeatures() {
 						<VStack alignItems={"start"}>
 							<IconPalette className={css({ w: 9, h: 9 })} />
 							<Heading>Full customization</Heading>
-							<Text>
+							<Text >
 								Seyfert makes customization easier than ever, with Seyfert you
 								can customize each aspect of your bot's functions, from cache to
 								behaviors!
@@ -67,7 +67,6 @@ export default function HomeFeatures() {
 					</Card>
 				</GridItem>
 			</Grid>
-			<Text alignSelf={"center"}>And a lot more...</Text>
 		</VStack>
 	);
 }

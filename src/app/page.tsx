@@ -19,12 +19,12 @@ export default function Page() {
 				justifyContent={"space-between"}
 			>
 				<Flex maxW={"3xl"} flexDir={"column"} gap={4}>
-					<Badge color="brand">
-						Seyfert 2.0 is coming soon!
+					<Badge color="brand" className="font">
+						Seyfert 2.0 is out!
 						<IconAlbum size={16} className={css({ ml: 1 })} />
 					</Badge>
 					<Heading size="5xl">
-						The Discord library that{" "}
+						The Discord framework that{" "}
 						<span
 							className={css({
 								fontStyle: "italic",
@@ -40,7 +40,7 @@ export default function Page() {
 						</span>{" "}
 						you
 					</Heading>
-					<Text>
+					<Text pr={5}>
 						Seyfert is a brand new, edge-bleeding Discord framework made with scalability and performance in mind.
 					</Text>
 					<Flex

@@ -3,6 +3,8 @@ import { Container, Flex } from "@/styled-system/jsx";
 import { Heading } from "../ui/heading";
 import Link from "next/link";
 import { IconBrandGithubFilled } from "@tabler/icons-react";
+import Image from "next/image";
+import Logo from "../../../public/logo.svg";
 
 export default function Header() {
 	return (
@@ -22,7 +24,14 @@ export default function Header() {
 		>
 			<Container w={"full"}>
 				<Flex justifyContent={"space-between"} alignItems={"center"}>
-					<Heading>Seyfert</Heading>
+					<Link href="/">
+						<Flex alignItems="center">
+							<Image src={Logo} alt="Seyfert Logo" className={css({
+								width: "30px", height: "30px", marginRight: "-2px", marginTop: "-1px"
+							})} />
+							<Heading>eyfert</Heading>
+						</Flex>
+					</Link>
 					<Link
 						href="https://github.com/tiramisulabs/seyfert"
 						target="_blank"
@@ -31,7 +40,7 @@ export default function Header() {
 						<IconBrandGithubFilled />
 					</Link>
 				</Flex>
-			</Container>
-		</header>
+			</Container >
+		</header >
 	);
 }
