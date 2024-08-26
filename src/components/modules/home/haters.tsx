@@ -65,14 +65,23 @@ const haters: {
 
 export default function HomeHaters() {
 	return (
-		<VStack alignItems={"start"}>
-			<Heading size="3xl">Everyone loves Seyfert!</Heading>
-			<Grid w="full" gridTemplateColumns={4}>
+		<VStack alignItems={"start"} w="full">
+			<Heading size="3xl" mb={{ base: 4, md: 6 }}>Everyone loves Seyfert!</Heading>
+			<Grid
+				w="full"
+				gridTemplateColumns={{
+					base: "1fr",
+					sm: "repeat(2, 1fr)",
+					md: "repeat(3, 1fr)",
+					lg: "repeat(4, 1fr)"
+				}}
+				gap={{ base: 4, md: 6 }}
+			>
 				{haters.map((hater, key) => (
-					<GridItem maxW="sm" key={key}>
-						<Card>
-							<VStack alignItems={"start"}>
-								<HStack>
+					<GridItem key={key}>
+						<Card h="full">
+							<VStack alignItems={"start"} h="full" gap={3}>
+								<HStack gap={3}>
 									<Image
 										width={50}
 										height={50}
@@ -83,11 +92,11 @@ export default function HomeHaters() {
 										})}
 									/>
 									<VStack gap={0} alignItems={"start"}>
-										<Heading size="lg">{hater.displayName}</Heading>
-										<Text>@{hater.username}</Text>
+										<Heading size="2xl">{hater.displayName}</Heading>
+										<Text fontSize="sm" color="gray.500">@{hater.username}</Text>
 									</VStack>
 								</HStack>
-								{hater.content}
+								<Text>{hater.content}</Text>
 							</VStack>
 						</Card>
 					</GridItem>
