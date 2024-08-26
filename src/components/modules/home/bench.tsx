@@ -10,11 +10,11 @@ export default function HomeBench() {
 		<Box w={{ base: "full", md: "3/4", lg: "full", xl: "full" }} fontSize={{ base: "xs", sm: "sm", md: "md" }}>
 			<VStack w="full" gap={{ base: 2, sm: 3, md: 4 }}>
 				{[
-					{ name: "Seyfert", width: "27%", memory: "75 MB", gradient: true },
-					{ name: "Eris", width: "30%", memory: "79 MB" },
-					{ name: "Discord.js", width: "40%", memory: "89 MB" },
-					{ name: "Detritus", width: "45%", memory: "99 MB" },
-					{ name: "Oceanic", width: "55%", memory: "104 MB" },
+					{ name: "Seyfert", width: "35%", memory: "75 MB", gradient: true },
+					{ name: "Eris", width: "40%", memory: "79 MB" },
+					{ name: "Discord.js", width: "50%", memory: "89 MB" },
+					{ name: "Detritus", width: "55%", memory: "99 MB" },
+					{ name: "Oceanic", width: "65%", memory: "104 MB" },
 				].map((item, index) => (
 					<HStack key={index} w="full">
 						<Text w="full" maxW={{ base: "16", sm: "24", md: "32" }}>
@@ -36,7 +36,7 @@ export default function HomeBench() {
 								h={{ base: 6, sm: 8, md: 10 }}
 								rounded="md"
 							/>
-							<Text ml="auto" mr="1.5">{item.memory}</Text>
+							<Text ml="inherit" mr="inherit">{item.memory}</Text>
 						</HStack>
 					</HStack>
 				))}

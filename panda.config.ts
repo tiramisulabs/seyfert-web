@@ -56,4 +56,11 @@ export default defineConfig({
 	// The output directory for your css system
 	outdir: "src/styled-system",
 	jsxFramework: "react",
+	staticCss: {
+		css: [{
+			properties: {
+				width: ["35%", "40%", "50%", "55%", "65%"],
+			}
+		}]
+	}
 });
