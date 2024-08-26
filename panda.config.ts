@@ -59,7 +59,7 @@ export default defineConfig({
 	staticCss: {
 		css: [{
 			properties: {
-				width: ["35%", "40%", "50%", "55%", "65%"],
+				width: ["35%", "40%", "50%", "60%", "65%"],
 			}
 		}]
 	}

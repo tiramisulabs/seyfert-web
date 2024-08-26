@@ -13,7 +13,7 @@ export default function HomeBench() {
 					{ name: "Seyfert", width: "35%", memory: "75 MB", gradient: true },
 					{ name: "Eris", width: "40%", memory: "79 MB" },
 					{ name: "Discord.js", width: "50%", memory: "89 MB" },
-					{ name: "Detritus", width: "55%", memory: "99 MB" },
+					{ name: "Detritus", width: "60%", memory: "99 MB" },
 					{ name: "Oceanic", width: "65%", memory: "104 MB" },
 				].map((item, index) => (
 					<HStack key={index} w="full">
