@@ -8,6 +8,10 @@ import { useMemo, useState } from "react";
 import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, LineChart } from "recharts";
 import { Box } from "@/styled-system/jsx";
 import { css } from "@/styled-system/css";
+import { TooltipProps } from 'recharts';
+import { IconBrandGithub } from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 function createData(metric: "rss" | "heapUsed" | "heapTotal") {
     return Array.from({ length: 24 }, (_, i) => {
@@ -22,7 +26,7 @@ function createData(metric: "rss" | "heapUsed" | "heapTotal") {
     });
 }
 
-import { TooltipProps } from 'recharts';
+
 
 interface CustomTooltipProps extends TooltipProps<number, string> {
     active?: boolean;
@@ -74,25 +78,65 @@ export default function Page() {
 
     return (
         <Box p={6} w="full" rounded="xl" h="80vh" bg="gray.900" shadow="xl">
-            <Box mb={4}>
-                {metricOptions.map((option) => (
-                    <button
-                        key={option.value}
-                        onClick={() => setMetric(option.value as "rss" | "heapUsed" | "heapTotal")}
+            <Box mb={4} display="flex" justifyContent="space-between" alignItems="center">
+                <Box>
+                    {metricOptions.map((option) => (
+                        <Button
+                            key={option.value}
+                            onClick={() => setMetric(option.value as "rss" | "heapUsed" | "heapTotal")}
+                            className={css({
+                                px: 4,
+                                py: 2,
+                                mr: 3,
+                                rounded: "full",
+                                bg: metric === option.value ? "brand.500" : "gray.700",
+                                color: "white",
+                                fontWeight: "bold",
+                                boxShadow: metric === option.value ? "0 0 10px rgba(0, 255, 0, 0.3)" : "none",
+                                _hover: {
+                                    bg: metric === option.value ? "brand.600" : "gray.600",
+                                    transform: "translateY(-2px)",
+                                },
+                                _active: {
+                                    transform: "translateY(1px)",
+                                },
+                                transition: "all 0.2s ease-in-out",
+                            })}
+                        >
+                            {option.label}
+                        </Button>
+                    ))}
+                </Box>
+                <Link
+                    href="https://github.com/tiramisulabs/benchmark"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <Button
                         className={css({
-                            px: 3,
+                            display: "inline-flex",
+                            alignItems: "center",
+                            px: 4,
                             py: 2,
-                            mr: 2,
-                            rounded: "md",
-                            bg: metric === option.value ? "blue.600" : "gray.700",
+                            rounded: "full",
+                            bg: "gray.700",
                             color: "white",
-                            _hover: { bg: "blue.500" },
-                            transition: "background-color 0.2s",
+                            fontWeight: "bold",
+                            _hover: {
+                                bg: "gray.600",
+                                transform: "translateY(-2px)",
+                                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                            },
+                            _active: {
+                                transform: "translateY(1px)",
+                            },
+                            transition: "all 0.2s ease-in-out",
                         })}
                     >
-                        {option.label}
-                    </button>
-                ))}
+                        <IconBrandGithub size={20} style={{ marginRight: '8px' }} />
+                        View Source on GitHub
+                    </Button>
+                </Link>
             </Box>
             <ResponsiveContainer width="100%" height="90%">
                 <LineChart
@@ -107,9 +151,11 @@ export default function Page() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
                     <XAxis
                         dataKey="time"
-                        label={{ value: 'Time', position: 'insideBottomRight', offset: -10, fill: '#a0a0a0' }}
+                        label={{ value: 'Time', position: 'insideBottom', offset: -15, fill: '#a0a0a0', marginTop: '10px' }}
                         tick={{ fill: '#a0a0a0' }}
                         tickFormatter={formatTime}
+                        domain={['auto', 'auto']}
+
                     />
                     <YAxis
                         domain={['auto', 'auto']}

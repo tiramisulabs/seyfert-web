@@ -20,8 +20,12 @@ export default function Page() {
 			>
 				<Flex maxW={"3xl"} flexDir={"column"} gap={4}>
 					<Badge color="brand" className="font">
-						Seyfert 2.0 is out!
-						<IconAlbum size={16} className={css({ ml: 1 })} />
+						<Link href="https://npmjs.com/package/seyfert" target="_blank">
+							<Flex alignItems="center">
+								<span>Seyfert 2.0 is out!</span>
+								<IconAlbum size={16} className={css({ ml: 2 })} />
+							</Flex>
+						</Link>
 					</Badge>
 					<Heading size="5xl">
 						The Discord framework that{" "}

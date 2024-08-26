@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { css } from "@/styled-system/css";
 import { Box, HStack, VStack } from "@/styled-system/jsx";
-import { IconChartLine } from "@tabler/icons-react";
+import { IconArrowBadgeRight, IconArrowBadgeRightFilled, IconArrowRight, IconChartLine } from "@tabler/icons-react";
 import Link from "next/link";
 
 export default function HomeBench() {
@@ -108,9 +108,8 @@ export default function HomeBench() {
 								},
 							})}
 						>
-							<span role="img" aria-label="sparkles" style={{ marginRight: '8px' }}>✨</span>
 							View Benchmark
-							<span role="img" aria-label="sparkles" style={{ marginLeft: '8px' }}>✨</span>
+							<IconArrowBadgeRightFilled size={20} style={{ marginLeft: '8px' }} />
 						</Button>
 					</Link>
 				</Box>
