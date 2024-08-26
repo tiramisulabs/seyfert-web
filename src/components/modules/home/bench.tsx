@@ -2,99 +2,48 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { css } from "@/styled-system/css";
 import { Box, HStack, VStack } from "@/styled-system/jsx";
-import { IconArrowBadgeRight, IconArrowBadgeRightFilled, IconArrowRight, IconChartLine } from "@tabler/icons-react";
+import { IconArrowBadgeRightFilled } from "@tabler/icons-react";
 import Link from "next/link";
 
 export default function HomeBench() {
 	return (
-		<Box w={"1/2"} fontSize={"sm"}>
-			<VStack w="full">
-				<HStack w="full">
-					<Text w="full" maxW={"24"}>
-						Seyfert
-					</Text>
-					<HStack
-						w="full"
-						p={2}
-						borderWidth={1}
-						rounded="md"
-						borderColor={"background.400"}
-					>
-						<Box
-							bgGradient={"to-r"}
-							gradientFrom={"brand.500"}
-							gradientTo={"green.500"}
-							w={"27%"}
-							h={9}
+		<Box w={{ base: "full", md: "3/4", lg: "full", xl: "full" }} fontSize={{ base: "xs", sm: "sm", md: "md" }}>
+			<VStack w="full" gap={{ base: 2, sm: 3, md: 4 }}>
+				{[
+					{ name: "Seyfert", width: "27%", memory: "75 MB", gradient: true },
+					{ name: "Eris", width: "30%", memory: "79 MB" },
+					{ name: "Discord.js", width: "40%", memory: "89 MB" },
+					{ name: "Detritus", width: "45%", memory: "99 MB" },
+					{ name: "Oceanic", width: "55%", memory: "104 MB" },
+				].map((item, index) => (
+					<HStack key={index} w="full">
+						<Text w="full" maxW={{ base: "16", sm: "24", md: "32" }}>
+							{item.name}
+						</Text>
+						<HStack
+							w="full"
+							p={0.5}
+							borderWidth={1}
 							rounded="md"
-						/>
-						<Text ml="auto">75 MB</Text>
+							borderColor={"background.400"}
+						>
+							<Box
+								bgGradient={item.gradient ? "to-r" : undefined}
+								gradientFrom={item.gradient ? "brand.500" : undefined}
+								gradientTo={item.gradient ? "green.500" : undefined}
+								bg={!item.gradient ? "background.400" : undefined}
+								w={item.width}
+								h={{ base: 6, sm: 8, md: 10 }}
+								rounded="md"
+							/>
+							<Text ml="auto" mr="1.5">{item.memory}</Text>
+						</HStack>
 					</HStack>
-				</HStack>
-				<HStack w="full">
-					<Text w="full" maxW={"24"}>
-						Eris
-					</Text>
-					<HStack
-						w="full"
-						p={2}
-						borderWidth={1}
-						rounded="md"
-						borderColor={"background.400"}
-					>
-						<Box bg="background.400" w={"30%"} h={9} rounded="md" />
-						<Text ml="auto">79 MB</Text>
-					</HStack>
-				</HStack>
-				<HStack w="full">
-					<Text w="full" maxW={"24"}>
-						Discord.js
-					</Text>
-					<HStack
-						w="full"
-						p={2}
-						borderWidth={1}
-						rounded="md"
-						borderColor={"background.400"}
-					>
-						<Box bg="background.400" w={"40%"} h={9} rounded="md" />
-						<Text ml="auto">89 MB</Text>
-					</HStack>
-				</HStack>
-				<HStack w="full">
-					<Text w="full" maxW={"24"}>
-						Detritus
-					</Text>
-					<HStack
-						w="full"
-						p={2}
-						borderWidth={1}
-						rounded="md"
-						borderColor={"background.400"}
-					>
-						<Box bg="background.400" w={"45%"} h={9} rounded="md" />
-						<Text ml="auto">99 MB</Text>
-					</HStack>
-				</HStack>
-				<HStack w="full">
-					<Text w="full" maxW={"24"}>
-						Oceanic
-					</Text>
-					<HStack
-						w="full"
-						p={2}
-						borderWidth={1}
-						rounded="md"
-						borderColor={"background.400"}
-					>
-						<Box bg="background.400" w={"55%"} h={9} rounded="md" />
-						<Text ml="auto">104 MB</Text>
-					</HStack>
-				</HStack>
-				<Box mt={4}>
+				))}
+				<Box mt={{ base: 2, sm: 4, md: 6 }}>
 					<Link href="/benchmark">
 						<Button
-							size="lg"
+							size="md"
 							color="brand"
 							className={css({
 								transition: "all 0.2s",

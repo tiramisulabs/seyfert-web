@@ -6,7 +6,7 @@ import oceanicJsData from "../../../public/bench_data/medianoceanic_js.json";
 import detritusClientData from "../../../public/bench_data/mediandetritus-client.json";
 import { useMemo, useState } from "react";
 import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, LineChart } from "recharts";
-import { Box } from "@/styled-system/jsx";
+import { Box, Flex, VStack } from "@/styled-system/jsx";
 import { css } from "@/styled-system/css";
 import { TooltipProps } from 'recharts';
 import { IconBrandGithub } from "@tabler/icons-react";
@@ -25,8 +25,6 @@ function createData(metric: "rss" | "heapUsed" | "heapTotal") {
         }
     });
 }
-
-
 
 interface CustomTooltipProps extends TooltipProps<number, string> {
     active?: boolean;
@@ -69,7 +67,6 @@ export default function Page() {
     const [metric, setMetric] = useState<"rss" | "heapUsed" | "heapTotal">("rss");
     const data = useMemo(() => createData(metric), [metric]);
 
-
     const metricOptions = [
         { value: "rss", label: "RSS" },
         { value: "heapUsed", label: "Heap Used" },
@@ -77,25 +74,56 @@ export default function Page() {
     ];
 
     return (
-        <Box p={6} w="full" rounded="xl" h="80vh" bg="gray.900" shadow="xl">
-            <Box mb={4} display="flex" justifyContent="space-between" alignItems="center">
-                <Box>
-                    {metricOptions.map((option) => (
+        <Box p={{ base: 2, md: 4, lg: 6 }} w="full" rounded="xl" minH="80vh" bg="gray.900" shadow="xl">
+            <VStack gap={4} alignItems="stretch">
+                <Flex direction={{ base: "column", md: "row" }} justifyContent="space-between" alignItems={{ base: "stretch", md: "center" }} gap={4}>
+                    <Flex flexWrap="wrap" gap={2}>
+                        {metricOptions.map((option) => (
+                            <Button
+                                key={option.value}
+                                onClick={() => setMetric(option.value as "rss" | "heapUsed" | "heapTotal")}
+                                className={css({
+                                    px: { base: 2, md: 4 },
+                                    py: 2,
+                                    rounded: "full",
+                                    bg: metric === option.value ? "brand.500" : "gray.700",
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    boxShadow: metric === option.value ? "0 0 10px rgba(0, 255, 0, 0.3)" : "none",
+                                    _hover: {
+                                        bg: metric === option.value ? "brand.600" : "gray.600",
+                                        transform: "translateY(-2px)",
+                                    },
+                                    _active: {
+                                        transform: "translateY(1px)",
+                                    },
+                                    transition: "all 0.2s ease-in-out",
+                                })}
+                            >
+                                {option.label}
+                            </Button>
+                        ))}
+                    </Flex>
+                    <Link
+                        href="https://github.com/tiramisulabs/benchmark"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
                         <Button
-                            key={option.value}
-                            onClick={() => setMetric(option.value as "rss" | "heapUsed" | "heapTotal")}
                             className={css({
-                                px: 4,
+                                display: "inline-flex",
+                                alignItems: "center",
+                                px: { base: 2, md: 4 },
                                 py: 2,
-                                mr: 3,
                                 rounded: "full",
-                                bg: metric === option.value ? "brand.500" : "gray.700",
+                                bg: "gray.700",
                                 color: "white",
                                 fontWeight: "bold",
-                                boxShadow: metric === option.value ? "0 0 10px rgba(0, 255, 0, 0.3)" : "none",
+                                w: { base: "full", md: "auto" },
                                 _hover: {
-                                    bg: metric === option.value ? "brand.600" : "gray.600",
+                                    bg: "gray.600",
                                     transform: "translateY(-2px)",
+                                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
                                 },
                                 _active: {
                                     transform: "translateY(1px)",
@@ -103,74 +131,46 @@ export default function Page() {
                                 transition: "all 0.2s ease-in-out",
                             })}
                         >
-                            {option.label}
+                            <IconBrandGithub size={20} style={{ marginRight: '8px' }} />
+                            View Source on GitHub
                         </Button>
-                    ))}
+                    </Link>
+                </Flex>
+                <Box h={{ base: "60vh", md: "70vh", lg: "80vh" }}>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart
+                            data={data}
+                            margin={{
+                                top: 20,
+                                right: 30,
+                                left: 20,
+                                bottom: 20,
+                            }}
+                        >
+                            <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
+                            <XAxis
+                                dataKey="time"
+                                label={{ value: 'Time', position: 'insideBottom', offset: -15, fill: '#a0a0a0', marginTop: '10px' }}
+                                tick={{ fill: '#a0a0a0' }}
+                                tickFormatter={formatTime}
+                                domain={['auto', 'auto']}
+                            />
+                            <YAxis
+                                domain={['auto', 'auto']}
+                                label={{ value: 'Memory Usage (MB)', angle: -90, position: 'insideLeft', fill: '#a0a0a0' }}
+                                tick={{ fill: '#a0a0a0' }}
+                            />
+                            <Tooltip content={<CustomTooltip />} />
+                            <Legend verticalAlign="top" height={36} wrapperStyle={{ color: '#a0a0a0' }} />
+                            <Line type="monotone" dataKey="seyfert" stroke="#3a9a9a" strokeWidth={2} dot={false} activeDot={{ r: 8 }} />
+                            <Line type="monotone" dataKey="discord_js" stroke="#4651c7" strokeWidth={2} dot={false} activeDot={{ r: 8 }} />
+                            <Line type="monotone" dataKey="eris" stroke="#cc4f69" strokeWidth={2} dot={false} activeDot={{ r: 8 }} />
+                            <Line type="monotone" dataKey="oceanic_js" stroke="#7a52cc" strokeWidth={2} dot={false} activeDot={{ r: 8 }} />
+                            <Line type="monotone" dataKey="detritus_client" stroke="#cc923f" strokeWidth={2} dot={false} activeDot={{ r: 8 }} />
+                        </LineChart>
+                    </ResponsiveContainer>
                 </Box>
-                <Link
-                    href="https://github.com/tiramisulabs/benchmark"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <Button
-                        className={css({
-                            display: "inline-flex",
-                            alignItems: "center",
-                            px: 4,
-                            py: 2,
-                            rounded: "full",
-                            bg: "gray.700",
-                            color: "white",
-                            fontWeight: "bold",
-                            _hover: {
-                                bg: "gray.600",
-                                transform: "translateY(-2px)",
-                                boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                            },
-                            _active: {
-                                transform: "translateY(1px)",
-                            },
-                            transition: "all 0.2s ease-in-out",
-                        })}
-                    >
-                        <IconBrandGithub size={20} style={{ marginRight: '8px' }} />
-                        View Source on GitHub
-                    </Button>
-                </Link>
-            </Box>
-            <ResponsiveContainer width="100%" height="90%">
-                <LineChart
-                    data={data}
-                    margin={{
-                        top: 20,
-                        right: 30,
-                        left: 20,
-                        bottom: 20,
-                    }}
-                >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
-                    <XAxis
-                        dataKey="time"
-                        label={{ value: 'Time', position: 'insideBottom', offset: -15, fill: '#a0a0a0', marginTop: '10px' }}
-                        tick={{ fill: '#a0a0a0' }}
-                        tickFormatter={formatTime}
-                        domain={['auto', 'auto']}
-
-                    />
-                    <YAxis
-                        domain={['auto', 'auto']}
-                        label={{ value: 'Memory Usage (MB)', angle: -90, position: 'insideLeft', fill: '#a0a0a0' }}
-                        tick={{ fill: '#a0a0a0' }}
-                    />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend verticalAlign="top" height={36} wrapperStyle={{ color: '#a0a0a0' }} />
-                    <Line type="monotone" dataKey="seyfert" stroke="#3a9a9a" strokeWidth={2} dot={false} activeDot={{ r: 8 }} />
-                    <Line type="monotone" dataKey="discord_js" stroke="#4651c7" strokeWidth={2} dot={false} activeDot={{ r: 8 }} />
-                    <Line type="monotone" dataKey="eris" stroke="#cc4f69" strokeWidth={2} dot={false} activeDot={{ r: 8 }} />
-                    <Line type="monotone" dataKey="oceanic_js" stroke="#7a52cc" strokeWidth={2} dot={false} activeDot={{ r: 8 }} />
-                    <Line type="monotone" dataKey="detritus_client" stroke="#cc923f" strokeWidth={2} dot={false} activeDot={{ r: 8 }} />
-                </LineChart>
-            </ResponsiveContainer>
+            </VStack>
         </Box>
     )
 }

@@ -12,13 +12,14 @@ import HomeHaters from "@/components/modules/home/haters";
 
 export default function Page() {
 	return (
-		<Flex flexDir={"column"} gap={12}>
+		<Flex flexDir={"column"} gap={{ base: 8, md: 12 }}>
 			<Flex
-				alignItems={"center"}
-				flexDir={{ lg: "row", base: "column" }}
+				alignItems={{ base: "flex-start", lg: "center" }}
+				flexDir={{ base: "column", lg: "row" }}
 				justifyContent={"space-between"}
+				gap={{ base: 8, lg: 0 }}
 			>
-				<Flex maxW={"3xl"} flexDir={"column"} gap={4}>
+				<Flex maxW={{ base: "full", lg: "3xl" }} flexDir={"column"} gap={4}>
 					<Badge color="brand" className="font">
 						<Link href="https://npmjs.com/package/seyfert" target="_blank">
 							<Flex alignItems="center">
@@ -33,18 +34,20 @@ export default function Page() {
 							className={css({
 								fontStyle: "italic",
 								fontFamily: "mono",
-								px: 6,
+								px: { base: 2, sm: 4, md: 6 },
 								py: 1,
 								bg: "brand.500/20",
 								rounded: "xl",
 								color: "brand.500",
+								display: "inline-block",
+								my: { base: 2, md: 0 },
 							})}
 						>
 							satisfies
 						</span>{" "}
 						you
 					</Heading>
-					<Text pr={5}>
+					<Text pr={{ base: 0, lg: 5 }}>
 						Seyfert is a brand new, edge-bleeding Discord framework made with scalability and performance in mind.
 					</Text>
 					<Flex
@@ -69,40 +72,44 @@ export default function Page() {
 							<Text>Low memory usage, always</Text>
 						</Flex>
 					</Flex>
-					<Flex gap={2}>
+					<Flex gap={2} flexDir={{ base: "column", sm: "row" }} w={{ base: "full", sm: "auto" }}>
 						<Link
 							target="_blank"
 							referrerPolicy="no-referrer"
 							href="https://docs.seyfert.dev"
+							className={css({ w: { base: "full", sm: "auto" } })}
 						>
-							<Button size="lg">Get started</Button>
+							<Button size="lg" w={{ base: "full", sm: "auto" }}>Get started</Button>
 						</Link>
 
 						<Link
 							target="_blank"
 							referrerPolicy="no-referrer"
 							href="https://discord.gg/Kxjj9HUVyc"
+							className={css({ w: { base: "full", sm: "auto" } })}
 						>
-							<Button size="lg" color="gray">
+							<Button size="lg" color="gray" w={{ base: "full", sm: "auto" }}>
 								Join the chat now
 							</Button>
 						</Link>
 					</Flex>
 				</Flex>
-				<HomeBench />
+				<Box w={{ base: "full", lg: "xl" }}>
+					<HomeBench />
+				</Box>
 			</Flex>
 			<HomeFeatures />
 			<HomeHaters />
-			<Box p={6} w="full" rounded="xl" color={"background.900"} bg="brand.600">
+			<Box p={{ base: 4, md: 6 }} w="full" rounded="xl" color={"background.900"} bg="brand.600">
 				<Center>
-					<VStack>
-						<IconBubbleFilled size={44} />
-						<Heading>Join the party</Heading>
-						<Text>Join the discussion and seek help if you need to!</Text>
-						<Button color="gray">Join the Discord server</Button>
+					<VStack gap={{ base: 3, md: 4 }}>
+						<IconBubbleFilled size={32} />
+						<Heading size="xl">Join the party</Heading>
+						<Text textAlign="center">Join the discussion and seek help if you need to!</Text>
+						<Button colorScheme="gray" size="md">Join the Discord server</Button>
 					</VStack>
 				</Center>
-			</Box>
-		</Flex>
+			</Box >
+		</Flex >
 	);
 }
