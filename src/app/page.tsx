@@ -106,7 +106,11 @@ export default function Page() {
 						<IconBubbleFilled size={32} />
 						<Heading size="xl">Join the party</Heading>
 						<Text textAlign="center">Join the discussion and seek help if you need to!</Text>
-						<Button colorScheme="gray" size="md">Join the Discord server</Button>
+						<Button colorScheme="gray" size="md">
+							<Link href="https://discord.gg/Kxjj9HUVyc" target="_blank">
+								Join the Discord server
+							</Link>
+						</Button>
 					</VStack>
 				</Center>
 			</Box >
