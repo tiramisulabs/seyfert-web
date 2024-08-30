@@ -85,7 +85,7 @@ export default function Page() {
 						<Link
 							target="_blank"
 							referrerPolicy="no-referrer"
-							href="https://discord.gg/Kxjj9HUVyc"
+							href="https://discord.gg/seyfert"
 							className={css({ w: { base: "full", sm: "auto" } })}
 						>
 							<Button size="lg" color="gray" w={{ base: "full", sm: "auto" }}>
@@ -107,7 +107,7 @@ export default function Page() {
 						<Heading size="xl">Join the party</Heading>
 						<Text textAlign="center">Join the discussion and seek help if you need to!</Text>
 						<Button colorScheme="gray" size="md">
-							<Link href="https://discord.gg/Kxjj9HUVyc" target="_blank">
+							<Link href="https://discord.gg/seyfert" target="_blank">
 								Join the Discord server
 							</Link>
 						</Button>
