@@ -31,8 +31,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts",
-    "src/app/benchmark"
+    ".next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"
