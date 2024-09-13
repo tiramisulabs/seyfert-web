@@ -21,10 +21,6 @@ export default function Home() {
           </Badge>
 
           <MultiDirectionSlide />
-          {/* <h1 className="text-5xl font-extrabold">
-            The Discord framework that{" "}
-            <span className="font-mono px-2 py-1 rounded-xl text-brand-500">satisfies</span> you
-          </h1> */}
           <p className="pr-0 lg:pr-5">
             Seyfert is a brand new, edge-bleeding Discord framework made with scalability and performance in mind.
           </p>
