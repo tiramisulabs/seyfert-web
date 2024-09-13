@@ -3,7 +3,7 @@ import { IconBrandTypescript, IconChartArrowsVertical, IconMoodHappyFilled, Icon
 export default function FeaturesSection() {
     return (
         <section className="py-8 bg-accent/40 sm:py-16 lg:py-8 rounded-md">
-            <h1 className="text-3xl font-bold text-center mb-4 dark:text-white">Features</h1>
+            <h2 className="text-3xl font-bold text-center mb-4 dark:text-white">Features</h2>
             <div className="mx-auto w-full px-8">
                 <div className="grid grid-cols-1 gap-8 text-center sm:grid-cols-2 lg:grid-cols-4">
                     <div>

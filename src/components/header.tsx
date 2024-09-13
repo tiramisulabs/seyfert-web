@@ -20,6 +20,7 @@ export default function Header() {
                         href="https://github.com/tiramisulabs/seyfert"
                         target="_blank"
                         referrerPolicy="no-referrer"
+                        aria-label="GitHub Repository"
                     >
                         <IconBrandGithubFilled />
                     </Link>
