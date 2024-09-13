@@ -26,7 +26,7 @@ export default function HomeBench() {
                     </div>
                 ))}
                 <div className="mt-2 sm:mt-4 md:mt-6">
-                    <Link href="/benchmark">
+                    <Link href="/benchmark" prefetch={false}>
                         <Button className="md:text-md transition-all duration-200 rounded-full font-bold hover:bg-green-400 hover:text-white hover:translate-y-[-2px] hover:scale-105 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)]">
                             View Benchmark
                             <IconArrowBadgeRightFilled size={20} className="ml-2" />
