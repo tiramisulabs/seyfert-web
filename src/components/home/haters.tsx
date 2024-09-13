@@ -60,8 +60,8 @@ export default function HatersSection() {
     return (
         <section className="py-8 sm:py-16 lg:py-4">
             <h1 className="text-3xl font-bold text-center mb-8 dark:text-white">What people say about Seyfert?</h1>
-            <div className="px-4 mx-auto w-full sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 gap-6 lg:gap-8 sm:grid-cols-2 md:grid-cols-4">
+            <div className="px-4 mx-auto w-full">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                     {haters.map((hater, index) => (
                         <div key={index} className="flex flex-col bg-accent/40 border border-accent/40 rounded-sm">
                             <div className="flex flex-col justify-between flex-1 p-8">

@@ -29,7 +29,7 @@ export default function RootLayout({
                         refresh
                     />
                     <Header />
-                    <main className="relative max-w-[90rem] mx-auto py-11 md:px-6 lg:ps-8 lg:pe-8">{children}</main>
+                    <main className="relative max-w-[90rem] mx-auto py-11 px-6 lg:p-8">{children}</main>
                 </ThemeProvider>
             </body>
         </html>
