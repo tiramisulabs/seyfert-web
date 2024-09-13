@@ -25,16 +25,16 @@ export default function Home() {
             Seyfert is a brand new, edge-bleeding Discord framework made with scalability and performance in mind.
           </p>
           <div className="flex flex-col sm:flex-row w-full sm:auto gap-2">
-            <Button>
-              <Link href="https://docs.seyfert.dev" target="_blank">
+            <Link href="https://docs.seyfert.dev" target="_blank">
+              <Button>
                 Get started
-              </Link>
-            </Button>
-            <Button>
-              <Link href="https://discord.gg/seyfert" target="_blank">
+              </Button>
+            </Link>
+            <Link href="https://discord.gg/seyfert" target="_blank">
+              <Button>
                 Join the chat now
-              </Link>
-            </Button>
+              </Button>
+            </Link>
           </div>
         </div>
         <HomeBench />
