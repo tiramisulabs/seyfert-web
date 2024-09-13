@@ -2,6 +2,7 @@ import Link from "next/link";
 import { IconBrandGithubFilled } from "@tabler/icons-react";
 import Image from "next/image";
 import Logo from "../../public/logo.svg";
+import { ThemeToggle } from "./theme";
 
 export default function Header() {
     return (
@@ -14,6 +15,7 @@ export default function Header() {
                             <h1 className="text-2xl font-bold">eyfert</h1>
                         </div>
                     </Link>
+                    <ThemeToggle />
                     <Link
                         href="https://github.com/tiramisulabs/seyfert"
                         target="_blank"

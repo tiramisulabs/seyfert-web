@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import Particles from '@/components/particles';
 import { Poppins } from 'next/font/google';
 import Header from '@/components/header';
+import { ThemeProvider } from 'next-themes'
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
@@ -18,16 +19,18 @@ export default function RootLayout({
     children: React.ReactNode
 }) {
     return (
-        <html lang="en">
-            <body className={poppins.className}>
-                <Particles
-                    className="fixed inset-0"
-                    quantity={300}
-                    ease={100}
-                    refresh
-                />
-                <Header />
-                <main className="relative max-w-[90rem] mx-auto py-11 md:px-6 lg:ps-8 lg:pe-8">{children}</main>
+        <html lang="en" suppressHydrationWarning>
+            <body className={`${poppins.className} dark:bg-background-900`}>
+                <ThemeProvider attribute='class' enableSystem>
+                    <Particles
+                        className="fixed inset-0"
+                        quantity={300}
+                        ease={100}
+                        refresh
+                    />
+                    <Header />
+                    <main className="relative max-w-[90rem] mx-auto py-11 md:px-6 lg:ps-8 lg:pe-8">{children}</main>
+                </ThemeProvider>
             </body>
         </html>
     );

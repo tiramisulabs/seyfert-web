@@ -1,4 +1,4 @@
-import { BlurIn, MultiDirectionSlide } from '@/components/effect';
+import { MultiDirectionSlide } from '@/components/effect';
 import HomeBench from "@/components/home/benchmark";
 import FeaturesSection from "@/components/home/features";
 import HomeFooter from "@/components/home/footer";

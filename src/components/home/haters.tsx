@@ -59,20 +59,20 @@ const haters: {
 export default function HatersSection() {
     return (
         <section className="py-8 sm:py-16 lg:py-4">
-            <h1 className="text-3xl font-bold text-center mb-8">What people say about Seyfert?</h1>
+            <h1 className="text-3xl font-bold text-center mb-8 dark:text-white">What people say about Seyfert?</h1>
             <div className="px-4 mx-auto w-full sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 gap-6 lg:gap-10 sm:grid-cols-2 md:grid-cols-4">
+                <div className="grid grid-cols-1 gap-6 lg:gap-8 sm:grid-cols-2 md:grid-cols-4">
                     {haters.map((hater, index) => (
-                        <div key={index} className="flex flex-col bg-white border border-gray-200 rounded-md">
+                        <div key={index} className="flex flex-col bg-accent/40 border border-accent/40 rounded-sm">
                             <div className="flex flex-col justify-between flex-1 p-8">
                                 <div className="flex-1">
                                     <blockquote>
-                                        <p className="text-lg text-gray-800">{hater.content}</p>
+                                        <p className="text-lg text-gray-800 dark:text-gray-200">{hater.content}</p>
                                     </blockquote>
                                 </div>
 
                                 <div className="mt-8">
-                                    <div className="w-full h-0 mb-8 border-t-2 border-gray-200 border-dotted"></div>
+                                    <div className="w-full h-0 mb-8 border-t-2 border-gray-200 dark:border-gray-700 border-dotted"></div>
                                     <div className="flex items-center">
                                         <Image
                                             width={50}
@@ -82,10 +82,9 @@ export default function HatersSection() {
                                             className="rounded-full"
                                         />
 
-                                        {/* <img className="flex-shrink-0 object-cover w-10 h-10 rounded-full" src={`https://cdn.discordapp.com/avatars/${hater.avatar}.png`} alt={hater.displayName} /> */}
                                         <div className="min-w-0 ml-3">
-                                            <p className="text-base font-semibold text-gray-800 truncate">{hater.displayName}</p>
-                                            <p className="text-base text-gray-500 truncate">@{hater.username}</p>
+                                            <p className="text-base font-semibold text-gray-800 dark:text-gray-200 truncate">{hater.displayName}</p>
+                                            <p className="text-base text-gray-500 dark:text-gray-400 truncate">@{hater.username}</p>
                                         </div>
                                     </div>
                                 </div>
