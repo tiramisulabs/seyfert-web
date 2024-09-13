@@ -1,43 +1,34 @@
-import Header from "@/components/shared/header";
-import Particles from "@/components/shared/magicui/particles";
-import Providers from "@/components/shared/providers";
-import { css } from "@/styled-system/css";
-import { Container } from "@/styled-system/jsx";
-import type { Metadata } from "next";
-import { Inter as Font } from "next/font/google";
-
+import React from 'react';
+import { Metadata } from 'next';
 import "@/styles/globals.css";
+import Particles from '@/components/particles';
+import { Poppins } from 'next/font/google';
+import Header from '@/components/header';
 
-const font = Font({ subsets: ["latin"] });
+const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
 export const metadata: Metadata = {
-	title: "Seyfert | The Discord framework",
-	description:
-		"Seyfert is a powerful library that focuses on Discord and its bot API. It offers support for scalable applications and unique utilities.",
+    title: 'My App',
+    description: 'A basic Next.js application',
 };
 
 export default function RootLayout({
-	children,
-}: Readonly<{
-	children: React.ReactNode;
-}>) {
-	return (
-		<Providers>
-			<html lang="en">
-				<body className={font.className}>
-					<Particles
-						className={css({
-							position: "absolute",
-							inset: 0,
-						})}
-						quantity={300}
-						ease={80}
-						refresh
-					/>
-					<Header />
-					<Container py={11}>{children}</Container>
-				</body>
-			</html>
-		</Providers>
-	);
+    children,
+}: {
+    children: React.ReactNode
+}) {
+    return (
+        <html lang="en">
+            <body className={poppins.className}>
+                <Particles
+                    className="fixed inset-0"
+                    quantity={300}
+                    ease={100}
+                    refresh
+                />
+                <Header />
+                <main className="relative max-w-[90rem] mx-auto py-11 md:px-6 lg:ps-8 lg:pe-8">{children}</main>
+            </body>
+        </html>
+    );
 }

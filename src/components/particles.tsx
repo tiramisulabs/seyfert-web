@@ -1,6 +1,9 @@
 "use client";
 
-import { css } from "@/styled-system/css";
+/**
+ * Component taken from https://magicui.design/docs/components/particles
+ */
+
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 
@@ -57,7 +60,7 @@ const Particles: React.FC<ParticlesProps> = ({
 	ease = 50,
 	size = 0.4,
 	refresh = false,
-	color = "#ffffff",
+	color = "#000", // modify this
 	vx = 0,
 	vy = 0,
 }) => {
@@ -71,7 +74,6 @@ const Particles: React.FC<ParticlesProps> = ({
 	const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
 	const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		if (canvasRef.current) {
 			context.current = canvasRef.current.getContext("2d");
@@ -85,12 +87,10 @@ const Particles: React.FC<ParticlesProps> = ({
 		};
 	}, [color]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		onMouseMove();
 	}, [mousePosition.x, mousePosition.y]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	useEffect(() => {
 		initCanvas();
 	}, [refresh]);
@@ -250,19 +250,15 @@ const Particles: React.FC<ParticlesProps> = ({
 
 			drawCircle(circle, true);
 
-			// circle gets out of the canvas
 			if (
 				circle.x < -circle.size ||
 				circle.x > canvasSize.current.w + circle.size ||
 				circle.y < -circle.size ||
 				circle.y > canvasSize.current.h + circle.size
 			) {
-				// remove the circle from the array
 				circles.current.splice(i, 1);
-				// create a new circle
 				const newCircle = circleParams();
 				drawCircle(newCircle);
-				// update the circle position
 			}
 		});
 		window.requestAnimationFrame(animate);
@@ -270,7 +266,7 @@ const Particles: React.FC<ParticlesProps> = ({
 
 	return (
 		<div className={className} ref={canvasContainerRef} aria-hidden="true">
-			<canvas ref={canvasRef} className={css({ w: "full", h: "full" })} />
+			<canvas ref={canvasRef} className={"w-full h-full"} />
 		</div>
 	);
 };
