@@ -1,10 +1,9 @@
 "use client";
 
-import { useTheme } from "next-themes";
 /**
  * Component taken from https://magicui.design/docs/components/particles
  */
-
+import { useTheme } from "next-themes";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 
@@ -13,7 +12,7 @@ interface MousePosition {
 	y: number;
 }
 
-function MousePosition(): MousePosition {
+function useMousePosition(): MousePosition {
 	const [mousePosition, setMousePosition] = useState<MousePosition>({
 		x: 0,
 		y: 0,
@@ -34,6 +33,28 @@ function MousePosition(): MousePosition {
 	return mousePosition;
 }
 
+function hexToRgb(hex: string): number[] {
+	const finalHex = hex.replace("#", "");
+	const hexInt = Number.parseInt(finalHex, 16);
+	const red = (hexInt >> 16) & 255;
+	const green = (hexInt >> 8) & 255;
+	const blue = hexInt & 255;
+	return [red, green, blue];
+}
+
+interface Circle {
+	x: number;
+	y: number;
+	translateX: number;
+	translateY: number;
+	size: number;
+	alpha: number;
+	targetAlpha: number;
+	dx: number;
+	dy: number;
+	magnetism: number;
+}
+
 interface ParticlesProps {
 	className?: string;
 	quantity?: number;
@@ -44,14 +65,6 @@ interface ParticlesProps {
 	color?: string;
 	vx?: number;
 	vy?: number;
-}
-function hexToRgb(hex: string): number[] {
-	const finalHex = hex.replace("#", "");
-	const hexInt = Number.parseInt(finalHex, 16);
-	const red = (hexInt >> 16) & 255;
-	const green = (hexInt >> 8) & 255;
-	const blue = hexInt & 255;
-	return [red, green, blue];
 }
 
 const Particles: React.FC<ParticlesProps> = ({
@@ -68,12 +81,13 @@ const Particles: React.FC<ParticlesProps> = ({
 	const canvasContainerRef = useRef<HTMLDivElement>(null);
 	const context = useRef<CanvasRenderingContext2D | null>(null);
 	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-	const circles = useRef<any[]>([]);
-	const mousePosition = MousePosition();
+	const circles = useRef<Circle[]>([]);
+	const mousePosition = useMousePosition();
 	const mouse = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 	const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
-	const { theme } = useTheme();
-	const color = theme === "dark" ? "#ffffff" : "#000";
+	const animationRef = useRef<number | null>(null);
+	const { resolvedTheme } = useTheme();
+	const color = resolvedTheme === "dark" ? "#ffffff" : "#000";
 	const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
 
 	useEffect(() => {
@@ -86,6 +100,9 @@ const Particles: React.FC<ParticlesProps> = ({
 
 		return () => {
 			window.removeEventListener("resize", initCanvas);
+			if (animationRef.current) {
+				window.cancelAnimationFrame(animationRef.current);
+			}
 		};
 	}, [color]);
 
@@ -114,19 +131,6 @@ const Particles: React.FC<ParticlesProps> = ({
 				mouse.current.y = y;
 			}
 		}
-	};
-
-	type Circle = {
-		x: number;
-		y: number;
-		translateX: number;
-		translateY: number;
-		size: number;
-		alpha: number;
-		targetAlpha: number;
-		dx: number;
-		dy: number;
-		magnetism: number;
 	};
 
 	const resizeCanvas = () => {
@@ -263,7 +267,7 @@ const Particles: React.FC<ParticlesProps> = ({
 				drawCircle(newCircle);
 			}
 		});
-		window.requestAnimationFrame(animate);
+		animationRef.current = window.requestAnimationFrame(animate);
 	};
 
 	return (
