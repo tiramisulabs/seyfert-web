@@ -19,7 +19,7 @@ export default function HomeBench() {
                         </p>
                         <div className={`flex items-center w-full p-1 border border-background-400 rounded-md`}>
                             <div
-                                className={`${item.gradient ? "bg-primary" : "bg-accent"} ${item.width} h-6 sm:h-8 md:h-10 rounded-md`}
+                                className={`${item.gradient ? "bg-gradient-to-r from-primary to-green-500" : "bg-accent"} ${item.width} h-6 sm:h-8 md:h-10 rounded-md`}
                             />
                             <p className="ml-auto mr-auto font-semibold text-base">{item.memory}</p>
                         </div>

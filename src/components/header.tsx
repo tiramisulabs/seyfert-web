@@ -7,7 +7,7 @@ import { ThemeToggle } from "./theme";
 export default function Header() {
     return (
         <header className="z-30 sticky top-0 bg-background-800/50 w-full py-5 border-b-2 border-background-600 z-100 backdrop-filter backdrop-blur-sm">
-            <div className="container mx-auto w-full">
+            <div className="container mx-auto w-full px-4 md:px-0">
                 <div className="flex justify-between items-center">
                     <Link href="/">
                         <div className="flex items-center">
