@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export default function HomeBench() {
     return (
-        <div className="w-full xl:w-full text-xs sm:text-sm md:text-md  flex-1">
+        <div className="w-full xl:w-full text-xs sm:text-sm md:text-md flex-[1_2_60%]">
             <div className="flex flex-col w-full gap-2 sm:gap-3 md:gap-4">
                 {[
                     { name: "Seyfert", width: "w-1/3", memory: "75 MB", gradient: true },
@@ -19,13 +19,13 @@ export default function HomeBench() {
                         </p>
                         <div className={`flex items-center w-full p-1 border border-background-400 rounded-md`}>
                             <div
-                                className={`bg-primary ${item.gradient ? "from-brand-500 to-green-500" : ""} ${item.width} h-6 sm:h-8 md:h-10 rounded-md`}
+                                className={`${item.gradient ? "bg-primary" : "bg-accent"} ${item.width} h-6 sm:h-8 md:h-10 rounded-md`}
                             />
                             <p className="ml-auto mr-auto font-semibold text-base">{item.memory}</p>
                         </div>
                     </div>
                 ))}
-                <div className="mt-2 sm:mt-4 md:mt-6">
+                <div className="mt-2 sm:mt-4 md:mt-6 text-center">
                     <Link href="/benchmark" prefetch={false}>
                         <Button className="md:text-md transition-all duration-200 rounded-full font-bold hover:bg-green-400 hover:text-white hover:translate-y-[-2px] hover:scale-105 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)]">
                             View Benchmark

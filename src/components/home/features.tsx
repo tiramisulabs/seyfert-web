@@ -14,7 +14,7 @@ export default function FeaturesSection() {
                             <IconBrandTypescript className="absolute text-blue-600 dark:text-blue-400 w-9 h-9" />
                         </div>
                         <h3 className="mt-2 text-lg font-semibold text-black dark:text-white">Written in TypeScript</h3>
-                        <p className="mt-2 text-base text-gray-600 dark:text-gray-300 text-justify">
+                        <p className="mt-2 text-base text-gray-600 dark:text-gray-300 text-left">
                             Seyfert is fully written from scratch in TypeScript with modern
                             practices so you don't need to worry about stability.
                         </p>
@@ -28,7 +28,7 @@ export default function FeaturesSection() {
                             <IconChartArrowsVertical className="absolute text-orange-600 dark:text-orange-400 w-9 h-9" />
                         </div>
                         <h3 className="mt-2 text-lg font-semibold text-black dark:text-white">Scalable</h3>
-                        <p className="mt-2 text-base text-gray-600 dark:text-gray-300 text-justify">
+                        <p className="mt-2 text-base text-gray-600 dark:text-gray-300 text-left">
                             Seyfert is tested on both big and small bots and there were
                             perfect performance results on both of them.
                         </p>
@@ -42,7 +42,7 @@ export default function FeaturesSection() {
                             <IconMoodHappyFilled className="absolute text-green-600 dark:text-green-400 w-9 h-9" />
                         </div>
                         <h3 className="mt-2 text-lg font-semibold text-black dark:text-white">Effortless Development</h3>
-                        <p className="mt-2 text-base text-gray-600 dark:text-gray-300 text-justify">
+                        <p className="mt-2 text-base text-gray-600 dark:text-gray-300 text-left">
                             Developer experience is at the core of Seyfert, with a focus on
                             easy setup to only worry about your bot's logic.
                         </p>
@@ -56,7 +56,7 @@ export default function FeaturesSection() {
                             <IconPalette className="absolute text-purple-600 dark:text-purple-400 w-9 h-9" />
                         </div>
                         <h3 className="mt-2 text-lg font-semibold text-black dark:text-white">Full customization</h3>
-                        <p className="mt-2 text-base text-gray-600 dark:text-gray-300 text-justify">
+                        <p className="mt-2 text-base text-gray-600 dark:text-gray-300 text-left">
                             Seyfert makes customization easier than ever, with Seyfert you
                             can easily customize the bot to your liking.
                         </p>

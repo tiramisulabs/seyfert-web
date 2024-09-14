@@ -15,11 +15,10 @@ export function MultiDirectionSlide() {
                 initial="hidden"
                 animate="visible"
                 variants={MULTIDIRECTION_SLIDE_VARIANTS}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.5 }}
                 className={clsx(
-                    "font-extrabold drop-shadow-sm",
-                    "text-5xl",
-                    "tracking-[-0.02em]",
+                    "font-extrabold drop-shadow-sm leading-10 lg:leading-[4.5rem]",
+                    "text-5xl"
                 )}
             >
                 The Discord framework
@@ -29,14 +28,13 @@ export function MultiDirectionSlide() {
                 initial="right"
                 animate="visible"
                 variants={MULTIDIRECTION_SLIDE_VARIANTS}
-                transition={{ duration: 1 }}
+                transition={{ duration: 0.5 }}
                 className={clsx(
                     "font-extrabold drop-shadow-sm",
-                    "text-5xl",
-                    "tracking-[-0.02em]",
+                    "text-5xl"
                 )}
             >
-                that <span className="font-mono px-2 py-1 rounded-xl underline">satisfies</span> you
+                that <span className="font-mono px-2 py-1 underline">satisfies</span> you
             </motion.h1>
         </div>
     );

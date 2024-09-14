@@ -1,16 +1,17 @@
 import React from 'react';
 import { Metadata } from 'next';
-import "@/styles/globals.css";
 import Particles from '@/components/particles';
 import { Poppins } from 'next/font/google';
 import Header from '@/components/header';
 import { ThemeProvider } from 'next-themes'
+import "@/styles/globals.css";
 
 const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700'] });
 
 export const metadata: Metadata = {
-    title: 'My App',
-    description: 'A basic Next.js application',
+    title: "Seyfert | The Discord framework",
+    description:
+        "Seyfert is a powerful framework that focuses on Discord and its bot API. It offers support for scalable applications and unique utilities.",
 };
 
 export default function RootLayout({

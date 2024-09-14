@@ -13,7 +13,7 @@ export default function Home() {
     <div className="flex flex-col gap-8 md:gap-12">
       <div className="flex flex-col lg:flex-row justify-between gap-8 items-start lg:items-center">
         <div className="max-w-full lg:max-w-3xl flex flex-col gap-4 flex-">
-          <Badge className="w-fit">
+          <Badge className="w-fit" variant="default">
             <Link href="https://npmjs.com/package/seyfert" target="_blank" className="flex items-center">
               <span>Seyfert 2.0 is out!</span>
               <IconAlbum size={16} className="ml-2" />
@@ -26,12 +26,12 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row w-full sm:auto gap-2">
             <Link href="https://docs.seyfert.dev" target="_blank">
-              <Button>
+              <Button size="lg">
                 Get started
               </Button>
             </Link>
             <Link href="https://discord.gg/seyfert" target="_blank">
-              <Button>
+              <Button size="lg" variant="secondary">
                 Join the chat now
               </Button>
             </Link>

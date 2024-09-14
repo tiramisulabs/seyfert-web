@@ -1,5 +1,6 @@
 "use client";
 
+import { useTheme } from "next-themes";
 /**
  * Component taken from https://magicui.design/docs/components/particles
  */
@@ -60,7 +61,6 @@ const Particles: React.FC<ParticlesProps> = ({
 	ease = 50,
 	size = 0.4,
 	refresh = false,
-	color = "#000", // modify this
 	vx = 0,
 	vy = 0,
 }) => {
@@ -72,6 +72,9 @@ const Particles: React.FC<ParticlesProps> = ({
 	const mousePosition = MousePosition();
 	const mouse = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 	const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
+	const { theme } = useTheme();
+	const color = theme === "dark" ? "#ffffff" : "#000";
+	console.log(color);
 	const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
 
 	useEffect(() => {
