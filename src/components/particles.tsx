@@ -74,7 +74,6 @@ const Particles: React.FC<ParticlesProps> = ({
 	const canvasSize = useRef<{ w: number; h: number }>({ w: 0, h: 0 });
 	const { theme } = useTheme();
 	const color = theme === "dark" ? "#ffffff" : "#000";
-	console.log(color);
 	const dpr = typeof window !== "undefined" ? window.devicePixelRatio : 1;
 
 	useEffect(() => {
