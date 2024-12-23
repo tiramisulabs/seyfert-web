@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import HomeFeatures from "@/components/modules/home/features";
 import HomeHaters from "@/components/modules/home/haters";
+import HomeBots from '@/components/modules/home/bots';
 
 export default function Page() {
 	return (
@@ -99,6 +100,7 @@ export default function Page() {
 				</Box>
 			</Flex>
 			<HomeFeatures />
+			<HomeBots />
 			<HomeHaters />
 			<Box p={{ base: 4, md: 6 }} w="full" rounded="xl" color={"background.900"} bg="brand.600">
 				<Center>
