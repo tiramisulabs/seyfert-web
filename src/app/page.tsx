@@ -22,9 +22,9 @@ export default function Page() {
 			>
 				<Flex maxW={{ base: "full", lg: "3xl" }} flexDir={"column"} gap={4}>
 					<Badge color="brand" className="font">
-						<Link href="https://npmjs.com/package/seyfert" target="_blank">
+						<Link href="https://docs.seyfert.dev/changelog" target="_blank">
 							<Flex alignItems="center">
-								<span>Seyfert 2.0 is out!</span>
+								<span>Seyfert 2.2.0 is out!</span>
 								<IconAlbum size={16} className={css({ ml: 2 })} />
 							</Flex>
 						</Link>
