@@ -14,6 +14,15 @@ export const metadata: Metadata = {
 	title: "Seyfert | The Discord framework",
 	description:
 		"Seyfert is a powerful library that focuses on Discord and its bot API. It offers support for scalable applications and unique utilities.",
+	openGraph: {
+		images: [
+			{
+				url: '/banner.png',
+				width: 1280,
+				height: 640
+			}
+		],
+	},
 };
 
 export default function RootLayout({
