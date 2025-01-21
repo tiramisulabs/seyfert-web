@@ -36,13 +36,13 @@ const bots: {
     username: 'Listen#7518',
     id: '777401960793636934',
     avatar: 'listen',
-    guilds: 3700,
+    guilds: 5100,
     content: (
       <>
         After years of experience with Discord.js, Discordeno and Eris, Seyfert
         proved to be unmatched for large-scale music bots - dropping our RAM
-        usage to under 1 GB (from almost 4 GB growing each day) while handling
-        75% more servers. This allowed us to finally focus on our features
+        usage to under 1 GB (from almost 4 GB) while handling
+        200% more servers. This allowed us to finally focus on our features
         without any constraints over all these years.
       </>
     ),
