@@ -1,0 +1,32 @@
+{
+  "name": "seyfert-docs",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev",
+    "start": "next start",
+    "postinstall": "fumadocs-mdx"
+  },
+  "dependencies": {
+    "next": "15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "fumadocs-ui": "15.0.2",
+    "fumadocs-core": "15.0.2",
+    "fumadocs-mdx": "11.4.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.0",
+    "@types/react": "^19.0.8",
+    "@types/react-dom": "^19.0.3",
+    "typescript": "^5.7.3",
+    "@types/mdx": "^2.0.13",
+    "@tailwindcss/postcss": "^4.0.3",
+    "tailwindcss": "^4.0.3",
+    "postcss": "^8.5.1",
+    "eslint": "^8",
+    "eslint-config-next": "15.1.6"
+  },
+  "packageManager": "pnpm@9.15.4+sha512.b2dc20e2fc72b3e18848459b37359a32064663e5627a51e4c74b2c29dd8e8e0491483c3abb40789cfd578bf362fb6ba8261b05f0387d76792ed6e23ea3b1b6a0"
+}
