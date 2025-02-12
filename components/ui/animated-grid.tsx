@@ -69,6 +69,7 @@ export default function AnimatedGridPattern({
         if (dimensions.width && dimensions.height) {
             setSquares(generateSquares(numSquares));
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [dimensions, numSquares]);
 
     // Resize observer to update container dimensions
