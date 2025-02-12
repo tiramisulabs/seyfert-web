@@ -1,0 +1,4795 @@
+---
+title: "Webhook"
+---
+                 
+### RESTPostAPIChannelWebhookJSONBody
+
+https://discord.com/developers/docs/resources/webhook#create-webhook
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Name of the webhook (1-80 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatar</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Image for the default webhook avatar
+
+See https://discord.com/developers/docs/reference#image-data
+
+
+
+</div></div>
+
+### RESTPostAPIChannelWebhookResult
+
+https://discord.com/developers/docs/resources/webhook#create-webhook
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"WebhookType"}</code>
+</div>
+
+The type of the webhook
+
+See https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The guild id this webhook is for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The channel id this webhook is for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+The user this webhook was created by (not returned when getting a webhook with its token)
+
+See https://discord.com/developers/docs/resources/user#user-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The default name of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatar</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The default avatar of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The secure token of the webhook (returned for Incoming Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The bot/OAuth2 application that created this webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">source_guild</code>
+  <code className="text-fd-muted-foreground">{"APIPartialGuild"}</code>
+</div>
+
+The guild of the channel that this webhook is following (returned for Channel Follower Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">source_channel</code>
+  <code className="text-fd-muted-foreground">{"APIPartialChannel"}</code>
+</div>
+
+The channel that this webhook is following (returned for Channel Follower Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The url used for executing the webhook (returned by the webhooks OAuth2 flow)
+
+
+
+</div></div>
+
+### RESTGetAPIChannelWebhooksResult
+
+https://discord.com/developers/docs/resources/webhook#get-channel-webhooks
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">length</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (): string; (locales: string | string[], options?: (NumberFormatOptions & DateTimeFormatOptions) | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pop</code>
+  <code className="text-fd-muted-foreground">{"() => APIWebhook | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">push</code>
+  <code className="text-fd-muted-foreground">{"(...items: APIWebhook[]) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">concat</code>
+  <code className="text-fd-muted-foreground">{"{ (...items: ConcatArray<APIWebhook>[]): APIWebhook[]; (...items: (APIWebhook | ConcatArray<APIWebhook>)[]): APIWebhook[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">join</code>
+  <code className="text-fd-muted-foreground">{"(separator?: string | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reverse</code>
+  <code className="text-fd-muted-foreground">{"() => APIWebhook[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shift</code>
+  <code className="text-fd-muted-foreground">{"() => APIWebhook | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">slice</code>
+  <code className="text-fd-muted-foreground">{"(start?: number | undefined, end?: number | undefined) => APIWebhook[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sort</code>
+  <code className="text-fd-muted-foreground">{"(compareFn?: ((a: APIWebhook, b: APIWebhook) => number) | undefined) => RESTGetAPIChannelWebhooksResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">splice</code>
+  <code className="text-fd-muted-foreground">{"{ (start: number, deleteCount?: number | undefined): APIWebhook[]; (start: number, deleteCount: number, ...items: APIWebhook[]): APIWebhook[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">unshift</code>
+  <code className="text-fd-muted-foreground">{"(...items: APIWebhook[]) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">indexOf</code>
+  <code className="text-fd-muted-foreground">{"(searchElement: APIWebhook, fromIndex?: number | undefined) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">lastIndexOf</code>
+  <code className="text-fd-muted-foreground">{"(searchElement: APIWebhook, fromIndex?: number | undefined) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">every</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends APIWebhook>(predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => value is S, thisArg?: any): this is S[]; (predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => unknown, thisArg?: any): boolean; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">some</code>
+  <code className="text-fd-muted-foreground">{"(predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => unknown, thisArg?: any) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">forEach</code>
+  <code className="text-fd-muted-foreground">{"(callbackfn: (value: APIWebhook, index: number, array: APIWebhook[]) => void, thisArg?: any) => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">map</code>
+  <code className="text-fd-muted-foreground">{"<U>(callbackfn: (value: APIWebhook, index: number, array: APIWebhook[]) => U, thisArg?: any) => U[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">filter</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends APIWebhook>(predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => value is S, thisArg?: any): S[]; (predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => unknown, thisArg?: any): APIWebhook[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduce</code>
+  <code className="text-fd-muted-foreground">{"{ (callbackfn: (previousValue: APIWebhook, currentValue: APIWebhook, currentIndex: number, array: APIWebhook[]) => APIWebhook): APIWebhook; (callbackfn: (previousValue: APIWebhook, currentValue: APIWebhook, currentIndex: number, array: APIWebhook[]) => APIWebhook, initialValue: APIWebhook): APIWebhook; <U>(callbackf..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduceRight</code>
+  <code className="text-fd-muted-foreground">{"{ (callbackfn: (previousValue: APIWebhook, currentValue: APIWebhook, currentIndex: number, array: APIWebhook[]) => APIWebhook): APIWebhook; (callbackfn: (previousValue: APIWebhook, currentValue: APIWebhook, currentIndex: number, array: APIWebhook[]) => APIWebhook, initialValue: APIWebhook): APIWebhook; <U>(callbackf..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">find</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends APIWebhook>(predicate: (value: APIWebhook, index: number, obj: APIWebhook[]) => value is S, thisArg?: any): S | undefined; (predicate: (value: APIWebhook, index: number, obj: APIWebhook[]) => unknown, thisArg?: any): APIWebhook | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findIndex</code>
+  <code className="text-fd-muted-foreground">{"(predicate: (value: APIWebhook, index: number, obj: APIWebhook[]) => unknown, thisArg?: any) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fill</code>
+  <code className="text-fd-muted-foreground">{"(value: APIWebhook, start?: number | undefined, end?: number | undefined) => RESTGetAPIChannelWebhooksResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">copyWithin</code>
+  <code className="text-fd-muted-foreground">{"(target: number, start: number, end?: number | undefined) => RESTGetAPIChannelWebhooksResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">entries</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<[number, APIWebhook]>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">keys</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<number>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">values</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<APIWebhook>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">includes</code>
+  <code className="text-fd-muted-foreground">{"(searchElement: APIWebhook, fromIndex?: number | undefined) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flatMap</code>
+  <code className="text-fd-muted-foreground">{"<U, This = undefined>(callback: (this: This, value: APIWebhook, index: number, array: APIWebhook[]) => U | readonly U[], thisArg?: This | undefined) => U[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flat</code>
+  <code className="text-fd-muted-foreground">{"<A, D extends number = 1>(this: A, depth?: D | undefined) => FlatArray<A, D>[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">at</code>
+  <code className="text-fd-muted-foreground">{"(index: number) => APIWebhook | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findLast</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends APIWebhook>(predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => value is S, thisArg?: any): S | undefined; (predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => unknown, thisArg?: any): APIWebhook | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findLastIndex</code>
+  <code className="text-fd-muted-foreground">{"(predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => unknown, thisArg?: any) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toReversed</code>
+  <code className="text-fd-muted-foreground">{"() => APIWebhook[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toSorted</code>
+  <code className="text-fd-muted-foreground">{"(compareFn?: ((a: APIWebhook, b: APIWebhook) => number) | undefined) => APIWebhook[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toSpliced</code>
+  <code className="text-fd-muted-foreground">{"{ (start: number, deleteCount: number, ...items: APIWebhook[]): APIWebhook[]; (start: number, deleteCount?: number | undefined): APIWebhook[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">with</code>
+  <code className="text-fd-muted-foreground">{"(index: number, value: APIWebhook) => APIWebhook[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@iterator@152286</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<APIWebhook>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@unscopables@152288</code>
+  <code className="text-fd-muted-foreground">{"{ [x: number]: boolean | undefined; length?: boolean | undefined; toString?: boolean | undefined; toLocaleString?: boolean | undefined; pop?: boolean | undefined; push?: boolean | undefined; ... 35 more ...; readonly [Symbol.unscopables]?: boolean | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTGetAPIGuildWebhooksResult
+
+https://discord.com/developers/docs/resources/webhook#get-guild-webhooks
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">length</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (): string; (locales: string | string[], options?: (NumberFormatOptions & DateTimeFormatOptions) | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pop</code>
+  <code className="text-fd-muted-foreground">{"() => APIWebhook | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">push</code>
+  <code className="text-fd-muted-foreground">{"(...items: APIWebhook[]) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">concat</code>
+  <code className="text-fd-muted-foreground">{"{ (...items: ConcatArray<APIWebhook>[]): APIWebhook[]; (...items: (APIWebhook | ConcatArray<APIWebhook>)[]): APIWebhook[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">join</code>
+  <code className="text-fd-muted-foreground">{"(separator?: string | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reverse</code>
+  <code className="text-fd-muted-foreground">{"() => APIWebhook[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shift</code>
+  <code className="text-fd-muted-foreground">{"() => APIWebhook | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">slice</code>
+  <code className="text-fd-muted-foreground">{"(start?: number | undefined, end?: number | undefined) => APIWebhook[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sort</code>
+  <code className="text-fd-muted-foreground">{"(compareFn?: ((a: APIWebhook, b: APIWebhook) => number) | undefined) => RESTGetAPIGuildWebhooksResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">splice</code>
+  <code className="text-fd-muted-foreground">{"{ (start: number, deleteCount?: number | undefined): APIWebhook[]; (start: number, deleteCount: number, ...items: APIWebhook[]): APIWebhook[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">unshift</code>
+  <code className="text-fd-muted-foreground">{"(...items: APIWebhook[]) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">indexOf</code>
+  <code className="text-fd-muted-foreground">{"(searchElement: APIWebhook, fromIndex?: number | undefined) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">lastIndexOf</code>
+  <code className="text-fd-muted-foreground">{"(searchElement: APIWebhook, fromIndex?: number | undefined) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">every</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends APIWebhook>(predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => value is S, thisArg?: any): this is S[]; (predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => unknown, thisArg?: any): boolean; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">some</code>
+  <code className="text-fd-muted-foreground">{"(predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => unknown, thisArg?: any) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">forEach</code>
+  <code className="text-fd-muted-foreground">{"(callbackfn: (value: APIWebhook, index: number, array: APIWebhook[]) => void, thisArg?: any) => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">map</code>
+  <code className="text-fd-muted-foreground">{"<U>(callbackfn: (value: APIWebhook, index: number, array: APIWebhook[]) => U, thisArg?: any) => U[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">filter</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends APIWebhook>(predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => value is S, thisArg?: any): S[]; (predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => unknown, thisArg?: any): APIWebhook[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduce</code>
+  <code className="text-fd-muted-foreground">{"{ (callbackfn: (previousValue: APIWebhook, currentValue: APIWebhook, currentIndex: number, array: APIWebhook[]) => APIWebhook): APIWebhook; (callbackfn: (previousValue: APIWebhook, currentValue: APIWebhook, currentIndex: number, array: APIWebhook[]) => APIWebhook, initialValue: APIWebhook): APIWebhook; <U>(callbackf..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduceRight</code>
+  <code className="text-fd-muted-foreground">{"{ (callbackfn: (previousValue: APIWebhook, currentValue: APIWebhook, currentIndex: number, array: APIWebhook[]) => APIWebhook): APIWebhook; (callbackfn: (previousValue: APIWebhook, currentValue: APIWebhook, currentIndex: number, array: APIWebhook[]) => APIWebhook, initialValue: APIWebhook): APIWebhook; <U>(callbackf..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">find</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends APIWebhook>(predicate: (value: APIWebhook, index: number, obj: APIWebhook[]) => value is S, thisArg?: any): S | undefined; (predicate: (value: APIWebhook, index: number, obj: APIWebhook[]) => unknown, thisArg?: any): APIWebhook | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findIndex</code>
+  <code className="text-fd-muted-foreground">{"(predicate: (value: APIWebhook, index: number, obj: APIWebhook[]) => unknown, thisArg?: any) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fill</code>
+  <code className="text-fd-muted-foreground">{"(value: APIWebhook, start?: number | undefined, end?: number | undefined) => RESTGetAPIGuildWebhooksResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">copyWithin</code>
+  <code className="text-fd-muted-foreground">{"(target: number, start: number, end?: number | undefined) => RESTGetAPIGuildWebhooksResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">entries</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<[number, APIWebhook]>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">keys</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<number>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">values</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<APIWebhook>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">includes</code>
+  <code className="text-fd-muted-foreground">{"(searchElement: APIWebhook, fromIndex?: number | undefined) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flatMap</code>
+  <code className="text-fd-muted-foreground">{"<U, This = undefined>(callback: (this: This, value: APIWebhook, index: number, array: APIWebhook[]) => U | readonly U[], thisArg?: This | undefined) => U[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flat</code>
+  <code className="text-fd-muted-foreground">{"<A, D extends number = 1>(this: A, depth?: D | undefined) => FlatArray<A, D>[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">at</code>
+  <code className="text-fd-muted-foreground">{"(index: number) => APIWebhook | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findLast</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends APIWebhook>(predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => value is S, thisArg?: any): S | undefined; (predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => unknown, thisArg?: any): APIWebhook | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findLastIndex</code>
+  <code className="text-fd-muted-foreground">{"(predicate: (value: APIWebhook, index: number, array: APIWebhook[]) => unknown, thisArg?: any) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toReversed</code>
+  <code className="text-fd-muted-foreground">{"() => APIWebhook[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toSorted</code>
+  <code className="text-fd-muted-foreground">{"(compareFn?: ((a: APIWebhook, b: APIWebhook) => number) | undefined) => APIWebhook[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toSpliced</code>
+  <code className="text-fd-muted-foreground">{"{ (start: number, deleteCount: number, ...items: APIWebhook[]): APIWebhook[]; (start: number, deleteCount?: number | undefined): APIWebhook[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">with</code>
+  <code className="text-fd-muted-foreground">{"(index: number, value: APIWebhook) => APIWebhook[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@iterator@152286</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<APIWebhook>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@unscopables@152288</code>
+  <code className="text-fd-muted-foreground">{"{ [x: number]: boolean | undefined; length?: boolean | undefined; toString?: boolean | undefined; toLocaleString?: boolean | undefined; pop?: boolean | undefined; push?: boolean | undefined; ... 35 more ...; readonly [Symbol.unscopables]?: boolean | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTGetAPIWebhookResult
+
+https://discord.com/developers/docs/resources/webhook#get-webhook
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"WebhookType"}</code>
+</div>
+
+The type of the webhook
+
+See https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The guild id this webhook is for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The channel id this webhook is for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+The user this webhook was created by (not returned when getting a webhook with its token)
+
+See https://discord.com/developers/docs/resources/user#user-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The default name of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatar</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The default avatar of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The secure token of the webhook (returned for Incoming Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The bot/OAuth2 application that created this webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">source_guild</code>
+  <code className="text-fd-muted-foreground">{"APIPartialGuild"}</code>
+</div>
+
+The guild of the channel that this webhook is following (returned for Channel Follower Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">source_channel</code>
+  <code className="text-fd-muted-foreground">{"APIPartialChannel"}</code>
+</div>
+
+The channel that this webhook is following (returned for Channel Follower Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The url used for executing the webhook (returned by the webhooks OAuth2 flow)
+
+
+
+</div></div>
+
+### RESTGetAPIWebhookWithTokenResult
+
+https://discord.com/developers/docs/resources/webhook#get-webhook-with-token
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"WebhookType"}</code>
+</div>
+
+The type of the webhook
+
+See https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The guild id this webhook is for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The channel id this webhook is for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The default name of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatar</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The default avatar of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The secure token of the webhook (returned for Incoming Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The bot/OAuth2 application that created this webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">source_guild</code>
+  <code className="text-fd-muted-foreground">{"APIPartialGuild"}</code>
+</div>
+
+The guild of the channel that this webhook is following (returned for Channel Follower Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">source_channel</code>
+  <code className="text-fd-muted-foreground">{"APIPartialChannel"}</code>
+</div>
+
+The channel that this webhook is following (returned for Channel Follower Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The url used for executing the webhook (returned by the webhooks OAuth2 flow)
+
+
+
+</div></div>
+
+### RESTPatchAPIWebhookJSONBody
+
+https://discord.com/developers/docs/resources/webhook#modify-webhook
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The default name of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatar</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Image for the default webhook avatar
+
+See https://discord.com/developers/docs/reference#image-data
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The new channel id this webhook should be moved to
+
+
+
+</div></div>
+
+### RESTPatchAPIWebhookResult
+
+https://discord.com/developers/docs/resources/webhook#modify-webhook
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"WebhookType"}</code>
+</div>
+
+The type of the webhook
+
+See https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The guild id this webhook is for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The channel id this webhook is for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+The user this webhook was created by (not returned when getting a webhook with its token)
+
+See https://discord.com/developers/docs/resources/user#user-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The default name of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatar</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The default avatar of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The secure token of the webhook (returned for Incoming Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The bot/OAuth2 application that created this webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">source_guild</code>
+  <code className="text-fd-muted-foreground">{"APIPartialGuild"}</code>
+</div>
+
+The guild of the channel that this webhook is following (returned for Channel Follower Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">source_channel</code>
+  <code className="text-fd-muted-foreground">{"APIPartialChannel"}</code>
+</div>
+
+The channel that this webhook is following (returned for Channel Follower Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The url used for executing the webhook (returned by the webhooks OAuth2 flow)
+
+
+
+</div></div>
+
+### RESTPatchAPIWebhookWithTokenJSONBody
+
+https://discord.com/developers/docs/resources/webhook#modify-webhook-with-token
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The default name of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatar</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Image for the default webhook avatar
+
+See https://discord.com/developers/docs/reference#image-data
+
+
+
+</div></div>
+
+### RESTPatchAPIWebhookWithTokenResult
+
+https://discord.com/developers/docs/resources/webhook#modify-webhook-with-token
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"WebhookType"}</code>
+</div>
+
+The type of the webhook
+
+See https://discord.com/developers/docs/resources/webhook#webhook-object-webhook-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The guild id this webhook is for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The channel id this webhook is for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The default name of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatar</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The default avatar of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The secure token of the webhook (returned for Incoming Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The bot/OAuth2 application that created this webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">source_guild</code>
+  <code className="text-fd-muted-foreground">{"APIPartialGuild"}</code>
+</div>
+
+The guild of the channel that this webhook is following (returned for Channel Follower Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">source_channel</code>
+  <code className="text-fd-muted-foreground">{"APIPartialChannel"}</code>
+</div>
+
+The channel that this webhook is following (returned for Channel Follower Webhooks)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The url used for executing the webhook (returned by the webhooks OAuth2 flow)
+
+
+
+</div></div>
+
+### RESTDeleteAPIWebhookResult
+
+https://discord.com/developers/docs/resources/webhook#delete-webhook
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>
+
+### RESTDeleteAPIWebhookWithTokenResult
+
+https://discord.com/developers/docs/resources/webhook#delete-webhook-with-token
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>
+
+### RESTPostAPIWebhookWithTokenJSONBody
+
+https://discord.com/developers/docs/resources/webhook#execute-webhook
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">content</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The message contents (up to 2000 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">username</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Override the default username of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatar_url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Override the default avatar of the webhook
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tts</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+`true` if this is a TTS message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">embeds</code>
+  <code className="text-fd-muted-foreground">{"APIEmbed[]"}</code>
+</div>
+
+Embedded `rich` content
+
+See https://discord.com/developers/docs/resources/channel#embed-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">allowed_mentions</code>
+  <code className="text-fd-muted-foreground">{"APIAllowedMentions"}</code>
+</div>
+
+Allowed mentions for the message
+
+See https://discord.com/developers/docs/resources/channel#allowed-mentions-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">components</code>
+  <code className="text-fd-muted-foreground">{"APIActionRowComponent<APIMessageActionRowComponent>[]"}</code>
+</div>
+
+The components to include with the message
+
+Requires an application-owned webhook
+
+See https://discord.com/developers/docs/interactions/message-components#component-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">attachments</code>
+  <code className="text-fd-muted-foreground">{"Partial<Pick<APIAttachment, \"id\" | \"description\" | \"duration_secs\" | \"filename\" | \"title\" | \"waveform\">>[]"}</code>
+</div>
+
+Attachment objects with filename and description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flags</code>
+  <code className="text-fd-muted-foreground">{"MessageFlags"}</code>
+</div>
+
+Message flags combined as a bitfield
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">thread_name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Name of thread to create
+
+Available only if the webhook is in a forum channel and a thread is not specified in &lbrace;@link RESTPostAPIWebhookWithTokenQuery.thread_id&rbrace; query parameter
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">applied_tags</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+Array of tag ids to apply to the thread
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">poll</code>
+  <code className="text-fd-muted-foreground">{"RESTAPIPollCreate"}</code>
+</div>
+
+A poll!
+
+
+
+</div></div>
+
+### RESTPostAPIWebhookWithTokenFormDataBody
+
+https://discord.com/developers/docs/resources/webhook#execute-webhook
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>
+
+### RESTPostAPIWebhookWithTokenQuery
+
+https://discord.com/developers/docs/resources/webhook#execute-webhook-query-string-params
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">wait</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Waits for server confirmation of message send before response, and returns the created message body
+(defaults to `false`; when `false` a message that is not saved does not return an error)
+
+- default:
+false
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">thread_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.
+
+Available only if the &lbrace;@link RESTPostAPIWebhookWithTokenJSONBody.thread_name&rbrace; JSON body property is not specified
+
+
+
+</div></div>
+
+### RESTPostAPIWebhookWithTokenResult
+
+https://discord.com/developers/docs/resources/webhook#execute-webhook
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>
+
+### RESTPostAPIWebhookWithTokenWaitResult
+
+Received when a call to https://discord.com/developers/docs/resources/webhook#execute-webhook receives
+the `wait` query parameter set to `true`
+
+See https://discord.com/developers/docs/resources/webhook#execute-webhook-query-string-params
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the channel the message was sent in
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">author</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+The author of this message (only a valid user in the case where the message is generated by a user or bot user)
+
+If the message is generated by a webhook, the author object corresponds to the webhook's id,
+username, and avatar. You can tell if a message is generated by a webhook by checking for the `webhook_id` property
+
+See https://discord.com/developers/docs/resources/user#user-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">content</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Contents of the message
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">timestamp</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+When this message was sent
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">edited_timestamp</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+When this message was edited (or null if never)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tts</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this was a TTS message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_everyone</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this message mentions everyone
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mentions</code>
+  <code className="text-fd-muted-foreground">{"APIUser[]"}</code>
+</div>
+
+Users specifically mentioned in the message
+
+The `member` field is only present in `MESSAGE_CREATE` and `MESSAGE_UPDATE` events
+from text-based guild channels
+
+See https://discord.com/developers/docs/resources/user#user-object
+See https://discord.com/developers/docs/resources/guild#guild-member-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_roles</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+Roles specifically mentioned in this message
+
+See https://discord.com/developers/docs/topics/permissions#role-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_channels</code>
+  <code className="text-fd-muted-foreground">{"APIChannelMention[]"}</code>
+</div>
+
+Channels specifically mentioned in this message
+
+Not all channel mentions in a message will appear in `mention_channels`.
+- Only textual channels that are visible to everyone in a lurkable guild will ever be included
+- Only crossposted messages (via Channel Following) currently include `mention_channels` at all
+
+If no mentions in the message meet these requirements, this field will not be sent
+
+See https://discord.com/developers/docs/resources/channel#channel-mention-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">attachments</code>
+  <code className="text-fd-muted-foreground">{"APIAttachment[]"}</code>
+</div>
+
+Any attached files
+
+See https://discord.com/developers/docs/resources/channel#attachment-object
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">embeds</code>
+  <code className="text-fd-muted-foreground">{"APIEmbed[]"}</code>
+</div>
+
+Any embedded content
+
+See https://discord.com/developers/docs/resources/channel#embed-object
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reactions</code>
+  <code className="text-fd-muted-foreground">{"APIReaction[]"}</code>
+</div>
+
+Reactions to the message
+
+See https://discord.com/developers/docs/resources/channel#reaction-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">nonce</code>
+  <code className="text-fd-muted-foreground">{"string | number"}</code>
+</div>
+
+A nonce that can be used for optimistic message sending (up to 25 characters)
+
+**You will not receive this from further fetches. This is received only once from a `MESSAGE_CREATE`
+event to ensure it got sent**
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pinned</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this message is pinned
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">webhook_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If the message is generated by a webhook, this is the webhook's id
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"MessageType"}</code>
+</div>
+
+Type of message
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">activity</code>
+  <code className="text-fd-muted-foreground">{"APIMessageActivity"}</code>
+</div>
+
+Sent with Rich Presence-related chat embeds
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-activity-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application</code>
+  <code className="text-fd-muted-foreground">{"Partial<APIApplication>"}</code>
+</div>
+
+Sent with Rich Presence-related chat embeds
+
+See https://discord.com/developers/docs/resources/application#application-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If the message is a response to an Interaction, this is the id of the interaction's application
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">message_reference</code>
+  <code className="text-fd-muted-foreground">{"APIMessageReference"}</code>
+</div>
+
+Reference data sent with crossposted messages, replies, pins, and thread starter messages
+
+See https://discord.com/developers/docs/resources/channel#message-reference-object-message-reference-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flags</code>
+  <code className="text-fd-muted-foreground">{"MessageFlags"}</code>
+</div>
+
+Message flags combined as a bitfield
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-flags
+
+See https://en.wikipedia.org/wiki/Bit_field
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">referenced_message</code>
+  <code className="text-fd-muted-foreground">{"APIMessage"}</code>
+</div>
+
+The message associated with the `message_reference`
+
+This field is only returned for messages with a `type` of `19` (REPLY).
+
+If the message is a reply but the `referenced_message` field is not present,
+the backend did not attempt to fetch the message that was being replied to,
+so its state is unknown.
+
+If the field exists but is `null`, the referenced message was deleted
+
+See https://discord.com/developers/docs/resources/channel#message-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">interaction_metadata</code>
+  <code className="text-fd-muted-foreground">{"APIMessageInteractionMetadata"}</code>
+</div>
+
+Sent if the message is sent as a result of an interaction
+
+- unstable:
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">thread</code>
+  <code className="text-fd-muted-foreground">{"APIThreadChannel"}</code>
+</div>
+
+Sent if a thread was started from this message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">components</code>
+  <code className="text-fd-muted-foreground">{"APIActionRowComponent<APIMessageActionRowComponent>[]"}</code>
+</div>
+
+Sent if the message contains components like buttons, action rows, or other interactive components
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sticker_items</code>
+  <code className="text-fd-muted-foreground">{"APIStickerItem[]"}</code>
+</div>
+
+Sent if the message contains stickers
+
+See https://discord.com/developers/docs/resources/sticker#sticker-item-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">position</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+A generally increasing integer (there may be gaps or duplicates) that represents the approximate position of the message in a thread
+
+It can be used to estimate the relative position of the message in a thread in company with `total_message_sent` on parent thread
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">role_subscription_data</code>
+  <code className="text-fd-muted-foreground">{"APIMessageRoleSubscriptionData"}</code>
+</div>
+
+Data of the role subscription purchase or renewal that prompted this `ROLE_SUBSCRIPTION_PURCHASE` message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resolved</code>
+  <code className="text-fd-muted-foreground">{"APIInteractionDataResolved"}</code>
+</div>
+
+Data for users, members, channels, and roles in the message's auto-populated select menus
+
+See https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-resolved-data-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">poll</code>
+  <code className="text-fd-muted-foreground">{"APIPoll"}</code>
+</div>
+
+A poll!
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">message_snapshots</code>
+  <code className="text-fd-muted-foreground">{"APIMessageSnapshot[]"}</code>
+</div>
+
+The message associated with the message_reference. This is a minimal subset of fields in a message (e.g. author is excluded.)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">call</code>
+  <code className="text-fd-muted-foreground">{"APIMessageCall"}</code>
+</div>
+
+The call associated with the message
+
+
+
+</div></div>
+
+### RESTPostAPIWebhookWithTokenSlackQuery
+
+https://discord.com/developers/docs/resources/webhook#execute-slackcompatible-webhook-query-string-params
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">wait</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Waits for server confirmation of message send before response, and returns the created message body
+(defaults to `false`; when `false` a message that is not saved does not return an error)
+
+- default:
+false
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">thread_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.
+
+Available only if the &lbrace;@link RESTPostAPIWebhookWithTokenJSONBody.thread_name&rbrace; JSON body property is not specified
+
+
+
+</div></div>
+
+### RESTPostAPIWebhookWithTokenSlackResult
+
+https://discord.com/developers/docs/resources/webhook#execute-slackcompatible-webhook
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>
+
+### RESTPostAPIWebhookWithTokenSlackWaitResult
+
+Received when a call to https://discord.com/developers/docs/resources/webhook#execute-webhook receives
+the `wait` query parameter set to `true`
+
+See https://discord.com/developers/docs/resources/webhook#execute-slackcompatible-webhook-query-string-params
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the channel the message was sent in
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">author</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+The author of this message (only a valid user in the case where the message is generated by a user or bot user)
+
+If the message is generated by a webhook, the author object corresponds to the webhook's id,
+username, and avatar. You can tell if a message is generated by a webhook by checking for the `webhook_id` property
+
+See https://discord.com/developers/docs/resources/user#user-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">content</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Contents of the message
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">timestamp</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+When this message was sent
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">edited_timestamp</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+When this message was edited (or null if never)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tts</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this was a TTS message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_everyone</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this message mentions everyone
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mentions</code>
+  <code className="text-fd-muted-foreground">{"APIUser[]"}</code>
+</div>
+
+Users specifically mentioned in the message
+
+The `member` field is only present in `MESSAGE_CREATE` and `MESSAGE_UPDATE` events
+from text-based guild channels
+
+See https://discord.com/developers/docs/resources/user#user-object
+See https://discord.com/developers/docs/resources/guild#guild-member-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_roles</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+Roles specifically mentioned in this message
+
+See https://discord.com/developers/docs/topics/permissions#role-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_channels</code>
+  <code className="text-fd-muted-foreground">{"APIChannelMention[]"}</code>
+</div>
+
+Channels specifically mentioned in this message
+
+Not all channel mentions in a message will appear in `mention_channels`.
+- Only textual channels that are visible to everyone in a lurkable guild will ever be included
+- Only crossposted messages (via Channel Following) currently include `mention_channels` at all
+
+If no mentions in the message meet these requirements, this field will not be sent
+
+See https://discord.com/developers/docs/resources/channel#channel-mention-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">attachments</code>
+  <code className="text-fd-muted-foreground">{"APIAttachment[]"}</code>
+</div>
+
+Any attached files
+
+See https://discord.com/developers/docs/resources/channel#attachment-object
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">embeds</code>
+  <code className="text-fd-muted-foreground">{"APIEmbed[]"}</code>
+</div>
+
+Any embedded content
+
+See https://discord.com/developers/docs/resources/channel#embed-object
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reactions</code>
+  <code className="text-fd-muted-foreground">{"APIReaction[]"}</code>
+</div>
+
+Reactions to the message
+
+See https://discord.com/developers/docs/resources/channel#reaction-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">nonce</code>
+  <code className="text-fd-muted-foreground">{"string | number"}</code>
+</div>
+
+A nonce that can be used for optimistic message sending (up to 25 characters)
+
+**You will not receive this from further fetches. This is received only once from a `MESSAGE_CREATE`
+event to ensure it got sent**
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pinned</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this message is pinned
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">webhook_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If the message is generated by a webhook, this is the webhook's id
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"MessageType"}</code>
+</div>
+
+Type of message
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">activity</code>
+  <code className="text-fd-muted-foreground">{"APIMessageActivity"}</code>
+</div>
+
+Sent with Rich Presence-related chat embeds
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-activity-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application</code>
+  <code className="text-fd-muted-foreground">{"Partial<APIApplication>"}</code>
+</div>
+
+Sent with Rich Presence-related chat embeds
+
+See https://discord.com/developers/docs/resources/application#application-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If the message is a response to an Interaction, this is the id of the interaction's application
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">message_reference</code>
+  <code className="text-fd-muted-foreground">{"APIMessageReference"}</code>
+</div>
+
+Reference data sent with crossposted messages, replies, pins, and thread starter messages
+
+See https://discord.com/developers/docs/resources/channel#message-reference-object-message-reference-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flags</code>
+  <code className="text-fd-muted-foreground">{"MessageFlags"}</code>
+</div>
+
+Message flags combined as a bitfield
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-flags
+
+See https://en.wikipedia.org/wiki/Bit_field
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">referenced_message</code>
+  <code className="text-fd-muted-foreground">{"APIMessage"}</code>
+</div>
+
+The message associated with the `message_reference`
+
+This field is only returned for messages with a `type` of `19` (REPLY).
+
+If the message is a reply but the `referenced_message` field is not present,
+the backend did not attempt to fetch the message that was being replied to,
+so its state is unknown.
+
+If the field exists but is `null`, the referenced message was deleted
+
+See https://discord.com/developers/docs/resources/channel#message-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">interaction_metadata</code>
+  <code className="text-fd-muted-foreground">{"APIMessageInteractionMetadata"}</code>
+</div>
+
+Sent if the message is sent as a result of an interaction
+
+- unstable:
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">thread</code>
+  <code className="text-fd-muted-foreground">{"APIThreadChannel"}</code>
+</div>
+
+Sent if a thread was started from this message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">components</code>
+  <code className="text-fd-muted-foreground">{"APIActionRowComponent<APIMessageActionRowComponent>[]"}</code>
+</div>
+
+Sent if the message contains components like buttons, action rows, or other interactive components
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sticker_items</code>
+  <code className="text-fd-muted-foreground">{"APIStickerItem[]"}</code>
+</div>
+
+Sent if the message contains stickers
+
+See https://discord.com/developers/docs/resources/sticker#sticker-item-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">position</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+A generally increasing integer (there may be gaps or duplicates) that represents the approximate position of the message in a thread
+
+It can be used to estimate the relative position of the message in a thread in company with `total_message_sent` on parent thread
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">role_subscription_data</code>
+  <code className="text-fd-muted-foreground">{"APIMessageRoleSubscriptionData"}</code>
+</div>
+
+Data of the role subscription purchase or renewal that prompted this `ROLE_SUBSCRIPTION_PURCHASE` message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resolved</code>
+  <code className="text-fd-muted-foreground">{"APIInteractionDataResolved"}</code>
+</div>
+
+Data for users, members, channels, and roles in the message's auto-populated select menus
+
+See https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-resolved-data-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">poll</code>
+  <code className="text-fd-muted-foreground">{"APIPoll"}</code>
+</div>
+
+A poll!
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">message_snapshots</code>
+  <code className="text-fd-muted-foreground">{"APIMessageSnapshot[]"}</code>
+</div>
+
+The message associated with the message_reference. This is a minimal subset of fields in a message (e.g. author is excluded.)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">call</code>
+  <code className="text-fd-muted-foreground">{"APIMessageCall"}</code>
+</div>
+
+The call associated with the message
+
+
+
+</div></div>
+
+### RESTPostAPIWebhookWithTokenGitHubQuery
+
+https://discord.com/developers/docs/resources/webhook#execute-githubcompatible-webhook-query-string-params
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">wait</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Waits for server confirmation of message send before response, and returns the created message body
+(defaults to `false`; when `false` a message that is not saved does not return an error)
+
+- default:
+false
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">thread_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Send a message to the specified thread within a webhook's channel. The thread will automatically be unarchived.
+
+Available only if the &lbrace;@link RESTPostAPIWebhookWithTokenJSONBody.thread_name&rbrace; JSON body property is not specified
+
+
+
+</div></div>
+
+### RESTPostAPIWebhookWithTokenGitHubResult
+
+https://discord.com/developers/docs/resources/webhook#execute-githubcompatible-webhook
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>
+
+### RESTPostAPIWebhookWithTokenGitHubWaitResult
+
+Received when a call to https://discord.com/developers/docs/resources/webhook#execute-webhook receives
+the `wait` query parameter set to `true`
+
+See https://discord.com/developers/docs/resources/webhook#execute-githubcompatible-webhook-query-string-params
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the channel the message was sent in
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">author</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+The author of this message (only a valid user in the case where the message is generated by a user or bot user)
+
+If the message is generated by a webhook, the author object corresponds to the webhook's id,
+username, and avatar. You can tell if a message is generated by a webhook by checking for the `webhook_id` property
+
+See https://discord.com/developers/docs/resources/user#user-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">content</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Contents of the message
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">timestamp</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+When this message was sent
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">edited_timestamp</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+When this message was edited (or null if never)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tts</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this was a TTS message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_everyone</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this message mentions everyone
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mentions</code>
+  <code className="text-fd-muted-foreground">{"APIUser[]"}</code>
+</div>
+
+Users specifically mentioned in the message
+
+The `member` field is only present in `MESSAGE_CREATE` and `MESSAGE_UPDATE` events
+from text-based guild channels
+
+See https://discord.com/developers/docs/resources/user#user-object
+See https://discord.com/developers/docs/resources/guild#guild-member-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_roles</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+Roles specifically mentioned in this message
+
+See https://discord.com/developers/docs/topics/permissions#role-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_channels</code>
+  <code className="text-fd-muted-foreground">{"APIChannelMention[]"}</code>
+</div>
+
+Channels specifically mentioned in this message
+
+Not all channel mentions in a message will appear in `mention_channels`.
+- Only textual channels that are visible to everyone in a lurkable guild will ever be included
+- Only crossposted messages (via Channel Following) currently include `mention_channels` at all
+
+If no mentions in the message meet these requirements, this field will not be sent
+
+See https://discord.com/developers/docs/resources/channel#channel-mention-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">attachments</code>
+  <code className="text-fd-muted-foreground">{"APIAttachment[]"}</code>
+</div>
+
+Any attached files
+
+See https://discord.com/developers/docs/resources/channel#attachment-object
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">embeds</code>
+  <code className="text-fd-muted-foreground">{"APIEmbed[]"}</code>
+</div>
+
+Any embedded content
+
+See https://discord.com/developers/docs/resources/channel#embed-object
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reactions</code>
+  <code className="text-fd-muted-foreground">{"APIReaction[]"}</code>
+</div>
+
+Reactions to the message
+
+See https://discord.com/developers/docs/resources/channel#reaction-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">nonce</code>
+  <code className="text-fd-muted-foreground">{"string | number"}</code>
+</div>
+
+A nonce that can be used for optimistic message sending (up to 25 characters)
+
+**You will not receive this from further fetches. This is received only once from a `MESSAGE_CREATE`
+event to ensure it got sent**
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pinned</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this message is pinned
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">webhook_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If the message is generated by a webhook, this is the webhook's id
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"MessageType"}</code>
+</div>
+
+Type of message
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">activity</code>
+  <code className="text-fd-muted-foreground">{"APIMessageActivity"}</code>
+</div>
+
+Sent with Rich Presence-related chat embeds
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-activity-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application</code>
+  <code className="text-fd-muted-foreground">{"Partial<APIApplication>"}</code>
+</div>
+
+Sent with Rich Presence-related chat embeds
+
+See https://discord.com/developers/docs/resources/application#application-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If the message is a response to an Interaction, this is the id of the interaction's application
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">message_reference</code>
+  <code className="text-fd-muted-foreground">{"APIMessageReference"}</code>
+</div>
+
+Reference data sent with crossposted messages, replies, pins, and thread starter messages
+
+See https://discord.com/developers/docs/resources/channel#message-reference-object-message-reference-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flags</code>
+  <code className="text-fd-muted-foreground">{"MessageFlags"}</code>
+</div>
+
+Message flags combined as a bitfield
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-flags
+
+See https://en.wikipedia.org/wiki/Bit_field
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">referenced_message</code>
+  <code className="text-fd-muted-foreground">{"APIMessage"}</code>
+</div>
+
+The message associated with the `message_reference`
+
+This field is only returned for messages with a `type` of `19` (REPLY).
+
+If the message is a reply but the `referenced_message` field is not present,
+the backend did not attempt to fetch the message that was being replied to,
+so its state is unknown.
+
+If the field exists but is `null`, the referenced message was deleted
+
+See https://discord.com/developers/docs/resources/channel#message-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">interaction_metadata</code>
+  <code className="text-fd-muted-foreground">{"APIMessageInteractionMetadata"}</code>
+</div>
+
+Sent if the message is sent as a result of an interaction
+
+- unstable:
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">thread</code>
+  <code className="text-fd-muted-foreground">{"APIThreadChannel"}</code>
+</div>
+
+Sent if a thread was started from this message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">components</code>
+  <code className="text-fd-muted-foreground">{"APIActionRowComponent<APIMessageActionRowComponent>[]"}</code>
+</div>
+
+Sent if the message contains components like buttons, action rows, or other interactive components
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sticker_items</code>
+  <code className="text-fd-muted-foreground">{"APIStickerItem[]"}</code>
+</div>
+
+Sent if the message contains stickers
+
+See https://discord.com/developers/docs/resources/sticker#sticker-item-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">position</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+A generally increasing integer (there may be gaps or duplicates) that represents the approximate position of the message in a thread
+
+It can be used to estimate the relative position of the message in a thread in company with `total_message_sent` on parent thread
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">role_subscription_data</code>
+  <code className="text-fd-muted-foreground">{"APIMessageRoleSubscriptionData"}</code>
+</div>
+
+Data of the role subscription purchase or renewal that prompted this `ROLE_SUBSCRIPTION_PURCHASE` message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resolved</code>
+  <code className="text-fd-muted-foreground">{"APIInteractionDataResolved"}</code>
+</div>
+
+Data for users, members, channels, and roles in the message's auto-populated select menus
+
+See https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-resolved-data-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">poll</code>
+  <code className="text-fd-muted-foreground">{"APIPoll"}</code>
+</div>
+
+A poll!
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">message_snapshots</code>
+  <code className="text-fd-muted-foreground">{"APIMessageSnapshot[]"}</code>
+</div>
+
+The message associated with the message_reference. This is a minimal subset of fields in a message (e.g. author is excluded.)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">call</code>
+  <code className="text-fd-muted-foreground">{"APIMessageCall"}</code>
+</div>
+
+The call associated with the message
+
+
+
+</div></div>
+
+### RESTGetAPIWebhookWithTokenMessageResult
+
+https://discord.com/developers/docs/resources/webhook#get-webhook-message
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the channel the message was sent in
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">author</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+The author of this message (only a valid user in the case where the message is generated by a user or bot user)
+
+If the message is generated by a webhook, the author object corresponds to the webhook's id,
+username, and avatar. You can tell if a message is generated by a webhook by checking for the `webhook_id` property
+
+See https://discord.com/developers/docs/resources/user#user-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">content</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Contents of the message
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">timestamp</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+When this message was sent
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">edited_timestamp</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+When this message was edited (or null if never)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tts</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this was a TTS message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_everyone</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this message mentions everyone
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mentions</code>
+  <code className="text-fd-muted-foreground">{"APIUser[]"}</code>
+</div>
+
+Users specifically mentioned in the message
+
+The `member` field is only present in `MESSAGE_CREATE` and `MESSAGE_UPDATE` events
+from text-based guild channels
+
+See https://discord.com/developers/docs/resources/user#user-object
+See https://discord.com/developers/docs/resources/guild#guild-member-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_roles</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+Roles specifically mentioned in this message
+
+See https://discord.com/developers/docs/topics/permissions#role-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_channels</code>
+  <code className="text-fd-muted-foreground">{"APIChannelMention[]"}</code>
+</div>
+
+Channels specifically mentioned in this message
+
+Not all channel mentions in a message will appear in `mention_channels`.
+- Only textual channels that are visible to everyone in a lurkable guild will ever be included
+- Only crossposted messages (via Channel Following) currently include `mention_channels` at all
+
+If no mentions in the message meet these requirements, this field will not be sent
+
+See https://discord.com/developers/docs/resources/channel#channel-mention-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">attachments</code>
+  <code className="text-fd-muted-foreground">{"APIAttachment[]"}</code>
+</div>
+
+Any attached files
+
+See https://discord.com/developers/docs/resources/channel#attachment-object
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">embeds</code>
+  <code className="text-fd-muted-foreground">{"APIEmbed[]"}</code>
+</div>
+
+Any embedded content
+
+See https://discord.com/developers/docs/resources/channel#embed-object
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reactions</code>
+  <code className="text-fd-muted-foreground">{"APIReaction[]"}</code>
+</div>
+
+Reactions to the message
+
+See https://discord.com/developers/docs/resources/channel#reaction-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">nonce</code>
+  <code className="text-fd-muted-foreground">{"string | number"}</code>
+</div>
+
+A nonce that can be used for optimistic message sending (up to 25 characters)
+
+**You will not receive this from further fetches. This is received only once from a `MESSAGE_CREATE`
+event to ensure it got sent**
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pinned</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this message is pinned
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">webhook_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If the message is generated by a webhook, this is the webhook's id
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"MessageType"}</code>
+</div>
+
+Type of message
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">activity</code>
+  <code className="text-fd-muted-foreground">{"APIMessageActivity"}</code>
+</div>
+
+Sent with Rich Presence-related chat embeds
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-activity-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application</code>
+  <code className="text-fd-muted-foreground">{"Partial<APIApplication>"}</code>
+</div>
+
+Sent with Rich Presence-related chat embeds
+
+See https://discord.com/developers/docs/resources/application#application-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If the message is a response to an Interaction, this is the id of the interaction's application
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">message_reference</code>
+  <code className="text-fd-muted-foreground">{"APIMessageReference"}</code>
+</div>
+
+Reference data sent with crossposted messages, replies, pins, and thread starter messages
+
+See https://discord.com/developers/docs/resources/channel#message-reference-object-message-reference-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flags</code>
+  <code className="text-fd-muted-foreground">{"MessageFlags"}</code>
+</div>
+
+Message flags combined as a bitfield
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-flags
+
+See https://en.wikipedia.org/wiki/Bit_field
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">referenced_message</code>
+  <code className="text-fd-muted-foreground">{"APIMessage"}</code>
+</div>
+
+The message associated with the `message_reference`
+
+This field is only returned for messages with a `type` of `19` (REPLY).
+
+If the message is a reply but the `referenced_message` field is not present,
+the backend did not attempt to fetch the message that was being replied to,
+so its state is unknown.
+
+If the field exists but is `null`, the referenced message was deleted
+
+See https://discord.com/developers/docs/resources/channel#message-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">interaction_metadata</code>
+  <code className="text-fd-muted-foreground">{"APIMessageInteractionMetadata"}</code>
+</div>
+
+Sent if the message is sent as a result of an interaction
+
+- unstable:
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">thread</code>
+  <code className="text-fd-muted-foreground">{"APIThreadChannel"}</code>
+</div>
+
+Sent if a thread was started from this message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">components</code>
+  <code className="text-fd-muted-foreground">{"APIActionRowComponent<APIMessageActionRowComponent>[]"}</code>
+</div>
+
+Sent if the message contains components like buttons, action rows, or other interactive components
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sticker_items</code>
+  <code className="text-fd-muted-foreground">{"APIStickerItem[]"}</code>
+</div>
+
+Sent if the message contains stickers
+
+See https://discord.com/developers/docs/resources/sticker#sticker-item-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">position</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+A generally increasing integer (there may be gaps or duplicates) that represents the approximate position of the message in a thread
+
+It can be used to estimate the relative position of the message in a thread in company with `total_message_sent` on parent thread
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">role_subscription_data</code>
+  <code className="text-fd-muted-foreground">{"APIMessageRoleSubscriptionData"}</code>
+</div>
+
+Data of the role subscription purchase or renewal that prompted this `ROLE_SUBSCRIPTION_PURCHASE` message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resolved</code>
+  <code className="text-fd-muted-foreground">{"APIInteractionDataResolved"}</code>
+</div>
+
+Data for users, members, channels, and roles in the message's auto-populated select menus
+
+See https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-resolved-data-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">poll</code>
+  <code className="text-fd-muted-foreground">{"APIPoll"}</code>
+</div>
+
+A poll!
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">message_snapshots</code>
+  <code className="text-fd-muted-foreground">{"APIMessageSnapshot[]"}</code>
+</div>
+
+The message associated with the message_reference. This is a minimal subset of fields in a message (e.g. author is excluded.)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">call</code>
+  <code className="text-fd-muted-foreground">{"APIMessageCall"}</code>
+</div>
+
+The call associated with the message
+
+
+
+</div></div>
+
+### RESTGetAPIWebhookWithTokenMessageQuery
+
+https://discord.com/developers/docs/resources/webhook#get-webhook-message-query-string-params
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">thread_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTPatchAPIWebhookWithTokenMessageJSONBody
+
+https://discord.com/developers/docs/resources/webhook#edit-webhook-message
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">content</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The message contents (up to 2000 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">embeds</code>
+  <code className="text-fd-muted-foreground">{"AddUndefinedToPossiblyUndefinedPropertiesOfInterface<APIEmbed>[]"}</code>
+</div>
+
+Embedded `rich` content
+
+See https://discord.com/developers/docs/resources/channel#embed-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">allowed_mentions</code>
+  <code className="text-fd-muted-foreground">{"AddUndefinedToPossiblyUndefinedPropertiesOfInterface<APIAllowedMentions>"}</code>
+</div>
+
+Allowed mentions for the message
+
+See https://discord.com/developers/docs/resources/channel#allowed-mentions-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">components</code>
+  <code className="text-fd-muted-foreground">{"AddUndefinedToPossiblyUndefinedPropertiesOfInterface<APIActionRowComponent<APIMessageActionRowComponent>>[]"}</code>
+</div>
+
+The components to include with the message
+
+Requires an application-owned webhook
+
+See https://discord.com/developers/docs/interactions/message-components#component-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">poll</code>
+  <code className="text-fd-muted-foreground">{"AddUndefinedToPossiblyUndefinedPropertiesOfInterface<RESTAPIPollCreate>"}</code>
+</div>
+
+A poll!
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">attachments</code>
+  <code className="text-fd-muted-foreground">{"Partial<Pick<APIAttachment, \"id\" | \"description\" | \"duration_secs\" | \"filename\" | \"title\" | \"waveform\">>[]"}</code>
+</div>
+
+Attached files to keep
+
+Starting with API v10, the `attachments` array must contain all attachments that should be present after edit, including **retained and new** attachments provided in the request body.
+
+See https://discord.com/developers/docs/resources/message#attachment-object
+
+
+
+</div></div>
+
+### RESTPatchAPIWebhookWithTokenMessageFormDataBody
+
+https://discord.com/developers/docs/resources/webhook#edit-webhook-message
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>
+
+### RESTPatchAPIWebhookWithTokenMessageResult
+
+https://discord.com/developers/docs/resources/webhook#edit-webhook-message
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the channel the message was sent in
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">author</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+The author of this message (only a valid user in the case where the message is generated by a user or bot user)
+
+If the message is generated by a webhook, the author object corresponds to the webhook's id,
+username, and avatar. You can tell if a message is generated by a webhook by checking for the `webhook_id` property
+
+See https://discord.com/developers/docs/resources/user#user-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">content</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Contents of the message
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">timestamp</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+When this message was sent
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">edited_timestamp</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+When this message was edited (or null if never)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tts</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this was a TTS message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_everyone</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this message mentions everyone
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mentions</code>
+  <code className="text-fd-muted-foreground">{"APIUser[]"}</code>
+</div>
+
+Users specifically mentioned in the message
+
+The `member` field is only present in `MESSAGE_CREATE` and `MESSAGE_UPDATE` events
+from text-based guild channels
+
+See https://discord.com/developers/docs/resources/user#user-object
+See https://discord.com/developers/docs/resources/guild#guild-member-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_roles</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+Roles specifically mentioned in this message
+
+See https://discord.com/developers/docs/topics/permissions#role-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_channels</code>
+  <code className="text-fd-muted-foreground">{"APIChannelMention[]"}</code>
+</div>
+
+Channels specifically mentioned in this message
+
+Not all channel mentions in a message will appear in `mention_channels`.
+- Only textual channels that are visible to everyone in a lurkable guild will ever be included
+- Only crossposted messages (via Channel Following) currently include `mention_channels` at all
+
+If no mentions in the message meet these requirements, this field will not be sent
+
+See https://discord.com/developers/docs/resources/channel#channel-mention-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">attachments</code>
+  <code className="text-fd-muted-foreground">{"APIAttachment[]"}</code>
+</div>
+
+Any attached files
+
+See https://discord.com/developers/docs/resources/channel#attachment-object
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">embeds</code>
+  <code className="text-fd-muted-foreground">{"APIEmbed[]"}</code>
+</div>
+
+Any embedded content
+
+See https://discord.com/developers/docs/resources/channel#embed-object
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reactions</code>
+  <code className="text-fd-muted-foreground">{"APIReaction[]"}</code>
+</div>
+
+Reactions to the message
+
+See https://discord.com/developers/docs/resources/channel#reaction-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">nonce</code>
+  <code className="text-fd-muted-foreground">{"string | number"}</code>
+</div>
+
+A nonce that can be used for optimistic message sending (up to 25 characters)
+
+**You will not receive this from further fetches. This is received only once from a `MESSAGE_CREATE`
+event to ensure it got sent**
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pinned</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this message is pinned
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">webhook_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If the message is generated by a webhook, this is the webhook's id
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"MessageType"}</code>
+</div>
+
+Type of message
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">activity</code>
+  <code className="text-fd-muted-foreground">{"APIMessageActivity"}</code>
+</div>
+
+Sent with Rich Presence-related chat embeds
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-activity-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application</code>
+  <code className="text-fd-muted-foreground">{"Partial<APIApplication>"}</code>
+</div>
+
+Sent with Rich Presence-related chat embeds
+
+See https://discord.com/developers/docs/resources/application#application-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If the message is a response to an Interaction, this is the id of the interaction's application
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">message_reference</code>
+  <code className="text-fd-muted-foreground">{"APIMessageReference"}</code>
+</div>
+
+Reference data sent with crossposted messages, replies, pins, and thread starter messages
+
+See https://discord.com/developers/docs/resources/channel#message-reference-object-message-reference-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flags</code>
+  <code className="text-fd-muted-foreground">{"MessageFlags"}</code>
+</div>
+
+Message flags combined as a bitfield
+
+See https://discord.com/developers/docs/resources/channel#message-object-message-flags
+
+See https://en.wikipedia.org/wiki/Bit_field
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">referenced_message</code>
+  <code className="text-fd-muted-foreground">{"APIMessage"}</code>
+</div>
+
+The message associated with the `message_reference`
+
+This field is only returned for messages with a `type` of `19` (REPLY).
+
+If the message is a reply but the `referenced_message` field is not present,
+the backend did not attempt to fetch the message that was being replied to,
+so its state is unknown.
+
+If the field exists but is `null`, the referenced message was deleted
+
+See https://discord.com/developers/docs/resources/channel#message-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">interaction_metadata</code>
+  <code className="text-fd-muted-foreground">{"APIMessageInteractionMetadata"}</code>
+</div>
+
+Sent if the message is sent as a result of an interaction
+
+- unstable:
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">thread</code>
+  <code className="text-fd-muted-foreground">{"APIThreadChannel"}</code>
+</div>
+
+Sent if a thread was started from this message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">components</code>
+  <code className="text-fd-muted-foreground">{"APIActionRowComponent<APIMessageActionRowComponent>[]"}</code>
+</div>
+
+Sent if the message contains components like buttons, action rows, or other interactive components
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sticker_items</code>
+  <code className="text-fd-muted-foreground">{"APIStickerItem[]"}</code>
+</div>
+
+Sent if the message contains stickers
+
+See https://discord.com/developers/docs/resources/sticker#sticker-item-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">position</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+A generally increasing integer (there may be gaps or duplicates) that represents the approximate position of the message in a thread
+
+It can be used to estimate the relative position of the message in a thread in company with `total_message_sent` on parent thread
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">role_subscription_data</code>
+  <code className="text-fd-muted-foreground">{"APIMessageRoleSubscriptionData"}</code>
+</div>
+
+Data of the role subscription purchase or renewal that prompted this `ROLE_SUBSCRIPTION_PURCHASE` message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resolved</code>
+  <code className="text-fd-muted-foreground">{"APIInteractionDataResolved"}</code>
+</div>
+
+Data for users, members, channels, and roles in the message's auto-populated select menus
+
+See https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-resolved-data-structure
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">poll</code>
+  <code className="text-fd-muted-foreground">{"APIPoll"}</code>
+</div>
+
+A poll!
+
+The `MESSAGE_CONTENT` privileged gateway intent is required for verified applications to receive a non-empty value from this field
+
+In the Discord Developers Portal, you need to enable the toggle of this intent of your application in **Bot &gt; Privileged Gateway Intents**.
+You also need to specify the intent bit value (`1 &lt;&lt; 15`) if you are connecting to the gateway
+
+See https://support-dev.discord.com/hc/articles/4404772028055
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">message_snapshots</code>
+  <code className="text-fd-muted-foreground">{"APIMessageSnapshot[]"}</code>
+</div>
+
+The message associated with the message_reference. This is a minimal subset of fields in a message (e.g. author is excluded.)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">call</code>
+  <code className="text-fd-muted-foreground">{"APIMessageCall"}</code>
+</div>
+
+The call associated with the message
+
+
+
+</div></div>
+
+### RESTDeleteAPIWebhookWithTokenMessageResult
+
+https://discord.com/developers/docs/resources/webhook#delete-webhook-message
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>

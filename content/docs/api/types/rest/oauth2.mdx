@@ -1,0 +1,1411 @@
+---
+title: "Oauth2"
+---
+                 
+### RESTGetAPIOAuth2CurrentApplicationResult
+
+https://discord.com/developers/docs/topics/oauth2#get-current-bot-application-information
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the app
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The name of the app
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">icon</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The icon hash of the app
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The description of the app
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">rpc_origins</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+An array of rpc origin urls, if rpc is enabled
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">bot_public</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+When `false` only app owner can join the app's bot to guilds
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">bot_require_code_grant</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+When `true` the app's bot will only join upon completion of the full oauth2 code grant flow
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">bot</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+Partial user object for the bot user associated with the application
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">terms_of_service_url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The url of the application's terms of service
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">privacy_policy_url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The url of the application's privacy policy
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">owner</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+Partial user object containing info on the owner of the application
+
+See https://discord.com/developers/docs/resources/user#user-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">verify_key</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The hexadecimal encoded key for verification in interactions and the GameSDK's GetTicket function
+
+See https://discord.com/developers/docs/game-sdk/applications#getticket
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">team</code>
+  <code className="text-fd-muted-foreground">{"APITeam"}</code>
+</div>
+
+The team this application belongs to
+
+See https://discord.com/developers/docs/topics/teams#data-models-team-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If this application is a game sold on Discord, this field will be the guild to which it has been linked
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild</code>
+  <code className="text-fd-muted-foreground">{"APIPartialGuild"}</code>
+</div>
+
+A partial object of the associated guild
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">primary_sku_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If this application is a game sold on Discord, this field will be the id of the "Game SKU" that is created, if exists
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">slug</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If this application is a game sold on Discord, this field will be the URL slug that links to the store page
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">cover_image</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+If this application is a game sold on Discord, this field will be the hash of the image on store embeds
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">approximate_guild_count</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Approximate count of guilds the application has been added to
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">approximate_user_install_count</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Approximate count of users that have installed the app
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">redirect_uris</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+Array of redirect URIs for the application
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">interactions_endpoint_url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The interactions endpoint URL for the application
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">role_connections_verification_url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The application's role connection verification entry point,
+which when configured will render the app as a verification method in the guild role verification configuration
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tags</code>
+  <code className="text-fd-muted-foreground">{"[string, (string | undefined)?, (string | undefined)?, (string | undefined)?, (string | undefined)?]"}</code>
+</div>
+
+Up to 5 tags of max 20 characters each describing the content and functionality of the application
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">install_params</code>
+  <code className="text-fd-muted-foreground">{"APIApplicationInstallParams"}</code>
+</div>
+
+Settings for the application's default in-app authorization link, if enabled
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">integration_types_config</code>
+  <code className="text-fd-muted-foreground">{"APIApplicationIntegrationTypesConfigMap"}</code>
+</div>
+
+Default scopes and permissions for each supported installation context. Value for each key is an integration type configuration object
+
+- unstable:
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">custom_install_url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The application's default custom authorization link, if enabled
+
+
+
+</div></div>
+
+### RESTGetAPIOAuth2CurrentAuthorizationResult
+
+https://discord.com/developers/docs/topics/oauth2#get-current-authorization-information
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application</code>
+  <code className="text-fd-muted-foreground">{"Partial<APIApplication>"}</code>
+</div>
+
+the current application
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scopes</code>
+  <code className="text-fd-muted-foreground">{"OAuth2Scopes[]"}</code>
+</div>
+
+the scopes the user has authorized the application for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">expires</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+when the access token expires
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+the user who has authorized, if the user has authorized with the `identify` scope
+
+
+
+</div></div>
+
+### RESTOAuth2AuthorizationQuery
+
+https://discord.com/developers/docs/topics/oauth2#authorization-code-grant
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">response_type</code>
+  <code className="text-fd-muted-foreground">{"\"code\""}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scope</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">redirect_uri</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">state</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">prompt</code>
+  <code className="text-fd-muted-foreground">{"\"consent\" | \"none\""}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTOAuth2AuthorizationQueryResult
+
+https://discord.com/developers/docs/topics/oauth2#authorization-code-grant-redirect-url-example
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">code</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">state</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTPostOAuth2AccessTokenURLEncodedData
+
+https://discord.com/developers/docs/topics/oauth2#authorization-code-grant-redirect-url-example
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client_secret</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">grant_type</code>
+  <code className="text-fd-muted-foreground">{"\"authorization_code\""}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">code</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">redirect_uri</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTPostOAuth2AccessTokenResult
+
+https://discord.com/developers/docs/topics/oauth2#authorization-code-grant-access-token-response
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">access_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token_type</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">expires_in</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">refresh_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scope</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTPostOAuth2RefreshTokenURLEncodedData
+
+https://discord.com/developers/docs/topics/oauth2#authorization-code-grant-refresh-token-exchange-example
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client_secret</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">grant_type</code>
+  <code className="text-fd-muted-foreground">{"\"refresh_token\""}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">refresh_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTPostOAuth2RefreshTokenResult
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">access_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token_type</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">expires_in</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">refresh_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scope</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTOAuth2ImplicitAuthorizationQuery
+
+https://discord.com/developers/docs/topics/oauth2#implicit-grant
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">response_type</code>
+  <code className="text-fd-muted-foreground">{"\"token\""}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scope</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">redirect_uri</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">state</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">prompt</code>
+  <code className="text-fd-muted-foreground">{"\"consent\" | \"none\""}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTOAuth2ImplicitAuthorizationURLFragmentResult
+
+https://discord.com/developers/docs/topics/oauth2#implicit-grant-redirect-url-example
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">access_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token_type</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">expires_in</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scope</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTPostOAuth2ClientCredentialsURLEncodedData
+
+https://discord.com/developers/docs/topics/oauth2#client-credentials-grant
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">grant_type</code>
+  <code className="text-fd-muted-foreground">{"\"client_credentials\""}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scope</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTPostOAuth2ClientCredentialsResult
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">access_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token_type</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">expires_in</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scope</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTOAuth2BotAuthorizationQuery
+
+https://discord.com/developers/docs/topics/oauth2#bot-authorization-flow-bot-auth-parameters
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Your app's client id
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scope</code>
+  <code className="text-fd-muted-foreground">{"OAuth2Scopes.Bot | `bot ${string}` | `bot%20${string}` | `${string} bot` | `${string}%20bot` | `${string} bot${string} ` | `${string} bot${string}%20` | `${string}%20bot${string} ` | `${string}%20bot${string}%20`"}</code>
+</div>
+
+Needs to include bot for the bot flow
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">permissions</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The permissions you're requesting
+
+See https://discord.com/developers/docs/topics/permissions
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Pre-fills the dropdown picker with a guild for the user
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">disable_guild_select</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+`true` or `false`—disallows the user from changing the guild dropdown
+
+
+
+</div></div>
+
+### RESTOAuth2AdvancedBotAuthorizationQuery
+
+https://discord.com/developers/docs/topics/oauth2#advanced-bot-authorization
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scope</code>
+  <code className="text-fd-muted-foreground">{"OAuth2Scopes.Bot | `bot ${string}` | `bot%20${string}` | `${string} bot` | `${string}%20bot` | `${string} bot${string} ` | `${string} bot${string}%20` | `${string}%20bot${string} ` | `${string}%20bot${string}%20`"}</code>
+</div>
+
+This assumes you include the `bot` scope alongside others (like `identify` for example)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">permissions</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The required permissions bitfield, stringified
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">disable_guild_select</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">response_type</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">redirect_uri</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTOAuth2AdvancedBotAuthorizationQueryResult
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">code</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">state</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">permissions</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTPostOAuth2AccessTokenWithBotAndGuildsScopeResult
+
+https://discord.com/developers/docs/topics/oauth2#advanced-bot-authorization-extended-bot-authorization-access-token-example
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">access_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token_type</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">expires_in</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">refresh_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scope</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild</code>
+  <code className="text-fd-muted-foreground">{"APIGuild"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTPostOAuth2AccessTokenWithBotAndWebhookIncomingScopeResult
+
+https://discord.com/developers/docs/topics/oauth2#webhooks-webhook-token-response-example
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">access_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token_type</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">expires_in</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">refresh_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scope</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">webhook</code>
+  <code className="text-fd-muted-foreground">{"APIWebhook"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTPostOAuth2AccessTokenWithBotAndGuildsAndWebhookIncomingScopeResult
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">access_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token_type</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">expires_in</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">refresh_token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">scope</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild</code>
+  <code className="text-fd-muted-foreground">{"APIGuild"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">webhook</code>
+  <code className="text-fd-muted-foreground">{"APIWebhook"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

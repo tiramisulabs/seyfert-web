@@ -1,0 +1,203 @@
+---
+title: "Permissions"
+---
+                 
+### APIGuildApplicationCommandPermissions
+
+https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-guild-application-command-permissions-structure
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the command or the application id if that permission applies to all commands
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">application_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the application the command belongs to
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the guild
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">permissions</code>
+  <code className="text-fd-muted-foreground">{"APIApplicationCommandPermission[]"}</code>
+</div>
+
+The permissions for the command in the guild
+
+
+
+</div></div>
+
+### APIApplicationCommandPermission
+
+https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-application-command-permissions-structure
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the role, user or channel. Can also be a permission constant
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"ApplicationCommandPermissionType"}</code>
+</div>
+
+Role, user or channel
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">permission</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+`true` to allow, `false`, to disallow
+
+
+
+</div></div>
+
+### ApplicationCommandPermissionType
+
+https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-application-command-permission-type
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(radix?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toFixed</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toExponential</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toPrecision</code>
+  <code className="text-fd-muted-foreground">{"(precision?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valueOf</code>
+  <code className="text-fd-muted-foreground">{"() => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined, options?: NumberFormatOptions | undefined): string; (locales?: LocalesArgument, options?: NumberFormatOptions | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIApplicationCommandPermissionsConstant
+
+https://discord.com/developers/docs/interactions/application-commands#application-command-permissions-object-application-command-permissions-constants
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">Everyone</code>
+  <code className="text-fd-muted-foreground">{"(guildId: string | bigint) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AllChannels</code>
+  <code className="text-fd-muted-foreground">{"(guildId: string | bigint) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

@@ -1,0 +1,86 @@
+---
+title: Listening to Events
+---
+import { Files, File, Folder } from 'fumadocs-ui/components/files';
+
+<Callout>
+This section is relevant only for **gateway**-based applications.  
+If your bot is built exclusively as an HTTP application, you can skip this section.
+</Callout>
+
+### Updating Seyfert's Configuration
+
+Before starting this section, you need to update the `seyfert.config.mjs` file to specify the location of the event files for Seyfert.
+
+```ts twoslash title="seyfert.config.mjs" copy wrap
+import { config } from 'seyfert';
+
+export default config.bot({
+    token: process.env.BOT_TOKEN ?? '',
+    intents: ['Guilds'],
+    locations: {
+        base: 'dist',
+        commands: 'commands',
+        events: 'events' // - src/events will be our folder for events [!code highlight]
+    }
+});
+```
+
+## Listening to Events
+
+Each event file must export the `createEvent` function as the default export so Seyfert can load it.  
+The `createEvent` function takes an object with two properties: `data` and `run`.
+
+Let's listen to the `botReady` event as the first example:
+
+```ts twoslash title="src/events/botReady.ts" showLineNumbers
+import { createEvent } from 'seyfert';
+
+export default createEvent({
+  // botReady is triggered when all shards and servers are ready.
+  // `once` ensures the event runs only once.
+  data: { once: true, name: 'botReady' },
+  run(user, client) {
+
+    //  We can use client.logger to display messages in the console.
+    client.logger.info(`${user.username} is ready`);
+
+  }
+})
+```
+
+As a second example, let's look at the `guildDelete` event emitted by Discord when a bot is removed from a server or the server is deleted:
+
+```ts twoslash title="src/events/guildDelete.ts" showLineNumbers wrap
+import { createEvent } from 'seyfert';
+
+export default createEvent({
+  data: { name: 'guildDelete' },
+  run(unguild, client) {
+    // unguild is the server from which the bot was removed or deleted.
+    // It is also possible that the server was simply deleted.
+    if (unguild.unavailable) return;
+
+    client.logger.info(`I was removed from: ${unguild.id}`);
+  }
+})
+```
+
+After completing these steps, your project structure should look like this:
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="commands">
+      <File name="ping.ts" />
+    </Folder>
+    <Folder name="events">
+      <File name="botReady.ts" />
+      <File name="guildDelete.ts" />
+    </Folder>
+    <File name="index.ts" />
+  </Folder>
+  <File name="package.json" />
+  <File name="seyfert.config.mjs" />
+  <File name="tsconfig.json" />
+  <File name=".env" />
+</Files>

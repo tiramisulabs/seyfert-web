@@ -1,0 +1,308 @@
+---
+title: "Permissions"
+---
+                 
+### APIRole
+
+https://discord.com/developers/docs/topics/permissions#role-object
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Role id
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Role name
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">color</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Integer representation of hexadecimal color code
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">hoist</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+If this role is pinned in the user listing
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">icon</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The role icon hash
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">unicode_emoji</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The role unicode emoji as a standard emoji
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">position</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Position of this role
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">permissions</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Permission bit set
+
+See https://en.wikipedia.org/wiki/Bit_field
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">managed</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this role is managed by an integration
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mentionable</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this role is mentionable
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tags</code>
+  <code className="text-fd-muted-foreground">{"APIRoleTags"}</code>
+</div>
+
+The tags this role has
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flags</code>
+  <code className="text-fd-muted-foreground">{"RoleFlags"}</code>
+</div>
+
+Role flags
+
+
+
+</div></div>
+
+### APIRoleTags
+
+https://discord.com/developers/docs/topics/permissions#role-object-role-tags-structure
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">bot_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the bot this role belongs to
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">premium_subscriber</code>
+  <code className="text-fd-muted-foreground">{"never"}</code>
+</div>
+
+Whether this is the guild's premium subscriber role
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">integration_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the integration this role belongs to
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">subscription_listing_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of this role's subscription sku and listing
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">available_for_purchase</code>
+  <code className="text-fd-muted-foreground">{"never"}</code>
+</div>
+
+Whether this role is available for purchase
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_connections</code>
+  <code className="text-fd-muted-foreground">{"never"}</code>
+</div>
+
+Whether this role is a guild's linked role
+
+
+
+</div></div>
+
+### RoleFlags
+
+https://discord.com/developers/docs/topics/permissions#role-object-role-flags
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(radix?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toFixed</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toExponential</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toPrecision</code>
+  <code className="text-fd-muted-foreground">{"(precision?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valueOf</code>
+  <code className="text-fd-muted-foreground">{"() => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined, options?: NumberFormatOptions | undefined): string; (locales?: LocalesArgument, options?: NumberFormatOptions | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

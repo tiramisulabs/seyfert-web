@@ -1,0 +1,876 @@
+---
+title: "Soundboard"
+---
+                 
+### RESTPostAPISendSoundboardSound
+
+https://discord.com/developers/docs/resources/soundboard#send-soundboard-sound
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sound_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the id of the soundboard sound to play
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">source_guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the id of the guild the soundboard sound is from, required to play sounds from different servers
+
+
+
+</div></div>
+
+### RESTGetAPIDefaultsSoundboardSoundsResult
+
+https://discord.com/developers/docs/resources/soundboard#list-default-soundboard-sounds
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">length</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (): string; (locales: string | string[], options?: (NumberFormatOptions & DateTimeFormatOptions) | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pop</code>
+  <code className="text-fd-muted-foreground">{"() => Omit<APISoundBoard, \"user\" | \"guild_id\"> | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">push</code>
+  <code className="text-fd-muted-foreground">{"(...items: Omit<APISoundBoard, \"user\" | \"guild_id\">[]) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">concat</code>
+  <code className="text-fd-muted-foreground">{"{ (...items: ConcatArray<Omit<APISoundBoard, \"user\" | \"guild_id\">>[]): Omit<APISoundBoard, \"user\" | \"guild_id\">[]; (...items: (Omit<...> | ConcatArray<...>)[]): Omit<...>[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">join</code>
+  <code className="text-fd-muted-foreground">{"(separator?: string | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reverse</code>
+  <code className="text-fd-muted-foreground">{"() => Omit<APISoundBoard, \"user\" | \"guild_id\">[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shift</code>
+  <code className="text-fd-muted-foreground">{"() => Omit<APISoundBoard, \"user\" | \"guild_id\"> | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">slice</code>
+  <code className="text-fd-muted-foreground">{"(start?: number | undefined, end?: number | undefined) => Omit<APISoundBoard, \"user\" | \"guild_id\">[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sort</code>
+  <code className="text-fd-muted-foreground">{"(compareFn?: ((a: Omit<APISoundBoard, \"user\" | \"guild_id\">, b: Omit<APISoundBoard, \"user\" | \"guild_id\">) => number) | undefined) => RESTGetAPIDefaultsSoundboardSoundsResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">splice</code>
+  <code className="text-fd-muted-foreground">{"{ (start: number, deleteCount?: number | undefined): Omit<APISoundBoard, \"user\" | \"guild_id\">[]; (start: number, deleteCount: number, ...items: Omit<APISoundBoard, \"user\" | \"guild_id\">[]): Omit<...>[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">unshift</code>
+  <code className="text-fd-muted-foreground">{"(...items: Omit<APISoundBoard, \"user\" | \"guild_id\">[]) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">indexOf</code>
+  <code className="text-fd-muted-foreground">{"(searchElement: Omit<APISoundBoard, \"user\" | \"guild_id\">, fromIndex?: number | undefined) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">lastIndexOf</code>
+  <code className="text-fd-muted-foreground">{"(searchElement: Omit<APISoundBoard, \"user\" | \"guild_id\">, fromIndex?: number | undefined) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">every</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends Omit<APISoundBoard, \"user\" | \"guild_id\">>(predicate: (value: Omit<APISoundBoard, \"user\" | \"guild_id\">, index: number, array: Omit<APISoundBoard, \"user\" | \"guild_id\">[]) => value is S, thisArg?: any): this is S[]; (predicate: (value: Omit<...>, index: number, array: Omit<...>[]) => unknown, thisArg?: any..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">some</code>
+  <code className="text-fd-muted-foreground">{"(predicate: (value: Omit<APISoundBoard, \"user\" | \"guild_id\">, index: number, array: Omit<APISoundBoard, \"user\" | \"guild_id\">[]) => unknown, thisArg?: any) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">forEach</code>
+  <code className="text-fd-muted-foreground">{"(callbackfn: (value: Omit<APISoundBoard, \"user\" | \"guild_id\">, index: number, array: Omit<APISoundBoard, \"user\" | \"guild_id\">[]) => void, thisArg?: any) => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">map</code>
+  <code className="text-fd-muted-foreground">{"<U>(callbackfn: (value: Omit<APISoundBoard, \"user\" | \"guild_id\">, index: number, array: Omit<APISoundBoard, \"user\" | \"guild_id\">[]) => U, thisArg?: any) => U[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">filter</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends Omit<APISoundBoard, \"user\" | \"guild_id\">>(predicate: (value: Omit<APISoundBoard, \"user\" | \"guild_id\">, index: number, array: Omit<APISoundBoard, \"user\" | \"guild_id\">[]) => value is S, thisArg?: any): S[]; (predicate: (value: Omit<...>, index: number, array: Omit<...>[]) => unknown, thisArg?: any): Omit<..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduce</code>
+  <code className="text-fd-muted-foreground">{"{ (callbackfn: (previousValue: Omit<APISoundBoard, \"user\" | \"guild_id\">, currentValue: Omit<APISoundBoard, \"user\" | \"guild_id\">, currentIndex: number, array: Omit<...>[]) => Omit<...>): Omit<...>; (callbackfn: (previousValue: Omit<...>, currentValue: Omit<...>, currentIndex: number, array: Omit<...>[]) => Omit<...>,..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduceRight</code>
+  <code className="text-fd-muted-foreground">{"{ (callbackfn: (previousValue: Omit<APISoundBoard, \"user\" | \"guild_id\">, currentValue: Omit<APISoundBoard, \"user\" | \"guild_id\">, currentIndex: number, array: Omit<...>[]) => Omit<...>): Omit<...>; (callbackfn: (previousValue: Omit<...>, currentValue: Omit<...>, currentIndex: number, array: Omit<...>[]) => Omit<...>,..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">find</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends Omit<APISoundBoard, \"user\" | \"guild_id\">>(predicate: (value: Omit<APISoundBoard, \"user\" | \"guild_id\">, index: number, obj: Omit<APISoundBoard, \"user\" | \"guild_id\">[]) => value is S, thisArg?: any): S | undefined; (predicate: (value: Omit<...>, index: number, obj: Omit<...>[]) => unknown, thisArg?: any):..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findIndex</code>
+  <code className="text-fd-muted-foreground">{"(predicate: (value: Omit<APISoundBoard, \"user\" | \"guild_id\">, index: number, obj: Omit<APISoundBoard, \"user\" | \"guild_id\">[]) => unknown, thisArg?: any) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fill</code>
+  <code className="text-fd-muted-foreground">{"(value: Omit<APISoundBoard, \"user\" | \"guild_id\">, start?: number | undefined, end?: number | undefined) => RESTGetAPIDefaultsSoundboardSoundsResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">copyWithin</code>
+  <code className="text-fd-muted-foreground">{"(target: number, start: number, end?: number | undefined) => RESTGetAPIDefaultsSoundboardSoundsResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">entries</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<[number, Omit<APISoundBoard, \"user\" | \"guild_id\">]>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">keys</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<number>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">values</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<Omit<APISoundBoard, \"user\" | \"guild_id\">>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">includes</code>
+  <code className="text-fd-muted-foreground">{"(searchElement: Omit<APISoundBoard, \"user\" | \"guild_id\">, fromIndex?: number | undefined) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flatMap</code>
+  <code className="text-fd-muted-foreground">{"<U, This = undefined>(callback: (this: This, value: Omit<APISoundBoard, \"user\" | \"guild_id\">, index: number, array: Omit<APISoundBoard, \"user\" | \"guild_id\">[]) => U | readonly U[], thisArg?: This | undefined) => U[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flat</code>
+  <code className="text-fd-muted-foreground">{"<A, D extends number = 1>(this: A, depth?: D | undefined) => FlatArray<A, D>[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">at</code>
+  <code className="text-fd-muted-foreground">{"(index: number) => Omit<APISoundBoard, \"user\" | \"guild_id\"> | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findLast</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends Omit<APISoundBoard, \"user\" | \"guild_id\">>(predicate: (value: Omit<APISoundBoard, \"user\" | \"guild_id\">, index: number, array: Omit<APISoundBoard, \"user\" | \"guild_id\">[]) => value is S, thisArg?: any): S | undefined; (predicate: (value: Omit<...>, index: number, array: Omit<...>[]) => unknown, thisArg?: a..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findLastIndex</code>
+  <code className="text-fd-muted-foreground">{"(predicate: (value: Omit<APISoundBoard, \"user\" | \"guild_id\">, index: number, array: Omit<APISoundBoard, \"user\" | \"guild_id\">[]) => unknown, thisArg?: any) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toReversed</code>
+  <code className="text-fd-muted-foreground">{"() => Omit<APISoundBoard, \"user\" | \"guild_id\">[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toSorted</code>
+  <code className="text-fd-muted-foreground">{"(compareFn?: ((a: Omit<APISoundBoard, \"user\" | \"guild_id\">, b: Omit<APISoundBoard, \"user\" | \"guild_id\">) => number) | undefined) => Omit<...>[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toSpliced</code>
+  <code className="text-fd-muted-foreground">{"{ (start: number, deleteCount: number, ...items: Omit<APISoundBoard, \"user\" | \"guild_id\">[]): Omit<APISoundBoard, \"user\" | \"guild_id\">[]; (start: number, deleteCount?: number | undefined): Omit<...>[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">with</code>
+  <code className="text-fd-muted-foreground">{"(index: number, value: Omit<APISoundBoard, \"user\" | \"guild_id\">) => Omit<APISoundBoard, \"user\" | \"guild_id\">[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@iterator@146909</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<Omit<APISoundBoard, \"user\" | \"guild_id\">>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@unscopables@146911</code>
+  <code className="text-fd-muted-foreground">{"{ [x: number]: boolean | undefined; length?: boolean | undefined; toString?: boolean | undefined; toLocaleString?: boolean | undefined; pop?: boolean | undefined; push?: boolean | undefined; ... 35 more ...; readonly [Symbol.unscopables]?: boolean | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTGetAPIGuildSoundboardSoundsResult
+
+https://discord.com/developers/docs/resources/soundboard#list-guild-soundboard-sounds
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">items</code>
+  <code className="text-fd-muted-foreground">{"APISoundBoard[]"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTPostAPIGuildSoundboardSound
+
+https://discord.com/developers/docs/resources/soundboard#create-guild-soundboard-sound
+
+Soundboard sounds have a max file size of 512kb and a max duration of 5.2 seconds.
+This endpoint supports the X-Audit-Log-Reason header.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+name of the soundboard sound (2-32 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sound</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the mp3 or ogg sound data, base64 encoded, similar to image data
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">volume</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+the volume of the soundboard sound, from 0 to 1, defaults to 1
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">emoji_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the id of the custom emoji for the soundboard sound
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">emoji_name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the unicode character of a standard emoji for the soundboard sound
+
+
+
+</div></div>
+
+### RESTPostAPIGuildSoundboardSoundResult
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the name of this sound
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sound_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the id of this sound
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">volume</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+the volume of this sound, from 0 to 1
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">emoji_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the id of this sound's custom emoji
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">emoji_name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the unicode character of this sound's standard emoji
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the id of the guild this sound is in
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">available</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+whether this sound can be used, may be false due to loss of Server Boosts
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+the user who created this sound
+
+
+
+</div></div>
+
+### RESTPatchAPIGuildSoundboardSound
+
+https://discord.com/developers/docs/resources/soundboard#modify-guild-soundboard-sound
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+name of the soundboard sound (2-32 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">volume</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+the volume of the soundboard sound, from 0 to 1, defaults to 1
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">emoji_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the id of the custom emoji for the soundboard sound
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">emoji_name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the unicode character of a standard emoji for the soundboard sound
+
+
+
+</div></div>
+
+### RESTPatchAPIGuildSoundboardSoundResult
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the name of this sound
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sound_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the id of this sound
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">volume</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+the volume of this sound, from 0 to 1
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">emoji_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the id of this sound's custom emoji
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">emoji_name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the unicode character of this sound's standard emoji
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+the id of the guild this sound is in
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">available</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+whether this sound can be used, may be false due to loss of Server Boosts
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+the user who created this sound
+
+
+
+</div></div>
+
+### RESTDeleteAPIGuildSoundboardSoundResult
+
+https://discord.com/developers/docs/resources/soundboard#delete-guild-soundboard-sound
+This endpoint supports the X-Audit-Log-Reason header.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>

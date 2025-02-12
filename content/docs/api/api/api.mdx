@@ -1,0 +1,497 @@
+---
+title: "Api"
+---
+                 
+### ApiHandler
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">_proxy_</code>
+  <code className="text-fd-muted-foreground">{"APIRoutes"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">debugger</code>
+  <code className="text-fd-muted-foreground">{"Logger"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">workerData</code>
+  <code className="text-fd-muted-foreground">{"WorkerData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">options</code>
+  <code className="text-fd-muted-foreground">{"ApiHandlerInternalOptions"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">globalBlock</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ratelimits</code>
+  <code className="text-fd-muted-foreground">{"Map<string, Bucket>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">readyQueue</code>
+  <code className="text-fd-muted-foreground">{"(() => void)[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">cdn</code>
+  <code className="text-fd-muted-foreground">{"CDNRoute"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">workerPromises</code>
+  <code className="text-fd-muted-foreground">{"Map<string, { resolve: (value: any) => any; reject: (error: any) => any; }>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onRatelimit</code>
+  <code className="text-fd-muted-foreground">{"OnRatelimitCallback"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">debug</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">proxy</code>
+  <code className="text-fd-muted-foreground">{"APIRoutes"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">globalUnblock</code>
+  <code className="text-fd-muted-foreground">{"() => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sendMessage</code>
+  <code className="text-fd-muted-foreground">{"(_body: WorkerSendApiRequest) => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">postMessage</code>
+  <code className="text-fd-muted-foreground">{"<T = unknown>(body: WorkerSendApiRequest) => Promise<T>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">request</code>
+  <code className="text-fd-muted-foreground">{"<T = unknown>(method: HttpMethods, url: `/${string}`, { auth, ...request }?: ApiRequestOptions) => Promise<T>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">parseError</code>
+  <code className="text-fd-muted-foreground">{"(method: HttpMethods, route: `/${string}`, response: Response, result: string | Record<string, any>) => Error"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">parseValidationError</code>
+  <code className="text-fd-muted-foreground">{"(data: Record<string, any>, path?: string, errors?: string[]) => string[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">handle50X</code>
+  <code className="text-fd-muted-foreground">{"(method: HttpMethods, url: `/${string}`, request: ApiRequestOptions, next: () => void) => Promise<unknown>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">handle429</code>
+  <code className="text-fd-muted-foreground">{"(route: string, method: HttpMethods, url: `/${string}`, request: ApiRequestOptions, response: Response, result: string, next: () => void, reject: (err: unknown) => void, now: number) => Promise<...>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">clearResetInterval</code>
+  <code className="text-fd-muted-foreground">{"(route: string) => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setResetBucket</code>
+  <code className="text-fd-muted-foreground">{"(route: string, resp: Response, now: number, headerNow: number) => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setRatelimitsBucket</code>
+  <code className="text-fd-muted-foreground">{"(route: string, resp: Response) => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">parseRequest</code>
+  <code className="text-fd-muted-foreground">{"(options: { url: string; headers: RequestHeaders; request: ApiRequestOptions; }) => { data: string | FormData | undefined; finalUrl: `/${string}`; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">routefy</code>
+  <code className="text-fd-muted-foreground">{"(url: string, method: HttpMethods) => `/${string}`"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### OnRatelimitCallback
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>
+
+### RequestOptions
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">auth</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reason</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">appendToFormData</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RestArguments
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">auth</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reason</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">appendToFormData</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RestArgumentsNoBody
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">query</code>
+  <code className="text-fd-muted-foreground">{"Q"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">files</code>
+  <code className="text-fd-muted-foreground">{"RawFile[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">auth</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reason</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">appendToFormData</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

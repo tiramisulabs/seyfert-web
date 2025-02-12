@@ -1,0 +1,322 @@
+---
+title: "Watcher"
+---
+                 
+### WatcherOptions
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">filePath</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">transpileCommand</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">srcPath</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">argv</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">handlePayload</code>
+  <code className="text-fd-muted-foreground">{"(shardId: number, packet: GatewayDispatchPayload) => unknown"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">info</code>
+  <code className="text-fd-muted-foreground">{"APIGatewayBotInfo"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">intents</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">spawnShardDelay</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Delay in milliseconds to wait before spawning next shard. OPTIMAL IS ABOVE 5100. YOU DON'T WANT TO HIT THE RATE LIMIT!!!
+
+- default:
+5300
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">totalShards</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Total amount of shards your bot uses. Useful for zero-downtime updates or resharding.
+
+- default:
+1
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shardStart</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shardEnd</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">debug</code>
+  <code className="text-fd-muted-foreground">{"true"}</code>
+</div>
+
+wheter to send debug information to the console
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">presence</code>
+  <code className="text-fd-muted-foreground">{"(shardId: number, workerId: number) => GatewayPresenceUpdateData"}</code>
+</div>
+
+Set a presence.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">compress</code>
+  <code className="text-fd-muted-foreground">{"true"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resharding</code>
+  <code className="text-fd-muted-foreground">{"{ getInfo(): Promise<APIGatewayBotInfo>; interval: number; percentage: number; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The URL of the gateway which should be connected to.
+
+- default:
+"wss://gateway.discord.gg"
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">version</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The gateway version which should be used.
+
+- default:
+10
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">properties</code>
+  <code className="text-fd-muted-foreground">{"IdentifyProperties"}</code>
+</div>
+
+Identify properties to use
+
+
+
+</div></div>
+
+### WatcherPayload
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"\"PAYLOAD\""}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shardId</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">payload</code>
+  <code className="text-fd-muted-foreground">{"GatewayDispatchPayload"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### WatcherSendToShard
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"\"SEND_TO_SHARD\""}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shardId</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">payload</code>
+  <code className="text-fd-muted-foreground">{"GatewaySendPayload"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

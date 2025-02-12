@@ -1,0 +1,1728 @@
+---
+title: "Chat"
+---
+                 
+### ReturnOptionsTypes
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">1</code>
+  <code className="text-fd-muted-foreground">{"never"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">2</code>
+  <code className="text-fd-muted-foreground">{"never"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">3</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">4</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">5</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">6</code>
+  <code className="text-fd-muted-foreground">{"InteractionGuildMember | User"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">7</code>
+  <code className="text-fd-muted-foreground">{"AllChannels"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">8</code>
+  <code className="text-fd-muted-foreground">{"GuildRole"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">9</code>
+  <code className="text-fd-muted-foreground">{"User | AllChannels | GuildRole"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">10</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">11</code>
+  <code className="text-fd-muted-foreground">{"Attachment"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### AutocompleteCallback
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>
+
+### OnAutocompleteErrorCallback
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>
+
+### CommandBaseOption
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">required</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">value</code>
+  <code className="text-fd-muted-foreground">{"ValueCallback<ApplicationCommandOptionType, SeyfertChoice<string>[] | SeyfertChoice<number>[], never> | ((data: { ...; }, ok: OKFunction<...>, fail: StopFunction) => Awaitable<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string | null>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string | null>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">locales</code>
+  <code className="text-fd-muted-foreground">{"{ name?: undefined; description?: undefined; } | { name?: undefined; description?: undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### CommandBaseAutocompleteOption
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">required</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">value</code>
+  <code className="text-fd-muted-foreground">{"ValueCallback<ApplicationCommandOptionType, SeyfertChoice<string>[] | SeyfertChoice<number>[], never> | ((data: { ...; }, ok: OKFunction<...>, fail: StopFunction) => Awaitable<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string | null>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string | null>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">locales</code>
+  <code className="text-fd-muted-foreground">{"{ name?: undefined; description?: undefined; } | { name?: undefined; description?: undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">autocomplete</code>
+  <code className="text-fd-muted-foreground">{"AutocompleteCallback"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onAutocompleteError</code>
+  <code className="text-fd-muted-foreground">{"OnAutocompleteErrorCallback"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### CommandAutocompleteOption
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">required</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">value</code>
+  <code className="text-fd-muted-foreground">{"ValueCallback<ApplicationCommandOptionType, SeyfertChoice<string>[] | SeyfertChoice<number>[], never> | ((data: { ...; }, ok: OKFunction<...>, fail: StopFunction) => Awaitable<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string | null>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string | null>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">locales</code>
+  <code className="text-fd-muted-foreground">{"{ name?: undefined; description?: undefined; } | { name?: undefined; description?: undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">autocomplete</code>
+  <code className="text-fd-muted-foreground">{"AutocompleteCallback"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onAutocompleteError</code>
+  <code className="text-fd-muted-foreground">{"OnAutocompleteErrorCallback"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### CommandOptionWithoutName
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">required</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">value</code>
+  <code className="text-fd-muted-foreground">{"ValueCallback<ApplicationCommandOptionType, SeyfertChoice<string>[] | SeyfertChoice<number>[], never> | ((data: { ...; }, ok: OKFunction<...>, fail: StopFunction) => Awaitable<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string | null>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string | null>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">locales</code>
+  <code className="text-fd-muted-foreground">{"{ name?: undefined; description?: undefined; } | { name?: undefined; description?: undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### CommandOption
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">required</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">value</code>
+  <code className="text-fd-muted-foreground">{"ValueCallback<ApplicationCommandOptionType, SeyfertChoice<string>[] | SeyfertChoice<number>[], never> | ((data: { ...; }, ok: OKFunction<...>, fail: StopFunction) => Awaitable<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string | null>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string | null>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">locales</code>
+  <code className="text-fd-muted-foreground">{"{ name?: undefined; description?: undefined; } | { name?: undefined; description?: undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### OptionsRecord
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>
+
+### ContextOptions
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>
+
+### BaseCommand
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">middlewares</code>
+  <code className="text-fd-muted-foreground">{"never[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__filePath</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__t</code>
+  <code className="text-fd-muted-foreground">{"{ name: string | undefined; description: string | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__autoload</code>
+  <code className="text-fd-muted-foreground">{"true"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guildId</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">nsfw</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">defaultMemberPermissions</code>
+  <code className="text-fd-muted-foreground">{"bigint"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">integrationTypes</code>
+  <code className="text-fd-muted-foreground">{"ApplicationIntegrationType[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">contexts</code>
+  <code className="text-fd-muted-foreground">{"InteractionContextType[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">botPermissions</code>
+  <code className="text-fd-muted-foreground">{"bigint"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">options</code>
+  <code className="text-fd-muted-foreground">{"CommandOptionWithType[] | SubCommand[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ignore</code>
+  <code className="text-fd-muted-foreground">{"IgnoreCommand"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">aliases</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">props</code>
+  <code className="text-fd-muted-foreground">{"ExtraProps"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toJSON</code>
+  <code className="text-fd-muted-foreground">{"() => { name: string; type: number; nsfw: boolean | undefined; description: string; name_localizations: Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | ... 21 more ... | \"vi\", string>> | undefined; ... 4 more ...; integration_types: ApplicationIntegrationType[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reload</code>
+  <code className="text-fd-muted-foreground">{"() => Promise<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">run</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onAfterRun</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, error: unknown) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onRunError</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, error: unknown) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onOptionsError</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, metadata: OnOptionsReturnObject) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onMiddlewaresError</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, error: string) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onBotPermissionsFail</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, permissions: PermissionStrings) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onPermissionsFail</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, permissions: PermissionStrings) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onInternalError</code>
+  <code className="text-fd-muted-foreground">{"(client: UsingClient, command: SubCommand | Command, error?: unknown) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### Command
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"ApplicationCommandType"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">groups</code>
+  <code className="text-fd-muted-foreground">{"Record<string, { name?: [language: \"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | ... 9 more ... | \"vi\", value: string][] | undefined; description?: [language: ...][] | undefined; defaultDescription..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">groupsAliases</code>
+  <code className="text-fd-muted-foreground">{"Record<string, string>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__tGroups</code>
+  <code className="text-fd-muted-foreground">{"Record<string, { name: string | undefined; description: string | undefined; defaultDescription: string; }>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toJSON</code>
+  <code className="text-fd-muted-foreground">{"() => { options: APIApplicationCommandOption[]; name: string; type: number; nsfw: boolean | undefined; description: string; name_localizations: Partial<Record<\"id\" | ... 30 more ... | \"vi\", string>> | undefined; ... 4 more ...; integration_types: ApplicationIntegrationType[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">middlewares</code>
+  <code className="text-fd-muted-foreground">{"never[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__filePath</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__t</code>
+  <code className="text-fd-muted-foreground">{"{ name: string | undefined; description: string | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__autoload</code>
+  <code className="text-fd-muted-foreground">{"true"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guildId</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">nsfw</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">defaultMemberPermissions</code>
+  <code className="text-fd-muted-foreground">{"bigint"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">integrationTypes</code>
+  <code className="text-fd-muted-foreground">{"ApplicationIntegrationType[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">contexts</code>
+  <code className="text-fd-muted-foreground">{"InteractionContextType[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">botPermissions</code>
+  <code className="text-fd-muted-foreground">{"bigint"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">options</code>
+  <code className="text-fd-muted-foreground">{"CommandOptionWithType[] | SubCommand[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ignore</code>
+  <code className="text-fd-muted-foreground">{"IgnoreCommand"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">aliases</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">props</code>
+  <code className="text-fd-muted-foreground">{"ExtraProps"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reload</code>
+  <code className="text-fd-muted-foreground">{"() => Promise<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">run</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onAfterRun</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, error: unknown) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onRunError</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, error: unknown) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onOptionsError</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, metadata: OnOptionsReturnObject) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onMiddlewaresError</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, error: string) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onBotPermissionsFail</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, permissions: PermissionStrings) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onPermissionsFail</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, permissions: PermissionStrings) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onInternalError</code>
+  <code className="text-fd-muted-foreground">{"(client: UsingClient, command: SubCommand | Command, error?: unknown) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### SubCommand
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"ApplicationCommandOptionType"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">group</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">options</code>
+  <code className="text-fd-muted-foreground">{"CommandOptionWithType[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toJSON</code>
+  <code className="text-fd-muted-foreground">{"() => { options: APIApplicationCommandBasicOption[]; name: string; type: number; nsfw: boolean | undefined; description: string; name_localizations: Partial<...> | undefined; ... 4 more ...; integration_types: ApplicationIntegrationType[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">run</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">middlewares</code>
+  <code className="text-fd-muted-foreground">{"never[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__filePath</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__t</code>
+  <code className="text-fd-muted-foreground">{"{ name: string | undefined; description: string | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__autoload</code>
+  <code className="text-fd-muted-foreground">{"true"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guildId</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">nsfw</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">defaultMemberPermissions</code>
+  <code className="text-fd-muted-foreground">{"bigint"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">integrationTypes</code>
+  <code className="text-fd-muted-foreground">{"ApplicationIntegrationType[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">contexts</code>
+  <code className="text-fd-muted-foreground">{"InteractionContextType[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">botPermissions</code>
+  <code className="text-fd-muted-foreground">{"bigint"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description_localizations</code>
+  <code className="text-fd-muted-foreground">{"Partial<Record<\"id\" | \"en-US\" | \"en-GB\" | \"bg\" | \"zh-CN\" | \"zh-TW\" | \"hr\" | \"cs\" | \"da\" | \"nl\" | \"fi\" | \"fr\" | \"de\" | \"el\" | \"hi\" | \"hu\" | \"it\" | \"ja\" | \"ko\" | \"lt\" | \"no\" | \"pl\" | \"pt-BR\" | \"ro\" | ... 7 more ... | \"vi\", string>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ignore</code>
+  <code className="text-fd-muted-foreground">{"IgnoreCommand"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">aliases</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">props</code>
+  <code className="text-fd-muted-foreground">{"ExtraProps"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reload</code>
+  <code className="text-fd-muted-foreground">{"() => Promise<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onAfterRun</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, error: unknown) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onRunError</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, error: unknown) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onOptionsError</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, metadata: OnOptionsReturnObject) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onMiddlewaresError</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, error: string) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onBotPermissionsFail</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, permissions: PermissionStrings) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onPermissionsFail</code>
+  <code className="text-fd-muted-foreground">{"(context: CommandContext<{}, never>, permissions: PermissionStrings) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onInternalError</code>
+  <code className="text-fd-muted-foreground">{"(client: UsingClient, command: SubCommand | Command, error?: unknown) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

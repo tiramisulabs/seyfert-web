@@ -1,0 +1,912 @@
+---
+title: "SelectMenu"
+---
+                 
+### BuilderSelectMenus
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setCustomId</code>
+  <code className="text-fd-muted-foreground">{"((id: string) => RoleSelectMenu) | ((id: string) => UserSelectMenu) | ((id: string) => MentionableSelectMenu) | ((id: string) => ChannelSelectMenu) | ((id: string) => StringSelectMenu)"}</code>
+</div>
+
+Sets the custom ID for the select menu.
+
+- param:
+id - The custom ID for the select menu.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setPlaceholder</code>
+  <code className="text-fd-muted-foreground">{"((placeholder: string) => RoleSelectMenu) | ((placeholder: string) => UserSelectMenu) | ((placeholder: string) => MentionableSelectMenu) | ((placeholder: string) => ChannelSelectMenu) | ((placeholder: string) => StringSelectMenu)"}</code>
+</div>
+
+Sets the placeholder text for the select menu.
+
+- param:
+placeholder - The placeholder text.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setValuesLength</code>
+  <code className="text-fd-muted-foreground">{"(({ max, min }: Partial<OptionValuesLength>) => RoleSelectMenu) | (({ max, min }: Partial<OptionValuesLength>) => UserSelectMenu) | (({ max, min }: Partial<...>) => MentionableSelectMenu) | (({ max, min }: Partial<...>) => ChannelSelectMenu) | (({ max, min }: Partial<...>) => StringSelectMenu)"}</code>
+</div>
+
+Sets the maximum and minimum number of selected values for the select menu.
+
+- param:
+options - The maximum and minimum values.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDisabled</code>
+  <code className="text-fd-muted-foreground">{"((disabled?: boolean) => RoleSelectMenu) | ((disabled?: boolean) => UserSelectMenu) | ((disabled?: boolean) => MentionableSelectMenu) | ((disabled?: boolean) => ChannelSelectMenu) | ((disabled?: boolean) => StringSelectMenu)"}</code>
+</div>
+
+Sets whether the select menu is disabled.
+ [disabled=true] - Indicates whether the select menu is disabled.
+
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"Partial<APIRoleSelectComponent> | Partial<APIUserSelectComponent> | Partial<APIMentionableSelectComponent> | Partial<...> | (Omit<...> & { ...; })"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toJSON</code>
+  <code className="text-fd-muted-foreground">{"(() => APIRoleSelectComponent) | (() => APIUserSelectComponent) | (() => APIMentionableSelectComponent) | (() => APIChannelSelectComponent) | (() => APIStringSelectComponent)"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### SelectMenu
+
+Represents a base class for building Select Menus.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setCustomId</code>
+  <code className="text-fd-muted-foreground">{"(id: string) => SelectMenu<Select>"}</code>
+</div>
+
+Sets the custom ID for the select menu.
+
+- param:
+id - The custom ID for the select menu.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setPlaceholder</code>
+  <code className="text-fd-muted-foreground">{"(placeholder: string) => SelectMenu<Select>"}</code>
+</div>
+
+Sets the placeholder text for the select menu.
+
+- param:
+placeholder - The placeholder text.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setValuesLength</code>
+  <code className="text-fd-muted-foreground">{"({ max, min }: Partial<OptionValuesLength>) => SelectMenu<Select>"}</code>
+</div>
+
+Sets the maximum and minimum number of selected values for the select menu.
+
+- param:
+options - The maximum and minimum values.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDisabled</code>
+  <code className="text-fd-muted-foreground">{"(disabled?: boolean) => SelectMenu<Select>"}</code>
+</div>
+
+Sets whether the select menu is disabled.
+ [disabled=true] - Indicates whether the select menu is disabled.
+
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"Partial<Select>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toJSON</code>
+  <code className="text-fd-muted-foreground">{"() => Select"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### UserSelectMenu
+
+Represents a Select Menu for selecting users.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">addDefaultUsers</code>
+  <code className="text-fd-muted-foreground">{"(...users: RestOrArray<string>) => UserSelectMenu"}</code>
+</div>
+
+Adds default selected users to the select menu.
+
+- param:
+users - User IDs to be added as default.
+- returns:
+The current UserSelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDefaultUsers</code>
+  <code className="text-fd-muted-foreground">{"(...users: RestOrArray<string>) => UserSelectMenu"}</code>
+</div>
+
+Sets the default selected users for the select menu.
+
+- param:
+users - User IDs to be set as default.
+- returns:
+The current UserSelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setCustomId</code>
+  <code className="text-fd-muted-foreground">{"(id: string) => UserSelectMenu"}</code>
+</div>
+
+Sets the custom ID for the select menu.
+
+- param:
+id - The custom ID for the select menu.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setPlaceholder</code>
+  <code className="text-fd-muted-foreground">{"(placeholder: string) => UserSelectMenu"}</code>
+</div>
+
+Sets the placeholder text for the select menu.
+
+- param:
+placeholder - The placeholder text.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setValuesLength</code>
+  <code className="text-fd-muted-foreground">{"({ max, min }: Partial<OptionValuesLength>) => UserSelectMenu"}</code>
+</div>
+
+Sets the maximum and minimum number of selected values for the select menu.
+
+- param:
+options - The maximum and minimum values.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDisabled</code>
+  <code className="text-fd-muted-foreground">{"(disabled?: boolean) => UserSelectMenu"}</code>
+</div>
+
+Sets whether the select menu is disabled.
+ [disabled=true] - Indicates whether the select menu is disabled.
+
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"Partial<APIUserSelectComponent>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toJSON</code>
+  <code className="text-fd-muted-foreground">{"() => APIUserSelectComponent"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RoleSelectMenu
+
+Represents a Select Menu for selecting roles.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">addDefaultRoles</code>
+  <code className="text-fd-muted-foreground">{"(...roles: RestOrArray<string>) => RoleSelectMenu"}</code>
+</div>
+
+Adds default selected roles to the select menu.
+
+- param:
+roles - Role IDs to be added as default.
+- returns:
+The current RoleSelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDefaultRoles</code>
+  <code className="text-fd-muted-foreground">{"(...roles: RestOrArray<string>) => RoleSelectMenu"}</code>
+</div>
+
+Sets the default selected roles for the select menu.
+
+- param:
+roles - Role IDs to be set as default.
+- returns:
+The current RoleSelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setCustomId</code>
+  <code className="text-fd-muted-foreground">{"(id: string) => RoleSelectMenu"}</code>
+</div>
+
+Sets the custom ID for the select menu.
+
+- param:
+id - The custom ID for the select menu.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setPlaceholder</code>
+  <code className="text-fd-muted-foreground">{"(placeholder: string) => RoleSelectMenu"}</code>
+</div>
+
+Sets the placeholder text for the select menu.
+
+- param:
+placeholder - The placeholder text.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setValuesLength</code>
+  <code className="text-fd-muted-foreground">{"({ max, min }: Partial<OptionValuesLength>) => RoleSelectMenu"}</code>
+</div>
+
+Sets the maximum and minimum number of selected values for the select menu.
+
+- param:
+options - The maximum and minimum values.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDisabled</code>
+  <code className="text-fd-muted-foreground">{"(disabled?: boolean) => RoleSelectMenu"}</code>
+</div>
+
+Sets whether the select menu is disabled.
+ [disabled=true] - Indicates whether the select menu is disabled.
+
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"Partial<APIRoleSelectComponent>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toJSON</code>
+  <code className="text-fd-muted-foreground">{"() => APIRoleSelectComponent"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### MentionableDefaultElement
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"\"Role\" | \"User\""}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### MentionableSelectMenu
+
+Represents a Select Menu for selecting mentionable entities.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDefaultMentionables</code>
+  <code className="text-fd-muted-foreground">{"(...mentionables: RestOrArray<MentionableDefaultElement>) => MentionableSelectMenu"}</code>
+</div>
+
+Sets the default selected roles or users for the select menu.
+
+- param:
+mentionables - Role/User id and type to be set as default.
+- returns:
+The current MentionableSelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">addDefaultMentionables</code>
+  <code className="text-fd-muted-foreground">{"(...mentionables: RestOrArray<MentionableDefaultElement>) => MentionableSelectMenu"}</code>
+</div>
+
+Adds default selected roles or users for the select menu.
+
+- param:
+mentionables - Role/User id and type to be added as default.
+- returns:
+The current MentionableSelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setCustomId</code>
+  <code className="text-fd-muted-foreground">{"(id: string) => MentionableSelectMenu"}</code>
+</div>
+
+Sets the custom ID for the select menu.
+
+- param:
+id - The custom ID for the select menu.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setPlaceholder</code>
+  <code className="text-fd-muted-foreground">{"(placeholder: string) => MentionableSelectMenu"}</code>
+</div>
+
+Sets the placeholder text for the select menu.
+
+- param:
+placeholder - The placeholder text.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setValuesLength</code>
+  <code className="text-fd-muted-foreground">{"({ max, min }: Partial<OptionValuesLength>) => MentionableSelectMenu"}</code>
+</div>
+
+Sets the maximum and minimum number of selected values for the select menu.
+
+- param:
+options - The maximum and minimum values.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDisabled</code>
+  <code className="text-fd-muted-foreground">{"(disabled?: boolean) => MentionableSelectMenu"}</code>
+</div>
+
+Sets whether the select menu is disabled.
+ [disabled=true] - Indicates whether the select menu is disabled.
+
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"Partial<APIMentionableSelectComponent>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toJSON</code>
+  <code className="text-fd-muted-foreground">{"() => APIMentionableSelectComponent"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### ChannelSelectMenu
+
+Represents a Select Menu for selecting channels.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">addDefaultChannels</code>
+  <code className="text-fd-muted-foreground">{"(...channels: RestOrArray<string>) => ChannelSelectMenu"}</code>
+</div>
+
+Adds default selected channels to the select menu.
+
+- param:
+channels - Channel IDs to be added as default.
+- returns:
+The current ChannelSelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDefaultChannels</code>
+  <code className="text-fd-muted-foreground">{"(...channels: RestOrArray<string>) => ChannelSelectMenu"}</code>
+</div>
+
+Sets the default selected channels for the select menu.
+
+- param:
+channels - Channel IDs to be set as default.
+- returns:
+The current ChannelSelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setChannelTypes</code>
+  <code className="text-fd-muted-foreground">{"(types: ChannelType[]) => ChannelSelectMenu"}</code>
+</div>
+
+Sets the types of channels that can be selected in the menu.
+ types - The types of channels.
+
+- returns:
+The current ChannelSelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setCustomId</code>
+  <code className="text-fd-muted-foreground">{"(id: string) => ChannelSelectMenu"}</code>
+</div>
+
+Sets the custom ID for the select menu.
+
+- param:
+id - The custom ID for the select menu.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setPlaceholder</code>
+  <code className="text-fd-muted-foreground">{"(placeholder: string) => ChannelSelectMenu"}</code>
+</div>
+
+Sets the placeholder text for the select menu.
+
+- param:
+placeholder - The placeholder text.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setValuesLength</code>
+  <code className="text-fd-muted-foreground">{"({ max, min }: Partial<OptionValuesLength>) => ChannelSelectMenu"}</code>
+</div>
+
+Sets the maximum and minimum number of selected values for the select menu.
+
+- param:
+options - The maximum and minimum values.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDisabled</code>
+  <code className="text-fd-muted-foreground">{"(disabled?: boolean) => ChannelSelectMenu"}</code>
+</div>
+
+Sets whether the select menu is disabled.
+ [disabled=true] - Indicates whether the select menu is disabled.
+
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"Partial<APIChannelSelectComponent>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toJSON</code>
+  <code className="text-fd-muted-foreground">{"() => APIChannelSelectComponent"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### StringSelectMenu
+
+Represents a Select Menu for selecting string options.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"Omit<APIStringSelectComponent, \"options\"> & { options: StringSelectOption[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">addOption</code>
+  <code className="text-fd-muted-foreground">{"(...options: RestOrArray<StringSelectOption>) => StringSelectMenu"}</code>
+</div>
+
+Adds options to the string select menu.
+
+- param:
+options - Options to be added.
+- returns:
+The current StringSelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setOptions</code>
+  <code className="text-fd-muted-foreground">{"(options: StringSelectOption[]) => StringSelectMenu"}</code>
+</div>
+
+Sets the options for the string select menu.
+ options - Options to be set.
+
+- returns:
+The current StringSelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toJSON</code>
+  <code className="text-fd-muted-foreground">{"() => APIStringSelectComponent"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setCustomId</code>
+  <code className="text-fd-muted-foreground">{"(id: string) => StringSelectMenu"}</code>
+</div>
+
+Sets the custom ID for the select menu.
+
+- param:
+id - The custom ID for the select menu.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setPlaceholder</code>
+  <code className="text-fd-muted-foreground">{"(placeholder: string) => StringSelectMenu"}</code>
+</div>
+
+Sets the placeholder text for the select menu.
+
+- param:
+placeholder - The placeholder text.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setValuesLength</code>
+  <code className="text-fd-muted-foreground">{"({ max, min }: Partial<OptionValuesLength>) => StringSelectMenu"}</code>
+</div>
+
+Sets the maximum and minimum number of selected values for the select menu.
+
+- param:
+options - The maximum and minimum values.
+- returns:
+The current SelectMenu instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDisabled</code>
+  <code className="text-fd-muted-foreground">{"(disabled?: boolean) => StringSelectMenu"}</code>
+</div>
+
+Sets whether the select menu is disabled.
+ [disabled=true] - Indicates whether the select menu is disabled.
+
+- returns:
+The current SelectMenu instance.
+
+</div></div>
+
+### StringSelectOption
+
+Represents an individual option for a string select menu.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"Partial<APISelectMenuOption>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setLabel</code>
+  <code className="text-fd-muted-foreground">{"(label: string) => StringSelectOption"}</code>
+</div>
+
+Sets the label for the option.
+ label - The label for the option.
+
+- returns:
+The current StringSelectOption instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setValue</code>
+  <code className="text-fd-muted-foreground">{"(value: string) => StringSelectOption"}</code>
+</div>
+
+Sets the value for the option.
+ value - The value for the option.
+
+- returns:
+The current StringSelectOption instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDescription</code>
+  <code className="text-fd-muted-foreground">{"(description: string) => StringSelectOption"}</code>
+</div>
+
+Sets the description for the option.
+ description - The description for the option.
+
+- returns:
+The current StringSelectOption instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setDefault</code>
+  <code className="text-fd-muted-foreground">{"(Default?: boolean) => StringSelectOption"}</code>
+</div>
+
+Sets whether the option is the default.
+ [Default=true] - Indicates whether the option is the default.
+
+- returns:
+The current StringSelectOption instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setEmoji</code>
+  <code className="text-fd-muted-foreground">{"(emoji: EmojiResolvable) => StringSelectOption"}</code>
+</div>
+
+Sets the emoji for the option.
+
+- param:
+emoji - The emoji to set.
+- returns:
+The modified option instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toJSON</code>
+  <code className="text-fd-muted-foreground">{"() => APISelectMenuOption"}</code>
+</div>
+
+Converts the option to JSON format.
+
+- returns:
+The option data in JSON format.
+
+</div></div>

@@ -1,0 +1,117 @@
+---
+title: Cloudflare Workers Integration
+description: Learn how to deploy your Seyfert bot on Cloudflare Workers
+---
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Cloudflare Workers Integration
+
+This guide will show you how to deploy your Seyfert bot on Cloudflare Workers.
+
+## Prerequisites
+
+Before starting, make sure you have:
+- A Cloudflare account
+- Wrangler CLI installed (`npm install -g wrangler`)
+- Basic knowledge of Cloudflare Workers
+
+## Setting up the Project
+
+First, create a new Cloudflare Workers project:
+
+```bash
+wrangler init my-seyfert-bot
+cd my-seyfert-bot
+```
+
+## Installing Dependencies
+
+Install Seyfert and the worker adapter:
+
+```bash
+npm install seyfert @slipher/worker-adapter
+```
+
+## Configuration
+
+Create your Seyfert configuration file:
+
+<Tabs items={['seyfert.config.mjs']}>
+  <Tab value="seyfert.config.mjs">
+```ts
+import { config } from 'seyfert';
+
+export default config.http({
+    token: '', // Your bot token
+    applicationId: '', // Your application ID
+    publicKey: '', // Your public key
+    locations: {
+        base: 'src',
+        commands: 'commands'
+    }
+});
+```
+  </Tab>
+</Tabs>
+
+## Worker Implementation
+
+Create your worker file:
+
+<Tabs items={['src/index.ts']}>
+  <Tab value="src/index.ts">
+```ts
+import { WorkerClient } from 'seyfert';
+
+declare module 'seyfert' {
+    interface UsingClient extends ParseClient<WorkerClient<true>> {}
+}
+
+const client = new WorkerClient();
+
+export default {
+    async fetch(request: Request, env: Env, ctx: ExecutionContext) {
+        // Handle the interaction
+        const response = await client.handleRequest(request);
+        
+        if (response) return response;
+        
+        return new Response('Not Found', { status: 404 });
+    }
+};
+```
+  </Tab>
+</Tabs>
+
+## Deployment
+
+Deploy your bot to Cloudflare Workers:
+
+```bash
+wrangler deploy
+```
+
+<Callout type="warning">
+Make sure to set up your environment variables in the Cloudflare Dashboard or using `wrangler secret`.
+</Callout>
+
+## Verifying the Setup
+
+1. Update your Discord application's Interactions Endpoint URL to your worker's URL
+2. Test a command to ensure everything is working
+
+## Common Issues
+
+Here are some common issues you might encounter:
+
+1. **Invalid Signature**: Make sure your public key is correct
+2. **Command Not Found**: Verify your commands are properly registered
+3. **Timeout**: Workers have a execution time limit of 50ms in the free tier
+
+## Next Steps
+
+- Set up proper error handling
+- Implement caching strategies
+- Add monitoring and logging
+- Configure custom domains 

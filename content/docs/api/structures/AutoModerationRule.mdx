@@ -1,0 +1,236 @@
+---
+title: "AutoModerationRule"
+---
+                 
+### AutoModerationRule
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fetchCreator</code>
+  <code className="text-fd-muted-foreground">{"(force?: boolean) => Promise<GuildMember>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild</code>
+  <code className="text-fd-muted-foreground">{"{ (mode?: \"rest\" | \"flow\" | undefined): Promise<Guild<\"cached\" | \"api\">>; (mode: \"cache\"): ReturnCache<Guild<\"cached\"> | undefined>; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fetch</code>
+  <code className="text-fd-muted-foreground">{"() => Promise<AutoModerationRule>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">edit</code>
+  <code className="text-fd-muted-foreground">{"(body: RESTPatchAPIAutoModerationRuleJSONBody, reason?: string | undefined) => Promise<AutoModerationRule>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">delete</code>
+  <code className="text-fd-muted-foreground">{"(reason?: string | undefined) => Promise<never>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">createdTimestamp</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Create a timestamp for the current object.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">createdAt</code>
+  <code className="text-fd-muted-foreground">{"Date"}</code>
+</div>
+
+createdAt gets the creation Date instace of the current object.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client</code>
+  <code className="text-fd-muted-foreground">{"UsingClient"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guildId</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">creatorId</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">eventType</code>
+  <code className="text-fd-muted-foreground">{"AutoModerationRuleEventType"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">triggerType</code>
+  <code className="text-fd-muted-foreground">{"AutoModerationRuleTriggerType"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">triggerMetadata</code>
+  <code className="text-fd-muted-foreground">{"{ keywordFilter?: string[] | undefined; presets?: AutoModerationRuleKeywordPresetType[] | undefined; allowList?: string[] | undefined; regexPatterns?: string[] | undefined; mentionTotalLimit?: number | undefined; mentionRaidProtectionEnabled?: boolean | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">actions</code>
+  <code className="text-fd-muted-foreground">{"{ type: AutoModerationActionType; metadata?: { channelId?: string | undefined; durationSeconds?: number | undefined; customMessage?: string | undefined; } | undefined; }[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">enabled</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">exemptRoles</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">exemptChannels</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

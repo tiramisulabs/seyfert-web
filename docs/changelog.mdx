@@ -1,0 +1,139 @@
+---
+title: Changelog
+description: Seyfert changes
+tableOfContents: false
+---
+
+import Timeline from '../../components/custom/timeline.astro';
+import TimelineEntry from '../../components/custom/timeline-entry.astro';
+
+<Timeline>
+  <TimelineEntry 
+    title="V2.2.0 Changes"
+    date="December 28, 2024"
+  >
+    **Breaking Changes:**
+    - Channel threads are no longer part of the main cache; they are now merged with channels.
+    - `WorkerAdapter` is no longer the default cache adapter of the WorkerClient.
+    - Changed `Context.guild`, `Context.channel`, and `Context.me` functions to use the `flow` mode by default.
+    - Removed `output` and `templates` locations from the configuration file.
+    - Removed `updateOnly` parameter from the `patch` method in the cache Adapter.
+    - Removed deprecated types and Intents.
+    - Renamed `VoiceChannelMethods#setVoiceState` to `VoiceChannelMethods#setVoiceStatus`
+
+    **Fixed:**
+    - Fixed issues with zombie connections.
+    - Fixed the `workerProxy` implementation in the `WorkerClient`.
+    - Fixed `edit` method in `GuildRole`.
+    - Fixed `ModalInteraction.member.roles` not returning the correct data.
+    - Fixed collector `refresh` callback.
+    - Fixed `guildMemberRemove` to get the correct `GuildMember` old object.
+
+    **Additions:**
+    - Added `Client.latency` to get the latency of all shards.
+    - `cache.disabledCache` can now be a function that dynamically returns `true`/`false` based on the `cacheType` parameter.
+    - Added `addRole` and `removeRole` methods to `BaseGuildMember`.
+    - Enhanced the error message for "config file not found."
+    - Component listeners now include an `onPass` function.
+    - Added support for the Soundboard API with functionalities to `get`, `upload`, `list`, and `delete`.
+    - Added a soundboard shorter in the `Client`.
+    - Added custom events in the `WorkerClient`.
+    - Introduced resharding, enabling automatic shard creation and deletion as needed in the WorkerClient.
+    - `attachment` objects now support `ArrayBuffer`, `Uint8ClampedArray`, and `Uint8Array` (types updated).
+    - `option.value` automatically infers the specified `option.choices` if available.
+    - `options.value` now returns the same type as specified in the `option.channel_types`.
+    - Introduced `Guild...Context` and `Context.inGuild()` to ensure guild data for commands not usable in DMs.
+    - Added a `deferUpdate` method for `ComponentContext`s.
+    - Embed setter methods (e.g., `addField`, `setDescription`) now support `undefined` as a valid parameter.
+    - Seyfert configuration is now extendable using `ExtendedRC` for types and `ExtendedRCLocations` for `config.locations`.
+    - Added a `generateOAuth2URL` utility in formatters.
+    - Added support for Deno and Bun.
+    - Introduced a shorter form for `voiceStates`, accessible via `client.voiceStates`.
+    - Improved Discord API error messages.
+    - Added an `onRatelimit` callback in ApiHandler (rest).
+    - Added webhook event types for `applicationAuthorized`, `entitlementCreated`, and `questUserEnrollment`.
+    - `HttpServerAdapter` now supports any type of `Client` (`HttpClient`, `Client`, or `WorkerClient`).
+    - Added `channel.messages.list()` to fetch all messages in a channel.
+  </TimelineEntry>
+  <TimelineEntry 
+    title="V2.1.0 Changes"
+    date="September 7, 2024"
+  >
+    **Fixed:**
+    - Handle http status 429 correctly (ratelimited)
+    - Could not disable cache with `.setServices` in a `WorkerClient`
+
+    **Additions:**
+    - `EntryPointInteraction`, `ButtonPointContext`, `EntryPointCommand`
+    - Resharding for `Client` (enabled by default)
+    - `AnyContext` type
+    - `WORKER_SHARD_CONNECTED` event
+    - `SUBSCRIPTION_DELETE`, `SUBSCRIPTION_UPDATE`, `SUBSCRIPTION_CREATE`
+    - Now shards logs errors without need of debug mode
+    - Workers now have a queue to spawn
+
+    **Breaking Changes:**
+
+    - Interface `AttachmentData` changed property `name` to `ilename`
+    ```ts del={2} ins={3}
+    interface AttachmentData {
+      name: string;
+      filename: string;
+    }
+    ```
+
+    - Now WorkerClient does not send all events to parent (WorkerManager) by default, if you want to enable it, just
+    ```ts
+    new WorkerClient({
+        sendPayloadToParent: true
+    });
+    ```
+
+    - `disabledCache` option in `WorkerClient` is not longer there, use `setServices` instead
+  </TimelineEntry>
+  <TimelineEntry 
+    title="V2.0.0 Changes"
+    date="August 23, 2024"
+  >
+
+    With this version, we are proud to announce that seyfert now has 0 dependencies including a websocket client built from scratch.
+  
+    **Additions:**
+
+    - **Handle commands**
+    Now seyfert handle all commands across the same struct, if you use a custom argsParser o something check it, also, if you have a seyfert plugin or plan to make one, all seyfert structures are modifiable, so just point it where you want it to go.
+    ```ts
+    import { HandleCommand } from 'seyfert'
+
+    client.setServices({ handleCommand: class extends HandleCommand { argsParser = yourParser() } })
+    ```
+
+    - **Transformers**
+    Now seyfert allows you to transform discord data as you want,  seyfert will call it and use it in the whole library.
+    ```ts
+    import { Transformers } from 'seyfert';
+    const storage = new Map();
+    class MyPoll extends Poll {
+        storage() {
+            return storage.set(this.id, this);
+        }
+    }
+
+    Transformers.Poll = (...args: ConstructorParameters<typeof MyPoll>) => new MyPoll(...args);
+
+    declare module 'seyfert' {
+        interface CustomStructures {
+            Poll: MyPoll;
+        }
+    }
+    ```
+
+    - **Discord API**
+    Now we support `Monetization`, `Polls (with builders)`, `Application Emojis`, `Get Role`, `Get voice states`, etc.
+
+    **Little changes:**
+    - Now disabledCaches options is a object
+    - Some events cache bugs resolved
+    - Fixed permissions bits resolved
+  </TimelineEntry>
+</Timeline>

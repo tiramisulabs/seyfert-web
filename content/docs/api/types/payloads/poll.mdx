@@ -1,0 +1,289 @@
+---
+title: "Poll"
+---
+                 
+### APIPoll
+
+https://discord.com/developers/docs/resources/poll#poll-object-poll-object-structure
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">question</code>
+  <code className="text-fd-muted-foreground">{"APIPollMedia"}</code>
+</div>
+
+The question of the poll
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">answers</code>
+  <code className="text-fd-muted-foreground">{"APIPollAnswer[]"}</code>
+</div>
+
+Each of the answers available in the poll, up to 10
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">expiry</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The time when the poll ends (IS08601 timestamp)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">allow_multiselect</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether a user can select multiple answers
+
+- default:
+false
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">layout_type</code>
+  <code className="text-fd-muted-foreground">{"PollLayoutType"}</code>
+</div>
+
+The layout type of the poll
+
+- default:
+PollLayoutType.Default
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">results</code>
+  <code className="text-fd-muted-foreground">{"APIPollResults"}</code>
+</div>
+
+The results of the poll
+
+
+
+</div></div>
+
+### PollLayoutType
+
+https://discord.com/developers/docs/resources/poll#layout-type
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(radix?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toFixed</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toExponential</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toPrecision</code>
+  <code className="text-fd-muted-foreground">{"(precision?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valueOf</code>
+  <code className="text-fd-muted-foreground">{"() => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined, options?: NumberFormatOptions | undefined): string; (locales?: LocalesArgument, options?: NumberFormatOptions | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIPollMedia
+
+https://discord.com/developers/docs/resources/poll#poll-media-object-poll-media-object-structure
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">text</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The text of the field
+
+The maximum length is `300` for the question, and `55` for any answer
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">emoji</code>
+  <code className="text-fd-muted-foreground">{"APIPartialEmoji"}</code>
+</div>
+
+The emoji of the field
+
+
+
+</div></div>
+
+### APIPollAnswer
+
+https://discord.com/developers/docs/resources/poll#poll-answer-object-poll-answer-object-structure
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">answer_id</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The ID of the answer. Starts at `1` for the first answer and goes up sequentially
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">poll_media</code>
+  <code className="text-fd-muted-foreground">{"APIPollMedia"}</code>
+</div>
+
+The data of the answer
+
+
+
+</div></div>
+
+### APIPollResults
+
+https://discord.com/developers/docs/resources/poll#poll-results-object-poll-results-object-structure
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">is_finalized</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether the votes have been precisely counted
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">answer_counts</code>
+  <code className="text-fd-muted-foreground">{"APIPollAnswerCount[]"}</code>
+</div>
+
+The counts for each answer
+
+
+
+</div></div>
+
+### APIPollAnswerCount
+
+https://discord.com/developers/docs/resources/poll#poll-results-object-poll-answer-count-object-structure
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The `answer_id`
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">count</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The number of votes for this answer
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">me_voted</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether the current user voted for this answer
+
+
+
+</div></div>

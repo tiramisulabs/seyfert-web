@@ -1,0 +1,2926 @@
+---
+title: "Handler"
+---
+                 
+### EventValue
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"ClientDataEvent"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">run</code>
+  <code className="text-fd-muted-foreground">{"(...args: unknown[]) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fired</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### GatewayEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">charAt</code>
+  <code className="text-fd-muted-foreground">{"(pos: number) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">charCodeAt</code>
+  <code className="text-fd-muted-foreground">{"(index: number) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">concat</code>
+  <code className="text-fd-muted-foreground">{"(...strings: string[]) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">indexOf</code>
+  <code className="text-fd-muted-foreground">{"(searchString: string, position?: number | undefined) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">lastIndexOf</code>
+  <code className="text-fd-muted-foreground">{"(searchString: string, position?: number | undefined) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">localeCompare</code>
+  <code className="text-fd-muted-foreground">{"{ (that: string): number; (that: string, locales?: string | string[] | undefined, options?: CollatorOptions | undefined): number; (that: string, locales?: LocalesArgument, options?: CollatorOptions | undefined): number; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">match</code>
+  <code className="text-fd-muted-foreground">{"{ (regexp: string | RegExp): RegExpMatchArray | null; (matcher: { [Symbol.match](string: string): RegExpMatchArray | null; }): RegExpMatchArray | null; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">replace</code>
+  <code className="text-fd-muted-foreground">{"{ (searchValue: string | RegExp, replaceValue: string): string; (searchValue: string | RegExp, replacer: (substring: string, ...args: any[]) => string): string; (searchValue: { ...; }, replaceValue: string): string; (searchValue: { ...; }, replacer: (substring: string, ...args: any[]) => string): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">search</code>
+  <code className="text-fd-muted-foreground">{"{ (regexp: string | RegExp): number; (searcher: { [Symbol.search](string: string): number; }): number; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">slice</code>
+  <code className="text-fd-muted-foreground">{"(start?: number | undefined, end?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">split</code>
+  <code className="text-fd-muted-foreground">{"{ (separator: string | RegExp, limit?: number | undefined): string[]; (splitter: { [Symbol.split](string: string, limit?: number | undefined): string[]; }, limit?: number | undefined): string[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">substring</code>
+  <code className="text-fd-muted-foreground">{"(start: number, end?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLowerCase</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleLowerCase</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined): string; (locales?: LocalesArgument): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toUpperCase</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleUpperCase</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined): string; (locales?: LocalesArgument): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">trim</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">length</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">substr</code>
+  <code className="text-fd-muted-foreground">{"(from: number, length?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valueOf</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">codePointAt</code>
+  <code className="text-fd-muted-foreground">{"(pos: number) => number | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">includes</code>
+  <code className="text-fd-muted-foreground">{"(searchString: string, position?: number | undefined) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">endsWith</code>
+  <code className="text-fd-muted-foreground">{"(searchString: string, endPosition?: number | undefined) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">normalize</code>
+  <code className="text-fd-muted-foreground">{"{ (form: \"NFC\" | \"NFD\" | \"NFKC\" | \"NFKD\"): string; (form?: string | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">repeat</code>
+  <code className="text-fd-muted-foreground">{"(count: number) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">startsWith</code>
+  <code className="text-fd-muted-foreground">{"(searchString: string, position?: number | undefined) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">anchor</code>
+  <code className="text-fd-muted-foreground">{"(name: string) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">big</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">blink</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">bold</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fixed</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fontcolor</code>
+  <code className="text-fd-muted-foreground">{"(color: string) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fontsize</code>
+  <code className="text-fd-muted-foreground">{"{ (size: number): string; (size: string): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">italics</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">link</code>
+  <code className="text-fd-muted-foreground">{"(url: string) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">small</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">strike</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sub</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sup</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">padStart</code>
+  <code className="text-fd-muted-foreground">{"(maxLength: number, fillString?: string | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">padEnd</code>
+  <code className="text-fd-muted-foreground">{"(maxLength: number, fillString?: string | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">trimEnd</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">trimStart</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">trimLeft</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">trimRight</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">matchAll</code>
+  <code className="text-fd-muted-foreground">{"(regexp: RegExp) => RegExpStringIterator<RegExpExecArray>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">replaceAll</code>
+  <code className="text-fd-muted-foreground">{"{ (searchValue: string | RegExp, replaceValue: string): string; (searchValue: string | RegExp, replacer: (substring: string, ...args: any[]) => string): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">at</code>
+  <code className="text-fd-muted-foreground">{"(index: number) => string | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">isWellFormed</code>
+  <code className="text-fd-muted-foreground">{"() => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toWellFormed</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@iterator@80287</code>
+  <code className="text-fd-muted-foreground">{"() => StringIterator<string>"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### ResolveEventParams
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">0</code>
+  <code className="text-fd-muted-foreground">{"any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">1</code>
+  <code className="text-fd-muted-foreground">{"UsingClient"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">2</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">length</code>
+  <code className="text-fd-muted-foreground">{"3"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | ... 49 more ... | (() => string)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (): string; (locales: string | string[], options?: (NumberFormatOptions & DateTimeFormatOptions) | undefined): string; } | { ...; } | ... 62 more ... | { ...; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pop</code>
+  <code className="text-fd-muted-foreground">{"(() => number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; } | undefined) | ... 63 more ... | (() => number | ... 2 more ... | undefined)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">push</code>
+  <code className="text-fd-muted-foreground">{"((...items: (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]) => number) | ... 63 more ... | ((...items: (number | ... 1 more ... | { ...; })[]) => number)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">concat</code>
+  <code className="text-fd-muted-foreground">{"{ (...items: ConcatArray<number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>[]): (number | ... 1 more ... | { ...; })[]; (...items: (number | ... 2 more ... | ConcatArray<...>)[]): (number | ... 1..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">join</code>
+  <code className="text-fd-muted-foreground">{"((separator?: string | undefined) => string) | ((separator?: string | undefined) => string) | ((separator?: string | undefined) => string) | ((separator?: string | undefined) => string) | ... 60 more ... | ((separator?: string | undefined) => string)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reverse</code>
+  <code className="text-fd-muted-foreground">{"(() => (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]) | ... 63 more ... | (() => (number | ... 1 more ... | { ...; })[])"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shift</code>
+  <code className="text-fd-muted-foreground">{"(() => number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; } | undefined) | ... 63 more ... | (() => number | ... 2 more ... | undefined)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">slice</code>
+  <code className="text-fd-muted-foreground">{"((start?: number | undefined, end?: number | undefined) => (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]) | ... 63 more ... | ((start?: number | undefined, end?: number | undefined) => (n..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sort</code>
+  <code className="text-fd-muted-foreground">{"((compareFn?: ((a: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, b: number | ... 1 more ... | { ...; }) => number) | undefined) => [...]) | ... 63 more ... | ((compareFn?: ((a: number | ... ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">splice</code>
+  <code className="text-fd-muted-foreground">{"{ (start: number, deleteCount?: number | undefined): (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]; (start: number, deleteCount: number, ...items: (number | ... 1 more ... | { ...; })[]):..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">unshift</code>
+  <code className="text-fd-muted-foreground">{"((...items: (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]) => number) | ... 63 more ... | ((...items: (number | ... 1 more ... | { ...; })[]) => number)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">indexOf</code>
+  <code className="text-fd-muted-foreground">{"((searchElement: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, fromIndex?: number | undefined) => number) | ... 63 more ... | ((searchElement: number | ... 1 more ... | { ...; }, fromIndex?:..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">lastIndexOf</code>
+  <code className="text-fd-muted-foreground">{"((searchElement: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, fromIndex?: number | undefined) => number) | ... 63 more ... | ((searchElement: number | ... 1 more ... | { ...; }, fromIndex?:..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">every</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>(predicate: (value: number | ... 1 more ... | { ...; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => value is S,..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">some</code>
+  <code className="text-fd-muted-foreground">{"((predicate: (value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => unknown, thisArg?: any) => boolean) | ... 63 more ... | ((..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">forEach</code>
+  <code className="text-fd-muted-foreground">{"((callbackfn: (value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => void, thisArg?: any) => void) | ... 63 more ... | ((callb..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">map</code>
+  <code className="text-fd-muted-foreground">{"(<U>(callbackfn: (value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => U, thisArg?: any) => U[]) | ... 63 more ... | (<U>(cal..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">filter</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>(predicate: (value: number | ... 1 more ... | { ...; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => value is S,..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduce</code>
+  <code className="text-fd-muted-foreground">{"{ (callbackfn: (previousValue: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, currentValue: number | ... 1 more ... | { ...; }, currentIndex: number, array: (number | ... 1 more ... | { ...; ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduceRight</code>
+  <code className="text-fd-muted-foreground">{"{ (callbackfn: (previousValue: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, currentValue: number | ... 1 more ... | { ...; }, currentIndex: number, array: (number | ... 1 more ... | { ...; ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">find</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>(predicate: (value: number | ... 1 more ... | { ...; }, index: number, obj: (number | ... 1 more ... | { ...; })[]) => value is S, t..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findIndex</code>
+  <code className="text-fd-muted-foreground">{"((predicate: (value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, index: number, obj: (number | ... 1 more ... | { ...; })[]) => unknown, thisArg?: any) => number) | ... 63 more ... | ((pre..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fill</code>
+  <code className="text-fd-muted-foreground">{"((value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, start?: number | undefined, end?: number | undefined) => [...]) | ... 63 more ... | ((value: number | ... 1 more ... | { ...; }, start?..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">copyWithin</code>
+  <code className="text-fd-muted-foreground">{"((target: number, start: number, end?: number | undefined) => [{ id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, UsingClient, number]) | ... 63 more ... | ((target: number, start: number, end?: number | undefined) => ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">entries</code>
+  <code className="text-fd-muted-foreground">{"(() => ArrayIterator<[number, number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }]>) | ... 63 more ... | (() => ArrayIterator<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">keys</code>
+  <code className="text-fd-muted-foreground">{"(() => ArrayIterator<number>) | (() => ArrayIterator<number>) | (() => ArrayIterator<number>) | (() => ArrayIterator<number>) | ... 60 more ... | (() => ArrayIterator<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">values</code>
+  <code className="text-fd-muted-foreground">{"(() => ArrayIterator<number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>) | ... 63 more ... | (() => ArrayIterator<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">includes</code>
+  <code className="text-fd-muted-foreground">{"((searchElement: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, fromIndex?: number | undefined) => boolean) | ... 63 more ... | ((searchElement: number | ... 1 more ... | { ...; }, fromIndex?..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flatMap</code>
+  <code className="text-fd-muted-foreground">{"(<U, This = undefined>(callback: (this: This, value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => U | readonly U[], thisArg?..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flat</code>
+  <code className="text-fd-muted-foreground">{"(<A, D extends number = 1>(this: A, depth?: D | undefined) => FlatArray<A, D>[]) | (<A, D extends number = 1>(this: A, depth?: D | undefined) => FlatArray<A, D>[]) | ... 62 more ... | (<A, D extends number = 1>(this: A, depth?: D | undefined) => FlatArray<...>[])"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">at</code>
+  <code className="text-fd-muted-foreground">{"((index: number) => number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; } | undefined) | ... 63 more ... | ((index: number) => number | ... 2 more ... | undefined)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findLast</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>(predicate: (value: number | ... 1 more ... | { ...; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => value is S,..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findLastIndex</code>
+  <code className="text-fd-muted-foreground">{"((predicate: (value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => unknown, thisArg?: any) => number) | ... 63 more ... | ((p..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toReversed</code>
+  <code className="text-fd-muted-foreground">{"(() => (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]) | ... 63 more ... | (() => (number | ... 1 more ... | { ...; })[])"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toSorted</code>
+  <code className="text-fd-muted-foreground">{"((compareFn?: ((a: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, b: number | ... 1 more ... | { ...; }) => number) | undefined) => (number | ... 1 more ... | { ...; })[]) | ... 63 more ... |..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toSpliced</code>
+  <code className="text-fd-muted-foreground">{"{ (start: number, deleteCount: number, ...items: (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]): (number | ... 1 more ... | { ...; })[]; (start: number, deleteCount?: number | undefined):..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">with</code>
+  <code className="text-fd-muted-foreground">{"((index: number, value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }) => (number | ... 1 more ... | { ...; })[]) | ... 63 more ... | ((index: number, value: number | ... 1 more ... | { ...; ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@iterator@80287</code>
+  <code className="text-fd-muted-foreground">{"(() => ArrayIterator<number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>) | ... 63 more ... | (() => ArrayIterator<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@unscopables@81084</code>
+  <code className="text-fd-muted-foreground">{"{ [x: number]: boolean | undefined; length?: boolean | undefined; toString?: boolean | undefined; toLocaleString?: boolean | undefined; pop?: boolean | undefined; push?: boolean | undefined; ... 35 more ...; readonly [Symbol.unscopables]?: boolean | undefined; } | ... 63 more ... | { ...; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### ResolveEventRunParams
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">0</code>
+  <code className="text-fd-muted-foreground">{"any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">1</code>
+  <code className="text-fd-muted-foreground">{"UsingClient"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">2</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">length</code>
+  <code className="text-fd-muted-foreground">{"3"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | (() => string) | ... 49 more ... | (() => string)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (): string; (locales: string | string[], options?: (NumberFormatOptions & DateTimeFormatOptions) | undefined): string; } | { ...; } | ... 62 more ... | { ...; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pop</code>
+  <code className="text-fd-muted-foreground">{"(() => number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; } | undefined) | ... 63 more ... | (() => number | ... 2 more ... | undefined)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">push</code>
+  <code className="text-fd-muted-foreground">{"((...items: (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]) => number) | ... 63 more ... | ((...items: (number | ... 1 more ... | { ...; })[]) => number)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">concat</code>
+  <code className="text-fd-muted-foreground">{"{ (...items: ConcatArray<number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>[]): (number | ... 1 more ... | { ...; })[]; (...items: (number | ... 2 more ... | ConcatArray<...>)[]): (number | ... 1..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">join</code>
+  <code className="text-fd-muted-foreground">{"((separator?: string | undefined) => string) | ((separator?: string | undefined) => string) | ((separator?: string | undefined) => string) | ((separator?: string | undefined) => string) | ... 60 more ... | ((separator?: string | undefined) => string)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reverse</code>
+  <code className="text-fd-muted-foreground">{"(() => (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]) | ... 63 more ... | (() => (number | ... 1 more ... | { ...; })[])"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shift</code>
+  <code className="text-fd-muted-foreground">{"(() => number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; } | undefined) | ... 63 more ... | (() => number | ... 2 more ... | undefined)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">slice</code>
+  <code className="text-fd-muted-foreground">{"((start?: number | undefined, end?: number | undefined) => (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]) | ... 63 more ... | ((start?: number | undefined, end?: number | undefined) => (n..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sort</code>
+  <code className="text-fd-muted-foreground">{"((compareFn?: ((a: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, b: number | ... 1 more ... | { ...; }) => number) | undefined) => [...]) | ... 63 more ... | ((compareFn?: ((a: number | ... ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">splice</code>
+  <code className="text-fd-muted-foreground">{"{ (start: number, deleteCount?: number | undefined): (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]; (start: number, deleteCount: number, ...items: (number | ... 1 more ... | { ...; })[]):..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">unshift</code>
+  <code className="text-fd-muted-foreground">{"((...items: (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]) => number) | ... 63 more ... | ((...items: (number | ... 1 more ... | { ...; })[]) => number)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">indexOf</code>
+  <code className="text-fd-muted-foreground">{"((searchElement: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, fromIndex?: number | undefined) => number) | ... 63 more ... | ((searchElement: number | ... 1 more ... | { ...; }, fromIndex?:..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">lastIndexOf</code>
+  <code className="text-fd-muted-foreground">{"((searchElement: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, fromIndex?: number | undefined) => number) | ... 63 more ... | ((searchElement: number | ... 1 more ... | { ...; }, fromIndex?:..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">every</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>(predicate: (value: number | ... 1 more ... | { ...; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => value is S,..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">some</code>
+  <code className="text-fd-muted-foreground">{"((predicate: (value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => unknown, thisArg?: any) => boolean) | ... 63 more ... | ((..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">forEach</code>
+  <code className="text-fd-muted-foreground">{"((callbackfn: (value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => void, thisArg?: any) => void) | ... 63 more ... | ((callb..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">map</code>
+  <code className="text-fd-muted-foreground">{"(<U>(callbackfn: (value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => U, thisArg?: any) => U[]) | ... 63 more ... | (<U>(cal..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">filter</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>(predicate: (value: number | ... 1 more ... | { ...; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => value is S,..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduce</code>
+  <code className="text-fd-muted-foreground">{"{ (callbackfn: (previousValue: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, currentValue: number | ... 1 more ... | { ...; }, currentIndex: number, array: (number | ... 1 more ... | { ...; ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduceRight</code>
+  <code className="text-fd-muted-foreground">{"{ (callbackfn: (previousValue: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, currentValue: number | ... 1 more ... | { ...; }, currentIndex: number, array: (number | ... 1 more ... | { ...; ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">find</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>(predicate: (value: number | ... 1 more ... | { ...; }, index: number, obj: (number | ... 1 more ... | { ...; })[]) => value is S, t..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findIndex</code>
+  <code className="text-fd-muted-foreground">{"((predicate: (value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, index: number, obj: (number | ... 1 more ... | { ...; })[]) => unknown, thisArg?: any) => number) | ... 63 more ... | ((pre..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fill</code>
+  <code className="text-fd-muted-foreground">{"((value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, start?: number | undefined, end?: number | undefined) => [...]) | ... 63 more ... | ((value: number | ... 1 more ... | { ...; }, start?..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">copyWithin</code>
+  <code className="text-fd-muted-foreground">{"((target: number, start: number, end?: number | undefined) => [{ id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, UsingClient, number]) | ... 63 more ... | ((target: number, start: number, end?: number | undefined) => ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">entries</code>
+  <code className="text-fd-muted-foreground">{"(() => ArrayIterator<[number, number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }]>) | ... 63 more ... | (() => ArrayIterator<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">keys</code>
+  <code className="text-fd-muted-foreground">{"(() => ArrayIterator<number>) | (() => ArrayIterator<number>) | (() => ArrayIterator<number>) | (() => ArrayIterator<number>) | ... 60 more ... | (() => ArrayIterator<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">values</code>
+  <code className="text-fd-muted-foreground">{"(() => ArrayIterator<number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>) | ... 63 more ... | (() => ArrayIterator<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">includes</code>
+  <code className="text-fd-muted-foreground">{"((searchElement: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, fromIndex?: number | undefined) => boolean) | ... 63 more ... | ((searchElement: number | ... 1 more ... | { ...; }, fromIndex?..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flatMap</code>
+  <code className="text-fd-muted-foreground">{"(<U, This = undefined>(callback: (this: This, value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => U | readonly U[], thisArg?..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flat</code>
+  <code className="text-fd-muted-foreground">{"(<A, D extends number = 1>(this: A, depth?: D | undefined) => FlatArray<A, D>[]) | (<A, D extends number = 1>(this: A, depth?: D | undefined) => FlatArray<A, D>[]) | ... 62 more ... | (<A, D extends number = 1>(this: A, depth?: D | undefined) => FlatArray<...>[])"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">at</code>
+  <code className="text-fd-muted-foreground">{"((index: number) => number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; } | undefined) | ... 63 more ... | ((index: number) => number | ... 2 more ... | undefined)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findLast</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>(predicate: (value: number | ... 1 more ... | { ...; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => value is S,..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findLastIndex</code>
+  <code className="text-fd-muted-foreground">{"((predicate: (value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, index: number, array: (number | ... 1 more ... | { ...; })[]) => unknown, thisArg?: any) => number) | ... 63 more ... | ((p..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toReversed</code>
+  <code className="text-fd-muted-foreground">{"(() => (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]) | ... 63 more ... | (() => (number | ... 1 more ... | { ...; })[])"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toSorted</code>
+  <code className="text-fd-muted-foreground">{"((compareFn?: ((a: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, b: number | ... 1 more ... | { ...; }) => number) | undefined) => (number | ... 1 more ... | { ...; })[]) | ... 63 more ... |..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toSpliced</code>
+  <code className="text-fd-muted-foreground">{"{ (start: number, deleteCount: number, ...items: (number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; })[]): (number | ... 1 more ... | { ...; })[]; (start: number, deleteCount?: number | undefined):..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">with</code>
+  <code className="text-fd-muted-foreground">{"((index: number, value: number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }) => (number | ... 1 more ... | { ...; })[]) | ... 63 more ... | ((index: number, value: number | ... 1 more ... | { ...; ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@iterator@80287</code>
+  <code className="text-fd-muted-foreground">{"(() => ArrayIterator<number | UsingClient | { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }>) | ... 63 more ... | (() => ArrayIterator<...>)"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@unscopables@81084</code>
+  <code className="text-fd-muted-foreground">{"{ [x: number]: boolean | undefined; length?: boolean | undefined; toString?: boolean | undefined; toLocaleString?: boolean | undefined; pop?: boolean | undefined; push?: boolean | undefined; ... 35 more ...; readonly [Symbol.unscopables]?: boolean | undefined; } | ... 63 more ... | { ...; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### EventValues
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">APPLICATION_COMMAND_PERMISSIONS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { id: string; applicationId: string; guildId: string; permissions: { id: string; type: ApplicationCommandPermissionType; permission: boolean; }[]; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_ACTION_EXECUTION</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId: string; action: { type: AutoModerationActionType; metadata?: { channelId?: string | undefined; durationSeconds?: number | undefined; customMessage?: string | undefined; } | undefined; }; ... 8 more ...; matchedContent: string | null; }, args_1: UsingClient, args_2: ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_RULE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: AutoModerationRule, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_RULE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: AutoModerationRule, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_RULE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: AutoModerationRule, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: AllChannels, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: AllChannels, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_PINS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId?: string | undefined; channelId: string; lastPinTimestamp?: string | null | undefined; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: [channel: AllChannels, old?: AllChannels | undefined], args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">BOT_READY</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: ClientUser, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">WORKER_READY</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: ClientUser, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">WORKER_SHARDS_CONNECTED</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: ClientUser, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">RAW_GUILD_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: Guild<\"create\">, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">RAW_GUILD_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: APIUnavailableGuild | Guild<\"cached\">, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILDS_READY</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: void, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">READY</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: ClientUser, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">RESUMED</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: any, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">RAW</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: GatewayDispatchPayload, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ENTITLEMENT_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: Entitlement, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ENTITLEMENT_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: Entitlement, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ENTITLEMENT_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: Entitlement, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_AUDIT_LOG_ENTRY_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId: string; targetId: string | null; changes?: ({ key: \"$add\"; newValue?: { name: string; id: string; }[] | undefined; oldValue?: { ...; }[] | undefined; } | ... 85 more ... | { ...; })[] | undefined; ... 4 more ...; reason?: string | undefined; }, args_1: UsingClient, ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_BAN_ADD</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId: string; } & { user: User; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_BAN_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId: string; } & { user: User; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: Guild<\"create\">, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: APIUnavailableGuild | Guild<\"cached\">, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_EMOJIS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId: string; } & { emojis: GuildEmoji[]; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_INTEGRATIONS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId: string; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBER_ADD</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: GuildMember, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBER_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: GuildMember | { user: User; guildId: string; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBERS_CHUNK</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId: string; nonce?: string | undefined; chunkIndex: number; chunkCount: number; notFound?: {}[] | undefined; presences?: { ...; }[] | undefined; } & { ...; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: [member: GuildMember, old?: GuildMember | undefined], args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { channelId: undefined; entityMetadata: { location: string; }; id: string; guildId: string; creatorId?: string | null | undefined; ... 11 more ...; recurrenceRule: { ...; } | null; } | { ...; } | { ...; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { channelId: undefined; entityMetadata: { location: string; }; id: string; guildId: string; creatorId?: string | null | undefined; ... 11 more ...; recurrenceRule: { ...; } | null; } | { ...; } | { ...; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { channelId: undefined; entityMetadata: { location: string; }; id: string; guildId: string; creatorId?: string | null | undefined; ... 11 more ...; recurrenceRule: { ...; } | null; } | { ...; } | { ...; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_USER_ADD</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildScheduledEventId: string; userId: string; guildId: string; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_USER_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildScheduledEventId: string; userId: string; guildId: string; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_ROLE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: GuildRole, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_ROLE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: GuildRole | { guildId: string; roleId: string; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_ROLE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: [role: GuildRole, old?: GuildRole | undefined], args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_STICKERS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId: string; } & { stickers: Sticker[]; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: [guild: Guild<\"api\">, old?: Guild<\"cached\"> | undefined], args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTEGRATION_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { application?: { id: string; name: string; icon: string | null; description: string; bot?: APIUser | undefined; } | undefined; ... 14 more ...; scopes?: OAuth2Scopes[] | undefined; } | ({ ...; } & { ...; }), args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTEGRATION_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { application?: { id: string; name: string; icon: string | null; description: string; bot?: APIUser | undefined; } | undefined; ... 14 more ...; scopes?: OAuth2Scopes[] | undefined; } | ({ ...; } & { ...; }), args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTEGRATION_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { id: string; guildId: string; applicationId?: string | undefined; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTERACTION_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: AutocompleteInteraction<boolean> | ChatInputCommandInteraction<boolean> | ... 9 more ... | BaseInteraction<...>, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INVITE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { channelId: string; code: string; createdAt: number; guildId?: string | undefined; inviter?: { id: string; username: string; discriminator: string; ... 13 more ...; avatarDecorationData?: APIAvatarDecorationData | ... 1 more ... | undefined; } | undefined; ... 6 more ...; use..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INVITE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { channelId: string; guildId?: string | undefined; code: string; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: Message, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: Message | { id: string; channelId: string; guildId?: string | undefined; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_DELETE_BULK</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: GatewayMessageDeleteBulkDispatchData & { messages: (string | Message)[]; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_ADD</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId?: string | undefined; userId: string; channelId: string; messageId: string; type: ReactionType; member?: { ...; } | undefined; burstColors: string[]; messageAuthorId?: string | undefined; emoji: { ...; }; burst: boolean; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId?: string | undefined; userId: string; channelId: string; messageId: string; type: ReactionType; emoji: { ...; }; burst: boolean; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_REMOVE_ALL</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { channelId: string; messageId: string; guildId?: string | undefined; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_REMOVE_EMOJI</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { emoji: { roles?: string[] | undefined; user?: { id: string; username: string; discriminator: string; globalName: string | null; avatar: string | null; ... 11 more ...; avatarDecorationData?: APIAvatarDecorationData | ... 1 more ... | undefined; } | undefined; ... 5 more ...;..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: [message: Omit<Message, \"tts\"> & { tts: false; }, old: Message | undefined], args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_POLL_VOTE_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { userId: string; channelId: string; messageId: string; guildId?: string | undefined; answerId: number; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_POLL_VOTE_ADD</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { userId: string; channelId: string; messageId: string; guildId?: string | undefined; answerId: number; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">PRESENCE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: readonly [{ user: { id: string; username?: string | undefined; discriminator?: string | undefined; globalName?: string | null | undefined; ... 12 more ...; avatarDecorationData?: { ...; } | ... 1 more ... | undefined; }; guildId: string; status?: PresenceUpdateReceiveStatus | ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">STAGE_INSTANCE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { id: string; guildId: string; channelId: string; topic: string; privacyLevel: StageInstancePrivacyLevel; guildScheduledEventId?: string | undefined; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">STAGE_INSTANCE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { id: string; guildId: string; channelId: string; topic: string; privacyLevel: StageInstancePrivacyLevel; guildScheduledEventId?: string | undefined; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">STAGE_INSTANCE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: [stage: { id: string; guildId: string; channelId: string; topic: string; privacyLevel: StageInstancePrivacyLevel; guildScheduledEventId?: string | undefined; }, old?: ReturnCache<...>], args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: ThreadChannel, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: ThreadChannel | { id: string; guildId: string; parentId: string; type: ChannelType; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_LIST_SYNC</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId: string; channelIds?: string[] | undefined; threads: { member?: { id?: string | undefined; userId?: string | undefined; joinTimestamp: string; flags: ThreadMemberFlags; member?: APIGuildMember | undefined; } | undefined; ... 17 more ...; parentId?: string | undefined..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_MEMBER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { id?: string | undefined; userId?: string | undefined; joinTimestamp: string; flags: ThreadMemberFlags; member?: { ...; } | undefined; guildId: string; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_MEMBERS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { id: string; guildId: string; memberCount: number; addedMembers?: { id?: string | undefined; userId?: string | undefined; joinTimestamp: string; flags: ThreadMemberFlags; member?: { ...; } | undefined; }[] | undefined; removedMemberIds?: string[] | undefined; }, args_1: Using..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: [thread: ThreadChannel, old?: ThreadChannel | undefined], args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">TYPING_START</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId?: string | undefined; userId: string; channelId: string; timestamp: number; } | ({ guildId?: string | undefined; userId: string; channelId: string; timestamp: number; } & { ...; }), args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">USER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: [user: User, old?: User | undefined], args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">VOICE_SERVER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { token: string; guildId: string; endpoint: string | null; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">VOICE_STATE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: [state: VoiceState] | [state: VoiceState, old?: VoiceState | undefined], args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">VOICE_CHANNEL_EFFECT_SEND</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { channelId: string; guildId: string; userId: string; emoji?: { id: string | null; name: string | null; animated?: boolean | undefined; } | null | undefined; animationType?: AnimationTypes | ... 1 more ... | undefined; animationId?: number | undefined; soundId: string | number..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">WEBHOOKS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId: string; channelId: string; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUND_CREATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { name: string; guildId?: string | undefined; available: boolean; soundId: string; volume: number; emojiId: string | null; emojiName: string | null; } | ({ ...; } & { ...; }), args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUND_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { name: string; guildId?: string | undefined; available: boolean; soundId: string; volume: number; emojiId: string | null; emojiName: string | null; } | ({ ...; } & { ...; }), args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUNDS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { guildId: string; sounds: ({ name: string; guildId?: string | undefined; available: boolean; soundId: string; volume: number; emojiId: string | null; emojiName: string | null; } | ({ ...; } & { ...; }))[]; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUND_DELETE</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { soundId: string; guildId: string; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SOUNDBOARD_SOUNDS</code>
+  <code className="text-fd-muted-foreground">{"Omit<EventValue, \"run\"> & { run(args_0: { soundboardSounds: { name: string; soundId: string; volume: number; emojiId: string | null; emojiName: string | null; guildId?: string | undefined; available: boolean; user?: { ...; } | undefined; }[]; guildId: string; }, args_1: UsingClient, args_2: number): any; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### EventHandler
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client</code>
+  <code className="text-fd-muted-foreground">{"Client<boolean> | WorkerClient<boolean>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onFail</code>
+  <code className="text-fd-muted-foreground">{"(event: \"APPLICATION_COMMAND_PERMISSIONS_UPDATE\" | \"AUTO_MODERATION_ACTION_EXECUTION\" | \"AUTO_MODERATION_RULE_CREATE\" | \"AUTO_MODERATION_RULE_DELETE\" | \"AUTO_MODERATION_RULE_UPDATE\" | ... 73 more ... | \"SOUNDBOARD_SOUNDS\", err: unknown) => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">filter</code>
+  <code className="text-fd-muted-foreground">{"(path: string) => boolean"}</code>
+</div>
+
+Filters a file path.
+
+- param:
+path The path to filter.
+- returns:
+`true` if the path passes the filter, otherwise `false`.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">values</code>
+  <code className="text-fd-muted-foreground">{"Partial<EventValues>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">discordEvents</code>
+  <code className="text-fd-muted-foreground">{"ClientNameEvents[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">set</code>
+  <code className="text-fd-muted-foreground">{"(events: ClientEvent[]) => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">load</code>
+  <code className="text-fd-muted-foreground">{"(eventsDir: string) => Promise<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">execute</code>
+  <code className="text-fd-muted-foreground">{"(raw: GatewayDispatchPayload, client: Client<true> | WorkerClient<true>, shardId: number) => Promise<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">runEvent</code>
+  <code className="text-fd-muted-foreground">{"(name: \"APPLICATION_COMMAND_PERMISSIONS_UPDATE\" | \"AUTO_MODERATION_ACTION_EXECUTION\" | \"AUTO_MODERATION_RULE_CREATE\" | \"AUTO_MODERATION_RULE_DELETE\" | \"AUTO_MODERATION_RULE_UPDATE\" | ... 73 more ... | \"SOUNDBOARD_SOUNDS\", client: Client<...> | WorkerClient<...>, packet: unknown, shardId: number, runCache?: boolean) ..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">runCustom</code>
+  <code className="text-fd-muted-foreground">{"<T extends CustomEventsKeys>(name: T, ...args: ResolveEventRunParams<T>) => Promise<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reload</code>
+  <code className="text-fd-muted-foreground">{"(name: \"APPLICATION_COMMAND_PERMISSIONS_UPDATE\" | \"AUTO_MODERATION_ACTION_EXECUTION\" | \"AUTO_MODERATION_RULE_CREATE\" | \"AUTO_MODERATION_RULE_DELETE\" | \"AUTO_MODERATION_RULE_UPDATE\" | ... 73 more ... | \"SOUNDBOARD_SOUNDS\") => Promise<...>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reloadAll</code>
+  <code className="text-fd-muted-foreground">{"(stopIfFail?: boolean) => Promise<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onFile</code>
+  <code className="text-fd-muted-foreground">{"(file: FileLoaded<ClientEvent>) => ClientEvent[] | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">callback</code>
+  <code className="text-fd-muted-foreground">{"(file: ClientEvent) => false | ClientEvent"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">logger</code>
+  <code className="text-fd-muted-foreground">{"Logger"}</code>
+</div>
+
+The logger instance.
+
+- param:
+logger The logger instance.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">getFiles</code>
+  <code className="text-fd-muted-foreground">{"(dir: string) => Promise<string[]>"}</code>
+</div>
+
+Recursively retrieves all files in a directory.
+
+- param:
+dir The directory path.
+- returns:
+A Promise that resolves to an array of file paths.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">loadFiles</code>
+  <code className="text-fd-muted-foreground">{"<T extends NonNullable<unknown>>(paths: string[]) => Promise<T[]>"}</code>
+</div>
+
+Loads files from given paths.
+
+- param:
+paths The paths of the files to load.
+- returns:
+A Promise that resolves to an array of loaded files.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">loadFilesK</code>
+  <code className="text-fd-muted-foreground">{"<T>(paths: string[]) => Promise<{ name: string; file: T; path: string; }[]>"}</code>
+</div>
+
+Loads files from given paths along with additional information.
+
+- param:
+paths The paths of the files to load.
+- returns:
+A Promise that resolves to an array of objects containing name, file, and path.
+
+</div></div>

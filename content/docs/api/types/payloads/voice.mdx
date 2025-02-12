@@ -1,0 +1,231 @@
+---
+title: "Voice"
+---
+                 
+### APIVoiceState
+
+https://discord.com/developers/docs/resources/voice#voice-state-object
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The guild id this voice state is for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The channel id this user is connected to
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The user id this voice state is for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">member</code>
+  <code className="text-fd-muted-foreground">{"APIGuildMember"}</code>
+</div>
+
+The guild member this voice state is for
+
+See https://discord.com/developers/docs/resources/guild#guild-member-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">session_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The session id for this voice state
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">deaf</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this user is deafened by the server
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mute</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this user is muted by the server
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">self_deaf</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this user is locally deafened
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">self_mute</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this user is locally muted
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">self_stream</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this user is streaming using "Go Live"
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">self_video</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this user's camera is enabled
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">suppress</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this user is muted by the current user
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">request_to_speak_timestamp</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The time at which the user requested to speak
+
+
+
+</div></div>
+
+### APIVoiceRegion
+
+https://discord.com/developers/docs/resources/voice#voice-region-object
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Unique ID for the region
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Name of the region
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">optimal</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+`true` for a single server that is closest to the current user's client
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">deprecated</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this is a deprecated voice region (avoid switching to these)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">custom</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this is a custom voice region (used for events/etc)
+
+
+
+</div></div>

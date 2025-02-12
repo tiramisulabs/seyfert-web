@@ -1,0 +1,689 @@
+---
+title: "Collection"
+---
+                 
+### Collection
+
+Represents a collection that extends the built-in Map class.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sweep</code>
+  <code className="text-fd-muted-foreground">{"(fn: (value: V, key: K, collection: Collection<K, V>) => unknown) => number"}</code>
+</div>
+
+Removes elements from the collection based on a filter function.
+
+- param:
+thisArg The value to use as `this` when executing the filter function.
+- returns:
+The number of elements removed from the collection.
+- example:
+```typescript
+const collection = new Collection<number, string>();
+collection.set(1, 'one');
+collection.set(2, 'two');
+collection.set(3, 'three');
+const removedCount = collection.sweep((value, key) => key % 2 === 0);
+console.log(removedCount); // Output: 1
+console.log(collection.size); // Output: 2
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">map</code>
+  <code className="text-fd-muted-foreground">{"<T = any>(fn: (value: V, key: K, collection: Collection<K, V>) => T) => T[]"}</code>
+</div>
+
+Creates a new array with the results of calling a provided function on every element in the collection.
+
+- param:
+thisArg The value to use as `this` when executing the map function.
+- returns:
+A new array with the results of calling the provided function on every element in the collection.
+- example:
+```typescript
+const collection = new Collection<number, string>();
+collection.set(1, 'one');
+collection.set(2, 'two');
+collection.set(3, 'three');
+const mappedArray = collection.map((value, key) => `${key}: ${value}`);
+console.log(mappedArray); // Output: ['1: one', '2: two', '3: three']
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">filter</code>
+  <code className="text-fd-muted-foreground">{"(fn: (value: V, key: K, collection: Collection<K, V>) => boolean) => V[]"}</code>
+</div>
+
+Creates a new array with all elements that pass the test implemented by the provided function.
+
+- param:
+thisArg The value to use as `this` when executing the filter function.
+- returns:
+A new array with the elements that pass the test.
+- example:
+```typescript
+const collection = new Collection<number, string>();
+collection.set(1, 'one');
+collection.set(2, 'two');
+collection.set(3, 'three');
+const filteredArray = collection.filter((value, key) => key % 2 === 0);
+console.log(filteredArray); // Output: ['two']
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduce</code>
+  <code className="text-fd-muted-foreground">{"<T = any>(fn: (accumulator: T, value: V, key: K, collection: Collection<K, V>) => T, initialValue?: T | undefined) => T"}</code>
+</div>
+
+Apply a function against an accumulator and each element in the collection (from left to right) to reduce it to a single value.
+
+- param:
+initialValue The initial value of the accumulator.
+- returns:
+The value that results from the reduction.
+- example:
+```typescript
+const collection = new Collection<number, number>();
+collection.set(1, 1);
+collection.set(2, 2);
+collection.set(3, 3);
+const sum = collection.reduce((acc, value) => acc + value, 0);
+console.log(sum); // Output: 6
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">every</code>
+  <code className="text-fd-muted-foreground">{"(fn: (value: V, key: K, collection: Collection<K, V>) => boolean) => boolean"}</code>
+</div>
+
+Checks if all elements in the collection pass a test implemented by the provided function.
+
+- param:
+fn The function to test each element of the collection.
+- returns:
+`true` if all elements pass the test, otherwise `false`.
+- example:
+```typescript
+const collection = new Collection<number, number>();
+collection.set(1, 1);
+collection.set(2, 2);
+collection.set(3, 3);
+const allGreaterThanZero = collection.every(value => value > 0);
+console.log(allGreaterThanZero); // Output: true
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">some</code>
+  <code className="text-fd-muted-foreground">{"(fn: (value: V, key: K, collection: Collection<K, V>) => boolean) => boolean"}</code>
+</div>
+
+Checks if at least one element in the collection passes a test implemented by the provided function.
+
+- param:
+fn The function to test each element of the collection.
+- returns:
+`true` if at least one element passes the test, otherwise `false`.
+- example:
+```typescript
+const collection = new Collection<number, number>();
+collection.set(1, 1);
+collection.set(2, 2);
+collection.set(3, 3);
+const hasEvenValue = collection.some(value => value % 2 === 0);
+console.log(hasEvenValue); // Output: true
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">find</code>
+  <code className="text-fd-muted-foreground">{"(fn: (value: V, key: K, collection: Collection<K, V>) => boolean) => V | undefined"}</code>
+</div>
+
+Returns the value of the first element in the collection that satisfies the provided testing function.
+
+- param:
+fn The function to test each element of the collection.
+- returns:
+The value of the first element that passes the test. `undefined` if no element passes the test.
+- example:
+```typescript
+const collection = new Collection<number, number>();
+collection.set(1, 1);
+collection.set(2, 2);
+collection.set(3, 3);
+const firstEvenValue = collection.find(value => value % 2 === 0);
+console.log(firstEvenValue); // Output: 2
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findKey</code>
+  <code className="text-fd-muted-foreground">{"(fn: (value: V, key: K, collection: Collection<K, V>) => boolean) => K | undefined"}</code>
+</div>
+
+Returns the first key in the collection that satisfies the provided testing function.
+
+- param:
+fn The function to test each element of the collection.
+- returns:
+The first key that passes the test. `undefined` if no element passes the test.
+- example:
+```typescript
+const collection = new Collection<number, number>();
+collection.set(1, 1);
+collection.set(2, 2);
+collection.set(3, 3);
+const firstEvenKey = collection.findKey(value => value % 2 === 0);
+console.log(firstEvenKey); // Output: 2
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">clear</code>
+  <code className="text-fd-muted-foreground">{"() => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">delete</code>
+  <code className="text-fd-muted-foreground">{"(key: K) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">forEach</code>
+  <code className="text-fd-muted-foreground">{"(callbackfn: (value: V, key: K, map: Map<K, V>) => void, thisArg?: any) => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">get</code>
+  <code className="text-fd-muted-foreground">{"(key: K) => V | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">has</code>
+  <code className="text-fd-muted-foreground">{"(key: K) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">set</code>
+  <code className="text-fd-muted-foreground">{"(key: K, value: V) => Collection<K, V>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">size</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">entries</code>
+  <code className="text-fd-muted-foreground">{"() => MapIterator<[K, V]>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">keys</code>
+  <code className="text-fd-muted-foreground">{"() => MapIterator<K>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">values</code>
+  <code className="text-fd-muted-foreground">{"() => MapIterator<V>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@iterator@33339</code>
+  <code className="text-fd-muted-foreground">{"() => MapIterator<[K, V]>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@toStringTag@33341</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### LimitedCollectionOptions
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">limit</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">expire</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">onDelete</code>
+  <code className="text-fd-muted-foreground">{"(key: K, value: V) => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resetOnDemand</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### LimitedCollection
+
+Creates a new array with the results of calling a provided function on every element in the collection.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"Map<K, LimitedCollectionData<V>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">options</code>
+  <code className="text-fd-muted-foreground">{"LimitedCollectionOptions<K, V>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">timeout</code>
+  <code className="text-fd-muted-foreground">{"Timeout"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">set</code>
+  <code className="text-fd-muted-foreground">{"(key: K, value: V, customExpire?: number) => void"}</code>
+</div>
+
+Adds an element to the limited collection.
+
+- param:
+customExpire The custom expiration time for the element.
+- example:
+```typescript
+const collection = new LimitedCollection<number, string>({ limit: 3 });
+collection.set(1, 'one');
+collection.set(2, 'two');
+collection.set(3, 'three');
+console.log(collection.size); // Output: 3
+collection.set(4, 'four');
+console.log(collection.size); // Output: 3
+console.log(collection.get(1)); // Output: undefined
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">raw</code>
+  <code className="text-fd-muted-foreground">{"(key: K) => LimitedCollectionData<V> | undefined"}</code>
+</div>
+
+Returns the raw data of an element in the limited collection.
+
+- param:
+key The key of the element.
+- returns:
+The raw data of the element, or `undefined` if the element does not exist.
+- example:
+```typescript
+const collection = new LimitedCollection<number, string>();
+collection.set(1, 'one');
+const rawData = collection.raw(1);
+console.log(rawData); // Output: { value: 'one', expire: -1, expireOn: -1 }
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">get</code>
+  <code className="text-fd-muted-foreground">{"(key: K) => V | undefined"}</code>
+</div>
+
+Returns the value of an element in the limited collection.
+
+- param:
+key The key of the element.
+- returns:
+The value of the element, or `undefined` if the element does not exist.
+- example:
+```typescript
+const collection = new LimitedCollection<number, string>();
+collection.set(1, 'one');
+const value = collection.get(1);
+console.log(value); // Output: 'one'
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">has</code>
+  <code className="text-fd-muted-foreground">{"(key: K) => boolean"}</code>
+</div>
+
+Checks if an element exists in the limited collection.
+
+- param:
+key The key of the element.
+- returns:
+`true` if the element exists, `false` otherwise.
+- example:
+```typescript
+const collection = new LimitedCollection<number, string>();
+collection.set(1, 'one');
+console.log(collection.has(1)); // Output: true
+console.log(collection.has(2)); // Output: false
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">delete</code>
+  <code className="text-fd-muted-foreground">{"(key: K) => boolean"}</code>
+</div>
+
+Removes an element from the limited collection.
+
+- param:
+key The key of the element to remove.
+- returns:
+`true` if the element was removed, `false` otherwise.
+- example:
+```typescript
+const collection = new LimitedCollection<number, string>();
+collection.set(1, 'one');
+console.log(collection.delete(1)); // Output: true
+console.log(collection.delete(2)); // Output: false
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">closer</code>
+  <code className="text-fd-muted-foreground">{"LimitedCollectionData<V>"}</code>
+</div>
+
+Returns the element in the limited collection that is closest to expiration.
+
+- returns:
+The element that is closest to expiration, or `undefined` if the collection is empty.
+- example:
+```typescript
+const collection = new LimitedCollection<number, string>();
+collection.set(1, 'one', 1000);
+collection.set(2, 'two', 2000);
+collection.set(3, 'three', 500);
+const closestElement = collection.closer;
+console.log(closestElement); // Output: { value: 'three', expire: 500, expireOn: [current timestamp + 500] }
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">size</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Returns the number of elements in the limited collection.
+
+- returns:
+The number of elements in the collection.
+- example:
+```typescript
+const collection = new LimitedCollection<number, string>();
+collection.set(1, 'one');
+collection.set(2, 'two');
+console.log(collection.size); // Output: 2
+```
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resetTimeout</code>
+  <code className="text-fd-muted-foreground">{"() => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">stopTimeout</code>
+  <code className="text-fd-muted-foreground">{"() => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">startTimeout</code>
+  <code className="text-fd-muted-foreground">{"() => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">keys</code>
+  <code className="text-fd-muted-foreground">{"() => MapIterator<K>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">values</code>
+  <code className="text-fd-muted-foreground">{"() => MapIterator<LimitedCollectionData<V>>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">entries</code>
+  <code className="text-fd-muted-foreground">{"() => MapIterator<[K, LimitedCollectionData<V>]>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">clear</code>
+  <code className="text-fd-muted-foreground">{"() => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">clearExpired</code>
+  <code className="text-fd-muted-foreground">{"() => void"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

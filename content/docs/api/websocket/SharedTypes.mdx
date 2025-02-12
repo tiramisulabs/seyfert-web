@@ -1,0 +1,3191 @@
+---
+title: "SharedTypes"
+---
+                 
+### StatusUpdate
+
+https://discord.com/developers/docs/topics/gateway-events#update-presence
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">activities</code>
+  <code className="text-fd-muted-foreground">{"Omit<GatewayActivity, \"created_at\" | \"id\">[]"}</code>
+</div>
+
+The user's activities
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">status</code>
+  <code className="text-fd-muted-foreground">{"PresenceUpdateStatus"}</code>
+</div>
+
+The user's new status
+
+
+
+</div></div>
+
+### UpdateVoiceState
+
+https://discord.com/developers/docs/topics/gateway#update-voice-state
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+id of the guild
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+id of the voice channel client wants to join (null if disconnecting)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">self_mute</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Is the client muted
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">self_deaf</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Is the client deafened
+
+
+
+</div></div>
+
+### ShardStatusUpdate
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">activities</code>
+  <code className="text-fd-muted-foreground">{"GatewayActivityUpdateData[]"}</code>
+</div>
+
+The user's activities
+
+See https://discord.com/developers/docs/topics/gateway-events#activity-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">status</code>
+  <code className="text-fd-muted-foreground">{"PresenceUpdateStatus"}</code>
+</div>
+
+The user's new status
+
+See https://discord.com/developers/docs/topics/gateway-events#update-presence-status-types
+
+
+
+</div></div>
+
+### RequestGuildMembersOptions
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">query</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+String that username starts with, or an empty string to return all members
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">limit</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Maximum number of members to send matching the `query`;
+a limit of `0` can be used with an empty string `query` to return all members
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the guild to get members for
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">presences</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Used to specify if we want the presences of the matched members
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">nonce</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Nonce to identify the Guild Members Chunk response
+
+Nonce can only be up to 32 bytes. If you send an invalid nonce it will be ignored and the reply member_chunk(s) will not have a `nonce` set.
+
+See https://discord.com/developers/docs/topics/gateway-events#guild-members-chunk
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user_ids</code>
+  <code className="text-fd-muted-foreground">{"string | string[]"}</code>
+</div>
+
+Used to specify which users you wish to fetch
+
+
+
+</div></div>
+
+### GatewayMemberRequest
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">nonce</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The unique nonce for this request.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resolve</code>
+  <code className="text-fd-muted-foreground">{"(value: APIGuildMember[] | PromiseLike<APIGuildMember[]>) => void"}</code>
+</div>
+
+The resolver handler to run when all members arrive.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">members</code>
+  <code className="text-fd-muted-foreground">{"APIGuildMember[]"}</code>
+</div>
+
+The members that have already arrived for this request.
+
+
+
+</div></div>
+
+### RawClientUser
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">bot</code>
+  <code className="text-fd-muted-foreground">{"true"}</code>
+</div>
+
+Whether the user belongs to an OAuth2 application
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The user's id
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">username</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The user's username, not unique across the platform
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">discriminator</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The user's Discord-tag
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">global_name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The user's display name, if it is set. For bots, this is the application name
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatar</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The user's avatar hash
+
+See https://discord.com/developers/docs/reference#image-formatting
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">system</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether the user is an Official Discord System user (part of the urgent message system)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mfa_enabled</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether the user has two factor enabled on their account
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">banner</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The user's banner hash
+
+See https://discord.com/developers/docs/reference#image-formatting
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">accent_color</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The user's banner color encoded as an integer representation of hexadecimal color code
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">locale</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The user's chosen language option
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">verified</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether the email on this account has been verified
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">email</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The user's email
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flags</code>
+  <code className="text-fd-muted-foreground">{"UserFlags"}</code>
+</div>
+
+The flags on a user's account
+
+See https://discord.com/developers/docs/resources/user#user-object-user-flags
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">premium_type</code>
+  <code className="text-fd-muted-foreground">{"UserPremiumType"}</code>
+</div>
+
+The type of Nitro subscription on a user's account
+
+See https://discord.com/developers/docs/resources/user#user-object-premium-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">public_flags</code>
+  <code className="text-fd-muted-foreground">{"UserFlags"}</code>
+</div>
+
+The public flags on a user's account
+
+See https://discord.com/developers/docs/resources/user#user-object-user-flags
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatar_decoration_data</code>
+  <code className="text-fd-muted-foreground">{"APIAvatarDecorationData"}</code>
+</div>
+
+The data for the user's avatar decoration
+
+See https://discord.com/developers/docs/resources/user#avatar-decoration-data-object
+
+
+
+</div></div>
+
+### Events
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">READY</code>
+  <code className="text-fd-muted-foreground">{"GatewayReadyDispatchData & { user: RawClientUser; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIChannel"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_ACTION_EXECUTION</code>
+  <code className="text-fd-muted-foreground">{"GatewayAutoModerationActionExecutionDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_LIST_SYNC</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadListSync"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_MEMBER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadMemberUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_MEMBERS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadMembersUpdate"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_PINS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayChannelPinsUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIGuild"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIUnavailableGuild"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_AUDIT_LOG_ENTRY_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIAuditLogEntry"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_BAN_ADD</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildBanModifyDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_BAN_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildBanModifyDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_EMOJIS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildEmojisUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_STICKERS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildStickersUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_INTEGRATIONS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildIntegrationsUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUNDS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildSoundboardSoundsUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUND_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildSoundboardSoundDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SOUNDBOARD_SOUNDS</code>
+  <code className="text-fd-muted-foreground">{"GatewaySoundboardSoundsDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBER_ADD</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildMemberAddDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBER_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildMemberRemoveDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildMemberUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBERS_CHUNK</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildMembersChunkDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_ROLE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildRoleModifyDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_ROLE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildRoleModifyDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_ROLE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildRoleDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTEGRATION_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayIntegrationDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INVITE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayInviteCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INVITE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayInviteDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_DELETE_BULK</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageDeleteBulkDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_ADD</code>
+  <code className="text-fd-muted-foreground">{"Omit<{ user_id: string; channel_id: string; message_id: string; guild_id?: string | undefined; member?: APIGuildMember | undefined; emoji: APIEmoji; message_author_id?: string | undefined; burst: boolean; burst_colors: string[]; type: ReactionType; }, never>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"Omit<{ user_id: string; channel_id: string; message_id: string; guild_id?: string | undefined; member?: APIGuildMember | undefined; emoji: APIEmoji; message_author_id?: string | undefined; burst: boolean; burst_colors: string[]; type: ReactionType; }, \"member\" | ... 1 more ... | \"burst_colors\">"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_REMOVE_ALL</code>
+  <code className="text-fd-muted-foreground">{"MessageReactionRemoveData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_REMOVE_EMOJI</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageReactionRemoveEmojiDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">PRESENCE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayPresenceUpdate"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">TYPING_START</code>
+  <code className="text-fd-muted-foreground">{"GatewayTypingStartDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">USER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">VOICE_CHANNEL_EFFECT_SEND</code>
+  <code className="text-fd-muted-foreground">{"GatewayVoiceChannelEffectSendDispachData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">VOICE_STATE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayVoiceStateUpdateData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">VOICE_SERVER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayVoiceServerUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">WEBHOOKS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayWebhooksUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTERACTION_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIInteraction"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ENTITLEMENT_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayEntitlementCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### StageSameEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">STAGE_INSTANCE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIStageInstance"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">STAGE_INSTANCE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIStageInstance"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">STAGE_INSTANCE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIStageInstance"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### PollVoteSameEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_POLL_VOTE_ADD</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessagePollVoteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_POLL_VOTE_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessagePollVoteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### IntegrationSameEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTEGRATION_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayIntegrationCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTEGRATION_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayIntegrationCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### GuildScheduledUserSameEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_USER_ADD</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildScheduledEventUserRemoveDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_USER_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildScheduledEventUserRemoveDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### GuildScheduledSameEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIGuildScheduledEvent"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIGuildScheduledEvent"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIGuildScheduledEvent"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### ChannelSameEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIChannel"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIChannel"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIChannel"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### AutoModetaractionRuleEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_RULE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIAutoModerationRule"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_RULE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIAutoModerationRule"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_RULE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIAutoModerationRule"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### EntitlementEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ENTITLEMENT_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIEntitlement"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ENTITLEMENT_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIEntitlement"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### SubscriptionEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SUBSCRIPTION_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APISubscription"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SUBSCRIPTION_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APISubscription"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SUBSCRIPTION_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APISubscription"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### SoundboardSoundsEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUND_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APISoundBoard"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUND_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APISoundBoard"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### NormalizeEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">READY</code>
+  <code className="text-fd-muted-foreground">{"GatewayReadyDispatchData & { user: RawClientUser; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIChannel"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_ACTION_EXECUTION</code>
+  <code className="text-fd-muted-foreground">{"GatewayAutoModerationActionExecutionDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_LIST_SYNC</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadListSync"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_MEMBER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadMemberUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_MEMBERS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadMembersUpdate"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_PINS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayChannelPinsUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIGuild"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIUnavailableGuild"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_AUDIT_LOG_ENTRY_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIAuditLogEntry"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_BAN_ADD</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildBanModifyDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_BAN_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildBanModifyDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_EMOJIS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildEmojisUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_STICKERS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildStickersUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_INTEGRATIONS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildIntegrationsUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUNDS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildSoundboardSoundsUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUND_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildSoundboardSoundDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SOUNDBOARD_SOUNDS</code>
+  <code className="text-fd-muted-foreground">{"GatewaySoundboardSoundsDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBER_ADD</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildMemberAddDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBER_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildMemberRemoveDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildMemberUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBERS_CHUNK</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildMembersChunkDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_ROLE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildRoleModifyDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_ROLE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildRoleModifyDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_ROLE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildRoleDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTEGRATION_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayIntegrationDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INVITE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayInviteCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INVITE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayInviteDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_DELETE_BULK</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageDeleteBulkDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_ADD</code>
+  <code className="text-fd-muted-foreground">{"Omit<{ user_id: string; channel_id: string; message_id: string; guild_id?: string | undefined; member?: APIGuildMember | undefined; emoji: APIEmoji; message_author_id?: string | undefined; burst: boolean; burst_colors: string[]; type: ReactionType; }, never>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"Omit<{ user_id: string; channel_id: string; message_id: string; guild_id?: string | undefined; member?: APIGuildMember | undefined; emoji: APIEmoji; message_author_id?: string | undefined; burst: boolean; burst_colors: string[]; type: ReactionType; }, \"member\" | ... 1 more ... | \"burst_colors\">"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_REMOVE_ALL</code>
+  <code className="text-fd-muted-foreground">{"MessageReactionRemoveData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_REMOVE_EMOJI</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageReactionRemoveEmojiDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">PRESENCE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayPresenceUpdate"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">TYPING_START</code>
+  <code className="text-fd-muted-foreground">{"GatewayTypingStartDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">USER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">VOICE_CHANNEL_EFFECT_SEND</code>
+  <code className="text-fd-muted-foreground">{"GatewayVoiceChannelEffectSendDispachData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">VOICE_STATE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayVoiceStateUpdateData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">VOICE_SERVER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayVoiceServerUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">WEBHOOKS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayWebhooksUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTERACTION_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIInteraction"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ENTITLEMENT_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayEntitlementCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_RULE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIAutoModerationRule"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_RULE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIAutoModerationRule"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_RULE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIAutoModerationRule"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIChannel"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIChannel"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIGuildScheduledEvent"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIGuildScheduledEvent"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIGuildScheduledEvent"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_USER_ADD</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildScheduledEventUserRemoveDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_USER_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildScheduledEventUserRemoveDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTEGRATION_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayIntegrationCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTEGRATION_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayIntegrationCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ENTITLEMENT_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIEntitlement"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ENTITLEMENT_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIEntitlement"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_POLL_VOTE_ADD</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessagePollVoteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_POLL_VOTE_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessagePollVoteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">STAGE_INSTANCE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIStageInstance"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">STAGE_INSTANCE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIStageInstance"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">STAGE_INSTANCE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIStageInstance"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SUBSCRIPTION_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APISubscription"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SUBSCRIPTION_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APISubscription"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SUBSCRIPTION_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APISubscription"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUND_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APISoundBoard"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUND_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APISoundBoard"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">RAW</code>
+  <code className="text-fd-muted-foreground">{"GatewayDispatchEvents"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### GatewayEvents
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">READY</code>
+  <code className="text-fd-muted-foreground">{"GatewayReadyDispatchData & { user: RawClientUser; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIChannel"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_ACTION_EXECUTION</code>
+  <code className="text-fd-muted-foreground">{"GatewayAutoModerationActionExecutionDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_LIST_SYNC</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadListSync"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_MEMBER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadMemberUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">THREAD_MEMBERS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayThreadMembersUpdate"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_PINS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayChannelPinsUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIGuild"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIUnavailableGuild"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_AUDIT_LOG_ENTRY_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIAuditLogEntry"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_BAN_ADD</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildBanModifyDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_BAN_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildBanModifyDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_EMOJIS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildEmojisUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_STICKERS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildStickersUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_INTEGRATIONS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildIntegrationsUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUNDS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildSoundboardSoundsUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUND_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildSoundboardSoundDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SOUNDBOARD_SOUNDS</code>
+  <code className="text-fd-muted-foreground">{"GatewaySoundboardSoundsDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBER_ADD</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildMemberAddDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBER_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildMemberRemoveDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildMemberUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_MEMBERS_CHUNK</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildMembersChunkDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_ROLE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildRoleModifyDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_ROLE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildRoleModifyDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_ROLE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildRoleDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTEGRATION_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayIntegrationDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INVITE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayInviteCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INVITE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayInviteDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageDeleteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_DELETE_BULK</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageDeleteBulkDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_ADD</code>
+  <code className="text-fd-muted-foreground">{"Omit<{ user_id: string; channel_id: string; message_id: string; guild_id?: string | undefined; member?: APIGuildMember | undefined; emoji: APIEmoji; message_author_id?: string | undefined; burst: boolean; burst_colors: string[]; type: ReactionType; }, never>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"Omit<{ user_id: string; channel_id: string; message_id: string; guild_id?: string | undefined; member?: APIGuildMember | undefined; emoji: APIEmoji; message_author_id?: string | undefined; burst: boolean; burst_colors: string[]; type: ReactionType; }, \"member\" | ... 1 more ... | \"burst_colors\">"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_REMOVE_ALL</code>
+  <code className="text-fd-muted-foreground">{"MessageReactionRemoveData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_REACTION_REMOVE_EMOJI</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessageReactionRemoveEmojiDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">PRESENCE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayPresenceUpdate"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">TYPING_START</code>
+  <code className="text-fd-muted-foreground">{"GatewayTypingStartDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">USER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">VOICE_CHANNEL_EFFECT_SEND</code>
+  <code className="text-fd-muted-foreground">{"GatewayVoiceChannelEffectSendDispachData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">VOICE_STATE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayVoiceStateUpdateData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">VOICE_SERVER_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayVoiceServerUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">WEBHOOKS_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayWebhooksUpdateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTERACTION_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIInteraction"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ENTITLEMENT_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayEntitlementCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_RULE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIAutoModerationRule"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_RULE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIAutoModerationRule"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">AUTO_MODERATION_RULE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIAutoModerationRule"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIChannel"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">CHANNEL_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIChannel"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIGuildScheduledEvent"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIGuildScheduledEvent"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIGuildScheduledEvent"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_USER_ADD</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildScheduledEventUserRemoveDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SCHEDULED_EVENT_USER_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"GatewayGuildScheduledEventUserRemoveDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTEGRATION_CREATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayIntegrationCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">INTEGRATION_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"GatewayIntegrationCreateDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ENTITLEMENT_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIEntitlement"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ENTITLEMENT_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIEntitlement"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_POLL_VOTE_ADD</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessagePollVoteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">MESSAGE_POLL_VOTE_REMOVE</code>
+  <code className="text-fd-muted-foreground">{"GatewayMessagePollVoteDispatchData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">STAGE_INSTANCE_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APIStageInstance"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">STAGE_INSTANCE_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APIStageInstance"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">STAGE_INSTANCE_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APIStageInstance"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SUBSCRIPTION_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APISubscription"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SUBSCRIPTION_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APISubscription"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">SUBSCRIPTION_DELETE</code>
+  <code className="text-fd-muted-foreground">{"APISubscription"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUND_CREATE</code>
+  <code className="text-fd-muted-foreground">{"APISoundBoard"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">GUILD_SOUNDBOARD_SOUND_UPDATE</code>
+  <code className="text-fd-muted-foreground">{"APISoundBoard"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">RAW</code>
+  <code className="text-fd-muted-foreground">{"GatewayDispatchEvents"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

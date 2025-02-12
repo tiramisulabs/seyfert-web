@@ -1,0 +1,358 @@
+---
+title: "Webhook"
+---
+                 
+### Webhook
+
+Represents a Discord webhook.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user</code>
+  <code className="text-fd-muted-foreground">{"User"}</code>
+</div>
+
+The user associated with the webhook, if applicable.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sourceGuild</code>
+  <code className="text-fd-muted-foreground">{"Partial<AnonymousGuild>"}</code>
+</div>
+
+The source guild of the webhook, if applicable.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">messages</code>
+  <code className="text-fd-muted-foreground">{"{ write: (payload: { body: Omit<RESTPostAPIWebhookWithTokenJSONBody, \"components\" | \"embeds\" | \"poll\"> & SendResolverProps; query?: RESTPostAPIWebhookWithTokenQuery | undefined; }) => Promise<...>; edit: (payload: { ...; }) => Promise<...>; delete: (messageId: string, reason?: string | undefined) => Promise<...>; }"}</code>
+</div>
+
+Methods related to interacting with messages through the webhook.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild</code>
+  <code className="text-fd-muted-foreground">{"{ (mode?: \"rest\" | \"flow\" | undefined): Promise<Guild<\"api\" | \"cached\"> | undefined>; (mode: \"cache\"): ReturnCache<Guild<\"cached\"> | undefined>; }"}</code>
+</div>
+
+Fetches the guild associated with the webhook.
+
+- param:
+force Whether to force fetching the guild even if it's already cached.
+- returns:
+A promise that resolves to the guild associated with the webhook, or undefined if not applicable.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel</code>
+  <code className="text-fd-muted-foreground">{"{ (mode?: \"rest\" | \"flow\" | undefined): Promise<AllChannels>; (mode: \"cache\"): ReturnCache<AllChannels | undefined>; }"}</code>
+</div>
+
+Fetches the channel associated with the webhook.
+
+- param:
+force Whether to force fetching the channel even if it's already cached.
+- returns:
+A promise that resolves to the channel associated with the webhook, or undefined if not applicable.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatarURL</code>
+  <code className="text-fd-muted-foreground">{"(options?: CDNUrlOptions | undefined) => string | null"}</code>
+</div>
+
+Retrieves the avatar URL of the webhook.
+
+- param:
+options The image options for the avatar.
+- returns:
+The avatar URL of the webhook, or null if no avatar is set.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fetch</code>
+  <code className="text-fd-muted-foreground">{"() => Promise<Webhook>"}</code>
+</div>
+
+Fetches the webhook data from the Discord API.
+
+- returns:
+A promise that resolves to the fetched webhook data.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">edit</code>
+  <code className="text-fd-muted-foreground">{"(body: RESTPatchAPIWebhookJSONBody | RESTPatchAPIWebhookWithTokenJSONBody, reason?: string | undefined) => Promise<...>"}</code>
+</div>
+
+Edits the webhook.
+
+- param:
+reason The reason for editing the webhook.
+- returns:
+A promise that resolves when the webhook is successfully edited.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">delete</code>
+  <code className="text-fd-muted-foreground">{"(reason?: string | undefined) => Promise<never>"}</code>
+</div>
+
+Deletes the webhook.
+
+- param:
+reason The reason for deleting the webhook.
+- returns:
+A promise that resolves when the webhook is successfully deleted.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">createdTimestamp</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Create a timestamp for the current object.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">createdAt</code>
+  <code className="text-fd-muted-foreground">{"Date"}</code>
+</div>
+
+createdAt gets the creation Date instace of the current object.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client</code>
+  <code className="text-fd-muted-foreground">{"UsingClient"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"WebhookType"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guildId</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channelId</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">avatar</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">applicationId</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sourceChannel</code>
+  <code className="text-fd-muted-foreground">{"{ id: string; type: ChannelType; name?: string | null | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### MessageWebhookMethodEditParams
+
+Type definition for parameters of editing a message through a webhook.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">body</code>
+  <code className="text-fd-muted-foreground">{"Omit<RESTPatchAPIWebhookWithTokenMessageJSONBody, \"components\" | \"embeds\" | \"poll\"> & ResolverProps"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">messageId</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">query</code>
+  <code className="text-fd-muted-foreground">{"RESTGetAPIWebhookWithTokenMessageQuery"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### MessageWebhookMethodWriteParams
+
+Type definition for parameters of writing a message through a webhook.
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">body</code>
+  <code className="text-fd-muted-foreground">{"Omit<RESTPostAPIWebhookWithTokenJSONBody, \"components\" | \"embeds\" | \"poll\"> & SendResolverProps"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">query</code>
+  <code className="text-fd-muted-foreground">{"RESTPostAPIWebhookWithTokenQuery"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

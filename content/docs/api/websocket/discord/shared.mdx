@@ -1,0 +1,1006 @@
+---
+title: "Shared"
+---
+                 
+### ShardManagerOptions
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">info</code>
+  <code className="text-fd-muted-foreground">{"APIGatewayBotInfo"}</code>
+</div>
+
+Important data which is used by the manager to connect shards to the gateway.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">spawnShardDelay</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Delay in milliseconds to wait before spawning next shard. OPTIMAL IS ABOVE 5100. YOU DON'T WANT TO HIT THE RATE LIMIT!!!
+
+- default:
+5300
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">totalShards</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Total amount of shards your bot uses. Useful for zero-downtime updates or resharding.
+
+- default:
+1
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shardStart</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shardEnd</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">handlePayload</code>
+  <code className="text-fd-muted-foreground">{"(shardId: number, packet: GatewayDispatchPayload) => unknown"}</code>
+</div>
+
+The payload handlers for messages on the shard.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">debug</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+wheter to send debug information to the console
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">presence</code>
+  <code className="text-fd-muted-foreground">{"(shardId: number, workerId: number) => GatewayPresenceUpdateData"}</code>
+</div>
+
+Set a presence.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">compress</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resharding</code>
+  <code className="text-fd-muted-foreground">{"{ getInfo(): Promise<APIGatewayBotInfo>; interval: number; percentage: number; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Bot token which is used to connect to Discord
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The URL of the gateway which should be connected to.
+
+- default:
+"wss://gateway.discord.gg"
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">version</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The gateway version which should be used.
+
+- default:
+10
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">intents</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The calculated intent value of the events which the shard should receive.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">properties</code>
+  <code className="text-fd-muted-foreground">{"IdentifyProperties"}</code>
+</div>
+
+Identify properties to use
+
+
+
+</div></div>
+
+### CustomManagerAdapter
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">postMessage</code>
+  <code className="text-fd-muted-foreground">{"(workerId: number, body: unknown) => unknown"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">spawn</code>
+  <code className="text-fd-muted-foreground">{"(workerData: WorkerData, env: Record<string, any>) => unknown"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### WorkerManagerOptions
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mode</code>
+  <code className="text-fd-muted-foreground">{"\"threads\" | \"clusters\" | \"custom\""}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">adapter</code>
+  <code className="text-fd-muted-foreground">{"CustomManagerAdapter"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">workers</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shardsPerWorker</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+- default:
+16
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">workerProxy</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">path</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">handlePayload</code>
+  <code className="text-fd-muted-foreground">{"(shardId: number, workerId: number, packet: GatewayDispatchPayload) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">handleWorkerMessage</code>
+  <code className="text-fd-muted-foreground">{"(message: WorkerMessages) => any"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">properties</code>
+  <code className="text-fd-muted-foreground">{"DeepPartial<IdentifyProperties>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">getRC</code>
+  <code className="text-fd-muted-foreground">{"() => Awaitable<InternalRuntimeConfig | InternalRuntimeConfigHTTP>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">info</code>
+  <code className="text-fd-muted-foreground">{"APIGatewayBotInfo"}</code>
+</div>
+
+Important data which is used by the manager to connect shards to the gateway.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">spawnShardDelay</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Delay in milliseconds to wait before spawning next shard. OPTIMAL IS ABOVE 5100. YOU DON'T WANT TO HIT THE RATE LIMIT!!!
+
+- default:
+5300
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">totalShards</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Total amount of shards your bot uses. Useful for zero-downtime updates or resharding.
+
+- default:
+1
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shardStart</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shardEnd</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">debug</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+wheter to send debug information to the console
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">presence</code>
+  <code className="text-fd-muted-foreground">{"(shardId: number, workerId: number) => GatewayPresenceUpdateData"}</code>
+</div>
+
+Set a presence.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">compress</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resharding</code>
+  <code className="text-fd-muted-foreground">{"{ getInfo(): Promise<APIGatewayBotInfo>; interval: number; percentage: number; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Bot token which is used to connect to Discord
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The URL of the gateway which should be connected to.
+
+- default:
+"wss://gateway.discord.gg"
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">version</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The gateway version which should be used.
+
+- default:
+10
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">intents</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The calculated intent value of the events which the shard should receive.
+
+
+
+</div></div>
+
+### ShardData
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resume_seq</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+resume seq to resume connections
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resume_gateway_url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+resume_gateway_url is the url to resume the connection
+
+- link:
+https://discord.com/developers/docs/topics/gateway#ready-event
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">session_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+session_id is the unique session id of the gateway
+do not mistake with the seyfert client which is named Client
+
+
+
+</div></div>
+
+### ShardDetails
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Bot token which is used to connect to Discord
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The URL of the gateway which should be connected to.
+
+- default:
+"wss://gateway.discord.gg"
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">version</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The gateway version which should be used.
+
+- default:
+10
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">intents</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The calculated intent value of the events which the shard should receive.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">properties</code>
+  <code className="text-fd-muted-foreground">{"IdentifyProperties"}</code>
+</div>
+
+Identify properties to use
+
+
+
+</div></div>
+
+### ShardOptions
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">info</code>
+  <code className="text-fd-muted-foreground">{"APIGatewayBotInfo"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">handlePayload</code>
+  <code className="text-fd-muted-foreground">{"(shardId: number, packet: GatewayDispatchPayload) => unknown"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">ratelimitOptions</code>
+  <code className="text-fd-muted-foreground">{"{ maxRequestsPerRateLimitTick: number; rateLimitResetInterval: number; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">debugger</code>
+  <code className="text-fd-muted-foreground">{"Logger"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">compress</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">presence</code>
+  <code className="text-fd-muted-foreground">{"GatewayPresenceUpdateData"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Bot token which is used to connect to Discord
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">url</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The URL of the gateway which should be connected to.
+
+- default:
+"wss://gateway.discord.gg"
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">version</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The gateway version which should be used.
+
+- default:
+10
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">intents</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The calculated intent value of the events which the shard should receive.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">properties</code>
+  <code className="text-fd-muted-foreground">{"IdentifyProperties"}</code>
+</div>
+
+Identify properties to use
+
+
+
+</div></div>
+
+### ShardSocketCloseCodes
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(radix?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toFixed</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toExponential</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toPrecision</code>
+  <code className="text-fd-muted-foreground">{"(precision?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valueOf</code>
+  <code className="text-fd-muted-foreground">{"() => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined, options?: NumberFormatOptions | undefined): string; (locales?: LocalesArgument, options?: NumberFormatOptions | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### WorkerData
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">intents</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">token</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">path</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shards</code>
+  <code className="text-fd-muted-foreground">{"number[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">totalShards</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">totalWorkers</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mode</code>
+  <code className="text-fd-muted-foreground">{"\"threads\" | \"clusters\" | \"custom\""}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">workerId</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">debug</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">workerProxy</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">info</code>
+  <code className="text-fd-muted-foreground">{"APIGatewayBotInfo"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">compress</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__USING_WATCHER__</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resharding</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

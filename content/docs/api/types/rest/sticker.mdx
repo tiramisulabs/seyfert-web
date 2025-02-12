@@ -1,0 +1,1272 @@
+---
+title: "Sticker"
+---
+                 
+### RESTGetAPIStickerResult
+
+https://discord.com/developers/docs/resources/sticker#get-sticker
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pack_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+For standard stickers, ID of the pack the sticker is from
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Name of the sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Description of the sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tags</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+For guild stickers, the Discord name of a unicode emoji representing the sticker's expression. for standard stickers, a comma-separated list of related expressions.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"StickerType"}</code>
+</div>
+
+Type of sticker
+
+See https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">format_type</code>
+  <code className="text-fd-muted-foreground">{"StickerFormatType"}</code>
+</div>
+
+Type of sticker format
+
+See https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-format-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">available</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this guild sticker can be used, may be false due to loss of Server Boosts
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the guild that owns this sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+The user that uploaded the guild sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sort_value</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The standard sticker's sort order within its pack
+
+
+
+</div></div>
+
+### RESTGetStickerPacksResult
+
+https://discord.com/developers/docs/resources/sticker#list-sticker-packs
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sticker_packs</code>
+  <code className="text-fd-muted-foreground">{"APIStickerPack[]"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTGetAPIStickerPack
+
+https://discord.com/developers/docs/resources/sticker#get-sticker-pack
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the sticker pack
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">stickers</code>
+  <code className="text-fd-muted-foreground">{"APISticker[]"}</code>
+</div>
+
+The stickers in the pack
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Name of the sticker pack
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sku_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the pack's SKU
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">cover_sticker_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of a sticker in the pack which is shown as the pack's icon
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Description of the sticker pack
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">banner_asset_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the sticker pack's banner image
+
+
+
+</div></div>
+
+### RESTGetAPIGuildStickersResult
+
+https://discord.com/developers/docs/resources/sticker#list-guild-stickers
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">length</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"() => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (): string; (locales: string | string[], options?: (NumberFormatOptions & DateTimeFormatOptions) | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pop</code>
+  <code className="text-fd-muted-foreground">{"() => APISticker | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">push</code>
+  <code className="text-fd-muted-foreground">{"(...items: APISticker[]) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">concat</code>
+  <code className="text-fd-muted-foreground">{"{ (...items: ConcatArray<APISticker>[]): APISticker[]; (...items: (APISticker | ConcatArray<APISticker>)[]): APISticker[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">join</code>
+  <code className="text-fd-muted-foreground">{"(separator?: string | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reverse</code>
+  <code className="text-fd-muted-foreground">{"() => APISticker[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">shift</code>
+  <code className="text-fd-muted-foreground">{"() => APISticker | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">slice</code>
+  <code className="text-fd-muted-foreground">{"(start?: number | undefined, end?: number | undefined) => APISticker[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sort</code>
+  <code className="text-fd-muted-foreground">{"(compareFn?: ((a: APISticker, b: APISticker) => number) | undefined) => RESTGetAPIGuildStickersResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">splice</code>
+  <code className="text-fd-muted-foreground">{"{ (start: number, deleteCount?: number | undefined): APISticker[]; (start: number, deleteCount: number, ...items: APISticker[]): APISticker[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">unshift</code>
+  <code className="text-fd-muted-foreground">{"(...items: APISticker[]) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">indexOf</code>
+  <code className="text-fd-muted-foreground">{"(searchElement: APISticker, fromIndex?: number | undefined) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">lastIndexOf</code>
+  <code className="text-fd-muted-foreground">{"(searchElement: APISticker, fromIndex?: number | undefined) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">every</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends APISticker>(predicate: (value: APISticker, index: number, array: APISticker[]) => value is S, thisArg?: any): this is S[]; (predicate: (value: APISticker, index: number, array: APISticker[]) => unknown, thisArg?: any): boolean; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">some</code>
+  <code className="text-fd-muted-foreground">{"(predicate: (value: APISticker, index: number, array: APISticker[]) => unknown, thisArg?: any) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">forEach</code>
+  <code className="text-fd-muted-foreground">{"(callbackfn: (value: APISticker, index: number, array: APISticker[]) => void, thisArg?: any) => void"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">map</code>
+  <code className="text-fd-muted-foreground">{"<U>(callbackfn: (value: APISticker, index: number, array: APISticker[]) => U, thisArg?: any) => U[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">filter</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends APISticker>(predicate: (value: APISticker, index: number, array: APISticker[]) => value is S, thisArg?: any): S[]; (predicate: (value: APISticker, index: number, array: APISticker[]) => unknown, thisArg?: any): APISticker[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduce</code>
+  <code className="text-fd-muted-foreground">{"{ (callbackfn: (previousValue: APISticker, currentValue: APISticker, currentIndex: number, array: APISticker[]) => APISticker): APISticker; (callbackfn: (previousValue: APISticker, currentValue: APISticker, currentIndex: number, array: APISticker[]) => APISticker, initialValue: APISticker): APISticker; <U>(callbackf..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">reduceRight</code>
+  <code className="text-fd-muted-foreground">{"{ (callbackfn: (previousValue: APISticker, currentValue: APISticker, currentIndex: number, array: APISticker[]) => APISticker): APISticker; (callbackfn: (previousValue: APISticker, currentValue: APISticker, currentIndex: number, array: APISticker[]) => APISticker, initialValue: APISticker): APISticker; <U>(callbackf..."}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">find</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends APISticker>(predicate: (value: APISticker, index: number, obj: APISticker[]) => value is S, thisArg?: any): S | undefined; (predicate: (value: APISticker, index: number, obj: APISticker[]) => unknown, thisArg?: any): APISticker | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findIndex</code>
+  <code className="text-fd-muted-foreground">{"(predicate: (value: APISticker, index: number, obj: APISticker[]) => unknown, thisArg?: any) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fill</code>
+  <code className="text-fd-muted-foreground">{"(value: APISticker, start?: number | undefined, end?: number | undefined) => RESTGetAPIGuildStickersResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">copyWithin</code>
+  <code className="text-fd-muted-foreground">{"(target: number, start: number, end?: number | undefined) => RESTGetAPIGuildStickersResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">entries</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<[number, APISticker]>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">keys</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<number>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">values</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<APISticker>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">includes</code>
+  <code className="text-fd-muted-foreground">{"(searchElement: APISticker, fromIndex?: number | undefined) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flatMap</code>
+  <code className="text-fd-muted-foreground">{"<U, This = undefined>(callback: (this: This, value: APISticker, index: number, array: APISticker[]) => U | readonly U[], thisArg?: This | undefined) => U[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flat</code>
+  <code className="text-fd-muted-foreground">{"<A, D extends number = 1>(this: A, depth?: D | undefined) => FlatArray<A, D>[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">at</code>
+  <code className="text-fd-muted-foreground">{"(index: number) => APISticker | undefined"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findLast</code>
+  <code className="text-fd-muted-foreground">{"{ <S extends APISticker>(predicate: (value: APISticker, index: number, array: APISticker[]) => value is S, thisArg?: any): S | undefined; (predicate: (value: APISticker, index: number, array: APISticker[]) => unknown, thisArg?: any): APISticker | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">findLastIndex</code>
+  <code className="text-fd-muted-foreground">{"(predicate: (value: APISticker, index: number, array: APISticker[]) => unknown, thisArg?: any) => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toReversed</code>
+  <code className="text-fd-muted-foreground">{"() => APISticker[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toSorted</code>
+  <code className="text-fd-muted-foreground">{"(compareFn?: ((a: APISticker, b: APISticker) => number) | undefined) => APISticker[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toSpliced</code>
+  <code className="text-fd-muted-foreground">{"{ (start: number, deleteCount: number, ...items: APISticker[]): APISticker[]; (start: number, deleteCount?: number | undefined): APISticker[]; }"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">with</code>
+  <code className="text-fd-muted-foreground">{"(index: number, value: APISticker) => APISticker[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@iterator@147920</code>
+  <code className="text-fd-muted-foreground">{"() => ArrayIterator<APISticker>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">__@unscopables@147922</code>
+  <code className="text-fd-muted-foreground">{"{ [x: number]: boolean | undefined; length?: boolean | undefined; toString?: boolean | undefined; toLocaleString?: boolean | undefined; pop?: boolean | undefined; push?: boolean | undefined; ... 35 more ...; readonly [Symbol.unscopables]?: boolean | undefined; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### RESTGetAPIGuildStickerResult
+
+https://discord.com/developers/docs/resources/sticker#get-guild-sticker
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pack_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+For standard stickers, ID of the pack the sticker is from
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Name of the sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Description of the sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tags</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+For guild stickers, the Discord name of a unicode emoji representing the sticker's expression. for standard stickers, a comma-separated list of related expressions.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"StickerType"}</code>
+</div>
+
+Type of sticker
+
+See https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">format_type</code>
+  <code className="text-fd-muted-foreground">{"StickerFormatType"}</code>
+</div>
+
+Type of sticker format
+
+See https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-format-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">available</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this guild sticker can be used, may be false due to loss of Server Boosts
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the guild that owns this sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+The user that uploaded the guild sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sort_value</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The standard sticker's sort order within its pack
+
+
+
+</div></div>
+
+### RESTPostAPIGuildStickerFormDataBody
+
+https://discord.com/developers/docs/resources/sticker#create-guild-sticker
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Name of the sticker (2-30 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Description of the sticker (empty or 2-100 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tags</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The Discord name of a unicode emoji representing the sticker's expression (2-200 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">file</code>
+  <code className="text-fd-muted-foreground">{"{}"}</code>
+</div>
+
+The sticker file to upload, must be a PNG, APNG, GIF, or Lottie JSON file, max 512 KB
+
+Uploaded stickers are constrained to 5 seconds in length for animated stickers, and 320 x 320 pixels.
+
+
+
+</div></div>
+
+### RESTPostAPIGuildStickerResult
+
+https://discord.com/developers/docs/resources/sticker#create-guild-sticker
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pack_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+For standard stickers, ID of the pack the sticker is from
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Name of the sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Description of the sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tags</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+For guild stickers, the Discord name of a unicode emoji representing the sticker's expression. for standard stickers, a comma-separated list of related expressions.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"StickerType"}</code>
+</div>
+
+Type of sticker
+
+See https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">format_type</code>
+  <code className="text-fd-muted-foreground">{"StickerFormatType"}</code>
+</div>
+
+Type of sticker format
+
+See https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-format-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">available</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this guild sticker can be used, may be false due to loss of Server Boosts
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the guild that owns this sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+The user that uploaded the guild sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sort_value</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The standard sticker's sort order within its pack
+
+
+
+</div></div>
+
+### RESTPatchAPIGuildStickerJSONBody
+
+https://discord.com/developers/docs/resources/sticker#modify-guild-sticker
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Name of the sticker (2-30 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Description of the sticker (2-100 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tags</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The Discord name of a unicode emoji representing the sticker's expression (2-200 characters)
+
+
+
+</div></div>
+
+### RESTPatchAPIGuildStickerResult
+
+https://discord.com/developers/docs/resources/sticker#modify-guild-sticker
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">pack_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+For standard stickers, ID of the pack the sticker is from
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Name of the sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">description</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Description of the sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tags</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+For guild stickers, the Discord name of a unicode emoji representing the sticker's expression. for standard stickers, a comma-separated list of related expressions.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"StickerType"}</code>
+</div>
+
+Type of sticker
+
+See https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">format_type</code>
+  <code className="text-fd-muted-foreground">{"StickerFormatType"}</code>
+</div>
+
+Type of sticker format
+
+See https://discord.com/developers/docs/resources/sticker#sticker-object-sticker-format-types
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">available</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this guild sticker can be used, may be false due to loss of Server Boosts
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the guild that owns this sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">user</code>
+  <code className="text-fd-muted-foreground">{"APIUser"}</code>
+</div>
+
+The user that uploaded the guild sticker
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">sort_value</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The standard sticker's sort order within its pack
+
+
+
+</div></div>
+
+### RESTDeleteAPIGuildStickerResult
+
+https://discord.com/developers/docs/resources/sticker#delete-guild-sticker
+
+<div className='*:border-b [&>*:last-child]:border-b-0'></div>

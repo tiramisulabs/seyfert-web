@@ -1,0 +1,785 @@
+---
+title: "Responses"
+---
+                 
+### InteractionType
+
+https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-type
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(radix?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toFixed</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toExponential</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toPrecision</code>
+  <code className="text-fd-muted-foreground">{"(precision?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valueOf</code>
+  <code className="text-fd-muted-foreground">{"() => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined, options?: NumberFormatOptions | undefined): string; (locales?: LocalesArgument, options?: NumberFormatOptions | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIInteractionResponse
+
+https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"InteractionResponseType"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIInteractionResponsePong
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"InteractionResponseType.Pong"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIApplicationCommandAutocompleteResponse
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"InteractionResponseType.ApplicationCommandAutocompleteResult"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"APICommandAutocompleteInteractionResponseCallbackData"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIModalInteractionResponse
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"InteractionResponseType.Modal"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"APIModalInteractionResponseCallbackData"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIInteractionResponseChannelMessageWithSource
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"InteractionResponseType.ChannelMessageWithSource"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"APIInteractionResponseCallbackData"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIInteractionResponseDeferredChannelMessageWithSource
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"InteractionResponseType.DeferredChannelMessageWithSource"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"Pick<APIInteractionResponseCallbackData, \"flags\">"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIInteractionResponseDeferredMessageUpdate
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"InteractionResponseType.DeferredMessageUpdate"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIInteractionResponseUpdateMessage
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"InteractionResponseType.UpdateMessage"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">data</code>
+  <code className="text-fd-muted-foreground">{"APIInteractionResponseCallbackData"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIInteractionResponseLaunchActivity
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"InteractionResponseType.LaunchActivity"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### InteractionResponseType
+
+https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-callback-type
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(radix?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toFixed</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toExponential</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toPrecision</code>
+  <code className="text-fd-muted-foreground">{"(precision?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valueOf</code>
+  <code className="text-fd-muted-foreground">{"() => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined, options?: NumberFormatOptions | undefined): string; (locales?: LocalesArgument, options?: NumberFormatOptions | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIInteractionResponseCallbackData
+
+https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-interaction-callback-data-structure
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">content</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The message contents (up to 2000 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">tts</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+`true` if this is a TTS message
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">embeds</code>
+  <code className="text-fd-muted-foreground">{"APIEmbed[]"}</code>
+</div>
+
+Embedded `rich` content
+
+See https://discord.com/developers/docs/resources/channel#embed-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">allowed_mentions</code>
+  <code className="text-fd-muted-foreground">{"APIAllowedMentions"}</code>
+</div>
+
+Allowed mentions for the message
+
+See https://discord.com/developers/docs/resources/channel#allowed-mentions-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">components</code>
+  <code className="text-fd-muted-foreground">{"APIActionRowComponent<APIMessageActionRowComponent>[]"}</code>
+</div>
+
+The components to include with the message
+
+Requires an application-owned webhook
+
+See https://discord.com/developers/docs/interactions/message-components#component-object
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">attachments</code>
+  <code className="text-fd-muted-foreground">{"Partial<Pick<APIAttachment, \"description\" | \"duration_secs\" | \"filename\" | \"title\" | \"waveform\" | \"id\">>[]"}</code>
+</div>
+
+Attachment objects with filename and description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flags</code>
+  <code className="text-fd-muted-foreground">{"MessageFlags"}</code>
+</div>
+
+Message flags combined as a bitfield
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">thread_name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Name of thread to create
+
+Available only if the webhook is in a forum channel and a thread is not specified in &lbrace;@link RESTPostAPIWebhookWithTokenQuery.thread_id&rbrace; query parameter
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">applied_tags</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+Array of tag ids to apply to the thread
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">poll</code>
+  <code className="text-fd-muted-foreground">{"RESTAPIPollCreate"}</code>
+</div>
+
+A poll!
+
+
+
+</div></div>
+
+### APICommandAutocompleteInteractionResponseCallbackData
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">choices</code>
+  <code className="text-fd-muted-foreground">{"APIApplicationCommandOptionChoice<string | number>[]"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIModalInteractionResponseCallbackData
+
+https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-response-object-modal
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">custom_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+A developer-defined identifier for the component, max 100 characters
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">title</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The title of the popup modal
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">components</code>
+  <code className="text-fd-muted-foreground">{"APIActionRowComponent<APITextInputComponent>[]"}</code>
+</div>
+
+Between 1 and 5 (inclusive) components that make up the modal
+
+
+
+</div></div>
+
+### InteractionCallbackData
+
+https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-callback-interaction-callback-object
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"T"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">activity_instance_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Instance ID of the Activity if one was launched or joined
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">response_message_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+ID of the message that was created by the interaction
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">response_message_loading</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether or not the message is in a loading state
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">response_message_ephemeral</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether or not the response message was ephemeral
+
+
+
+</div></div>
+
+### InteractionCallbackResourceActivity
+
+https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-callback-interaction-callback-resource-object
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Instance ID of the Activity if one was launched or joined.
+
+
+
+</div></div>
+
+### InteractionCallbackResource
+
+https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-callback-interaction-callback-activity-instance-resource
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"T"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">activity_instance</code>
+  <code className="text-fd-muted-foreground">{"InteractionCallbackResourceActivity"}</code>
+</div>
+
+Represents the Activity launched by this interaction.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">message</code>
+  <code className="text-fd-muted-foreground">{"Omit<RESTPostAPIWebhookWithTokenJSONBody, \"avatar_url\" | \"username\"> & { flags?: MessageFlags | undefined; }"}</code>
+</div>
+
+Message created by the interaction.
+
+
+
+</div></div>
+
+### InteractionCallbackResponse
+
+https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-callback-interaction-callback-response-object
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">interaction</code>
+  <code className="text-fd-muted-foreground">{"InteractionCallbackData<InteractionType>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resource</code>
+  <code className="text-fd-muted-foreground">{"InteractionCallbackResource<InteractionResponseType>"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIInteractionCallbackLaunchActivity
+
+https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-callback-interaction-callback-response-object
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">interaction</code>
+  <code className="text-fd-muted-foreground">{"InteractionCallbackData<InteractionType>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resource</code>
+  <code className="text-fd-muted-foreground">{"InteractionCallbackResource<InteractionResponseType> & Omit<MakeRequired<InteractionCallbackResource<InteractionResponseType>, \"activity_instance\">, \"message\">"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIInteractionCallbackMessage
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">interaction</code>
+  <code className="text-fd-muted-foreground">{"InteractionCallbackData<InteractionType>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">resource</code>
+  <code className="text-fd-muted-foreground">{"InteractionCallbackResource<InteractionResponseType> & Omit<MakeRequired<InteractionCallbackResource<InteractionResponseType>, \"message\">, \"activity_instance\">"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

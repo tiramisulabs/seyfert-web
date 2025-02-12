@@ -1,0 +1,625 @@
+---
+title: "AutoModeration"
+---
+                 
+### APIAutoModerationRule
+
+https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-auto-moderation-rule-structure
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of this rule
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The guild which this rule belongs to
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">name</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The rule name
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">creator_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The user id who created this rule
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">event_type</code>
+  <code className="text-fd-muted-foreground">{"AutoModerationRuleEventType"}</code>
+</div>
+
+The rule event type
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">trigger_type</code>
+  <code className="text-fd-muted-foreground">{"AutoModerationRuleTriggerType"}</code>
+</div>
+
+The rule trigger type
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">trigger_metadata</code>
+  <code className="text-fd-muted-foreground">{"APIAutoModerationRuleTriggerMetadata"}</code>
+</div>
+
+The rule trigger metadata
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">actions</code>
+  <code className="text-fd-muted-foreground">{"APIAutoModerationAction[]"}</code>
+</div>
+
+The actions which will execute when this rule is triggered
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">enabled</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether this rule is enabled
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">exempt_roles</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+The role ids that shouldn't be affected by this rule (Maximum of 20)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">exempt_channels</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+The channel ids that shouldn't be affected by this rule (Maximum of 50)
+
+
+
+</div></div>
+
+### AutoModerationRuleTriggerType
+
+https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-trigger-types
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(radix?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toFixed</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toExponential</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toPrecision</code>
+  <code className="text-fd-muted-foreground">{"(precision?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valueOf</code>
+  <code className="text-fd-muted-foreground">{"() => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined, options?: NumberFormatOptions | undefined): string; (locales?: LocalesArgument, options?: NumberFormatOptions | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIAutoModerationRuleTriggerMetadata
+
+https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-trigger-metadata
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">keyword_filter</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+Substrings which will be searched for in content (Maximum of 1000)
+
+A keyword can be a phrase which contains multiple words. Wildcard symbols can be used to customize how each string will be matched. Each keyword must be 60 characters or less
+See [keyword matching strategies](https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-keyword-matching-strategies)
+
+Associated trigger types: &lbrace;@link AutoModerationRuleTriggerType.Keyword&rbrace;, &lbrace;@link AutoModerationRuleTriggerType.MemberProfile&rbrace;
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">presets</code>
+  <code className="text-fd-muted-foreground">{"AutoModerationRuleKeywordPresetType[]"}</code>
+</div>
+
+The internally pre-defined wordsets which will be searched for in content
+
+Associated trigger type: &lbrace;@link AutoModerationRuleTriggerType.KeywordPreset&rbrace;
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">allow_list</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+Substrings which will be exempt from triggering the preset trigger type (Maximum of 1000)
+
+A allowed-word can be a phrase which contains multiple words. Wildcard symbols can be used to customize how each string will be matched. Each keyword must be 60 characters or less
+See [keyword matching strategies](https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-keyword-matching-strategies)
+
+Associated trigger types: &lbrace;@link AutoModerationRuleTriggerType.Keyword&rbrace;, &lbrace;@link AutoModerationRuleTriggerType.KeywordPreset&rbrace;, &lbrace;@link AutoModerationRuleTriggerType.MemberProfile&rbrace;
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">regex_patterns</code>
+  <code className="text-fd-muted-foreground">{"string[]"}</code>
+</div>
+
+Regular expression patterns which will be matched against content (Maximum of 10)
+
+Only Rust flavored regex is currently supported (Maximum of 260 characters)
+
+Associated trigger types: &lbrace;@link AutoModerationRuleTriggerType.Keyword&rbrace;, &lbrace;@link AutoModerationRuleTriggerType.MemberProfile&rbrace;
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_total_limit</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Total number of mentions (role & user) allowed per message (Maximum of 50)
+
+Associated trigger type: &lbrace;@link AutoModerationRuleTriggerType.MentionSpam&rbrace;
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">mention_raid_protection_enabled</code>
+  <code className="text-fd-muted-foreground">{"boolean"}</code>
+</div>
+
+Whether to automatically detect mention raids
+
+Associated trigger type: &lbrace;@link AutoModerationRuleTriggerType.MentionSpam&rbrace;
+
+
+
+</div></div>
+
+### AutoModerationRuleKeywordPresetType
+
+https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-keyword-preset-types
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(radix?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toFixed</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toExponential</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toPrecision</code>
+  <code className="text-fd-muted-foreground">{"(precision?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valueOf</code>
+  <code className="text-fd-muted-foreground">{"() => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined, options?: NumberFormatOptions | undefined): string; (locales?: LocalesArgument, options?: NumberFormatOptions | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### AutoModerationRuleEventType
+
+https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-rule-object-event-types
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(radix?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toFixed</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toExponential</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toPrecision</code>
+  <code className="text-fd-muted-foreground">{"(precision?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valueOf</code>
+  <code className="text-fd-muted-foreground">{"() => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined, options?: NumberFormatOptions | undefined): string; (locales?: LocalesArgument, options?: NumberFormatOptions | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIAutoModerationAction
+
+https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-action-object-auto-moderation-action-structure
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">type</code>
+  <code className="text-fd-muted-foreground">{"AutoModerationActionType"}</code>
+</div>
+
+The action type
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">metadata</code>
+  <code className="text-fd-muted-foreground">{"APIAutoModerationActionMetadata"}</code>
+</div>
+
+Additional metadata needed during execution for this specific action type
+
+Will only be omitted if the action type is &lbrace;@link AutoModerationActionType.BlockMessage&rbrace;
+
+
+
+</div></div>
+
+### AutoModerationActionType
+
+https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-action-object-action-types
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(radix?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toFixed</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toExponential</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toPrecision</code>
+  <code className="text-fd-muted-foreground">{"(precision?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valueOf</code>
+  <code className="text-fd-muted-foreground">{"() => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined, options?: NumberFormatOptions | undefined): string; (locales?: LocalesArgument, options?: NumberFormatOptions | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIAutoModerationActionMetadata
+
+https://discord.com/developers/docs/resources/auto-moderation#auto-moderation-action-object-action-metadata
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Channel to which user content should be logged
+
+Associated action type: &lbrace;@link AutoModerationActionType.SendAlertMessage&rbrace;
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">duration_seconds</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+Timeout duration in seconds (Maximum of 4 weeks - 2419200 seconds)
+
+Only available if using &lbrace;@link AutoModerationRuleTriggerType.Keyword&rbrace;
+
+Associated action type: &lbrace;@link AutoModerationActionType.Timeout&rbrace;
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">custom_message</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+Additional explanation that will be shown to members whenever their message is blocked (Maximum 150 characters)
+
+Associated action type &lbrace;@link AutoModerationActionType.BlockMessage&rbrace;
+
+
+
+</div></div>

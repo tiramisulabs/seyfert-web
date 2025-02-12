@@ -1,0 +1,214 @@
+---
+title: "StageInstance"
+---
+                 
+### APIStageInstance
+
+https://discord.com/developers/docs/resources/stage-instance#stage-instance-object
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the stage instance
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The guild id of the associated stage channel
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channel_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the associated stage channel
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">topic</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The topic of the stage instance (1-120 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">privacy_level</code>
+  <code className="text-fd-muted-foreground">{"StageInstancePrivacyLevel"}</code>
+</div>
+
+The privacy level of the stage instance
+
+See https://discord.com/developers/docs/resources/stage-instance#stage-instance-object-privacy-level
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">guild_scheduled_event_id</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The id of the scheduled event for this stage instance
+
+
+
+</div></div>
+
+### StageInstancePrivacyLevel
+
+https://discord.com/developers/docs/resources/stage-instance#stage-instance-object-privacy-level
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toString</code>
+  <code className="text-fd-muted-foreground">{"(radix?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toFixed</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toExponential</code>
+  <code className="text-fd-muted-foreground">{"(fractionDigits?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toPrecision</code>
+  <code className="text-fd-muted-foreground">{"(precision?: number | undefined) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valueOf</code>
+  <code className="text-fd-muted-foreground">{"() => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">toLocaleString</code>
+  <code className="text-fd-muted-foreground">{"{ (locales?: string | string[] | undefined, options?: NumberFormatOptions | undefined): string; (locales?: LocalesArgument, options?: NumberFormatOptions | undefined): string; }"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
+
+### APIInviteStageInstance
+
+https://discord.com/developers/docs/resources/invite#invite-stage-instance-object-invite-stage-instance-structure
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">topic</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+The topic of the stage instance (1-120 characters)
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">participant_count</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The number of users in the stage
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">speaker_count</code>
+  <code className="text-fd-muted-foreground">{"number"}</code>
+</div>
+
+The number of users speaking in the stage
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">members</code>
+  <code className="text-fd-muted-foreground">{"APIGuildMember[]"}</code>
+</div>
+
+The members speaking in the stage
+
+See https://discord.com/developers/docs/resources/guild#guild-member-object-guild-member-structure
+
+
+
+</div></div>

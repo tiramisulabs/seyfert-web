@@ -1,0 +1,161 @@
+---
+title: "Guilds"
+---
+                 
+### GuildShorter
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">create</code>
+  <code className="text-fd-muted-foreground">{"(body: RESTPostAPIGuildsJSONBody) => Promise<Guild<\"api\">>"}</code>
+</div>
+
+Creates a new guild.
+
+- param:
+body The data for creating the guild.
+- returns:
+A Promise that resolves to the created guild.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fetch</code>
+  <code className="text-fd-muted-foreground">{"(id: string, force?: boolean) => Promise<Guild<\"api\">>"}</code>
+</div>
+
+Fetches a guild by its ID.
+
+- param:
+force Whether to force fetching the guild from the API even if it exists in the cache.
+- returns:
+A Promise that resolves to the fetched guild.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">raw</code>
+  <code className="text-fd-muted-foreground">{"(id: string, force?: boolean) => Promise<APIGuild>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">widgetURL</code>
+  <code className="text-fd-muted-foreground">{"(id: string, style?: GuildWidgetStyle | undefined) => Promise<APIGuildWidgetSettings>"}</code>
+</div>
+
+Generates the widget URL for the guild.
+
+- param:
+style The style of the widget.
+- returns:
+The generated widget URL.
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">edit</code>
+  <code className="text-fd-muted-foreground">{"(guildId: string, body: RESTPatchAPIGuildJSONBody, reason?: string | undefined) => Promise<Guild<\"api\">>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">list</code>
+  <code className="text-fd-muted-foreground">{"(query?: RESTGetAPICurrentUserGuildsQuery | undefined) => Promise<AnonymousGuild[]>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">fetchSelf</code>
+  <code className="text-fd-muted-foreground">{"(id: string, force?: boolean) => Promise<GuildMember>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">leave</code>
+  <code className="text-fd-muted-foreground">{"(id: string) => Promise<void | undefined>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">channels</code>
+  <code className="text-fd-muted-foreground">{"{ list: (guildId: string, force?: boolean) => Promise<AllChannels[]>; fetch: (guildId: string, channelId: string, force?: boolean | undefined) => Promise<AllChannels>; ... 4 more ...; addFollower: (channelId: string, webhook_channel_id: string, reason?: string | undefined) => Promise<...>; }"}</code>
+</div>
+
+Provides access to channel-related functionality in a guild.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">moderation</code>
+  <code className="text-fd-muted-foreground">{"{ list: (guildId: string) => Promise<AutoModerationRule[]>; create: (guildId: string, body: RESTPostAPIAutoModerationRuleJSONBody) => Promise<...>; delete: (guildId: string, ruleId: string, reason?: string | undefined) => Promise<...>; fetch: (guildId: string, ruleId: string) => Promise<...>; edit: (guildId: string,..."}</code>
+</div>
+
+Provides access to auto-moderation rule-related functionality in a guild.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">stickers</code>
+  <code className="text-fd-muted-foreground">{"{ list: (guildId: string) => Promise<Sticker[]>; create: (guildId: string, { file, ...json }: CreateStickerBodyRequest, reason?: string | undefined) => Promise<...>; edit: (guildId: string, stickerId: string, body: RESTPatchAPIGuildStickerJSONBody, reason?: string | undefined) => Promise<...>; fetch: (guildId: strin..."}</code>
+</div>
+
+Provides access to sticker-related functionality in a guild.
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client</code>
+  <code className="text-fd-muted-foreground">{"UsingClient"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>

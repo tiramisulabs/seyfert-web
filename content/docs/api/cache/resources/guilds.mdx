@@ -1,0 +1,296 @@
+---
+title: "Guilds"
+---
+                 
+### Guilds
+
+
+
+<div className='*:border-b [&>*:last-child]:border-b-0'><div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">namespace</code>
+  <code className="text-fd-muted-foreground">{"string"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">filter</code>
+  <code className="text-fd-muted-foreground">{"(data: APIGuild, id: string, from: CacheFrom) => boolean"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">get</code>
+  <code className="text-fd-muted-foreground">{"(id: string) => ReturnCache<Guild<\"cached\"> | undefined>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">raw</code>
+  <code className="text-fd-muted-foreground">{"(id: string) => ReturnCache<APIGuild | undefined>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">bulk</code>
+  <code className="text-fd-muted-foreground">{"(ids: string[]) => Guild<\"cached\">[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">bulkRaw</code>
+  <code className="text-fd-muted-foreground">{"(ids: string[]) => APIGuild[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">values</code>
+  <code className="text-fd-muted-foreground">{"() => Guild<\"cached\">[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">valuesRaw</code>
+  <code className="text-fd-muted-foreground">{"() => APIGuild[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">remove</code>
+  <code className="text-fd-muted-foreground">{"(id: string) => Promise<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">set</code>
+  <code className="text-fd-muted-foreground">{"(from: CacheFrom, id: string, data: any) => Promise<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">patch</code>
+  <code className="text-fd-muted-foreground">{"(from: CacheFrom, id: string, data: any) => Promise<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">cache</code>
+  <code className="text-fd-muted-foreground">{"Cache"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">client</code>
+  <code className="text-fd-muted-foreground">{"UsingClient"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">adapter</code>
+  <code className="text-fd-muted-foreground">{"Adapter"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">removeIfNI</code>
+  <code className="text-fd-muted-foreground">{"(intent: \"Guilds\" | \"GuildMembers\" | \"GuildModeration\" | \"GuildExpressions\" | \"GuildIntegrations\" | \"GuildWebhooks\" | \"GuildInvites\" | \"GuildVoiceStates\" | \"GuildPresences\" | \"GuildMessages\" | ... 12 more ... | \"OnlyPrivilaged\", id: string) => Awaitable<...>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">setIfNI</code>
+  <code className="text-fd-muted-foreground">{"(from: CacheFrom, intent: \"Guilds\" | \"GuildMembers\" | \"GuildModeration\" | \"GuildExpressions\" | \"GuildIntegrations\" | \"GuildWebhooks\" | \"GuildInvites\" | \"GuildVoiceStates\" | ... 14 more ... | \"OnlyPrivilaged\", id: string, data: APIGuild | GatewayGuildCreateDispatchData) => Awaitable<...>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">keys</code>
+  <code className="text-fd-muted-foreground">{"() => string[]"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">count</code>
+  <code className="text-fd-muted-foreground">{"() => number"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">contains</code>
+  <code className="text-fd-muted-foreground">{"(id: string) => ReturnCache<boolean>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">getToRelationship</code>
+  <code className="text-fd-muted-foreground">{"() => Awaitable<string[]>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">addToRelationship</code>
+  <code className="text-fd-muted-foreground">{"(id: string | string[]) => Awaitable<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">removeToRelationship</code>
+  <code className="text-fd-muted-foreground">{"(id: string | string[]) => Awaitable<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">flush</code>
+  <code className="text-fd-muted-foreground">{"() => Awaitable<void>"}</code>
+</div>
+
+No Description
+
+
+
+</div>
+<div className='text-sm text-fd-muted-foreground py-4'>
+
+<div className="flex flex-row items-center gap-4">
+  <code className="text-sm">hashId</code>
+  <code className="text-fd-muted-foreground">{"(id: string) => string"}</code>
+</div>
+
+No Description
+
+
+
+</div></div>
