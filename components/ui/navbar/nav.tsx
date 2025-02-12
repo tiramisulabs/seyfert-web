@@ -19,17 +19,20 @@ export default function Navbar() {
     const isHomePage = pathname === '/';
 
     useEffect(() => {
-        const handleScroll = () => {
+        const checkScroll = () => {
             setIsScrolled(window.scrollY > SCROLL_THRESHOLD);
         };
 
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        checkScroll();
+
+        window.addEventListener('scroll', checkScroll);
+        return () => window.removeEventListener('scroll', checkScroll);
     }, []);
 
     return (
         <motion.nav
             layout
+            initial={false}
             className={cn(
                 "p-3 z-50 w-full transition-colors duration-200 bg-background/90 border",
                 "left-1/2 -translate-x-1/2",
