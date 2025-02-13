@@ -40,9 +40,9 @@ export default function Home() {
               Seyfert
             </span>
           </h1>
-          <p className="tracking-wide mt-6 text-[17px] md:text-md leading-relaxed bg-gradient-to-r from-neutral-300 to-neutral-100 bg-clip-text text-transparent flex flex-col items-center">
-            <span className="w-full max-w-[500px]">Experience the perfect balance of power and simplicity.</span>
-            <span className="w-full max-w-[500px]">A modern Discord framework engineered for scalability, without sacrificing developer experience.</span>
+          <p className="tracking-normal mt-6 text-[17px] md:text-md leading-relaxed bg-gradient-to-r from-neutral-300 to-neutral-100 bg-clip-text text-transparent flex flex-col items-center">
+            <span className="w-full md:max-w-[500px]">Experience the perfect balance of power and simplicity.</span>
+            <span className="w-full md:max-w-[500px]">A modern Discord framework engineered for scalability, without sacrificing developer experience.</span>
           </p>
           <div className="mt-10 flex items-center justify-center">
             <Link href="/docs" prefetch={false}>
@@ -60,7 +60,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="mx-auto max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mt-8 relative space-y-16">
+      <div className="mx-auto max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mt-8 relative space-y-16">
         <div className="h-full w-full absolute -z-10 opacity-40">
           <Particles
             particleColors={['#ffffff', '#ffffff']}
