@@ -47,19 +47,23 @@ export default function Navbar() {
     return (
         <nav
             className={cn(
-                "p-3 z-50 transition-all duration-1000 ease-out bg-background/90 border",
+                "p-3 z-50 transition-all duration-1000 ease-out relative",
                 "left-1/2 -translate-x-1/2",
                 isHomePage ? 'fixed' : 'relative',
                 isHomePage && isScrolled
-                    ? 'w-[min(50rem,95vw)] rounded-xl top-4'
+                    ? 'w-[min(60rem,95vw)] top-3'
                     : 'w-full rounded-none top-0',
             )}
             style={{
-                width: isHomePage && isScrolled ? 'min(50rem,95vw)' : '100%'
+                width: isHomePage && isScrolled ? 'min(60rem,95vw)' : '100%'
             }}
             aria-label="Navigation bar"
         >
-            <div className="h-full flex items-center justify-between mx-auto px-4 sm:px-6">
+            <div className={cn(
+                "border rounded-xl backdrop-blur-xs bg-background/70 w-full h-full absolute top-0 left-0 -z-10",
+                isHomePage && isScrolled ? 'rounded-xl' : 'rounded-none'
+            )} />
+            <div className="h-full flex items-center justify-between mx-auto px-4 sm:px-6 relative">
                 <div className="flex items-center gap-6">
                     <Link href="/">
                         <div className="flex items-center">
