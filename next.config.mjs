@@ -17,6 +17,9 @@ const config = {
       fullUrl: true,
     },
   },
+  experimental: {
+    optimizePackageImports: ['hugeicons-react']
+  }
 };
 
 export default withMDX(config);
