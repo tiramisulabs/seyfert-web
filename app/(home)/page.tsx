@@ -52,8 +52,8 @@ export default function Home() {
               <Button
                 className="relative px-6 py-3 font-medium group cursor-pointer text-base"
               >
-                <span className="absolute inset-0 w-full h-full transition duration-200 ease-out transform translate-x-1 translate-y-1 bg-white group-hover:-translate-x-0 group-hover:-translate-y-0"></span>
-                <span className="absolute inset-0 w-full h-full bg-white group-hover:bg-white"></span>
+                <span className="rounded-sm absolute inset-0 w-full h-full transition duration-200 ease-out transform translate-x-1 translate-y-1 bg-white group-hover:-translate-x-0 group-hover:-translate-y-0"></span>
+                <span className="rounded-sm absolute inset-0 w-full h-full bg-white group-hover:bg-white"></span>
                 <span className="relative text-black group-hover:text-black flex items-center">
                   GET STARTED
                   <ArrowUpRight className="!w-5 !h-5 ml-2" />

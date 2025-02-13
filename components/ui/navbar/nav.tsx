@@ -60,8 +60,8 @@ export default function Navbar() {
             aria-label="Navigation bar"
         >
             <div className={cn(
-                "border rounded-xl backdrop-blur-xs bg-background/70 w-full h-full absolute top-0 left-0 -z-10",
-                isHomePage && isScrolled ? 'rounded-xl' : 'rounded-none'
+                "border backdrop-blur-xs bg-background/70 w-full h-full absolute top-0 left-0 -z-10",
+                isHomePage && isScrolled ? 'rounded-sm' : 'rounded-none'
             )} />
             <div className="h-full flex items-center justify-between mx-auto px-4 sm:px-6 relative">
                 <div className="flex items-center gap-6">
