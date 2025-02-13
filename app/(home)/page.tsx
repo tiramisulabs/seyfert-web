@@ -4,11 +4,10 @@ import { cn } from "@/lib/utils";
 import { ArrowUpRight, } from "lucide-react";
 import { AnimatedGradientText } from "@/components/ui/magicui/gradient-text";
 import { Spotlight } from "@/components/ui/spotlight";
-import { Github01Icon } from "hugeicons-react";
 import Particles from "@/components/ui/particles";
 import HomeSections from './sections';
 import { Badge } from "@/components/ui/badge";
-
+import Link from "next/link";
 export default function Home() {
   return (
     <main className="flex flex-col">
@@ -27,7 +26,7 @@ export default function Home() {
           className="-top-20 -left-12 md:left-70 md:-top-20"
           fill="rgba(255, 255, 255, 0.7)"
         />
-        <div className="text-center max-w-2xl">
+        <div className="text-center max-w-2xl z-2">
           <AnimatedGradientText className="flex items-center gap-2 px-3">
             <Badge variant="secondary" className="rounded-full">
               Announcement
@@ -35,37 +34,37 @@ export default function Home() {
 
             Released v2.3
           </AnimatedGradientText>
-          <h1 className="mt-6 text-4xl sm:text-5xl md:text-5xl font-bold leading-[1.1] tracking-tight">
+          <h1 className="mt-6 text-4xl sm:text-5xl md:text-5xl font-bold leading-[1.1] tracking-normal">
             Powerful Discord Bots Made Simple with{" "}
-            <span className="animate-text-gradient bg-gradient-to-r from-blue-300 via-purple-500 to-blue-900 bg-clip-text text-transparent">
+            <span className="tracking-normal animate-text-gradient bg-gradient-to-r from-indigo-400 via-purple-500 to-blue-600 bg-clip-text text-transparent">
               Seyfert
             </span>
           </h1>
-          <p className="mt-6 text-[17px] md:text-md ">
-            Experience the perfect balance of power and simplicity. A modern Discord framework engineered for scalability, without sacrificing developer experience.
+          <p className="tracking-wide mt-6 text-[17px] md:text-md leading-relaxed bg-gradient-to-r from-neutral-300 to-neutral-100 bg-clip-text text-transparent flex flex-col items-center">
+            <span className="w-full max-w-[500px]">Experience the perfect balance of power and simplicity.</span>
+            <span className="w-full max-w-[500px]">A modern Discord framework engineered for scalability, without sacrificing developer experience.</span>
           </p>
-          <div className="mt-12 flex items-center justify-center gap-4">
-            <Button
-              size="lg"
-              className="rounded-md text-base cursor-pointer"
-            >
-              Start Now <ArrowUpRight className="!h-5 !w-5" />
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-md text-base shadow-none cursor-pointer"
-            >
-              Repository <Github01Icon className="!h-5 !w-5" />
-            </Button>
+          <div className="mt-10 flex items-center justify-center">
+            <Link href="/docs" prefetch={false}>
+              <Button
+                className="relative px-6 py-3 font-medium group cursor-pointer text-base"
+              >
+                <span className="absolute inset-0 w-full h-full transition duration-200 ease-out transform translate-x-1 translate-y-1 bg-white group-hover:-translate-x-0 group-hover:-translate-y-0"></span>
+                <span className="absolute inset-0 w-full h-full bg-white group-hover:bg-white"></span>
+                <span className="relative text-black group-hover:text-black flex items-center">
+                  GET STARTED
+                  <ArrowUpRight className="!w-5 !h-5 ml-2" />
+                </span>
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
       <div className="mx-auto max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mt-8 relative space-y-16">
-        <div className="h-full w-full absolute -z-10 opacity-20">
+        <div className="h-full w-full absolute -z-10 opacity-40">
           <Particles
             particleColors={['#ffffff', '#ffffff']}
-            particleCount={400}
+            particleCount={450}
             particleSpread={20}
             speed={0.15}
             particleBaseSize={4}

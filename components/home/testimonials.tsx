@@ -61,7 +61,7 @@ export function Testimonials() {
                     <div
                         className={cn(
                             // Base styles
-                            "group w-full rounded-xs border border-neutral-800 p-5 h-full",
+                            "group w-full border border-neutral-800 p-5 h-full rounded-sm",
                             "relative overflow-hidden transition-all duration-300",
                             // Hover effect styles
                             "hover:-translate-y-1",
