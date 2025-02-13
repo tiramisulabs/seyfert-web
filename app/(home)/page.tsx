@@ -45,7 +45,10 @@ export default function Home() {
             <span className="w-full md:max-w-[500px]">A modern Discord framework engineered for scalability, without sacrificing developer experience.</span>
           </p>
           <div className="mt-10 flex items-center justify-center">
-            <Link href="/docs" prefetch={false}>
+            <Link
+              target="_blank"
+              rel="noopener noreferrer"
+              href="/docs">
               <Button
                 className="relative px-6 py-3 font-medium group cursor-pointer text-base"
               >
