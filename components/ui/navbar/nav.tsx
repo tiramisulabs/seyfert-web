@@ -1,6 +1,6 @@
-'use client';
+"use client";
+
 import { useEffect, useState } from 'react';
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { NavMenu } from "./nav-menu";
 import { SunIcon } from "lucide-react";
@@ -15,6 +15,7 @@ const SCROLL_THRESHOLD = 50;
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
     const pathname = usePathname();
     const isHomePage = pathname === '/';
 
@@ -23,32 +24,38 @@ export default function Navbar() {
             setIsScrolled(window.scrollY > SCROLL_THRESHOLD);
         };
 
-        checkScroll();
+        let ticking = false;
+        const onScroll = () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    checkScroll();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        };
 
-        window.addEventListener('scroll', checkScroll);
-        return () => window.removeEventListener('scroll', checkScroll);
+        checkScroll();
+        setIsLoaded(true);
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
     }, []);
 
+    if (!isLoaded) return null;
+
     return (
-        <motion.nav
-            layout
-            initial={false}
+        <nav
             className={cn(
-                "p-3 z-50 w-full transition-colors duration-200 bg-background/90 border",
+                "p-3 z-50 transition-all duration-1000 ease-out bg-background/90 border",
                 "left-1/2 -translate-x-1/2",
-                isHomePage ? 'fixed' : 'relative'
+                isHomePage ? 'fixed' : 'relative',
+                isHomePage && isScrolled
+                    ? 'w-[min(50rem,95vw)] rounded-xl top-4'
+                    : 'w-full rounded-none top-0',
             )}
-            animate={{
-                maxWidth: isHomePage && isScrolled ? '50rem' : '100%',
-                borderRadius: isHomePage && isScrolled ? '10px' : '0px',
-                top: isHomePage && isScrolled ? '1rem' : '0',
-            }}
-            transition={{
-                duration: isHomePage ? 0.4 : 0,
-                ease: [0.22, 1, 0.36, 1],
-                type: "spring",
-                stiffness: 120,
-                damping: 25,
+            style={{
+                width: isHomePage && isScrolled ? 'min(50rem,95vw)' : '100%'
             }}
             aria-label="Navigation bar"
         >
@@ -74,6 +81,6 @@ export default function Navbar() {
                     </Button>
                 </div>
             </div>
-        </motion.nav>
+        </nav>
     );
 };

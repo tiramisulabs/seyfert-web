@@ -19,7 +19,6 @@
     "@slipher/uws-adapter": "^0.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "framer-motion": "^12.4.1",
     "fumadocs-core": "15.0.2",
     "fumadocs-mdx": "11.4.1",
     "fumadocs-twoslash": "^3.0.0",

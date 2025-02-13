@@ -1,5 +1,3 @@
-"use client";
-
 import AnimatedGridPattern from "@/components/ui/animated-grid";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -63,7 +61,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="mx-auto max-w-sm sm:max-w-md md:max-w-3xl lg:max-w-4xl xl:max-w-6xl mt-8 relative space-y-16">
+      <div className="mx-auto max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mt-8 relative space-y-16">
         <div className="h-full w-full absolute -z-10 opacity-20">
           <Particles
             particleColors={['#ffffff', '#ffffff']}

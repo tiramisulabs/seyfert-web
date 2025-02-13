@@ -1,9 +1,8 @@
-"use client"
 import { FeaturesSectionWithHoverEffects } from '@/components/home/features';
 import { Testimonials } from '@/components/home/testimonials';
 import { Footer } from '@/components/home/footer';
 import { UsedBySection } from '@/components/home/usedby';
-import { motion } from 'framer-motion';
+import * as motion from "motion/react-client"
 import OpenSource from '@/components/home/github';
 
 const AnimatedSection = ({ children, delay = 0 }: {
