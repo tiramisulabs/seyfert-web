@@ -108,13 +108,13 @@ export default function Page() {
     };
 
     return (
-        <main className="min-h-screen mt-10 flex flex-col items-center space-y-4 mb-4">
+        <main className="min-h-screen mt-10 flex flex-col items-center space-y-4 mb-4 px-4">
             <div className="space-y-6 w-full max-w-6xl">
                 <div className="text-center space-y-4">
-                    <h1 className="text-5xl font-bold bg-gradient-to-r from-neutral-200 to-neutral-400 bg-clip-text text-transparent">
+                    <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-neutral-200 to-neutral-400 bg-clip-text text-transparent">
                         Performance Benchmark
                     </h1>
-                    <p className="text-lg leading-relaxed text-neutral-200 max-w-2xl mx-auto text-justify">
+                    <p className="text-base md:text-lg leading-relaxed text-neutral-200 max-w-2xl mx-auto text-justify">
                         To demonstrate <span className="font-bold text-neutral-200">Seyfert</span>&apos;s performance capabilities,
                         we conducted a comprehensive benchmark comparing the median memory usage across various Discord clients.
                     </p>
@@ -142,7 +142,7 @@ export default function Page() {
 
             <div className="w-full max-w-6xl">
                 <div className="space-y-2 flex flex-col items-center">
-                    <div className="flex gap-2 justify-center">
+                    <div className="flex flex-wrap gap-2 justify-center">
                         {Object.entries(metricDescriptions).map(([key]) => (
                             <Button
                                 key={key}
@@ -178,7 +178,7 @@ export default function Page() {
                 </div>
             </div>
 
-            <div className="w-full max-w-6xl h-[600px] relative">
+            <div className="w-full max-w-6xl h-[400px] md:h-[600px] relative">
                 {isLoading && (
                     <div className="absolute inset-0 bg-neutral-900/50 flex items-center justify-center z-10">
                         <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-neutral-200"></div>
@@ -189,26 +189,50 @@ export default function Page() {
                         data={data}
                         margin={{
                             top: 20,
-                            right: 30,
-                            left: 20,
+                            right: 10,
+                            left: 0,
                             bottom: 20,
                         }}
                     >
                         <CartesianGrid strokeDasharray="3 3" stroke="#333333" />
                         <XAxis
                             dataKey="time"
-                            label={{ value: 'Time', position: 'insideBottom', offset: -15, fill: '#a0a0a0', marginTop: '10px' }}
-                            tick={{ fill: '#a0a0a0' }}
+                            label={{
+                                value: 'Time',
+                                position: 'insideBottom',
+                                offset: -15,
+                                fill: '#a0a0a0',
+                                style: { fontSize: '0.8rem', '@media (minWidth: 768px)': { fontSize: '1rem' } }
+                            }}
+                            tick={{ fill: '#a0a0a0', fontSize: '0.75rem' }}
                             tickFormatter={formatTime}
                             domain={['auto', 'auto']}
                         />
                         <YAxis
                             domain={['auto', 'auto']}
-                            label={{ value: 'Memory Usage (MB)', angle: -90, position: 'insideLeft', fill: '#a0a0a0' }}
-                            tick={{ fill: '#a0a0a0' }}
+                            label={{
+                                value: 'Memory Usage (MB)',
+                                angle: -90,
+                                position: 'insideLeft',
+                                fill: '#a0a0a0',
+                                style: { fontSize: '0.8rem', '@media (minWidth: 768px)': { fontSize: '1rem' } }
+                            }}
+                            tick={{ fill: '#a0a0a0', fontSize: '0.75rem' }}
+                            width={60}
                         />
                         <Tooltip content={<CustomTooltip />} />
-                        <Legend verticalAlign="top" height={36} wrapperStyle={{ color: '#a0a0a0' }} />
+                        <Legend
+                            verticalAlign="top"
+                            height={36}
+                            wrapperStyle={{
+                                color: '#a0a0a0',
+                                fontSize: '0.75rem',
+                                // @ts-expect-error why not
+                                '@media (minWidth: 768px)': {
+                                    fontSize: '1rem'
+                                }
+                            }}
+                        />
                         {Object.entries(LIBRARIES).map(([key, { color }]) => (
                             <Line
                                 key={key}
