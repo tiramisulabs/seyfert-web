@@ -34,13 +34,13 @@ export default function Home() {
 
             Released v2.3
           </AnimatedGradientText>
-          <h1 className="mt-6 text-4xl sm:text-5xl md:text-5xl font-bold leading-[1.1] tracking-normal">
+          <h1 className="mt-6 text-4xl sm:text-5xl md:text-5xl font-bold leading-[1.1]">
             Powerful Discord Bots Made Simple with{" "}
-            <span className="tracking-normal animate-text-gradient bg-gradient-to-r from-indigo-400 via-purple-500 to-blue-600 bg-clip-text text-transparent">
+            <span className="animate-text-gradient bg-gradient-to-r from-indigo-400 via-purple-500 to-blue-600 bg-clip-text text-transparent">
               Seyfert
             </span>
           </h1>
-          <p className="tracking-normal mt-6 text-[17px] md:text-md leading-relaxed bg-gradient-to-r from-neutral-300 to-neutral-100 bg-clip-text text-transparent flex flex-col items-center">
+          <p className="mt-6 text-[17px] md:text-md leading-relaxed bg-gradient-to-r from-neutral-300 to-neutral-100 bg-clip-text text-transparent flex flex-col items-center">
             <span className="w-full md:max-w-[500px]">Experience the perfect balance of power and simplicity.</span>
             <span className="w-full md:max-w-[500px]">A modern Discord framework engineered for scalability, without sacrificing developer experience.</span>
           </p>
