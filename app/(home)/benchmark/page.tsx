@@ -95,7 +95,7 @@ const Select: React.FC<SelectProps> = ({ label, value, onChange, options, minWid
     <div className="relative" ref={selectRef}>
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className={`bg-neutral-900 text-white px-4 py-3 rounded-xs border 
+        className={`bg-neutral-900 text-white px-4 py-3 rounded-sm border 
           ${isOpen ? 'border-purple-500 ring-2 ring-purple-500/20' : 'border-neutral-700'} 
           hover:border-neutral-600 transition-all duration-200 cursor-pointer`}
         style={{ minWidth }}
@@ -124,7 +124,7 @@ const Select: React.FC<SelectProps> = ({ label, value, onChange, options, minWid
 
       {isOpen && (
         <div className="absolute z-50 w-full mt-2 bg-neutral-900 border border-neutral-700 
-          rounded-xs shadow-lg overflow-hidden">
+          rounded-sm shadow-lg overflow-hidden">
           {Object.entries(options).map(([key, { name }]) => (
             <div
               key={key}
@@ -189,7 +189,7 @@ const LibrarySelect: React.FC<{
     <div className="relative" ref={selectRef}>
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className={`bg-neutral-900 text-white px-4 py-3 rounded-xs border 
+        className={`bg-neutral-900 text-white px-4 py-3 rounded-sm border 
           ${isOpen ? 'border-purple-500 ring-2 ring-purple-500/20' : 'border-neutral-700'} 
           hover:border-neutral-600 transition-all duration-200 cursor-pointer`}
         style={{ minWidth: "200px" }}
@@ -218,11 +218,11 @@ const LibrarySelect: React.FC<{
 
       {isOpen && (
         <div className="absolute z-50 w-full mt-2 bg-neutral-900 border border-neutral-700 
-          rounded-xs shadow-lg overflow-hidden p-2">
+          rounded-sm shadow-lg overflow-hidden p-2">
           {Object.entries(LIBRARIES).map(([key, { name, color }]) => (
             <div
               key={key}
-              className="flex items-center gap-3 p-2 hover:bg-neutral-800 rounded-xs cursor-pointer"
+              className="flex items-center gap-3 p-2 hover:bg-neutral-800 rounded-sm cursor-pointer"
               onClick={() => {
                 const isCurrentlySelected = selectedLibraries.includes(key);
                 if (isCurrentlySelected) {
@@ -238,7 +238,7 @@ const LibrarySelect: React.FC<{
                 id={key}
                 checked={selectedLibraries.includes(key)}
                 onChange={() => { }}
-                className="w-4 h-4 rounded-xs border-neutral-600 text-purple-500 
+                className="w-4 h-4 rounded-sm border-neutral-600 text-purple-500 
                   focus:ring-purple-500/20 focus:ring-offset-neutral-900 bg-neutral-800"
                 onClick={(e) => e.stopPropagation()}
               />
@@ -319,7 +319,7 @@ export default function Page() {
           </p>
         </div>
 
-        <div className="max-w-2xl mx-auto space-y-6 bg-neutral-900/50 p-6 rounded-xs border border-neutral-800">
+        <div className="max-w-2xl mx-auto space-y-6 bg-neutral-900/50 p-6 rounded-sm border border-neutral-800">
           <p className="text-sm leading-relaxed text-neutral-400">
             The benchmark was conducted over a 12-hour period, measuring three key metrics:{" "}
             <span className="text-neutral-300">RSS (Resident Set Size)</span>,{" "}
