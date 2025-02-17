@@ -35,7 +35,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "content/docs/commands/middlewares.mdx"
+    "public/bench/combine.ts"
   ],
   "exclude": [
     "node_modules"
