@@ -132,6 +132,9 @@ export function StarryBackground({
         container.appendChild(gl.canvas);
         gl.clearColor(0, 0, 0, 0);
 
+        gl.canvas.style.width = '100%';
+        gl.canvas.style.height = '100%';
+
         const camera = new Camera(gl);
         camera.position.z = 15;
 
@@ -216,7 +219,7 @@ export function StarryBackground({
     return (
         <div
             ref={containerRef}
-            className={cn("fixed inset-0 -z-10", className)}
+            className={cn("absolute w-full h-full", className)}
         />
     );
 }
