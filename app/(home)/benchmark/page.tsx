@@ -330,7 +330,7 @@ export default function Page() {
           </p>
 
           <Link
-            href="https://github.com/seyfert/benchmarks"
+            href="https://github.com/tiramisulabs/benchmark"
             className="flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-300 transition-colors w-fit mx-auto group"
           >
             <Github01Icon size={18} className="group-hover:scale-110 transition-transform" />
