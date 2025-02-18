@@ -50,7 +50,7 @@ const fragment = /* glsl */ `
     
     float alpha = smoothstep(0.5, 0.0, d);
     alpha *= mix(0.3, 1.0, vTwinkle);
-    gl_FragColor = vec4(1.0, 1.0, 1.0, alpha * 0.8);
+    gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
   }
 `;
 
@@ -65,7 +65,6 @@ export function StarryBackground({
         const container = containerRef.current;
         if (!container) return;
 
-        // Configuración del renderer
         const renderer = new Renderer({
             alpha: true,
             depth: false,
@@ -75,7 +74,6 @@ export function StarryBackground({
         container.appendChild(gl.canvas);
         gl.clearColor(0, 0, 0, 0);
 
-        // Configuración de la cámara
         const camera = new Camera(gl);
         camera.position.z = 15;
 
@@ -91,8 +89,8 @@ export function StarryBackground({
             ], i * 3);
 
             randoms.set([
-                Math.random(),  // velocidad
-                Math.random()   // tamaño
+                Math.random(),  // velocity
+                Math.random()   // size
             ], i * 2);
         }
 
@@ -101,7 +99,6 @@ export function StarryBackground({
             random: { size: 2, data: randoms }
         });
 
-        // Configurar programa de shaders
         const program = new Program(gl, {
             vertex,
             fragment,
@@ -118,7 +115,6 @@ export function StarryBackground({
             program
         });
 
-        // Manejar resize
         const resize = () => {
             renderer.setSize(container.clientWidth, container.clientHeight);
             camera.perspective({
