@@ -23,6 +23,7 @@ const vertex = /* glsl */ `
   varying vec2 vRandom;
   varying float vTwinkle;
   varying float vTrail;
+  varying float vFade;
   
   void main() {
     vRandom = random;
@@ -32,7 +33,8 @@ const vertex = /* glsl */ `
     float parallaxStrength = mix(0.5, 2.0, depth);
     float speedMultiplier = mix(1.5, 0.5, random.y);
     
-    // Movimiento más complejo
+    vFade = min(1.0, uTime * 1.5 - random.x * 2.0);
+    
     pos.x += sin(uTime * random.x + pos.y) * 0.2 * parallaxStrength;
     pos.z += cos(uTime * random.y + pos.x) * 0.1 * parallaxStrength;
     
@@ -54,6 +56,7 @@ const fragment = /* glsl */ `
   varying vec2 vRandom;
   varying float vTwinkle;
   varying float vTrail;
+  varying float vFade;
   
   void main() {
     vec2 uv = gl_PointCoord.xy;
@@ -79,6 +82,7 @@ const fragment = /* glsl */ `
     
     float alpha = smoothstep(0.5, 0.0, d);
     alpha *= mix(0.3, 1.0, vTwinkle);
+    alpha *= vFade;
     
     if (vTrail > 0.0) {
       alpha *= 1.2;
