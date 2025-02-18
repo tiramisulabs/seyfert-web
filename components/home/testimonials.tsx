@@ -10,7 +10,7 @@ const testimonials = [
     },
     {
         name: "MARCROCK22",
-        review: "The documentation is so vast, I hired an archaeologist to explore it. They're still searching for the table of contents!.",
+        review: "The documentation is so vast, I hired an archaeologist to explore it. They're still searching for the table of contents!",
         avatar: "/avatars/marcrock22.png"
     },
     {
