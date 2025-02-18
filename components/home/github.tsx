@@ -237,7 +237,7 @@ function OpenSourceContent({
     stars,
     contributors,
     title = "Proudly open-source",
-    description = "Our source code is available on GitHub - feel free to read, review, or contribute to it however you want!",
+    description = "Our source code is available on GitHub - feel free to read, review, or contribute to it whatever you want!",
     buttonText = "Star on GitHub",
 }: Stats & {
     repository: string;
