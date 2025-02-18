@@ -19,6 +19,7 @@ const vertex = /* glsl */ `
   uniform mat4 projectionMatrix;
   uniform float uTime;
   uniform float uPulse;
+  uniform float uColorShift;
   
   varying vec2 vRandom;
   varying float vTwinkle;
@@ -34,6 +35,13 @@ const vertex = /* glsl */ `
     float speedMultiplier = mix(1.5, 0.5, random.y);
     
     vFade = min(1.0, uTime * 1.5 - random.x * 2.0);
+    
+    float rotation = uTime * 0.05;
+    mat2 rot = mat2(
+      cos(rotation), -sin(rotation),
+      sin(rotation), cos(rotation)
+    );
+    pos.xz = rot * pos.xz;
     
     pos.x += sin(uTime * random.x + pos.y) * 0.2 * parallaxStrength;
     pos.z += cos(uTime * random.y + pos.x) * 0.1 * parallaxStrength;
@@ -57,6 +65,7 @@ const fragment = /* glsl */ `
   varying float vTwinkle;
   varying float vTrail;
   varying float vFade;
+  uniform float uColorShift;
   
   void main() {
     vec2 uv = gl_PointCoord.xy;
@@ -64,11 +73,11 @@ const fragment = /* glsl */ `
     
     if(d > 0.5) discard;
     
-    vec3 color1 = vec3(0.95, 0.95, 1.0);
-    vec3 color2 = vec3(1.0, 0.85, 0.7);
-    vec3 color3 = vec3(0.85, 0.9, 1.0);
-    vec3 color4 = vec3(0.9, 0.7, 1.0);
-    vec3 color5 = vec3(0.7, 0.9, 1.0);
+    vec3 color1 = vec3(0.95, 0.95 - uColorShift * 0.1, 1.0);
+    vec3 color2 = vec3(1.0, 0.85 + uColorShift * 0.15, 0.7 + uColorShift * 0.2);
+    vec3 color3 = vec3(0.85, 0.9 + uColorShift * 0.1, 1.0);
+    vec3 color4 = vec3(0.9, 0.7 + uColorShift * 0.2, 1.0 - uColorShift * 0.1);
+    vec3 color5 = vec3(0.7 + uColorShift * 0.1, 0.9, 1.0);
     
     vec3 finalColor = mix(
       mix(
@@ -142,7 +151,8 @@ export function StarryBackground({
             fragment,
             uniforms: {
                 uTime: { value: 0 },
-                uPulse: { value: 1.0 }
+                uPulse: { value: 1.0 },
+                uColorShift: { value: 0.0 }
             },
             transparent: true,
             depthTest: false,
@@ -169,6 +179,7 @@ export function StarryBackground({
             const time = t * 0.001 * speed;
             program.uniforms.uTime.value = time;
 
+            program.uniforms.uColorShift.value = Math.sin(time * 0.1) * 0.5 + 0.5;
             program.uniforms.uPulse.value = 0.8 + Math.sin(time * 0.2) * 0.2;
 
             camera.position.x = Math.sin(time * 0.1) * 2;
