@@ -4,11 +4,6 @@ import { GridBG } from "../ui/grid-bg"
 
 const testimonials = [
     {
-        name: "FreeAoi",
-        review: "This framework is so advanced, my bot now responds to commands that I never even programmed.",
-        avatar: "/avatars/freeaoi.png"
-    },
-    {
         name: "Socram09",
         review: "The error handling is amazing - it catches errors so well I never know what actually went wrong.",
         avatar: "/avatars/socram09.png"
@@ -17,6 +12,11 @@ const testimonials = [
         name: "MARCROCK22",
         review: "The documentation is so vast, I hired an archaeologist to explore it. They're still searching for the table of contents!.",
         avatar: "/avatars/marcrock22.png"
+    },
+    {
+        name: "FreeAoi",
+        review: "This framework is so advanced, my bot now responds to commands that I never even programmed.",
+        avatar: "/avatars/freeaoi.png"
     },
     {
         name: "Deivid",
@@ -29,9 +29,9 @@ const testimonials = [
         avatar: "/avatars/justevil.png"
     },
     {
-        name: "Sawako",
+        name: "Miia",
         review: "Event handling is so fast, my bot responds to messages before users even think about sending them.",
-        avatar: "/avatars/sawa_ko.png"
+        avatar: "/avatars/miia.png"
     }
 ]
 
@@ -89,7 +89,7 @@ export function Testimonials() {
                             </div>
                         </div>
                         <div className="w-full">
-                            <p className="text-sm leading-tight">
+                            <p className="text-sm">
                                 {testimonial.review}
                             </p>
                         </div>

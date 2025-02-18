@@ -1,30 +1,19 @@
-import AnimatedGridPattern from "@/components/ui/animated-grid";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { ArrowUpRight, } from "lucide-react";
 import { AnimatedGradientText } from "@/components/ui/magicui/gradient-text";
 import { Spotlight } from "@/components/ui/spotlight";
-import Particles from "@/components/ui/particles";
 import HomeSections from './sections';
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
+import { Link } from 'next-view-transitions'
+import { StarryBackground } from "@/components/ui/starry";
 export default function Home() {
   return (
     <main className="flex flex-col">
+      <StarryBackground starCount={300} speed={0.5} />
       <div className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden gap-10">
-        <AnimatedGridPattern
-          numSquares={20}
-          maxOpacity={0.2}
-          duration={3}
-          repeatdelay={1}
-          className={cn(
-            "[mask-image:radial-gradient(500px_circle_at_center,white,transparent)]",
-            "inset-x-0 h-full skew-y-12"
-          )}
-        />
         <Spotlight
-          className="-top-20 -left-12 md:left-70 md:-top-20"
-          fill="rgba(255, 255, 255, 0.7)"
+          className="-top-20 -left-12 lg:left-70 lg:-top-20"
+          fill="rgba(255, 255, 255, 0.5)"
         />
         <div className="text-center max-w-2xl z-2">
           <AnimatedGradientText className="flex items-center gap-2 px-3">
@@ -40,15 +29,14 @@ export default function Home() {
               Seyfert
             </span>
           </h1>
-          <p className="mt-6 text-[17px] md:text-md leading-relaxed bg-gradient-to-r from-neutral-300 to-neutral-100 bg-clip-text text-transparent flex flex-col items-center">
+          <p className="mt-6 text-[17px] md:text-md bg-gradient-to-r from-neutral-300 to-neutral-100 bg-clip-text text-transparent flex flex-col items-center">
             <span className="w-full md:max-w-[500px]">Experience the perfect balance of power and simplicity.</span>
             <span className="w-full md:max-w-[500px]">A modern Discord framework engineered for scalability, without sacrificing developer experience.</span>
           </p>
           <div className="mt-10 flex items-center justify-center">
             <Link
-              target="_blank"
-              rel="noopener noreferrer"
-              href="/docs">
+              href="/docs"
+            >
               <Button
                 className="relative px-6 py-3 font-medium group cursor-pointer text-base"
               >
@@ -64,17 +52,6 @@ export default function Home() {
         </div>
       </div>
       <div className="mx-auto max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mt-8 relative space-y-16">
-        <div className="h-full w-full absolute -z-10 opacity-60">
-          <Particles
-            particleColors={['#ffffff', '#ffffff']}
-            particleCount={500}
-            particleSpread={20}
-            speed={0.1}
-            particleBaseSize={3}
-            moveParticlesOnHover={false}
-            disableRotation={false}
-          />
-        </div>
 
         <HomeSections />
       </div>
