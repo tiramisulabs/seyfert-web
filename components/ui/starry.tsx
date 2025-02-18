@@ -18,30 +18,32 @@ const vertex = /* glsl */ `
   uniform mat4 viewMatrix;
   uniform mat4 projectionMatrix;
   uniform float uTime;
+  uniform float uPulse;
   
   varying vec2 vRandom;
   varying float vTwinkle;
+  varying float vTrail;
   
   void main() {
     vRandom = random;
     vec3 pos = position;
     
-    // Parallax effect based on Z position
-    float depth = (pos.z + 10.0) / 20.0; // Normalize z position to 0-1
+    float depth = (pos.z + 10.0) / 20.0;
     float parallaxStrength = mix(0.5, 2.0, depth);
-    
     float speedMultiplier = mix(1.5, 0.5, random.y);
     
-    // Añadir movimiento ondulatorio en X
+    // Movimiento más complejo
     pos.x += sin(uTime * random.x + pos.y) * 0.2 * parallaxStrength;
+    pos.z += cos(uTime * random.y + pos.x) * 0.1 * parallaxStrength;
     
     pos.y = mod(pos.y + uTime * (0.5 + random.x * 0.5) * speedMultiplier, 20.0) - 10.0;
     
-    vTwinkle = sin(uTime * (2.0 + random.x * 3.0)) * 0.5 + 0.5;
+    vTwinkle = (sin(uTime * (2.0 + random.x * 3.0)) * 0.5 + 0.5) * uPulse;
     
-    // Tamaño variable basado en profundidad
-    float size = mix(2.0, 6.0, random.y) * (1.0 + vTwinkle * 0.5);
-    gl_PointSize = size * mix(0.5, 1.5, depth); // Estrellas más grandes al frente
+    vTrail = random.y > 0.8 ? 1.0 : 0.0;
+    
+    float size = mix(2.0, 8.0, random.y) * (1.0 + vTwinkle * 0.5);
+    gl_PointSize = size * mix(0.5, 1.5, depth);
     
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(pos, 1.0);
   }
@@ -51,6 +53,7 @@ const fragment = /* glsl */ `
   precision highp float;
   varying vec2 vRandom;
   varying float vTwinkle;
+  varying float vTrail;
   
   void main() {
     vec2 uv = gl_PointCoord.xy;
@@ -58,19 +61,30 @@ const fragment = /* glsl */ `
     
     if(d > 0.5) discard;
     
-    // Crear colores para las estrellas
-    vec3 color1 = vec3(0.95, 0.95, 1.0);    // Blanco azulado
-    vec3 color2 = vec3(1.0, 0.85, 0.7);     // Amarillo cálido
-    vec3 color3 = vec3(0.85, 0.9, 1.0);     // Azul claro
+    vec3 color1 = vec3(0.95, 0.95, 1.0);
+    vec3 color2 = vec3(1.0, 0.85, 0.7);
+    vec3 color3 = vec3(0.85, 0.9, 1.0);
+    vec3 color4 = vec3(0.9, 0.7, 1.0);
+    vec3 color5 = vec3(0.7, 0.9, 1.0);
     
     vec3 finalColor = mix(
-      mix(color1, color2, vRandom.x),
+      mix(
+        mix(color1, color2, vRandom.x),
+        mix(color4, color5, vRandom.y),
+        vRandom.x
+      ),
       color3,
       vRandom.y
     );
     
     float alpha = smoothstep(0.5, 0.0, d);
     alpha *= mix(0.3, 1.0, vTwinkle);
+    
+    if (vTrail > 0.0) {
+      alpha *= 1.2;
+      finalColor += vec3(0.2) * (1.0 - d);
+    }
+    
     gl_FragColor = vec4(finalColor, alpha);
   }
 `;
@@ -123,7 +137,8 @@ export function StarryBackground({
             vertex,
             fragment,
             uniforms: {
-                uTime: { value: 0 }
+                uTime: { value: 0 },
+                uPulse: { value: 1.0 }
             },
             transparent: true,
             depthTest: false,
@@ -144,17 +159,23 @@ export function StarryBackground({
         window.addEventListener('resize', resize);
         resize();
 
-        // Loop de animación
         let animationFrame: number;
         const animate = (t: number) => {
             animationFrame = requestAnimationFrame(animate);
-            program.uniforms.uTime.value = t * 0.001 * speed;
+            const time = t * 0.001 * speed;
+            program.uniforms.uTime.value = time;
+
+            program.uniforms.uPulse.value = 0.8 + Math.sin(time * 0.2) * 0.2;
+
+            camera.position.x = Math.sin(time * 0.1) * 2;
+            camera.position.z = 15 + Math.cos(time * 0.1) * 2;
+            camera.lookAt([0, 0, 0]);
+
             renderer.render({ scene: stars, camera });
         };
 
         animationFrame = requestAnimationFrame(animate);
 
-        // Cleanup
         return () => {
             window.removeEventListener('resize', resize);
             cancelAnimationFrame(animationFrame);

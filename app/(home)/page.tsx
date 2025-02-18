@@ -9,7 +9,7 @@ import { StarryBackground } from "@/components/ui/starry";
 export default function Home() {
   return (
     <main className="flex flex-col">
-      <StarryBackground starCount={300} speed={0.5} />
+      <StarryBackground starCount={200} speed={0.5} />
       <div className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden gap-10">
         <Spotlight
           className="-top-20 -left-12 lg:left-70 lg:-top-20"
