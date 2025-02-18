@@ -64,15 +64,15 @@ export default function Home() {
         </div>
       </div>
       <div className="mx-auto max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mt-8 relative space-y-16">
-        <div className="h-full w-full absolute -z-10 opacity-40">
+        <div className="h-full w-full absolute -z-10 opacity-60">
           <Particles
             particleColors={['#ffffff', '#ffffff']}
-            particleCount={450}
+            particleCount={500}
             particleSpread={20}
-            speed={0.15}
-            particleBaseSize={4}
+            speed={0.1}
+            particleBaseSize={3}
             moveParticlesOnHover={false}
-            disableRotation={true}
+            disableRotation={false}
           />
         </div>
 
