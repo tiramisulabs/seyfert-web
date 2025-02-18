@@ -28,11 +28,15 @@ const vertex = /* glsl */ `
     
     float speedMultiplier = mix(1.5, 0.5, random.y);
     
+    // Añadir movimiento ondulatorio en X
+    pos.x += sin(uTime * random.x + pos.y) * 0.2;
+    
     pos.y = mod(pos.y + uTime * (0.5 + random.x * 0.5) * speedMultiplier, 20.0) - 10.0;
     
     vTwinkle = sin(uTime * (2.0 + random.x * 3.0)) * 0.5 + 0.5;
     
-    gl_PointSize = mix(4.0, 8.0, random.y);
+    // Tamaño variable de las estrellas
+    gl_PointSize = mix(2.0, 6.0, random.y) * (1.0 + vTwinkle * 0.5);
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(pos, 1.0);
   }
 `;
@@ -48,9 +52,20 @@ const fragment = /* glsl */ `
     
     if(d > 0.5) discard;
     
+    // Crear colores para las estrellas
+    vec3 color1 = vec3(0.95, 0.95, 1.0);    // Blanco azulado
+    vec3 color2 = vec3(1.0, 0.85, 0.7);     // Amarillo cálido
+    vec3 color3 = vec3(0.85, 0.9, 1.0);     // Azul claro
+    
+    vec3 finalColor = mix(
+      mix(color1, color2, vRandom.x),
+      color3,
+      vRandom.y
+    );
+    
     float alpha = smoothstep(0.5, 0.0, d);
     alpha *= mix(0.3, 1.0, vTwinkle);
-    gl_FragColor = vec4(1.0, 1.0, 1.0, alpha);
+    gl_FragColor = vec4(finalColor, alpha);
   }
 `;
 
@@ -77,7 +92,6 @@ export function StarryBackground({
         const camera = new Camera(gl);
         camera.position.z = 15;
 
-        // Crear geometría de estrellas
         const positions = new Float32Array(starCount * 3);
         const randoms = new Float32Array(starCount * 2);
 
