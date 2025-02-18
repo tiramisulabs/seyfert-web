@@ -20,6 +20,7 @@ const vertex = /* glsl */ `
   uniform float uTime;
   uniform float uPulse;
   uniform float uColorShift;
+  uniform float uWave;
   
   varying vec2 vRandom;
   varying float vTwinkle;
@@ -35,6 +36,15 @@ const vertex = /* glsl */ `
     float speedMultiplier = mix(1.5, 0.5, random.y);
     
     vFade = min(1.0, uTime * 1.5 - random.x * 2.0);
+    
+    if (random.x > 0.8) {
+      float orbit = uTime * (0.2 + random.y * 0.3);
+      pos.x += sin(orbit) * 3.0 * random.x;
+      pos.z += cos(orbit) * 2.0 * random.y;
+    }
+    
+    float wave = sin(uTime * 0.5 + pos.x * 0.2 + pos.z * 0.2) * uWave;
+    pos.y += wave * random.y;
     
     float rotation = uTime * 0.05;
     mat2 rot = mat2(
@@ -152,7 +162,8 @@ export function StarryBackground({
             uniforms: {
                 uTime: { value: 0 },
                 uPulse: { value: 1.0 },
-                uColorShift: { value: 0.0 }
+                uColorShift: { value: 0.0 },
+                uWave: { value: 0.0 }
             },
             transparent: true,
             depthTest: false,
@@ -181,6 +192,8 @@ export function StarryBackground({
 
             program.uniforms.uColorShift.value = Math.sin(time * 0.1) * 0.5 + 0.5;
             program.uniforms.uPulse.value = 0.8 + Math.sin(time * 0.2) * 0.2;
+
+            program.uniforms.uWave.value = Math.sin(time * 0.3) * 0.5;
 
             camera.position.x = Math.sin(time * 0.1) * 2;
             camera.position.z = 15 + Math.cos(time * 0.1) * 2;
