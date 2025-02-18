@@ -26,17 +26,23 @@ const vertex = /* glsl */ `
     vRandom = random;
     vec3 pos = position;
     
+    // Parallax effect based on Z position
+    float depth = (pos.z + 10.0) / 20.0; // Normalize z position to 0-1
+    float parallaxStrength = mix(0.5, 2.0, depth);
+    
     float speedMultiplier = mix(1.5, 0.5, random.y);
     
     // Añadir movimiento ondulatorio en X
-    pos.x += sin(uTime * random.x + pos.y) * 0.2;
+    pos.x += sin(uTime * random.x + pos.y) * 0.2 * parallaxStrength;
     
     pos.y = mod(pos.y + uTime * (0.5 + random.x * 0.5) * speedMultiplier, 20.0) - 10.0;
     
     vTwinkle = sin(uTime * (2.0 + random.x * 3.0)) * 0.5 + 0.5;
     
-    // Tamaño variable de las estrellas
-    gl_PointSize = mix(2.0, 6.0, random.y) * (1.0 + vTwinkle * 0.5);
+    // Tamaño variable basado en profundidad
+    float size = mix(2.0, 6.0, random.y) * (1.0 + vTwinkle * 0.5);
+    gl_PointSize = size * mix(0.5, 1.5, depth); // Estrellas más grandes al frente
+    
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(pos, 1.0);
   }
 `;
@@ -152,7 +158,6 @@ export function StarryBackground({
         return () => {
             window.removeEventListener('resize', resize);
             cancelAnimationFrame(animationFrame);
-            // renderer.dispose();
             if (container.contains(gl.canvas)) {
                 container.removeChild(gl.canvas);
             }
