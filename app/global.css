@@ -65,7 +65,7 @@
 
 .dark {
 
-  --background: hsl(0 0% 3.9%);
+  --background: hsl(0 0% 2%);
 
   --foreground: hsl(0 0% 98%);
 
@@ -216,17 +216,19 @@
 @keyframes spotlight {
   0% {
     opacity: 0;
-    transform: translate(-72%, -62%) scale(0.5);
+    transform: translate(-72%, -62%) scale(0.25);
+    filter: blur(20px);
   }
 
   100% {
     opacity: 1;
     transform: translate(-50%, -40%) scale(1);
+    filter: blur(0px);
   }
 }
 
 .animate-spotlight {
-  animation: spotlight 2s ease .75s 1 forwards;
+  animation: spotlight 2s cubic-bezier(0.4, 0.0, 0.2, 1) .75s 1 forwards;
 }
 
 @keyframes shine {

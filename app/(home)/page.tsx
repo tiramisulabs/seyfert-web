@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, } from "lucide-react";
 import { AnimatedGradientText } from "@/components/ui/magicui/gradient-text";
-import { Spotlight } from "@/components/ui/spotlight";
 import HomeSections from './sections';
 import { Badge } from "@/components/ui/badge";
 import { Link } from 'next-view-transitions'
@@ -11,10 +10,7 @@ export default function Home() {
     <main className="flex flex-col">
       <StarryBackground starCount={200} speed={0.5} />
       <div className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden gap-10">
-        <Spotlight
-          className="-top-20 -left-12 lg:left-70 lg:-top-20"
-          fill="rgba(255, 255, 255, 0.5)"
-        />
+
         <div className="text-center max-w-2xl z-2">
           <AnimatedGradientText className="flex items-center gap-2 px-3">
             <Badge variant="secondary" className="rounded-full">
