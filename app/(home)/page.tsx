@@ -5,13 +5,19 @@ import HomeSections from './sections';
 import { Badge } from "@/components/ui/badge";
 import { Link } from 'next-view-transitions'
 import { StarryBackground } from "@/components/ui/starry";
+import { Spotlight } from "@/components/ui/spotlight";
 export default function Home() {
   return (
     <main className="flex flex-col">
       <div className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden gap-10">
         <div className="absolute inset-0 -z-10 w-full h-full">
-          <StarryBackground starCount={300} speed={0.5} />
+          <StarryBackground starCount={325} speed={0.5} />
         </div>
+
+        <Spotlight
+          className="-top-20 -left-12 lg:left-80 lg:-top-30"
+          fill="rgba(255, 255, 255, 0.8)"
+        />
 
         <div className="text-center max-w-2xl z-2">
           <AnimatedGradientText className="flex items-center gap-2 px-3">

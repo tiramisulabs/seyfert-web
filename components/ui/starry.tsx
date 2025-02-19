@@ -8,11 +8,13 @@ interface StarryBackgroundProps {
     className?: string;
     starCount?: number;
     speed?: number;
+    shootingStarFrequency?: number;
 }
 
 const vertex = /* glsl */ `
   attribute vec3 position;
   attribute vec2 random;
+  attribute float isShootingStar;
   
   uniform mat4 modelMatrix;
   uniform mat4 viewMatrix;
@@ -26,44 +28,52 @@ const vertex = /* glsl */ `
   varying float vTwinkle;
   varying float vTrail;
   varying float vFade;
+  varying float vIsShootingStar;
   
   void main() {
     vRandom = random;
+    vIsShootingStar = isShootingStar;
     vec3 pos = position;
     
-    float depth = (pos.z + 10.0) / 20.0;
-    float parallaxStrength = mix(0.5, 2.0, depth);
-    float speedMultiplier = mix(1.5, 0.5, random.y);
-    
-    vFade = min(1.0, uTime * 1.5 - random.x * 2.0);
-    
-    if (random.x > 0.8) {
-      float orbit = uTime * (0.2 + random.y * 0.3);
-      pos.x += sin(orbit) * 3.0 * random.x;
-      pos.z += cos(orbit) * 2.0 * random.y;
+    if (isShootingStar > 0.0) {
+      float shootingTime = mod(uTime * 2.0 + random.x * 10.0, 15.0);
+      pos.x -= shootingTime * 3.0;
+      pos.y -= shootingTime * 1.5;
+      vTrail = 1.0;
+      gl_PointSize = mix(4.0, 8.0, random.y);
+    } else {
+      float depth = (pos.z + 10.0) / 20.0;
+      float parallaxStrength = mix(0.5, 2.0, depth);
+      float speedMultiplier = mix(1.5, 0.5, random.y);
+      
+      vFade = min(1.0, uTime * 1.5 - random.x * 2.0);
+      
+      if (random.x > 0.8) {
+        float orbit = uTime * (0.2 + random.y * 0.3);
+        pos.x += sin(orbit) * 3.0 * random.x;
+        pos.z += cos(orbit) * 2.0 * random.y;
+      }
+      
+      float wave = sin(uTime * 0.5 + pos.x * 0.2 + pos.z * 0.2) * uWave;
+      pos.y += wave * random.y;
+      
+      float rotation = uTime * 0.05;
+      mat2 rot = mat2(
+        cos(rotation), -sin(rotation),
+        sin(rotation), cos(rotation)
+      );
+      pos.xz = rot * pos.xz;
+      
+      pos.x += sin(uTime * random.x + pos.y) * 0.2 * parallaxStrength;
+      pos.z += cos(uTime * random.y + pos.x) * 0.1 * parallaxStrength;
+      
+      pos.y = mod(pos.y + uTime * (0.5 + random.x * 0.5) * speedMultiplier, 20.0) - 10.0;
+      
+      vTwinkle = (sin(uTime * (2.0 + random.x * 3.0)) * 0.5 + 0.5) * uPulse;
+      
+      float size = mix(2.0, 8.0, random.y) * (1.0 + vTwinkle * 0.5);
+      gl_PointSize = size * mix(0.5, 1.5, depth);
     }
-    
-    float wave = sin(uTime * 0.5 + pos.x * 0.2 + pos.z * 0.2) * uWave;
-    pos.y += wave * random.y;
-    
-    float rotation = uTime * 0.05;
-    mat2 rot = mat2(
-      cos(rotation), -sin(rotation),
-      sin(rotation), cos(rotation)
-    );
-    pos.xz = rot * pos.xz;
-    
-    pos.x += sin(uTime * random.x + pos.y) * 0.2 * parallaxStrength;
-    pos.z += cos(uTime * random.y + pos.x) * 0.1 * parallaxStrength;
-    
-    pos.y = mod(pos.y + uTime * (0.5 + random.x * 0.5) * speedMultiplier, 20.0) - 10.0;
-    
-    vTwinkle = (sin(uTime * (2.0 + random.x * 3.0)) * 0.5 + 0.5) * uPulse;
-    
-    vTrail = random.y > 0.8 ? 1.0 : 0.0;
-    
-    float size = mix(2.0, 8.0, random.y) * (1.0 + vTwinkle * 0.5);
-    gl_PointSize = size * mix(0.5, 1.5, depth);
     
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(pos, 1.0);
   }
@@ -75,6 +85,7 @@ const fragment = /* glsl */ `
   varying float vTwinkle;
   varying float vTrail;
   varying float vFade;
+  varying float vIsShootingStar;
   uniform float uColorShift;
   
   void main() {
@@ -83,29 +94,43 @@ const fragment = /* glsl */ `
     
     if(d > 0.5) discard;
     
-    vec3 color1 = vec3(0.95, 0.95 - uColorShift * 0.1, 1.0);
-    vec3 color2 = vec3(1.0, 0.85 + uColorShift * 0.15, 0.7 + uColorShift * 0.2);
-    vec3 color3 = vec3(0.85, 0.9 + uColorShift * 0.1, 1.0);
-    vec3 color4 = vec3(0.9, 0.7 + uColorShift * 0.2, 1.0 - uColorShift * 0.1);
-    vec3 color5 = vec3(0.7 + uColorShift * 0.1, 0.9, 1.0);
+    vec3 finalColor;
+    float alpha;
     
-    vec3 finalColor = mix(
-      mix(
-        mix(color1, color2, vRandom.x),
-        mix(color4, color5, vRandom.y),
-        vRandom.x
-      ),
-      color3,
-      vRandom.y
-    );
-    
-    float alpha = smoothstep(0.5, 0.0, d);
-    alpha *= mix(0.3, 1.0, vTwinkle);
-    alpha *= vFade;
-    
-    if (vTrail > 0.0) {
-      alpha *= 1.2;
-      finalColor += vec3(0.2) * (1.0 - d);
+    if (vIsShootingStar > 0.0) {
+      finalColor = vec3(1.0, 0.95, 0.8);
+      float trail = smoothstep(0.5, 0.0, d);
+      alpha = trail * 0.8;
+      
+      vec2 trailUV = uv;
+      trailUV.x = 1.0 - trailUV.x;
+      float trailMask = smoothstep(0.5, 0.0, length(vec2(trailUV.x * 2.0, trailUV.y) - vec2(0.5)));
+      alpha += trailMask * 0.3;
+    } else {
+      vec3 color1 = vec3(0.95, 0.95 - uColorShift * 0.1, 1.0);
+      vec3 color2 = vec3(1.0, 0.85 + uColorShift * 0.15, 0.7 + uColorShift * 0.2);
+      vec3 color3 = vec3(0.85, 0.9 + uColorShift * 0.1, 1.0);
+      vec3 color4 = vec3(0.9, 0.7 + uColorShift * 0.2, 1.0 - uColorShift * 0.1);
+      vec3 color5 = vec3(0.7 + uColorShift * 0.1, 0.9, 1.0);
+      
+      finalColor = mix(
+        mix(
+          mix(color1, color2, vRandom.x),
+          mix(color4, color5, vRandom.y),
+          vRandom.x
+        ),
+        color3,
+        vRandom.y
+      );
+      
+      alpha = smoothstep(0.5, 0.0, d);
+      alpha *= mix(0.3, 1.0, vTwinkle);
+      alpha *= vFade;
+      
+      if (vTrail > 0.0) {
+        alpha *= 1.2;
+        finalColor += vec3(0.2) * (1.0 - d);
+      }
     }
     
     gl_FragColor = vec4(finalColor, alpha);
@@ -115,7 +140,8 @@ const fragment = /* glsl */ `
 export function StarryBackground({
     className,
     starCount = 400,
-    speed = 1.0
+    speed = 1.0,
+    shootingStarFrequency = 0.01
 }: StarryBackgroundProps) {
     const containerRef = useRef<HTMLDivElement>(null);
 
@@ -140,6 +166,7 @@ export function StarryBackground({
 
         const positions = new Float32Array(starCount * 3);
         const randoms = new Float32Array(starCount * 2);
+        const isShootingStar = new Float32Array(starCount);
 
         for (let i = 0; i < starCount; i++) {
             positions.set([
@@ -152,11 +179,14 @@ export function StarryBackground({
                 Math.random(),  // velocity
                 Math.random()   // size
             ], i * 2);
+
+            isShootingStar[i] = Math.random() < shootingStarFrequency ? 1.0 : 0.0;
         }
 
         const geometry = new Geometry(gl, {
             position: { size: 3, data: positions },
-            random: { size: 2, data: randoms }
+            random: { size: 2, data: randoms },
+            isShootingStar: { size: 1, data: isShootingStar }
         });
 
         const program = new Program(gl, {
@@ -214,7 +244,7 @@ export function StarryBackground({
                 container.removeChild(gl.canvas);
             }
         };
-    }, [starCount, speed]);
+    }, [starCount, speed, shootingStarFrequency]);
 
     return (
         <div
