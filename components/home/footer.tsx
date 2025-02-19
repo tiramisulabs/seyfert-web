@@ -25,7 +25,7 @@ export function Footer() {
                         and get started in minutes.
                     </p>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex gap-4 flex-wrap">
                     <Link href="/docs" target="_blank" rel="noopener noreferrer">
                         <Button variant="default" size="lg" className="rounded-md shadow-none cursor-pointer">
                             Read the Docs
