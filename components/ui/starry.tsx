@@ -29,6 +29,7 @@ const vertex = /* glsl */ `
   varying float vTrail;
   varying float vFade;
   varying float vIsShootingStar;
+  varying float vDepth;
   
   void main() {
     vRandom = random;
@@ -36,43 +37,50 @@ const vertex = /* glsl */ `
     vec3 pos = position;
     
     if (isShootingStar > 0.0) {
-      float shootingTime = mod(uTime * 2.0 + random.x * 10.0, 15.0);
-      pos.x -= shootingTime * 3.0;
-      pos.y -= shootingTime * 1.5;
-      vTrail = 1.0;
-      gl_PointSize = mix(4.0, 8.0, random.y);
+      float shootingTime = mod(uTime * 2.0 + random.x * 10.0, 20.0);
+      float curve = sin(shootingTime * 0.5) * random.y;
+      pos.x -= shootingTime * 4.0;
+      pos.y -= shootingTime * 1.5 + curve;
+      vTrail = smoothstep(20.0, 0.0, shootingTime);
+      gl_PointSize = mix(6.0, 12.0, random.y) * vTrail;
     } else {
       float depth = (pos.z + 10.0) / 20.0;
-      float parallaxStrength = mix(0.5, 2.0, depth);
+      vDepth = depth;
+      float parallaxStrength = mix(0.5, 2.5, depth);
       float speedMultiplier = mix(1.5, 0.5, random.y);
       
       vFade = min(1.0, uTime * 1.5 - random.x * 2.0);
       
-      if (random.x > 0.8) {
-        float orbit = uTime * (0.2 + random.y * 0.3);
-        pos.x += sin(orbit) * 3.0 * random.x;
-        pos.z += cos(orbit) * 2.0 * random.y;
+      if (random.x > 0.85) {
+        float orbit = uTime * (0.2 + random.y * 0.4);
+        float orbitRadius = 2.0 + random.x * 2.0;
+        pos.x += sin(orbit) * orbitRadius * random.x;
+        pos.z += cos(orbit) * orbitRadius * random.y;
+        pos.y += sin(orbit * 1.5) * random.y;
       }
       
       float wave = sin(uTime * 0.5 + pos.x * 0.2 + pos.z * 0.2) * uWave;
+      wave += cos(uTime * 0.3 + pos.z * 0.3) * uWave * 0.5;
       pos.y += wave * random.y;
       
-      float rotation = uTime * 0.05;
+      float rotation = uTime * 0.03;
       mat2 rot = mat2(
         cos(rotation), -sin(rotation),
         sin(rotation), cos(rotation)
       );
       pos.xz = rot * pos.xz;
       
-      pos.x += sin(uTime * random.x + pos.y) * 0.2 * parallaxStrength;
-      pos.z += cos(uTime * random.y + pos.x) * 0.1 * parallaxStrength;
+      pos.x += sin(uTime * random.x + pos.y * 0.2) * 0.3 * parallaxStrength;
+      pos.z += cos(uTime * random.y + pos.x * 0.2) * 0.2 * parallaxStrength;
       
-      pos.y = mod(pos.y + uTime * (0.5 + random.x * 0.5) * speedMultiplier, 20.0) - 10.0;
+      pos.y = mod(pos.y + uTime * (0.3 + random.x * 0.4) * speedMultiplier, 20.0) - 10.0;
       
-      vTwinkle = (sin(uTime * (2.0 + random.x * 3.0)) * 0.5 + 0.5) * uPulse;
+      vTwinkle = sin(uTime * (1.5 + random.x * 2.0)) * 0.5 + 0.5;
+      vTwinkle *= sin(uTime * (0.7 + random.y * 1.0)) * 0.5 + 0.5;
+      vTwinkle = vTwinkle * uPulse;
       
-      float size = mix(2.0, 8.0, random.y) * (1.0 + vTwinkle * 0.5);
-      gl_PointSize = size * mix(0.5, 1.5, depth);
+      float size = mix(1.5, 6.0, random.y) * (1.0 + vTwinkle * 0.6);
+      gl_PointSize = size * mix(0.5, 2.0, depth);
     }
     
     gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(pos, 1.0);
@@ -81,11 +89,14 @@ const vertex = /* glsl */ `
 
 const fragment = /* glsl */ `
   precision highp float;
+  
   varying vec2 vRandom;
   varying float vTwinkle;
   varying float vTrail;
   varying float vFade;
   varying float vIsShootingStar;
+  varying float vDepth;
+  
   uniform float uColorShift;
   
   void main() {
@@ -98,20 +109,28 @@ const fragment = /* glsl */ `
     float alpha;
     
     if (vIsShootingStar > 0.0) {
-      finalColor = vec3(1.0, 0.95, 0.8);
+      finalColor = mix(
+        vec3(1.0, 0.95, 0.8),
+        vec3(1.0, 0.7, 0.3),
+        vTrail
+      );
+      
       float trail = smoothstep(0.5, 0.0, d);
       alpha = trail * 0.8;
       
       vec2 trailUV = uv;
       trailUV.x = 1.0 - trailUV.x;
       float trailMask = smoothstep(0.5, 0.0, length(vec2(trailUV.x * 2.0, trailUV.y) - vec2(0.5)));
-      alpha += trailMask * 0.3;
+      alpha += trailMask * 0.4 * vTrail;
+      
+      float core = smoothstep(0.2, 0.0, d);
+      finalColor += core * 0.5;
     } else {
-      vec3 color1 = vec3(0.95, 0.95 - uColorShift * 0.1, 1.0);
-      vec3 color2 = vec3(1.0, 0.85 + uColorShift * 0.15, 0.7 + uColorShift * 0.2);
-      vec3 color3 = vec3(0.85, 0.9 + uColorShift * 0.1, 1.0);
-      vec3 color4 = vec3(0.9, 0.7 + uColorShift * 0.2, 1.0 - uColorShift * 0.1);
-      vec3 color5 = vec3(0.7 + uColorShift * 0.1, 0.9, 1.0);
+      vec3 color1 = vec3(0.95, 0.95 - uColorShift * 0.2, 1.0);
+      vec3 color2 = vec3(1.0, 0.85 + uColorShift * 0.2, 0.7 + uColorShift * 0.3);
+      vec3 color3 = vec3(0.85, 0.9 + uColorShift * 0.15, 1.0);
+      vec3 color4 = vec3(0.9, 0.7 + uColorShift * 0.25, 1.0 - uColorShift * 0.15);
+      vec3 color5 = vec3(0.7 + uColorShift * 0.15, 0.9, 1.0);
       
       finalColor = mix(
         mix(
@@ -123,14 +142,19 @@ const fragment = /* glsl */ `
         vRandom.y
       );
       
-      alpha = smoothstep(0.5, 0.0, d);
-      alpha *= mix(0.3, 1.0, vTwinkle);
+      float softness = smoothstep(0.5, 0.0, d);
+      float core = smoothstep(0.15, 0.0, d);
+      alpha = softness;
+      alpha *= mix(0.4, 1.0, vTwinkle);
       alpha *= vFade;
       
-      if (vTrail > 0.0) {
-        alpha *= 1.2;
-        finalColor += vec3(0.2) * (1.0 - d);
-      }
+      finalColor += vec3(0.2) * core * vTwinkle;
+      
+      finalColor = mix(
+        finalColor * 0.8,
+        finalColor * 1.2,
+        vDepth
+      );
     }
     
     gl_FragColor = vec4(finalColor, alpha);
@@ -139,9 +163,9 @@ const fragment = /* glsl */ `
 
 export function StarryBackground({
     className,
-    starCount = 400,
+    starCount = 800,
     speed = 1.0,
-    shootingStarFrequency = 0.01
+    shootingStarFrequency = 0.015
 }: StarryBackgroundProps) {
     const containerRef = useRef<HTMLDivElement>(null);
 
