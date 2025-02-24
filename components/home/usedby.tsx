@@ -28,6 +28,13 @@ const usedByEntries: Array<{
                 avatar: "/bots/hiraku.png"
             },
             text: "All my homies use Seyfert so that's why I use it too."
+        }, {
+            author: {
+                name: "Button Bot",
+                handle: "@ButtonBot",
+                avatar: "/bots/buttonbot.gif"
+            },
+            text: "Managing custom bots for our premium users was a major challenge—until we switched to Seyfert. It handled everything seamlessly, proving to be a powerful and reliable framework for large-scale bot deployments."
         }
     ]
 
