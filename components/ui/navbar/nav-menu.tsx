@@ -23,7 +23,7 @@ export const NavMenu = (props: NavigationMenuProps) => (
                     <Link
                         prefetch={false}
                         href="/docs"
-                        className="text-sm font-medium relative after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-foreground after:transition-all hover:after:w-full hover:bg-transparent">API Documentation</Link>
+                        className="text-sm font-medium relative after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-foreground after:transition-all hover:after:w-full hover:bg-transparent">API Reference</Link>
                 </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>

@@ -6,9 +6,6 @@ exports.load = function (app) {
     let isStringSelectMenu = false;
 
     app.renderer.on(MarkdownPageEvent.BEGIN, (event) => {
-        const fileName = path.basename(event.url, '.mdx');
-        console.log("fileName", fileName);
-
         isStringSelectMenu = false;
 
         if (fileName === 'StringSelectMenuInteraction') {

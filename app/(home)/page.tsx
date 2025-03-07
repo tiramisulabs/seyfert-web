@@ -37,19 +37,29 @@ export default function Home() {
             <span className="w-full md:max-w-[500px]">Experience the perfect balance of power and simplicity.</span>
             <span className="w-full md:max-w-[500px]">A modern Discord framework engineered for scalability, without sacrificing developer experience.</span>
           </p>
-          <div className="mt-10 flex items-center justify-center">
+          <div className="mt-10 flex items-center justify-center gap-5">
             <Link
-              href="/docs"
+              href="/guide"
             >
               <Button
-                className="relative px-6 py-3 font-medium group cursor-pointer text-base"
+                className="relative px-6 py-3 font-medium group cursor-pointer text-base -translate-y-0.5"
               >
                 <span className="rounded-sm absolute inset-0 w-full h-full transition duration-200 ease-out transform translate-x-1 translate-y-1 bg-white group-hover:-translate-x-0 group-hover:-translate-y-0"></span>
                 <span className="rounded-sm absolute inset-0 w-full h-full bg-white group-hover:bg-white"></span>
                 <span className="relative text-black group-hover:text-black flex items-center">
-                  GET STARTED
+                  Guide
                   <ArrowUpRight className="!w-5 !h-5 ml-2" />
                 </span>
+              </Button>
+            </Link>
+            <Link
+              href="/docs"
+            >
+              <Button
+                variant="secondary"
+                className="relative px-6 py-3 font-medium group cursor-pointer text-base"
+              >
+                API Reference
               </Button>
             </Link>
           </div>
