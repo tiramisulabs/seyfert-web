@@ -27,5 +27,5 @@ yarn-error.log*
 .vercel
 next-env.d.ts
 
-# api reference (this is generated on build)
+# api reference (this is generated on vercel side)
 /content/docs

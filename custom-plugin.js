@@ -2,19 +2,19 @@ const util = require('util');
 const path = require('path');
 
 exports.load = async function (app) {
-    let isStringSelectMenu = false;
+    let emptyEntry = false;
 
     // Use dynamic import for the ES Module
     const { MarkdownPageEvent } = await import('typedoc-plugin-markdown');
 
     app.renderer.on(MarkdownPageEvent.BEGIN, (event) => {
-        isStringSelectMenu = false;
+        emptyEntry = false;
 
         // Missing fileName variable declaration
         const fileName = path.basename(event.url, '.mdx');
 
-        if (fileName === 'StringSelectMenuInteraction') {
-            isStringSelectMenu = true;
+        if (fileName === 'StringSelectMenuInteraction' || fileName === 'Formatter') {
+            emptyEntry = true;
             event.contents = `---
 title: ${fileName}
 ---`;
@@ -31,7 +31,7 @@ ${event.contents}`;
     });
 
     app.renderer.on(MarkdownPageEvent.END, (event) => {
-        if (isStringSelectMenu) {
+        if (emptyEntry) {
             const fileName = path.basename(event.url, '.mdx');
             event.contents = `---
 title: ${fileName}
