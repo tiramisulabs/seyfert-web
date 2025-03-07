@@ -1,6 +1,21 @@
 {
+    "$schema": "https://typedoc-plugin-markdown.org/schema.json",
     "plugin": [
-        "typedoc-plugin-markdown"
+        "typedoc-plugin-markdown",
+        "./custom-plugin.js"
     ],
-    "out": "./content/docs/api"
+    "readme": "none",
+    "out": "./content/docs",
+    "fileExtension": ".mdx",
+    "useCodeBlocks": true,
+    "expandObjects": true,
+    "expandParameters": true,
+    "indexFormat": "htmlTable",
+    "parametersFormat": "htmlTable",
+    "interfacePropertiesFormat": "htmlTable",
+    "classPropertiesFormat": "htmlTable",
+    "enumMembersFormat": "htmlTable",
+    "propertyMembersFormat": "htmlTable",
+    "typeDeclarationFormat": "htmlTable",
+    "useHTMLEncodedBrackets": true
 }

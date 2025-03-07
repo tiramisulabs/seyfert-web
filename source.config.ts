@@ -3,7 +3,10 @@ import { transformerTwoslash } from 'fumadocs-twoslash';
 import { rehypeCodeDefaultOptions } from 'fumadocs-core/mdx-plugins';
 
 export const { docs, meta } = defineDocs({
-  dir: 'content/docs',
+  dir: [
+    'content/docs',
+    'content/guide',
+  ],
 });
 
 export default defineConfig({

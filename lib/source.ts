@@ -6,3 +6,8 @@ export const source = loader({
   baseUrl: '/docs',
   source: createMDXSource(docs, meta),
 });
+
+export const guideSource = loader({
+  baseUrl: '/guide',
+  source: createMDXSource(docs, meta),
+});
