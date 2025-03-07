@@ -11,7 +11,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         tree={source.pageTree}
         {...baseOptions}
         sidebar={{
-          className: 'font-base'
+          className: 'font-medium'
         }}
       >
         {children}
