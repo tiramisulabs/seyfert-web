@@ -25,8 +25,6 @@ title: ${fileName}
 title: ${fileName}
 ---
 
-import { AutoTypeTable } from 'fumadocs-typescript/ui';
-
 ${event.contents}`;
     });
 

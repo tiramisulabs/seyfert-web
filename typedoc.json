@@ -17,5 +17,10 @@
     "enumMembersFormat": "htmlTable",
     "propertyMembersFormat": "htmlTable",
     "typeDeclarationFormat": "htmlTable",
-    "useHTMLEncodedBrackets": true
+    "entryFileName": "index",
+    "useHTMLEncodedBrackets": true,
+    "entryPoints": [
+        "./seyfert/src/index.ts"
+    ],
+    "tsconfig": "./seyfert/tsconfig.json"
 }
