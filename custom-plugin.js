@@ -1,12 +1,17 @@
-const { MarkdownPageEvent } = require('typedoc-plugin-markdown');
 const util = require('util');
 const path = require('path');
 
-exports.load = function (app) {
+exports.load = async function (app) {
     let isStringSelectMenu = false;
+
+    // Use dynamic import for the ES Module
+    const { MarkdownPageEvent } = await import('typedoc-plugin-markdown');
 
     app.renderer.on(MarkdownPageEvent.BEGIN, (event) => {
         isStringSelectMenu = false;
+
+        // Missing fileName variable declaration
+        const fileName = path.basename(event.url, '.mdx');
 
         if (fileName === 'StringSelectMenuInteraction') {
             isStringSelectMenu = true;
