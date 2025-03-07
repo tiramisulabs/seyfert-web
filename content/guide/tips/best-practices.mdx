@@ -3,6 +3,7 @@ title: Best Practices
 description: Learn the best practices for developing with Seyfert
 ---
 import { Callout } from 'fumadocs-ui/components/callout';
+import { Files, File, Folder } from '@/components/ui/fileTree.tsx';
 
 # Best Practices
 
@@ -12,16 +13,23 @@ This guide covers the recommended practices when developing Discord bots with Se
 
 Organize your code following this recommended structure:
 
-```
-src/
-├── commands/        # Command files
-├── components/      # Component handlers
-├── events/          # Event handlers
-├── middleware/      # Middleware functions
-├── utils/          # Utility functions
-├── config/         # Configuration files
-└── index.ts        # Entry point
-```
+<Files>
+    <Folder name="src" defaultOpen={true}>
+        <Folder name="commands" comment="Command files">
+        </Folder>
+        <Folder name="components" comment="Component handlers">
+        </Folder>
+        <Folder name="events" comment="Event handlers">
+        </Folder>
+        <Folder name="middleware" comment="Middleware functions">
+        </Folder>
+        <Folder name="utils" comment="Utility functions">
+        </Folder>
+        <Folder name="config" comment="Configuration files">
+        </Folder>
+        <File name="index.ts" comment="Entry point" />
+    </Folder>
+</Files>
 
 ## Command Organization
 

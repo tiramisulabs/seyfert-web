@@ -7,12 +7,14 @@ import React, { useState } from 'react';
 interface FileProps {
     name: string;
     children?: React.ReactNode;
+    comment?: string;
 }
 
 interface FolderProps {
     name: string;
     defaultOpen?: boolean;
     children: React.ReactNode;
+    comment?: string;
 }
 
 const iconClass = 'text-gray-500 dark:text-gray-300 size-4';
@@ -35,24 +37,29 @@ const getFileIcon = (fileName: string) => {
     }
 };
 
-export const File: React.FC<FileProps> = ({ name }) => {
+export const File: React.FC<FileProps> = ({ name, comment }) => {
     const icon = getFileIcon(name);
 
     return (
-        <div className="flex items-center py-1 pl-2">
+        <div className="flex items-center py-1 pl-2 group">
             <span className="mr-2">{icon}</span>
             <span>{name}</span>
+            {comment && (
+                <span className="ml-2 text-xs text-gray-400 dark:text-gray-500 italic">
+                    {comment}
+                </span>
+            )}
         </div>
     );
 };
 
-export const Folder: React.FC<FolderProps> = ({ name, defaultOpen = false, children }) => {
+export const Folder: React.FC<FolderProps> = ({ name, defaultOpen = false, children, comment }) => {
     const [isOpen, setIsOpen] = useState(defaultOpen);
 
     return (
         <div>
             <div
-                className="flex items-center py-1 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#232327] pl-2 rounded transition-all duration-200"
+                className="flex items-center py-1 cursor-pointer hover:bg-gray-50 dark:hover:bg-[#232327] pl-2 rounded transition-all duration-200 group"
                 onClick={() => setIsOpen(!isOpen)}
             >
                 <span className="mr-2">
@@ -62,6 +69,11 @@ export const Folder: React.FC<FolderProps> = ({ name, defaultOpen = false, child
                     }
                 </span>
                 <span>{name}</span>
+                {comment && (
+                    <span className="ml-2 text-xs text-gray-400 dark:text-gray-500 italic">
+                        {comment}
+                    </span>
+                )}
             </div>
             {isOpen && (
                 <div className="ml-4 border-l border-gray-200 dark:border-[#333336] pl-2">
