@@ -38,6 +38,7 @@
     "public/bench/combine.ts"
   ],
   "exclude": [
+    "seyfert",
     "node_modules"
   ]
 }
