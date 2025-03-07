@@ -11,7 +11,7 @@ export default function Home() {
     <main className="flex flex-col">
       <div className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden gap-10">
         <div className="absolute inset-0 -z-10 w-full h-full">
-          <StarryBackground starCount={350} speed={0.5} />
+          <StarryBackground />
         </div>
 
         <Spotlight

@@ -1,0 +1,6 @@
+{
+    "plugin": [
+        "typedoc-plugin-markdown"
+    ],
+    "out": "./content/docs/api"
+}

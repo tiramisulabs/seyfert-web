@@ -1,279 +1,149 @@
 'use client';
 
-import React, { useEffect, useRef } from "react";
-import { Renderer, Camera, Geometry, Program, Mesh } from "ogl";
+import React, { useEffect, useState } from "react";
 import { cn } from '@/lib/utils';
 
 interface StarryBackgroundProps {
-    className?: string;
-    starCount?: number;
-    speed?: number;
-    shootingStarFrequency?: number;
+  className?: string;
 }
 
-const vertex = /* glsl */ `
-  attribute vec3 position;
-  attribute vec2 random;
-  attribute float isShootingStar;
-  
-  uniform mat4 modelMatrix;
-  uniform mat4 viewMatrix;
-  uniform mat4 projectionMatrix;
-  uniform float uTime;
-  uniform float uPulse;
-  uniform float uColorShift;
-  uniform float uWave;
-  
-  varying vec2 vRandom;
-  varying float vTwinkle;
-  varying float vTrail;
-  varying float vFade;
-  varying float vIsShootingStar;
-  varying float vDepth;
-  
-  void main() {
-    vRandom = random;
-    vIsShootingStar = isShootingStar;
-    vec3 pos = position;
-    
-    if (isShootingStar > 0.0) {
-      float shootingTime = mod(uTime * 2.0 + random.x * 10.0, 20.0);
-      float curve = sin(shootingTime * 0.5) * random.y;
-      pos.x -= shootingTime * 4.0;
-      pos.y -= shootingTime * 1.5 + curve;
-      vTrail = smoothstep(20.0, 0.0, shootingTime);
-      gl_PointSize = mix(6.0, 12.0, random.y) * vTrail;
-    } else {
-      float depth = (pos.z + 10.0) / 20.0;
-      vDepth = depth;
-      float parallaxStrength = mix(0.5, 2.5, depth);
-      float speedMultiplier = mix(1.5, 0.5, random.y);
-      
-      vFade = min(1.0, uTime * 1.5 - random.x * 2.0);
-      
-      if (random.x > 0.85) {
-        float orbit = uTime * (0.2 + random.y * 0.4);
-        float orbitRadius = 2.0 + random.x * 2.0;
-        pos.x += sin(orbit) * orbitRadius * random.x;
-        pos.z += cos(orbit) * orbitRadius * random.y;
-        pos.y += sin(orbit * 1.5) * random.y;
-      }
-      
-      float wave = sin(uTime * 0.5 + pos.x * 0.2 + pos.z * 0.2) * uWave;
-      wave += cos(uTime * 0.3 + pos.z * 0.3) * uWave * 0.5;
-      pos.y += wave * random.y;
-      
-      float rotation = uTime * 0.03;
-      mat2 rot = mat2(
-        cos(rotation), -sin(rotation),
-        sin(rotation), cos(rotation)
-      );
-      pos.xz = rot * pos.xz;
-      
-      pos.x += sin(uTime * random.x + pos.y * 0.2) * 0.3 * parallaxStrength;
-      pos.z += cos(uTime * random.y + pos.x * 0.2) * 0.2 * parallaxStrength;
-      
-      pos.y = mod(pos.y + uTime * (0.3 + random.x * 0.4) * speedMultiplier, 20.0) - 10.0;
-      
-      vTwinkle = sin(uTime * (1.5 + random.x * 2.0)) * 0.5 + 0.5;
-      vTwinkle *= sin(uTime * (0.7 + random.y * 1.0)) * 0.5 + 0.5;
-      vTwinkle = vTwinkle * uPulse;
-      
-      float size = mix(1.5, 6.0, random.y) * (1.0 + vTwinkle * 0.6);
-      gl_PointSize = size * mix(0.5, 2.0, depth);
-    }
-    
-    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(pos, 1.0);
-  }
-`;
+// Helper function to generate random star positions for box shadows
+const generateStarBoxShadows = (count: number): string => {
+  let shadows = '';
+  for (let i = 0; i < count; i++) {
+    const x = Math.floor(Math.random() * 2000);
+    const y = Math.floor(Math.random() * 2000);
 
-const fragment = /* glsl */ `
-  precision highp float;
-  
-  varying vec2 vRandom;
-  varying float vTwinkle;
-  varying float vTrail;
-  varying float vFade;
-  varying float vIsShootingStar;
-  varying float vDepth;
-  
-  uniform float uColorShift;
-  
-  void main() {
-    vec2 uv = gl_PointCoord.xy;
-    float d = length(uv - 0.5);
-    
-    if(d > 0.5) discard;
-    
-    vec3 finalColor;
-    float alpha;
-    
-    if (vIsShootingStar > 0.0) {
-      finalColor = mix(
-        vec3(1.0, 0.95, 0.8),
-        vec3(1.0, 0.7, 0.3),
-        vTrail
-      );
-      
-      float trail = smoothstep(0.5, 0.0, d);
-      alpha = trail * 0.8;
-      
-      vec2 trailUV = uv;
-      trailUV.x = 1.0 - trailUV.x;
-      float trailMask = smoothstep(0.5, 0.0, length(vec2(trailUV.x * 2.0, trailUV.y) - vec2(0.5)));
-      alpha += trailMask * 0.4 * vTrail;
-      
-      float core = smoothstep(0.2, 0.0, d);
-      finalColor += core * 0.5;
-    } else {
-      vec3 color1 = vec3(0.95, 0.95 - uColorShift * 0.2, 1.0);
-      vec3 color2 = vec3(1.0, 0.85 + uColorShift * 0.2, 0.7 + uColorShift * 0.3);
-      vec3 color3 = vec3(0.85, 0.9 + uColorShift * 0.15, 1.0);
-      vec3 color4 = vec3(0.9, 0.7 + uColorShift * 0.25, 1.0 - uColorShift * 0.15);
-      vec3 color5 = vec3(0.7 + uColorShift * 0.15, 0.9, 1.0);
-      
-      finalColor = mix(
-        mix(
-          mix(color1, color2, vRandom.x),
-          mix(color4, color5, vRandom.y),
-          vRandom.x
-        ),
-        color3,
-        vRandom.y
-      );
-      
-      float softness = smoothstep(0.5, 0.0, d);
-      float core = smoothstep(0.15, 0.0, d);
-      alpha = softness;
-      alpha *= mix(0.4, 1.0, vTwinkle);
-      alpha *= vFade;
-      
-      finalColor += vec3(0.2) * core * vTwinkle;
-      
-      finalColor = mix(
-        finalColor * 0.8,
-        finalColor * 1.2,
-        vDepth
-      );
-    }
-    
-    gl_FragColor = vec4(finalColor, alpha);
+    // Add some variation to star brightness
+    const opacity = Math.random();
+    const color = opacity > 0.9
+      ? '#FFF'
+      : opacity > 0.6
+        ? 'rgba(255, 255, 255, 0.8)'
+        : 'rgba(255, 255, 255, 0.6)';
+
+    shadows += `${x}px ${y}px ${color}`;
+    if (i < count - 1) shadows += ', ';
   }
-`;
+  return shadows;
+};
 
 export function StarryBackground({
-    className,
-    starCount = 800,
-    speed = 1.0,
-    shootingStarFrequency = 0.015
+  className,
 }: StarryBackgroundProps) {
-    const containerRef = useRef<HTMLDivElement>(null);
+  // Use state to store the generated shadows
+  const [shadows, setShadows] = useState<{
+    small: string;
+    medium: string;
+    large: string;
+  } | null>(null);
 
-    useEffect(() => {
-        const container = containerRef.current;
-        if (!container) return;
+  // Only generate shadows on the client side
+  useEffect(() => {
+    setShadows({
+      small: generateStarBoxShadows(500),
+      medium: generateStarBoxShadows(200),
+      large: generateStarBoxShadows(50)
+    });
+  }, []);
 
-        const renderer = new Renderer({
-            alpha: true,
-            depth: false,
-            dpr: Math.min(window.devicePixelRatio, 2)
-        });
-        const gl = renderer.gl;
-        container.appendChild(gl.canvas);
-        gl.clearColor(0, 0, 0, 0);
-
-        gl.canvas.style.width = '100%';
-        gl.canvas.style.height = '100%';
-
-        const camera = new Camera(gl);
-        camera.position.z = 15;
-
-        const positions = new Float32Array(starCount * 3);
-        const randoms = new Float32Array(starCount * 2);
-        const isShootingStar = new Float32Array(starCount);
-
-        for (let i = 0; i < starCount; i++) {
-            positions.set([
-                (Math.random() - 0.5) * 20,  // x
-                (Math.random() - 0.5) * 20,  // y
-                (Math.random() - 0.5) * 20   // z
-            ], i * 3);
-
-            randoms.set([
-                Math.random(),  // velocity
-                Math.random()   // size
-            ], i * 2);
-
-            isShootingStar[i] = Math.random() < shootingStarFrequency ? 1.0 : 0.0;
-        }
-
-        const geometry = new Geometry(gl, {
-            position: { size: 3, data: positions },
-            random: { size: 2, data: randoms },
-            isShootingStar: { size: 1, data: isShootingStar }
-        });
-
-        const program = new Program(gl, {
-            vertex,
-            fragment,
-            uniforms: {
-                uTime: { value: 0 },
-                uPulse: { value: 1.0 },
-                uColorShift: { value: 0.0 },
-                uWave: { value: 0.0 }
-            },
-            transparent: true,
-            depthTest: false,
-        });
-
-        const stars = new Mesh(gl, {
-            mode: gl.POINTS,
-            geometry,
-            program
-        });
-
-        const resize = () => {
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            camera.perspective({
-                aspect: gl.canvas.width / gl.canvas.height
-            });
-        };
-        window.addEventListener('resize', resize);
-        resize();
-
-        let animationFrame: number;
-        const animate = (t: number) => {
-            animationFrame = requestAnimationFrame(animate);
-            const time = t * 0.001 * speed;
-            program.uniforms.uTime.value = time;
-
-            program.uniforms.uColorShift.value = Math.sin(time * 0.1) * 0.5 + 0.5;
-            program.uniforms.uPulse.value = 0.8 + Math.sin(time * 0.2) * 0.2;
-
-            program.uniforms.uWave.value = Math.sin(time * 0.3) * 0.5;
-
-            camera.position.x = Math.sin(time * 0.1) * 2;
-            camera.position.z = 15 + Math.cos(time * 0.1) * 2;
-            camera.lookAt([0, 0, 0]);
-
-            renderer.render({ scene: stars, camera });
-        };
-
-        animationFrame = requestAnimationFrame(animate);
-
-        return () => {
-            window.removeEventListener('resize', resize);
-            cancelAnimationFrame(animationFrame);
-            if (container.contains(gl.canvas)) {
-                container.removeChild(gl.canvas);
+  return (
+    <div className={cn(
+      "absolute inset-0 w-full h-full overflow-hidden bg-transparent",
+      className
+    )}>
+      {shadows && (
+        <>
+          <style jsx>{`
+            .starry-container {
+              height: 100%;
+              width: 100%;
+              position: absolute;
+              top: 0;
+              left: 0;
+              overflow: hidden;
+              z-index: 0;
             }
-        };
-    }, [starCount, speed, shootingStarFrequency]);
+            
+            #stars {
+              width: 1px;
+              height: 1px;
+              background: transparent;
+              box-shadow: ${shadows.small};
+              animation: animStar 50s linear infinite;
+              z-index: 1;
+            }
+            
+            #stars:after {
+              content: " ";
+              position: absolute;
+              top: 2000px;
+              width: 1px;
+              height: 1px;
+              background: transparent;
+              box-shadow: ${shadows.small};
+            }
+            
+            #stars2 {
+              width: 2px;
+              height: 2px;
+              background: transparent;
+              box-shadow: ${shadows.medium};
+              animation: animStar 100s linear infinite;
+              z-index: 2;
+            }
+            
+            #stars2:after {
+              content: " ";
+              position: absolute;
+              top: 2000px;
+              width: 2px;
+              height: 2px;
+              background: transparent;
+              box-shadow: ${shadows.medium};
+            }
+            
+            #stars3 {
+              width: 3px;
+              height: 3px;
+              background: transparent;
+              box-shadow: ${shadows.large};
+              animation: animStar 150s linear infinite;
+              z-index: 3;
+            }
+            
+            #stars3:after {
+              content: " ";
+              position: absolute;
+              top: 2000px;
+              width: 3px;
+              height: 3px;
+              background: transparent;
+              box-shadow: ${shadows.large};
+            }
+            
+            @keyframes animStar {
+              from {
+                transform: translateY(0px);
+              }
+              to {
+                transform: translateY(-2000px);
+              }
+            }
+          `}</style>
 
-    return (
-        <div
-            ref={containerRef}
-            className={cn("absolute w-full h-full", className)}
-        />
-    );
+          <div className="starry-container">
+            <div id="stars"></div>
+            <div id="stars2"></div>
+            <div id="stars3"></div>
+          </div>
+        </>
+      )}
+
+      {/* Empty transparent container while shadows are being generated */}
+      {!shadows && (
+        <div className="w-full h-full bg-transparent"></div>
+      )}
+    </div>
+  );
 }
