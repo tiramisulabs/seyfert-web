@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowUpRight, } from "lucide-react";
+import { ArrowUpRight, BookOpen, Code, Rocket } from "lucide-react";
 import { AnimatedGradientText } from "@/components/ui/magicui/gradient-text";
 import HomeSections from './sections';
 import { Badge } from "@/components/ui/badge";
@@ -40,26 +40,25 @@ export default function Home() {
           <div className="mt-10 flex items-center justify-center gap-5">
             <Link
               href="/guide"
+              target="_blank"
             >
               <Button
-                className="relative px-6 py-3 font-medium group cursor-pointer text-base -translate-y-0.5"
+                className="font-medium cursor-pointer text-base gap-3"
               >
-                <span className="rounded-sm absolute inset-0 w-full h-full transition duration-200 ease-out transform translate-x-1 translate-y-1 bg-white group-hover:-translate-x-0 group-hover:-translate-y-0"></span>
-                <span className="rounded-sm absolute inset-0 w-full h-full bg-white group-hover:bg-white"></span>
-                <span className="relative text-black group-hover:text-black flex items-center">
-                  Guide
-                  <ArrowUpRight className="!w-5 !h-5 ml-2" />
-                </span>
+                Get Started
+                <Rocket className="size-5" />
               </Button>
             </Link>
             <Link
               href="/docs"
+              target="_blank"
             >
               <Button
-                variant="secondary"
-                className="relative px-6 py-3 font-medium group cursor-pointer text-base"
+                variant="outline"
+                className="font-medium cursor-pointer text-base gap-3"
               >
                 API Reference
+                <BookOpen className="size-5" />
               </Button>
             </Link>
           </div>
