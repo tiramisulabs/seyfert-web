@@ -5,6 +5,7 @@ const withMDX = createMDX();
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
+  productionBrowserSourceMaps: false,
   images: {
     remotePatterns: [
       {
@@ -18,7 +19,8 @@ const config = {
     },
   },
   experimental: {
-    optimizePackageImports: ['hugeicons-react']
+    optimizePackageImports: ['hugeicons-react'],
+    serverSourceMaps: false,
   }
 };
 
