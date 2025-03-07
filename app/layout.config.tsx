@@ -18,5 +18,10 @@ export const baseOptions: BaseLayoutProps = {
       url: '/guide',
       active: 'nested-url',
     },
+    {
+      text: 'API Reference',
+      url: '/docs',
+      active: 'nested-url',
+    },
   ],
 };
