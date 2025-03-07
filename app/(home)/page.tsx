@@ -3,7 +3,7 @@ import { ArrowUpRight, } from "lucide-react";
 import { AnimatedGradientText } from "@/components/ui/magicui/gradient-text";
 import HomeSections from './sections';
 import { Badge } from "@/components/ui/badge";
-import { Link } from 'next-view-transitions'
+import Link from 'next/link'
 import { StarryBackground } from "@/components/ui/starry";
 import { Spotlight } from "@/components/ui/spotlight";
 export default function Home() {
