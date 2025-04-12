@@ -36,7 +36,7 @@ const bots: {
     username: 'Listen#7518',
     id: '777401960793636934',
     avatar: 'listen',
-    guilds: 5100,
+    guilds: 7300,
     content: (
       <>
         After years of experience with Discord.js, Discordeno and Eris, Seyfert
