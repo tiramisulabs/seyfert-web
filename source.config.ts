@@ -21,12 +21,12 @@ export default defineConfig({
         light: 'github-light',
         dark: 'github-dark',
       },
+      langs: ["python", "javascript", "typescript", "bash"],
       transformers: [
         ...(rehypeCodeDefaultOptions.transformers ?? []),
-        transformerTwoslash({
-          langs: Object.keys(bundledLanguages)
-        }),
+        transformerTwoslash(),
       ],
     },
+
   },
 });
