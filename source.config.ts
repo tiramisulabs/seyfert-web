@@ -2,6 +2,15 @@ import { defineDocs, defineConfig } from 'fumadocs-mdx/config';
 import { transformerTwoslash } from 'fumadocs-twoslash';
 import { rehypeCodeDefaultOptions } from 'fumadocs-core/mdx-plugins';
 
+import {
+  getSingletonHighlighter,
+  bundledLanguages
+} from 'shiki';
+
+await getSingletonHighlighter({
+  langs: Object.keys(bundledLanguages)
+})
+
 export const { docs: docsContent, meta: docsMeta } = defineDocs({
   dir: 'content/docs',
 });
@@ -19,7 +28,9 @@ export default defineConfig({
       },
       transformers: [
         ...(rehypeCodeDefaultOptions.transformers ?? []),
-        transformerTwoslash(),
+        transformerTwoslash({
+
+        }),
       ],
     },
   },
