@@ -8,6 +8,14 @@ exports.load = async function (app) {
     app.renderer.on(MarkdownPageEvent.END, (event) => {
         const fileName = path.basename(event.url, '.mdx');
 
+        if (fileName === 'StringSelectMenuInteraction' || fileName === 'Formatter') {
+            emptyEntry = true;
+            event.contents = `---
+title: ${fileName}
+---`;
+            return;
+        }
+
         event.contents = `---
 title: ${fileName}
 ---

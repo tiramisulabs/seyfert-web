@@ -23,7 +23,7 @@ const config = {
   experimental: {
     optimizePackageImports: ['hugeicons-react'],
     serverSourceMaps: false,
-  }
+  },
 };
 
 export default withMDX(config);

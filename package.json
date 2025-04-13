@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev --turbo",
-    "start": "next start",
+    "dev": "next dev --turbopack",
+    "start": "next start --turbopack",
     "postinstall": "fumadocs-mdx",
     "docs": "typedoc"
   },
