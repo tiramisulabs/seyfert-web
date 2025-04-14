@@ -7,7 +7,6 @@ const config = {
   reactStrictMode: true,
   serverExternalPackages: ['typescript', 'twoslash'],
   productionBrowserSourceMaps: false,
-  output: "standalone",
   images: {
     remotePatterns: [
       {
