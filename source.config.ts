@@ -18,13 +18,15 @@ export default defineConfig({
   mdxOptions: {
     rehypeCodeOptions: {
       themes: {
-        light: 'github-light',
-        dark: 'github-dark',
+        light: 'min-light',
+        dark: 'min-dark',
       },
       langs: ["python", "javascript", "typescript", "bash"],
       transformers: [
         ...(rehypeCodeDefaultOptions.transformers ?? []),
-        transformerTwoslash(),
+        transformerTwoslash({
+          langs: ["python", "javascript", "typescript", "bash"],
+        }),
       ],
     },
 

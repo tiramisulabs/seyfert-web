@@ -1,117 +1,91 @@
 ---
-title: Cloudflare Workers Integration
-description: Learn how to deploy your Seyfert bot on Cloudflare Workers
+title: Using Cloudflare Workers
 ---
-import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
-import { Callout } from 'fumadocs-ui/components/callout';
 
-# Cloudflare Workers Integration
+Seyfert supports Cloudflare Workers, you can setup it by configuring `seyfert.config.mjs` with `config.http` [see more info here](/guide/getting-started/setup-project#configuration)
 
-This guide will show you how to deploy your Seyfert bot on Cloudflare Workers.
+<Callout>
 
-## Prerequisites
+Since Cloudflare Workers doesn't support fs, using it with seyfert might be a little tricky as you may have to import each command/language/component
+and load it manually
 
-Before starting, make sure you have:
-- A Cloudflare account
-- Wrangler CLI installed (`npm install -g wrangler`)
-- Basic knowledge of Cloudflare Workers
-
-## Setting up the Project
-
-First, create a new Cloudflare Workers project:
-
-```bash
-wrangler init my-seyfert-bot
-cd my-seyfert-bot
-```
-
-## Installing Dependencies
-
-Install Seyfert and the worker adapter:
-
-```bash
-npm install seyfert @slipher/worker-adapter
-```
-
-## Configuration
-
-Create your Seyfert configuration file:
-
-<Tabs items={['seyfert.config.mjs']}>
-  <Tab value="seyfert.config.mjs">
-```ts
-import { config } from 'seyfert';
-
-export default config.http({
-    token: '', // Your bot token
-    applicationId: '', // Your application ID
-    publicKey: '', // Your public key
-    locations: {
-        base: 'src',
-        commands: 'commands'
-    }
-});
-```
-  </Tab>
-</Tabs>
-
-## Worker Implementation
-
-Create your worker file:
-
-<Tabs items={['src/index.ts']}>
-  <Tab value="src/index.ts">
-```ts
-import { WorkerClient } from 'seyfert';
-
-declare module 'seyfert' {
-    interface UsingClient extends ParseClient<WorkerClient<true>> {}
-}
-
-const client = new WorkerClient();
-
-export default {
-    async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-        // Handle the interaction
-        const response = await client.handleRequest(request);
-        
-        if (response) return response;
-        
-        return new Response('Not Found', { status: 404 });
-    }
-};
-```
-  </Tab>
-</Tabs>
-
-## Deployment
-
-Deploy your bot to Cloudflare Workers:
-
-```bash
-wrangler deploy
-```
-
-<Callout type="warning">
-Make sure to set up your environment variables in the Cloudflare Dashboard or using `wrangler secret`.
 </Callout>
 
-## Verifying the Setup
+<Callout type="warn">
 
-1. Update your Discord application's Interactions Endpoint URL to your worker's URL
-2. Test a command to ensure everything is working
+You must set `compilerOptions.module` to `ESNext` in your `tsconfig.json` since cf workers only supports ESM
 
-## Common Issues
+</Callout>
 
-Here are some common issues you might encounter:
+First of all you will need to install an adapter for seyfert, you can do it by running:
 
-1. **Invalid Signature**: Make sure your public key is correct
-2. **Command Not Found**: Verify your commands are properly registered
-3. **Timeout**: Workers have a execution time limit of 50ms in the free tier
+```bash copy
+npm add @slipher/generic-adapter
+```
 
-## Next Steps
+and your `index.ts` shall follow the following example:
 
-- Set up proper error handling
-- Implement caching strategies
-- Add monitoring and logging
-- Configure custom domains 
+```ts copy
+import '../seyfert.config.mjs'; // ye, importing our seyfert.config.mjs
+import { HttpClient } from 'seyfert';
+import { GenericAdapter } from '@slipher/generic-adapter';
+
+import Ping from './commands/ping.js';
+
+const client = new HttpClient();
+const adapter = new GenericAdapter(client);
+
+client.start()
+  .then(async () => {
+    // we need to load commands manually
+    await client.commands!.set('', client, [Ping]);
+  });
+
+adapter.start();
+
+export default {
+  fetch(req: Request) {
+    return adapter.fetch(req);
+  }
+}
+```
+
+and the same when we load both `components` and `langs`
+
+```ts copy
+import '../seyfert.config.mjs'; // ye, importing our seyfert.config.mjs
+import { HttpClient } from 'seyfert';
+
+// commands
+import Ping from './commands/ping.js';
+
+// langs
+import EnLang from './languages/en.js';
+
+// components
+import ButtonC from './components/buttonHandle.js';
+
+const client = new HttpClient();
+
+client.start()
+  .then(async () => {
+    // we need to load commands manually
+    await client.commands!.set('', client, [Ping]);
+
+    // load languages
+    await client.langs!.set('', [{ name: 'en', file: EnLang}]);
+
+    // load components
+    await client.components!.set('', client, [ButtonC]);
+  });
+
+adapter.start();
+
+export default {
+  fetch(req: Request) {
+    return adapter.fetch(req);
+  }
+}
+```
+
+and then onwards we can use seyfert with Cloudflare Workers.
