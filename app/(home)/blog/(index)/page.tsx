@@ -1,6 +1,5 @@
 import { blogSource } from '@/lib/source';
 import type { Metadata } from 'next';
-import { DocsPage, DocsBody } from 'fumadocs-ui/page';
 import { CalendarIcon } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -41,11 +40,11 @@ export default function BlogIndexPage() {
                                 {page.data.title || 'Untitled'}
                             </h2>
 
-                            {(page.data as any).date && (
+                            {page.data.date && (
                                 <div className="flex items-center gap-2 text-sm text-neutral-500 mt-2 mb-3">
                                     <CalendarIcon className="h-4 w-4" />
                                     <span>
-                                        {new Date((page.data as any).date).toLocaleDateString('en-US', {
+                                        {new Date(page.data.date).toLocaleDateString('en-US', {
                                             year: 'numeric',
                                             month: 'long',
                                             day: 'numeric',

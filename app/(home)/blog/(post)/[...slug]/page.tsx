@@ -34,9 +34,9 @@ export default async function Page(props: {
             {page.data.description && (
                 <DocsDescription>{page.data.description}</DocsDescription>
             )}
-            {(page.data as any).date && (
+            {page.data.date && (
                 <p className="text-muted-foreground mb-2 -mt-10">
-                    {new Date((page.data as any).date).toLocaleDateString('en-US', {
+                    {new Date(page.data.date).toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: 'long',
                         day: 'numeric',
