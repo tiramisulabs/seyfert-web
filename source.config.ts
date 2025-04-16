@@ -10,7 +10,7 @@ export const blog = defineCollections({
   dir: 'content/blog',
   type: 'doc',
   schema: frontmatterSchema.extend({
-    date: z.string().date().or(z.date()).optional(),
+    date: z.date(),
   }),
 });
 

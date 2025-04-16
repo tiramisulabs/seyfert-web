@@ -11,8 +11,8 @@ export default function BlogIndexPage() {
     const pages = blogSource.getPages();
     const sortedPages = [...pages].sort(
         (a, b) =>
-            new Date(b.data.date ?? b.file.name).getTime() -
-            new Date(a.data.date ?? a.file.name).getTime(),
+            b.data.date.getTime() -
+            a.data.date.getTime(),
     )
 
     return (
@@ -48,6 +48,7 @@ export default function BlogIndexPage() {
                                             year: 'numeric',
                                             month: 'long',
                                             day: 'numeric',
+                                            timeZone: 'UTC'
                                         })}
                                     </span>
                                 </div>
