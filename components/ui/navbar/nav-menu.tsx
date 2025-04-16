@@ -22,15 +22,7 @@ export const NavMenu = (props: NavigationMenuProps) => (
                 <NavigationMenuLink asChild>
                     <Link
                         prefetch={false}
-                        href="/docs"
-                        className="text-sm font-medium relative after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-foreground after:transition-all hover:after:w-full hover:bg-transparent">API Reference</Link>
-                </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-                <NavigationMenuLink asChild>
-                    <Link
-                        prefetch={false}
-                        href="#"
+                        href="/blog"
                         className="text-sm font-medium relative after:absolute after:bottom-0 after:left-0 after:h-[1px] after:w-0 after:bg-foreground after:transition-all hover:after:w-full hover:bg-transparent">Blog</Link>
                 </NavigationMenuLink>
             </NavigationMenuItem>

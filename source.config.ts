@@ -1,9 +1,17 @@
-import { defineDocs, defineConfig } from 'fumadocs-mdx/config';
+import { defineDocs, defineConfig, defineCollections, frontmatterSchema } from 'fumadocs-mdx/config';
 import { transformerTwoslash } from 'fumadocs-twoslash';
 import { rehypeCodeDefaultOptions } from 'fumadocs-core/mdx-plugins';
-
+import { z } from 'zod';
 export const { docs: guideContent, meta: guideMeta } = defineDocs({
   dir: 'content/guide',
+});
+
+export const blog = defineCollections({
+  dir: 'content/blog',
+  type: 'doc',
+  schema: frontmatterSchema.extend({
+    date: z.string().date().or(z.date()).optional(),
+  }),
 });
 
 export default defineConfig({

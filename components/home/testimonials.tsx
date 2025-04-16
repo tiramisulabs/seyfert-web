@@ -15,7 +15,7 @@ const testimonials = [
     },
     {
         name: "FreeAoi",
-        review: "This framework is so advanced, my bot now responds to commands that I never even programmed.",
+        review: "pinche kelsy ya hazme caso.",
         avatar: "/avatars/freeaoi.png"
     },
     {
