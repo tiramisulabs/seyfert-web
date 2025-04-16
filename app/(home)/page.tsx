@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { BookOpen, Rocket } from "lucide-react";
+import { BookOpen, Rocket, Users } from "lucide-react";
 import { AnimatedGradientText } from "@/components/ui/magicui/gradient-text";
 import HomeSections from './sections';
 import { Badge } from "@/components/ui/badge";
@@ -50,15 +50,15 @@ export default function Home() {
               </Button>
             </Link>
             <Link
-              href="/docs"
+              href="https://discord.gg/hEeJNaSqnS"
               target="_blank"
             >
               <Button
                 variant="outline"
                 className="font-medium cursor-pointer text-base gap-3"
               >
-                API Reference
-                <BookOpen className="size-5" />
+                Community
+                <Users className="size-5" />
               </Button>
             </Link>
           </div>

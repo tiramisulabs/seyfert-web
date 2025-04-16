@@ -1,4 +1,5 @@
 import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
+import Link from 'next/link';
 
 /**
  * Shared layout configurations
@@ -7,21 +8,15 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
  * Home Layout: app/(home)/layout.tsx
  * Docs Layout: app/docs/layout.tsx
  */
+
 export const baseOptions: BaseLayoutProps = {
   nav: {
-    // can be JSX too!
-    title: 'Seyfert',
+    children: (
+      <div className="flex items-center">
+        <img src="/logo.svg" alt="Seyfert Logo" className="h-6 w-6" />
+        <Link href="/">Seyfert</Link>
+      </div>
+    ),
   },
-  links: [
-    {
-      text: 'Guide',
-      url: '/guide',
-      active: 'nested-url',
-    },
-    {
-      text: 'API Reference',
-      url: '/docs',
-      active: 'nested-url',
-    },
-  ],
+  links: [],
 };
