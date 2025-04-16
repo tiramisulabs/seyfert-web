@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { BookOpen, Rocket, Users } from "lucide-react";
+import { Rocket, Users } from "lucide-react";
 import { AnimatedGradientText } from "@/components/ui/magicui/gradient-text";
 import HomeSections from './sections';
 import { Badge } from "@/components/ui/badge";
