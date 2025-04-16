@@ -11,9 +11,10 @@ import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 
 export default async function Page(props: {
-    params: { slug: string[] };
+    params: Promise<{ slug: string[] }>;
 }) {
-    const page = blogSource.getPage(props.params.slug);
+    const params = await props.params;
+    const page = blogSource.getPage(params.slug);
 
     if (!page) {
         notFound();
@@ -57,9 +58,10 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata(props: {
-    params: { slug: string[] };
+    params: Promise<{ slug: string[] }>;
 }) {
-    const page = blogSource.getPage(props.params.slug);
+    const params = await props.params;
+    const page = blogSource.getPage(params.slug);
     if (!page) notFound();
 
     return {
