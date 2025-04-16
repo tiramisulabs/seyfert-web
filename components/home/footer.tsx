@@ -26,9 +26,9 @@ export function Footer() {
                     </p>
                 </div>
                 <div className="flex gap-4 flex-wrap">
-                    <Link href="/docs" target="_blank" rel="noopener noreferrer">
+                    <Link href="/guide" target="_blank" rel="noopener noreferrer">
                         <Button variant="default" size="lg" className="rounded-md shadow-none cursor-pointer">
-                            Read the Docs
+                            Read the guide
                             <ArrowUpRight className="!w-5 !h-5 ml-2" />
                         </Button>
                     </Link>
