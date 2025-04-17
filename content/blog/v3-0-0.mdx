@@ -10,7 +10,7 @@ It was meant to be a minor version, but FreeAoi took so long to make the new web
 
 - `emojis` cache now stores `ApplicationEmoji` objects
 - `PermissionsBitField.has` now expects an array
-- `set`, `parse`, and `onFIle` now expects `LangInstance` instead of `EventInstance`
+- `set`, `parse`, and `onFile` now expects `LangInstance` instead of `EventInstance`
 - Changed all `method(force?: boolean)` to `method(mode: 'cache' | 'rest' | 'flow')`
 - Changed `getAnswerVoters` to accept an optional parameter for client-side checking if the answer exists
 
@@ -20,7 +20,7 @@ It was meant to be a minor version, but FreeAoi took so long to make the new web
 - Node18 compatibility (why do y'all use old versions lmao)
 - Fix shard zombie connection
 - `overwrites` cache
-- Structrures mixer
+- Structures mixer
 - Added support for custom events (type was missing, already worked)
 - Fixed custom events parameters
 
@@ -30,14 +30,13 @@ It was meant to be a minor version, but FreeAoi took so long to make the new web
 - Add `onError` callback on components collectors
 - Cache `presences` and `members` when `GUILD_MEMBERS_CHUNKS` event is emitted
 - `invites` shorter
-- `followup` method to all contexts
 - `editEmoji`, `deleteEmoji`, `fetch`, and `getActivityInstance` method to `aplications` shorter
 - `filter` is now optional in `ComponentCommand` and `ModalCommand`
 - `customId` for statics `ComponentCommand` and `ModalCommand` (can use both `filter` and `customId`)
 - `MESSAGE_POLL_VOTE_ADD` event
 - `Application` structure
-- `Guild`#invites shorter
-- `BaseGuildChannel`#invites shorter
+- `Guild#invites` shorter
+- `BaseGuildChannel#invites` shorter
 - `attachmentSizeLimit` in interactions
 - Added `reconnectTimeout` and `connectionTimeout` to `ShardOptions`
 - Added `requestGuildMembers` to `Shard`
