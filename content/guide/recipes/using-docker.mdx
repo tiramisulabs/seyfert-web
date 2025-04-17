@@ -1,0 +1,111 @@
+---
+title: Docker
+description: An introduction on how to deploy Seyfert in a Docker container
+---
+
+This guide assumes you have knowledge of the following topics:
+
+- [TypeScript](https://www.typescriptlang.org/)
+- [Node.js](https://nodejs.org/en)
+- [Docker](https://www.docker.com/)
+- [Virtualization](https://en.wikipedia.org/wiki/OS-level_virtualization)
+
+## Why Docker?
+
+Docker provides a consistent environment that ensures the proper functioning of any bot in both development and production, as well as simplifying the integration with CI/CD tools.
+
+With Docker scaling a bot horizontally is simple, allowing workloads to be distributed across multiple instances as needed.
+
+## What files does a Seyfert project require?
+
+- `package.json`
+- `seyfert.config.mjs`
+- `/node_modules`
+- `/src` or `/dist`
+
+## Deploying with Node.js
+
+### Container file for a TypeScript project
+
+A basic container file looks as follows:
+
+```docker title="Dockerfile" copy
+FROM node:<VERSION_TAG>
+
+WORKDIR /bot
+
+COPY package*.json ./
+
+RUN npm install --production
+
+RUN npm i -g typescript
+
+COPY tsconfig.json seyfert.config.mjs ./
+COPY /src ./src
+
+# Build typescript files
+RUN tsc --project tsconfig.json
+
+ENV NODE_ENV=production
+
+ENTRYPOINT ["node", "dist/index.js"]
+```
+
+You must replace `<VERSION_TAG>` with the Node.js version you want to use.
+
+### Container file with multi-stage builds
+
+Although the previous container image is simple and practical, it can still be improved by adding multi-stage builds and other best practices:
+
+```docker title="Dockerfile" copy
+# [ base ] #
+FROM node:<VERSION_TAG>-alpine AS base
+
+ENV DIR /bot
+WORKDIR $DIR
+
+# [ OS packages ] #
+FROM base AS pkg
+
+RUN apk update && apk add --no-cache dumb-init
+
+# [ project builder ] #
+FROM base AS build
+
+COPY package*.json ./
+
+## Ref: https://docs.npmjs.com/cli/v10/commands/npm-ci
+RUN npm ci
+## Ref: https://docs.npmjs.com/cli/v10/commands/npm-prune
+RUN npm prune --production
+
+RUN npm i -g typescript
+
+COPY tsconfig.json seyfert.config.mjs ./
+COPY /src ./src
+
+## Build typescript
+RUN tsc --project tsconfig.json
+
+# [ production ready ] #
+FROM base AS production
+
+# Joining stages
+## Packages
+COPY --from=pkg /usr/bin/dumb-init /usr/bin/dumb-init
+## Dependencies
+COPY --from=build $DIR/node_modules ./node_modules
+## Builder
+COPY --from=build $DIR/dist ./dist
+COPY --from=build $DIR/package.json ./package.json
+COPY --from=build $DIR/seyfert.config.js ./seyfert.config.js
+
+# Environment permissions
+ENV NODE_ENV production
+## Remove if your project needs root permissions
+ENV USER node
+USER $USER
+
+# Run the application
+ENTRYPOINT ["dumb-init", "node", "dist/index.js"]
+```

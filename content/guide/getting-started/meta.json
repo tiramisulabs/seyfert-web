@@ -1,0 +1,9 @@
+{
+    "title": "Getting Started",
+    "pages": [
+        "setup-project",
+        "first-command",
+        "listening-events",
+        "declare-module"
+    ]
+}

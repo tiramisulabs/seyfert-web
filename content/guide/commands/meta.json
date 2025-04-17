@@ -1,0 +1,12 @@
+{
+    "title": "Commands",
+    "pages": [
+        "intro",
+        "options",
+        "middlewares",
+        "subcommands",
+        "handling-errors",
+        "prefix-commands",
+        "extend-commandcontext"
+    ]
+}

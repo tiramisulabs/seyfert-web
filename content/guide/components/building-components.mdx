@@ -1,0 +1,150 @@
+---
+title: Building components
+---
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+
+Components are built with a builder, which is a JavaScript class, which represents it. Within this builder you can customize the component so it's either text or color.
+
+There are diffrent types of components' builders with diffrent customization but all have a common property: the custom Id. A unique identifier which is used for handling the interactions of the component.
+
+## ActionRow
+
+All the builders are sent within an [`ActionRow`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/ActionRow.ts#L16). Each message can contain a maxium of 5 actions row.
+
+Here is how we create a basic ActionRow:
+
+```ts twoslash {"Set all the components within this ActionRow": 4-5} {"Add components to the ActionRow": 6-7} showLineNumbers copy
+import { ActionRow } from 'seyfert';
+
+const row = new ActionRow()
+
+  .setComponents([])
+
+  .addComponents();
+```
+
+## Building each component
+
+Now we are going to build each type of component and set it within an ActionRow:
+
+<Tabs items={['Buttons', 'Select Menus']}>
+  <Tab value="Buttons">
+An ActionRow shouldn't contain more than 5 buttons.
+
+```ts twoslash showLineNumbers copy
+import { ActionRow, Button } from 'seyfert';
+import { ButtonStyle } from 'seyfert/lib/types';
+
+const button = new Button()
+  .setCustomId('first-button')
+  .setStyle(ButtonStyle.Primary)
+  .setLabel('First Button');
+
+const row = new ActionRow<Button>().setComponents([button]);
+```
+  </Tab>
+  <Tab value="Select Menus">
+An ActionRow shouldn't contain more than one select menu.
+
+There are diffrent types of select menus: [`StringSelectMenu`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/SelectMenu.ts#L276), [`UserSelectMenu`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/SelectMenu.ts#L114), [`RoleSelectMenu`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/SelectMenu.ts#L149), [`ChannelSelectMenu`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/SelectMenu.ts#L227) and [`MentionableSelectMenu`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/SelectMenu.ts#L185).
+
+We are going to make diffrent action rows for each select menu. 
+
+```ts twoslash {"String select menu": 10-19} {"User select menu": 20-27} {"Role select menu": 28-35} {"Channel select menu": 36-45} {"Mentionable select menu": 46-58} showLineNumbers copy
+import {
+  ActionRow,
+  StringSelectMenu,
+  StringSelectOption,
+  UserSelectMenu,
+  RoleSelectMenu,
+  ChannelSelectMenu,
+  MentionableSelectMenu
+} from 'seyfert';
+
+const stringMenu = new StringSelectMenu()
+  .setCustomId('string-menu')
+  .setPlaceholder('Select an string option')
+  .addOption(
+    new StringSelectOption().setLabel('Option 1').setValue('1'),
+    new StringSelectOption().setLabel('Option 2').setValue('2')
+  );
+
+const stringRow = new ActionRow<StringSelectMenu>().setComponents([stringMenu]);
+
+const userMenu = new UserSelectMenu()
+  .setCustomId('user-menu')
+  .setPlaceholder('Select an user')
+  //user id's
+  .setDefaultUsers('123456789', '987654321');
+
+const userRow = new ActionRow<UserSelectMenu>().setComponents([userMenu]);
+
+const roleMenu = new RoleSelectMenu()
+  .setCustomId('role-menu')
+  .setPlaceholder('Select a role')
+  //role id's
+  .setDefaultRoles('123456789', '987654321');
+
+const roleRow = new ActionRow<RoleSelectMenu>().setComponents([roleMenu]);
+
+const channelMenu = new ChannelSelectMenu()
+  .setCustomId('channel-menu')
+  .setPlaceholder('Select a channel')
+  //channel id's
+  .setDefaultChannels('123456789', '987654321');
+
+const channelRow = new ActionRow<ChannelSelectMenu>().setComponents([
+  channelMenu
+]);
+
+const mentionableMenu = new MentionableSelectMenu()
+  .setCustomId('mentionable-menu')
+  .setPlaceholder('Select a mentionable')
+  //mentionable id's (role or user)
+  .setDefaultMentionables(
+    { type: 'User', id: '123456789' },
+    { type: 'Role', id: '987654321' }
+  );
+
+const mentionableRow = new ActionRow<MentionableSelectMenu>().setComponents([
+  mentionableMenu
+]);
+```
+  </Tab>
+</Tabs>
+
+## Sending the components
+
+After creating the components you have to send the ActionRow into the components field. You can check example below:
+
+```ts twoslash {13-16,20} showLineNumbers copy
+import type { ParseClient, Client } from 'seyfert';
+declare module 'seyfert' {
+  interface UsingClient extends ParseClient<Client<true>> {}
+}
+// ---cut---
+import { Declare, Command, type CommandContext, ActionRow, Button } from 'seyfert';
+import { ButtonStyle } from 'seyfert/lib/types';
+
+@Declare({
+  name: 'ping',
+  description: 'Show the ping with discord'
+})
+export default class PingCommand extends Command {
+
+	async run(ctx: CommandContext) {
+		// average latency between shards
+    const ping = ctx.client.gateway.latency;
+
+    const row = new ActionRow()
+      .setComponents([
+        new Button().setCustomId('pingbtn').setLabel(`Ping: ${ping}`).setStyle(ButtonStyle.Primary)
+      ])
+
+    await ctx.write({
+      content: `The ping is \`${ping}\``,
+      components: [row]
+    });
+  }
+}
+``` 
