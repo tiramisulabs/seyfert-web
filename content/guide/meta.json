@@ -1,0 +1,12 @@
+{
+    "pages": [
+        "index",
+        "getting-started",
+        "commands",
+        "i18n",
+        "components",
+        "recipes",
+        "tips",
+        "api"
+    ]
+}

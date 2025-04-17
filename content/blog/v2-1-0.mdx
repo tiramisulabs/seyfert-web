@@ -1,0 +1,39 @@
+---
+title: Seyfert v2.1.0
+description: New features and improvements in Seyfert v2.1.0
+date: 2024-09-07
+---
+
+## Bug Fixes
+
+- Handle http status 429 correctly (ratelimited)
+- Could not disable cache with `.setServices` in a `WorkerClient`
+
+## New Features
+
+- Added `EntryPointInteraction`, `ButtonPointContext`, `EntryPointCommand`
+- Resharding for `Client` (enabled by default)
+- Added `AnyContext` type
+- Added `WORKER_SHARD_CONNECTED` event
+- Added `SUBSCRIPTION_DELETE`, `SUBSCRIPTION_UPDATE`, `SUBSCRIPTION_CREATE` events
+- Now shards logs errors without need of debug mode
+- Workers now have a queue to spawn
+
+## Breaking Changes
+
+- Interface `AttachmentData` changed property `name` to `filename`:
+```ts
+interface AttachmentData {
+  - name: string;
+  + filename: string;
+}
+```
+
+- WorkerClient no longer sends all events to parent (WorkerManager) by default. To enable it:
+```ts
+new WorkerClient({
+    sendPayloadToParent: true
+});
+```
+
+- `disabledCache` option in `WorkerClient` has been removed, use `setServices` instead 

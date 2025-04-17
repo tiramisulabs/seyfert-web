@@ -1,0 +1,124 @@
+---
+title: Creating Your First Command
+---
+import { Files, File, Folder } from '@/components/ui/fileTree.tsx';
+
+The main input for any Discord bot is its commands. In Seyfert, you can easily create and manage commands. Seyfert will handle loading and executing all the commands you create within the `commands` folder (as specified in the configuration).
+
+To get started, let's create the following file and use the `ping` command as an example.  
+All commands must use the `@Declare` decorator for their information and a class that extends `Command`:
+
+```ts twoslash title="src/commands/ping.ts" showLineNumbers wrap
+import type { ParseClient, Client } from 'seyfert';
+declare module 'seyfert' {
+  interface UsingClient extends ParseClient<Client<true>> {}
+}
+// ---cut---
+import { Declare, Command, type CommandContext } from 'seyfert';
+
+@Declare({
+  name: 'ping',
+  description: 'Show latency with Discord'
+})
+export default class PingCommand extends Command {
+  async run(ctx: CommandContext) {
+    // Average latency between existing connections
+    const ping = ctx.client.gateway.latency;
+
+    await ctx.write({
+      content: `The latency is \`${ping}\``
+    });
+  }
+}
+```
+
+Before you can execute new commands, you need to register them with Discord. You can do this using the following code:
+
+```ts twoslash {5-6} title="src/index.ts" showLineNumbers
+import { Client } from 'seyfert';
+
+const client = new Client();
+
+client.start()
+  .then(() => client.uploadCommands({ cachePath: './commands.json' }));
+```
+
+<Callout type="tip">
+When the bot starts, the commands will be uploaded to Discord, and a `./commands.json` file (cachePath) will be created to store them. This helps detect changes and prevents re-uploading them every time.
+</Callout>
+
+With this, you can run your bot and test the `/ping` command on Discord. You should see your bot's latency!
+
+## Using Options
+
+Simple enough, right? However, commands don't always respond the same way every time you execute them. Sometimes, we need to interpret what the user actually needs. This is where `options` come into play.
+
+Let's configure this command so its response is invisible to other users (an ephemeral message).  
+To achieve this, we'll use the `@Options` decorator and create a `hide` option of type boolean:
+
+```ts twoslash {4-5,10-14,20,23-24,31} title="src/commands/ping.ts" showLineNumbers
+// @exactOptionalPropertyTypes: false
+import type { ParseClient, Client } from 'seyfert';
+declare module 'seyfert' {
+  interface UsingClient extends ParseClient<Client<true>> {}
+}
+// ---cut---
+import {
+  Command,
+  Declare,
+  Options,
+  createBooleanOption,
+  type CommandContext
+} from 'seyfert';
+import { MessageFlags } from 'seyfert/lib/types';
+
+const options = {
+  hide: createBooleanOption({
+    description: "Hide the command's response",
+  }),
+};
+
+@Declare({
+  name: 'ping',
+  description: 'Show latency with Discord'
+})
+@Options(options)
+export default class PingCommand extends Command {
+
+  async run(ctx: CommandContext<typeof options>) {
+    const flags = ctx.options.hide ? MessageFlags.Ephemeral : undefined;
+    
+    // Average latency between existing connections
+    const ping = ctx.client.gateway.latency;
+
+    await ctx.write({
+      content: `The latency is \`${ping}\``,
+      flags,
+    });
+  }
+}
+```
+
+The `CommandContext` is extended with a generic to infer the type of options and provide access to them.
+
+<Callout>
+More information about command options can be found [here](../commands/options).
+</Callout>
+
+<Callout type="tip">
+You can create additional folders inside the commands folder to keep your files organized.
+</Callout>
+
+Your project structure should look like this:
+
+<Files>
+  <Folder name="src" defaultOpen>
+    <Folder name="commands">
+      <File name="ping.ts" />
+    </Folder>
+    <File name="index.ts" />
+  </Folder>
+  <File name="package.json" />
+  <File name="seyfert.config.mjs" />
+  <File name="tsconfig.json" />
+</Files>

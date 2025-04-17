@@ -1,0 +1,43 @@
+---
+title: Seyfert v3.0.0
+description: Major improvements and breaking changes in Seyfert v3.0.0
+date: 2025-04-16
+---
+
+It was meant to be a minor version, but FreeAoi took so long to make the new web that we reached v3.0.
+
+## Breaking Changes
+
+- `emojis` cache now stores `ApplicationEmoji` objects
+- `PermissionsBitField.has` now expects an array
+- `set`, `parse`, and `onFIle` now expects `LangInstance` instead of `EventInstance`
+- Changed all `method(force?: boolean)` to `method(mode: 'cache' | 'rest' | 'flow')`
+- Changed `getAnswerVoters` to accept an optional parameter for client-side checking if the answer exists
+
+## Bug Fixes
+
+- `Message.url` for messages outside a guild or in MenuCommands
+- Node18 compatibility (why do y'all use old versions lmao)
+- Fix shard zombie connection
+- `overwrites` cache
+- Structrures mixer
+- Added support for custom events (type was missing, already worked)
+- Fixed custom events parameters
+
+## New Features
+
+- `AnyContext.followup` shorter for `Interaction.followup` and a trick for MessageCommands.
+- Add `onError` callback on components collectors
+- Cache `presences` and `members` when `GUILD_MEMBERS_CHUNKS` event is emitted
+- `invites` shorter
+- `followup` method to all contexts
+- `editEmoji`, `deleteEmoji`, `fetch`, and `getActivityInstance` method to `aplications` shorter
+- `filter` is now optional in `ComponentCommand` and `ModalCommand`
+- `customId` for statics `ComponentCommand` and `ModalCommand` (can use both `filter` and `customId`)
+- `MESSAGE_POLL_VOTE_ADD` event
+- `Application` structure
+- `Guild`#invites shorter
+- `BaseGuildChannel`#invites shorter
+- `attachmentSizeLimit` in interactions
+- Added `reconnectTimeout` and `connectionTimeout` to `ShardOptions`
+- Added `requestGuildMembers` to `Shard`

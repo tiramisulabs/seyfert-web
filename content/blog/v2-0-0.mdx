@@ -1,0 +1,54 @@
+---
+title: Seyfert v2.0.0
+description: Major release with zero dependencies and new features
+date: 2024-08-23
+---
+
+We are proud to announce that Seyfert now has zero dependencies, including a WebSocket client built from scratch!
+
+## New Features
+
+### Handle Commands
+Now Seyfert handles all commands across the same struct. If you use a custom argsParser or plan to make a Seyfert plugin, all Seyfert structures are modifiable.
+
+```ts
+import { HandleCommand } from 'seyfert'
+
+client.setServices({ handleCommand: class extends HandleCommand { argsParser = yourParser() } })
+```
+
+### Transformers
+Seyfert now allows you to transform Discord data as you want. Seyfert will call it and use it throughout the library.
+
+```ts
+import { Transformers } from 'seyfert';
+const storage = new Map();
+class MyPoll extends Poll {
+    storage() {
+        return storage.set(this.id, this);
+    }
+}
+
+Transformers.Poll = (...args: ConstructorParameters<typeof MyPoll>) => new MyPoll(...args);
+
+declare module 'seyfert' {
+    interface CustomStructures {
+        Poll: MyPoll;
+    }
+}
+```
+
+### Discord API Support
+We've added support for:
+- Monetization
+- Polls (with builders)
+- Application Emojis
+- Get Role
+- Get voice states
+- And more!
+
+## Changes
+
+- `disabledCaches` option is now an object
+- Fixed several events cache bugs
+- Fixed permissions bits resolution 
