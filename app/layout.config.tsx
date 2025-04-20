@@ -13,7 +13,7 @@ export const baseOptions: BaseLayoutProps = {
   nav: {
     children: (
       <div className="flex items-center">
-        <Image src="/logo.svg" alt="Seyfert Logo" className="h-6 w-6" />
+        <Image src="/logo.svg" alt="Seyfert Logo" className="h-6 w-6" width={24} height={24} />
         <Link href="/">Seyfert</Link>
       </div>
     ),

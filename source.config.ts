@@ -2,6 +2,8 @@ import { defineDocs, defineConfig, defineCollections, frontmatterSchema } from '
 import { transformerTwoslash } from 'fumadocs-twoslash';
 import { rehypeCodeDefaultOptions } from 'fumadocs-core/mdx-plugins';
 import { z } from 'zod';
+import dacezuTheme from './dacezu.json';
+import { ThemeRegistrationAny } from 'shiki/types';
 export const { docs: guideContent, meta: guideMeta } = defineDocs({
   dir: 'content/guide',
 });
@@ -19,7 +21,7 @@ export default defineConfig({
     rehypeCodeOptions: {
       themes: {
         light: 'min-light',
-        dark: 'min-dark',
+        dark: dacezuTheme as ThemeRegistrationAny,
       },
       langs: ["python", "javascript", "typescript", "bash"],
       transformers: [
