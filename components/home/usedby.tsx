@@ -36,6 +36,14 @@ const usedByEntries: Array<{
                 avatar: "/bots/buttonbot.gif"
             },
             text: "Managing custom bots for our premium users was a major challenge—until we switched to Seyfert. It handled everything seamlessly, proving to be a powerful and reliable framework for large-scale bot deployments."
+        },
+        {
+            author: {
+                name: "Stelle",
+                handle: "@Stelle#4466",
+                avatar: "/bots/stelle.png"
+            },
+            text: "Listeting your music with an open-source solution is always a good idea. Seyfert is the best solution for that. It has a great community and is very easy to use. I love it!"
         }
     ]
 
