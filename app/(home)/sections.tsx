@@ -4,6 +4,7 @@ import { Footer } from "@/components/home/footer";
 import { UsedBySection } from "@/components/home/usedby";
 import * as motion from "motion/react-client";
 import OpenSource from "@/components/home/github";
+import { config } from "@/app.config";
 
 const AnimatedSection = ({
   children,
@@ -38,7 +39,7 @@ export default function HomeSections() {
       </AnimatedSection>
 
       <AnimatedSection delay={0.4}>
-        <OpenSource repository={globalThis.appConfig.repository} />
+        <OpenSource repository={config.repository} />
       </AnimatedSection>
 
       <AnimatedSection delay={0.5}>

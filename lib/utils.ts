@@ -4,14 +4,3 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
-import globalConfig from "app.config.mjs";
-
-declare global {
-  // eslint-disable-next-line no-var
-  var appConfig: typeof globalConfig;
-}
-
-if (!globalThis.appConfig) {
-  globalThis.appConfig = globalConfig;
-}

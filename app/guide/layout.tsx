@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { baseOptions } from "@/app/layout.config";
 import { guideSource } from "@/lib/source";
 import { GeistSans } from "geist/font/sans";
+import { config } from "@/app.config";
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
@@ -13,7 +14,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         sidebar={{
           className: "font-medium",
         }}
-        githubUrl={`https://github.com/${globalThis.appConfig.repository}`}
+        githubUrl={`https://github.com/${config.repository}`}
       >
         {children}
       </DocsLayout>

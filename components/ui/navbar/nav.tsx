@@ -9,7 +9,7 @@ import { Github01Icon } from "hugeicons-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-
+import { config } from "@/app.config";
 const SCROLL_THRESHOLD = 50;
 
 export default function Navbar() {
@@ -79,7 +79,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-3">
           <a
-            href={`https://github.com/${globalThis.appConfig.repository}`}
+            href={`https://github.com/${config.repository}`}
             target="_blank"
             rel="noreferrer"
           >

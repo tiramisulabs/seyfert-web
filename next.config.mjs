@@ -1,16 +1,16 @@
-import { createMDX } from 'fumadocs-mdx/next';
+import { createMDX } from "fumadocs-mdx/next";
 
 const withMDX = createMDX();
 
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
-  serverExternalPackages: ['typescript', 'twoslash'],
+  serverExternalPackages: ["typescript", "twoslash"],
   productionBrowserSourceMaps: false,
   images: {
     remotePatterns: [
       {
-        hostname: 'avatars.githubusercontent.com',
+        hostname: "avatars.githubusercontent.com",
       },
     ],
   },
@@ -20,9 +20,10 @@ const config = {
     },
   },
   experimental: {
-    optimizePackageImports: ['hugeicons-react'],
+    optimizePackageImports: ["hugeicons-react"],
     serverSourceMaps: false,
   },
+  turbopack: true,
 };
 
 export default withMDX(config);
