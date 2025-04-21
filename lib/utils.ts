@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 import globalConfig from "app.config.mjs";
 
 declare global {
-  // eslint-disable-next-line no-var, vars-on-top
+  // eslint-disable-next-line no-var
   var appConfig: typeof globalConfig;
 }
 

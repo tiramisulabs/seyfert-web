@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { NavMenu } from "./nav-menu";
-import { SunIcon } from "lucide-react";
 import Image from "next/image";
 import logo from "@/public/logo.svg";
 import { Github01Icon } from "hugeicons-react";
