@@ -1,7 +1,7 @@
-import { DocsLayout } from 'fumadocs-ui/layouts/docs';
-import type { ReactNode } from 'react';
-import { baseOptions } from '@/app/layout.config';
-import { guideSource } from '@/lib/source';
+import { DocsLayout } from "fumadocs-ui/layouts/docs";
+import type { ReactNode } from "react";
+import { baseOptions } from "@/app/layout.config";
+import { guideSource } from "@/lib/source";
 import { GeistSans } from "geist/font/sans";
 
 export default function Layout({ children }: { children: ReactNode }) {
@@ -11,9 +11,9 @@ export default function Layout({ children }: { children: ReactNode }) {
         tree={guideSource.pageTree}
         {...baseOptions}
         sidebar={{
-          className: 'font-medium'
+          className: "font-medium",
         }}
-        githubUrl={"https://github.com/tiramisulabs/seyfert"}
+        githubUrl={`https://github.com/${globalThis.appConfig.repository}`}
       >
         {children}
       </DocsLayout>
