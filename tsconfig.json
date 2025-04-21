@@ -36,7 +36,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "public/bench/combine.ts"
-  ],
+, "app.config.ts"  ],
   "exclude": [
     "seyfert",
     "node_modules"
