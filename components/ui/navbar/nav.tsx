@@ -77,9 +77,11 @@ export default function Navbar() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <Button variant="default" className="hidden sm:inline-flex cursor-pointer">
-                        <Github01Icon className="!w-4 !h-4" />
-                    </Button>
+                    <Link href="https://github.com/tiramisulabs/seyfert" target="_blank" rel="noopener noreferrer">
+                        <Button variant="default" className="hidden sm:inline-flex cursor-pointer">
+                            <Github01Icon className="!w-4 !h-4" />
+                        </Button>
+                    </Link>
                     <Button size="icon" variant="outline">
                         <SunIcon className="!w-4 !h-4" />
                     </Button>
