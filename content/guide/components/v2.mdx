@@ -1,0 +1,185 @@
+---
+title: Components v2
+---
+
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+
+This section explains how to use the v2 components to build interfaces in Discord.
+
+<Tabs items={['Section', 'File', 'Separator','MediaGallery', 'Container']}>
+  <Tab value="Container">
+# Container
+
+The Container component groups other components and lets you define a visual container to organize the layout. You can add child components and set an accent color or mark it as a spoiler.
+
+```js showLineNumbers
+import { Container, TextDisplay, ActionRow, Button, Separator, Spacing, MediaGallery, MediaGalleryItem } from 'seyfert';
+
+const section = new Section().setAccessory(new Thumbnail()
+	.setUrl('https://example.com/image.png')
+	.setDescription('This is a thumbnail image')).addComponents(
+		new TextDisplay().setContent('This is a message with a thumbnail')
+  );
+
+const file = new File()
+		.setUrl('attachment://example.png')
+		.setSpoiler(false);
+
+const separator = new Separator()
+	.setSpacing(Spacing.Small)
+	.setDivider(true);
+
+const gallery = new MediaGallery()
+    .addItems(
+        new MediaGalleryItem().setMedia('https://example.com/image1.png').setDescription('Image 1'),
+        new MediaGalleryItem().setMedia('https://example.com/image2.jpg').setSpoiler()
+  	);
+
+const container = new Container()
+    .addComponents(section, file, separator, gallery)
+    .setColor('#5865f2')
+    .setSpoiler(false);
+
+ctx.write({ components: [container] })
+```
+  </Tab>
+	<Tab value="File">
+# File
+The File component is used to display attachments within the content. It allows you to set the file's URL and mark it as a spoiler if needed.
+
+```js showLineNumbers
+import { File, AttachmentBuilder } from 'seyfert';
+
+const attachment = new Attachment().setName('example.png').setUrl('https://example.com/example.png');
+
+const file = new File()
+		.setUrl('attachment://example.png')
+		.setSpoiler(false);
+
+ctx.write({ flags: 1 << 15, files: [attachment], components: [file] });
+```
+	</Tab>
+
+	<Tab value="Section">
+# Section	
+The Section component allows you to group text elements and an accessory (like a Thumbnail or a button) within the same section. It is ideal for combining a summary with an image or an action.
+
+```js showLineNumbers
+import { Section, Thumbnail, TextDisplay} from 'seyfert';
+
+const section = new Section().setAccessory(
+	new Thumbnail()
+	.setUrl('https://example.com/image.png')
+	.setDescription('This is a thumbnail image'))
+	.addComponents(
+		new TextDisplay().setContent('This is a message with a thumbnail')
+	);
+
+```	
+</Tab>
+
+	<Tab value="Separator">
+# Separator
+
+The Separator is used to visually separate other components, either by adding space (padding) or displaying a dividing line. You can configure the spacing and enable or disable the visual divider.
+
+```js showLineNumbers
+import { Separator, Spacing } from 'seyfert';
+
+const separator = new Separator()
+	.setSpacing(Spacing.Small)
+	.setDivider(true);
+```
+</Tab>
+
+	<Tab value="MediaGallery">
+# MediaGallery
+
+The MediaGallery lets you display between 1 and 10 images or multimedia files in a gallery format. Each item can be defined with its URL, a description, and optionally marked as a spoiler.
+
+```js showLineNumbers
+import { MediaGallery, MediaGalleryItem } from 'seyfert';
+
+const gallery = new MediaGallery()
+    .addItems(
+        new MediaGalleryItem().setMedia('https://example.com/image1.png').setDescription('Image 1'),
+        new MediaGalleryItem().setMedia('https://example.com/image2.jpg').setSpoiler()
+    );
+```
+</Tab>
+
+</Tabs>
+
+## Example
+
+Let's make a real presentation, let's recreate the discord presentation for the components v2.
+
+```js showLineNumbers
+
+import {
+	Button,
+	Container,
+	File,
+	MediaGallery,
+	MediaGalleryItem,
+	Section,
+	Separator,
+	TextDisplay,
+} from "seyfert";
+import { ButtonStyle } from "seyfert/lib/types";
+
+const components = new Container().addComponents(
+	new MediaGallery().addItems(
+		new MediaGalleryItem().setMedia("attachment://banner.png"),
+	),
+	new TextDisplay().setContent(
+		"## Introducing New Components for Messages!\nWe're bringing new components to messages that you can use in your apps. They allow you to have full control over the layout of your messages.\n\nOur previous components system, while functional, had limitations:\n- Content, attachments, embeds, and components had to follow fixed positioning rules\n- Visual styling options were limited\n\nOur new component system addresses these challenges with fully composable components that can be arranged and laid out in any order, allowing for a more flexible and visually appealing design. Check out the [changelog](https://discord.com/developers/docs/change-log) for more details.",
+	),
+	new MediaGallery().addItems(
+		new MediaGalleryItem().setMedia("attachment://hero.png"),
+	),
+	new Section()
+		.setComponents(
+			new TextDisplay().setContent("A brief overview of components:"),
+		)
+		.setAccessory(
+			new Button()
+				.setStyle(ButtonStyle.Link)
+				.setLabel("Overview")
+				.setURL("https://discord.com/developers/docs/components/overview"),
+		),
+	new Section()
+		.setComponents(
+			new TextDisplay().setContent("A list of all the components:"),
+		)
+		.setAccessory(
+			new Button()
+				.setStyle(ButtonStyle.Link)
+				.setLabel("Reference")
+				.setURL(
+					"https://discord.com/developers/docs/components/reference#what-is-a-component-component-types",
+				),
+		),
+
+	new Section()
+		.setComponents(
+			new TextDisplay().setContent("Get started with message components:"),
+		)
+		.setAccessory(
+			new Button()
+				.setStyle(ButtonStyle.Link)
+				.setLabel("Guide")
+				.setURL(
+					"https://discord.com/developers/docs/components/using-message-components",
+				),
+		),
+	new Separator(),
+	new TextDisplay().setContent(
+		"-# This message was composed using components, check out the request:",
+	),
+
+	new File().setMedia("data.json"),
+);
+
+ctx.write({ components, flags: 1 << 15 });
+```
