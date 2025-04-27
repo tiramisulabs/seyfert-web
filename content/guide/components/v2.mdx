@@ -181,5 +181,5 @@ const components = new Container().addComponents(
 	new File().setMedia("data.json"),
 );
 
-ctx.write({ components, flags: 1 << 15 });
+ctx.write({ components: [components], flags: 1 << 15 });
 ```
