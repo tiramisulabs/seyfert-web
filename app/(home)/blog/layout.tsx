@@ -1,7 +1,7 @@
-import type { Metadata } from 'next';
+import { blogSource } from '@/lib/source';
 import { DocsLayout } from 'fumadocs-ui/layouts/docs';
 import { GeistSans } from "geist/font/sans";
-import { blogSource } from '@/lib/source';
+import type { Metadata } from 'next';
 import { baseOptions } from '../../layout.config';
 
 export const metadata: Metadata = {
@@ -10,6 +10,12 @@ export const metadata: Metadata = {
         default: 'Seyfert Blog',
     },
     description: 'Updates, release notes, and news about Seyfert',
+   openGraph: {
+    images: {
+        type: 'image/png',
+        url: './banner.png'
+    }
+   }
 };
 
 export default function BlogLayout({

@@ -1,11 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Rocket, Users } from "lucide-react";
-import { AnimatedGradientText } from "@/components/ui/magicui/gradient-text";
-import HomeSections from './sections';
 import { Badge } from "@/components/ui/badge";
-import Link from 'next/link'
-import { StarryBackground } from "@/components/ui/starry";
+import { Button } from "@/components/ui/button";
+import { AnimatedGradientText } from "@/components/ui/magicui/gradient-text";
 import { Spotlight } from "@/components/ui/spotlight";
+import { StarryBackground } from "@/components/ui/starry";
+import { Rocket, Users } from "lucide-react";
+import Link from 'next/link';
+import HomeSections from './sections';
 export default function Home() {
   return (
     <main className="flex flex-col">
@@ -25,7 +25,7 @@ export default function Home() {
               Announcement
             </Badge>
 
-            Released v3
+            Released v3.1
           </AnimatedGradientText>
           <h1 className="mt-6 text-4xl sm:text-5xl md:text-5xl font-bold leading-[1.1]">
             Powerful Discord Bots Made Simple with{" "}

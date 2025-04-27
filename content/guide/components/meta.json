@@ -5,6 +5,7 @@
         "handling-components",
         "modals",
         "collectors",
-        "polls"
+        "polls",
+        "v2"
     ]
 }

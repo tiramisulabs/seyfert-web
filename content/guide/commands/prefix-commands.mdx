@@ -28,7 +28,7 @@ After configuring our prefixes for commands, it's time to make them work.
 
 Fortunately, handling them works the same way as application commands. The only difference is that we receive an optional [`Message`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/structures/Message.ts#L123) property inside the [`CommandContext`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/commands/applications/chatcontext.ts#L24).
 
-To make this property appear in our CommandContext, all we need to do is declare the Seyfert module and set the `withPrefix` property inside [`InternalOptions`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/commands/applications/shared.ts#L11) to true. You can see this [detailed example](/guides/declare-module#internal-options).
+To make this property appear in our CommandContext, all we need to do is declare the Seyfert module and set the `withPrefix` property inside [`InternalOptions`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/commands/applications/shared.ts#L11) to true. You can see this [detailed example](/guide/getting-started/declare-module#internal-options).
 
 In this example, we are going to create a command that `crossposts` the message sent in an announcement channel.
 
