@@ -126,7 +126,7 @@ import {
 	Separator,
 	TextDisplay,
 } from "seyfert";
-import { ButtonStyle } from "seyfert/lib/types";
+import { ButtonStyle, MessageFlags } from "seyfert/lib/types";
 
 const components = new Container().addComponents(
 	new MediaGallery().addItems(
@@ -181,5 +181,5 @@ const components = new Container().addComponents(
 	new File().setMedia("data.json"),
 );
 
-ctx.write({ components: [components], flags: 1 << 15 });
+ctx.write({ components: [components], flags: MessageFlags.IsComponentsV2 });
 ```
