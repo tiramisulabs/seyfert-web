@@ -52,6 +52,14 @@ const usedByEntries: Array<{
                 avatar: "/bots/multiversal.png"
             },
             text: "Multiversal is a global chat bot, developed with Seyfert. Over time it has received recognition from numerous servers."
+        },
+        {
+            author: {
+                name: "Kenium",
+                handle: "@Kenium#9090",
+                avatar: "/bots/kenium.png"
+            },
+            text: "Open source music bot with multiple sources and free playlists. After developing on discord.js for all my projects, Seyfert provied every feature i wanted to develop an bot, while beign the most recourse-efficient i ever used, loved this project :D !!! "
         }
     ]
 
