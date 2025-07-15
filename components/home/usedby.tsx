@@ -44,6 +44,14 @@ const usedByEntries: Array<{
                 avatar: "/bots/stelle.png"
             },
             text: "Listeting your music with an open-source solution is always a good idea. Seyfert is the best solution for that. It has a great community and is very easy to use. I love it!"
+        },
+        {
+            author: {
+                name: "Multiversal",
+                handle: "@Multiversal#9799",
+                avatar: "/bots/multiversal.png"
+            },
+            text: "Multiversal is a global chat bot, developed with Seyfert. Over time it has received recognition from numerous servers."
         }
     ]
 
