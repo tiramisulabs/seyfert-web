@@ -60,7 +60,15 @@ const usedByEntries: Array<{
                 avatar: "/bots/kenium.png"
             },
             text: "Open source music bot with multiple sources and free playlists. After developing on discord.js for all my projects, Seyfert provied every feature i wanted to develop an bot, while beign the most recourse-efficient i ever used, loved this project :D !!! "
-        }
+        },
+        {
+            author: {
+                name: "Mirastone",
+                handle: "@Mirastone#0071",
+                avatar: "/bots/mirastone.png"
+            },
+            text: "Mirastone is a bot for economics, fun, music, and utilities. Explore and have fun."
+        },
     ]
 
 export function UsedBySection() {
