@@ -43,7 +43,7 @@ const usedByEntries: Array<{
                 handle: "@Stelle#4466",
                 avatar: "/bots/stelle.png"
             },
-            text: "Listeting your music with an open-source solution is always a good idea. Seyfert is the best solution for that. It has a great community and is very easy to use. I love it!"
+            text: "Listening to your music with an open-source solution is always a good idea. Seyfert is the best solution for that. It has a great community and is very easy to use. I love it!"
         },
         {
             author: {
@@ -59,15 +59,7 @@ const usedByEntries: Array<{
                 handle: "@Kenium#9090",
                 avatar: "/bots/kenium.png"
             },
-            text: "Open source music bot with multiple sources and free playlists. After developing on discord.js for all my projects, Seyfert provied every feature i wanted to develop an bot, while beign the most recourse-efficient i ever used, loved this project :D !!! "
-        },
-        {
-            author: {
-                name: "Mirastone",
-                handle: "@Mirastone#0071",
-                avatar: "/bots/mirastone.png"
-            },
-            text: "Mirastone is a bot for economics, fun, music, and utilities. Explore and have fun."
+            text: "Open source music bot with multiple sources and free playlists. After developing on discord.js for all my projects, Seyfert provided every feature I wanted to develop a bot, while being the most resource-efficient I ever used, loved this project :D !!! "
         },
     ]
 
