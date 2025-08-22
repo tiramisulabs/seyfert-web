@@ -75,7 +75,7 @@ import { Middlewares, Declare, Command, type CommandContext } from "seyfert";
 @Middlewares(["logger"])
 export default class PingCommand extends Command {
     async run(ctx: CommandContext) {
-        await ctx.reply("Pong!");
+        await ctx.write({ content: "Pong!" });
     }
 }
 ```
