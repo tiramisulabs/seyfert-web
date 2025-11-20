@@ -2,58 +2,266 @@
 title: Modals
 ---
 
-Modals can also be created in Seyfert. They are created with a builder like other components do and then `TextInput` components, inside an `ActionRow`, are attached to it.
+# Modals
 
-Here is an example of how to create a modal with two text inputs:
+Modals in Seyfert allow you to request structured user input through a popup interface. Seyfert extends the traditional Discord modal system by supporting new component types and a more flexible builder structure.
 
-```ts twoslash showLineNumbers copy
-import { Modal, TextInput, ActionRow } from 'seyfert';
+A modal can contain **multiple types of interactive components**:
 
-import { TextInputStyle } from 'seyfert/lib/types';
+- **TextInput**
+- **StringSelectMenu**
+- **RoleSelectMenu**
+- **ChannelSelectMenu**
+- **UserSelectMenu**
+- **MentionableSelectMenu**
+- **FileUpload**
+- **TextDisplay** (static text)
 
-const nameInput = new TextInput()
-  .setCustomId('name')
-  .setStyle(TextInputStyle.Short)
-  .setLabel('Name');
+All interactive components are placed in a modal by wrapping them inside a `Label`.
 
-const row1 = new ActionRow<TextInput>().setComponents([nameInput]);
+---
 
-const ageInput = new TextInput()
-  .setCustomId('age')
-  .setStyle(TextInputStyle.Short)
-  .setLabel('Age');
+# Creating a Modal
 
-const row2 = new ActionRow<TextInput>().setComponents([ageInput]);
+A modal is created with the `Modal` class:
 
+```ts
 const modal = new Modal()
-  .setCustomId('mymodal')
-  .setTitle('My Modal')
-  .setComponents([row1, row2]);
+    .setTitle('My modal')
+    .setCustomId('myfirstmodal')
+    .setComponents([ /* labels here */ ])
 ```
 
-## Handling Modals
+Each component must be wrapped in a `Label`:
 
-To handle modals, as they aren't components, Seyfert provides `ModalCommmand` class which has the same logic as the `ComponentCommand` class.
+```ts
+const label = new Label()
+    .setLabel('Some field')
+    .setComponent(myComponent);
+```
 
-```ts twoslash showLineNumbers copy
+---
+
+# 1. Text Input Modals
+
+This is the traditional Discord-style modal.
+
+### Example
+
+```ts
+const textInput = new TextInput()
+    .setCustomId('text')
+    .setStyle(TextInputStyle.Short)
+    .setLength({
+        max: 200,
+        min: 10
+    });
+
+const label = new Label()
+    .setLabel('Write something')
+    .setComponent(textInput);
+
+const modal = new Modal()
+    .setTitle('My modal')
+    .setCustomId('myfirstmodal')
+    .setComponents([ label ]);
+```
+
+### Sending the modal
+
+```ts
+interaction.modal(modal);
+```
+
+---
+
+# 2. Static Text Modal (TextDisplay)
+
+`TextDisplay` allows you to show static text inside a modal.
+
+### Example
+
+```ts
+const text = new TextDisplay()
+    .setId(1)
+    .setContent('hello world!');
+
+const modal = new Modal()
+    .setTitle('My modal')
+    .setCustomId('myfirstmodal')
+    .setComponents([ text ]);
+```
+
+---
+
+# 3. String Select Menu Modal
+
+A select menu with predefined string options.
+
+### Example
+
+```ts
+const stringSelectMenu = new StringSelectMenu()
+    .setCustomId('strings')
+    .setOptions([
+        new StringSelectOption()
+            .setLabel('Option 1')
+            .setValue('option1'),
+        new StringSelectOption()
+            .setLabel('Option 2')
+            .setValue('option2')
+    ]);
+
+const label = new Label()
+    .setLabel('Choose an option')
+    .setComponent(stringSelectMenu);
+
+const modal = new Modal()
+    .setTitle('My modal')
+    .setCustomId('myfirstmodal')
+    .setComponents([ label ]);
+```
+
+---
+
+# 4. Role Select Menu Modal
+
+### Example
+
+```ts
+const roleSelectMenu = new RoleSelectMenu()
+    .setCustomId('role');
+
+const label = new Label()
+    .setLabel('Choose a role')
+    .setComponent(roleSelectMenu);
+
+const modal = new Modal()
+    .setTitle('My modal')
+    .setCustomId('myfirstmodal')
+    .setComponents([ label ]);
+```
+
+---
+
+# 5. Channel Select Menu Modal
+
+### Example
+
+```ts
+const channelSelectMenu = new ChannelSelectMenu()
+    .setCustomId('channel');
+
+const label = new Label()
+    .setLabel('Choose a channel')
+    .setComponent(channelSelectMenu);
+
+const modal = new Modal()
+    .setTitle('My modal')
+    .setCustomId('myfirstmodal')
+    .setComponents([ label ]);
+```
+
+---
+
+# 6. User Select Menu Modal
+
+### Example
+
+```ts
+const userSelectMenu = new UserSelectMenu()
+    .setCustomId('user');
+
+const label = new Label()
+    .setLabel('Choose a user')
+    .setComponent(userSelectMenu);
+
+const modal = new Modal()
+    .setTitle('My modal')
+    .setCustomId('myfirstmodal')
+    .setComponents([ label ]);
+```
+
+---
+
+# 7. Mentionable Select Menu Modal
+
+### Example
+
+```ts
+const mentionableSelectMenu = new MentionableSelectMenu()
+    .setCustomId('member');
+
+const label = new Label()
+    .setLabel('Choose a mentionable')
+    .setComponent(mentionableSelectMenu);
+
+const modal = new Modal()
+    .setTitle('My modal')
+    .setCustomId('myfirstmodal')
+    .setComponents([ label ]);
+```
+
+---
+
+# 8. File Upload Modal
+
+### Example
+
+```ts
+const fileUpload = new FileUpload()
+    .setCustomId('fileupload');
+
+const label = new Label()
+    .setLabel('Choose a file')
+    .setComponent(fileUpload);
+
+const modal = new Modal()
+    .setTitle('My modal')
+    .setCustomId('myfirstmodal')
+    .setComponents([ label ]);
+```
+
+---
+
+# Handling Modals
+
+Modals are handled using the `ModalCommand` class.
+
+### Example
+
+```ts
 import { ModalCommand, type ModalContext } from 'seyfert';
 
 export default class MyModal extends ModalCommand {
-  filter(context: ModalContext) {
-    return context.customId === 'mymodal';
-  }
+    filter(context: ModalContext) {
+        return context.customId === 'myfirstmodal';
+    }
 
-  async run(context: ModalContext) {
-    const interaction = context.interaction;
-    
-    //we are getting the textinput values by passing their custom ids in the getInputValue method.
+    async run(context: ModalContext) {
+        const interaction = context.interaction;
 
-    const name = interaction.getInputValue('name', true);
+        const text = interaction.getInputValue('text', true);
 
-    const age = interaction.getInputValue('age', true);
+        return context.write({
+            content: `Your input was: ${text}`
+        });
+    }
+}
+```
 
-    return context.write({
-      content: `You are ${name} and you have ${age} years`
-    });
-  }
-} 
+---
+
+# Triggering Modals From Component Collectors
+
+```ts
+const collector = message.createComponentCollector();
+
+collector.run('modal', (interaction) => {
+    interaction.modal(modal);
+});
+```
+
+This method works for all modal types.
+
+---
