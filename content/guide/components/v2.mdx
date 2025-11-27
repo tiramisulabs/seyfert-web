@@ -16,7 +16,7 @@ The Container component groups other components and lets you define a visual con
 import { Container, TextDisplay, ActionRow, Button, Separator, Spacing, MediaGallery, MediaGalleryItem } from 'seyfert';
 
 const section = new Section().setAccessory(new Thumbnail()
-	.setUrl('https://example.com/image.png')
+	.setMedia('https://example.com/image.png')
 	.setDescription('This is a thumbnail image')).addComponents(
 		new TextDisplay().setContent('This is a message with a thumbnail')
   );
