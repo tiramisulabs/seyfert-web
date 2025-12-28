@@ -61,6 +61,14 @@ const usedByEntries: Array<{
             },
             text: "Open source music bot with multiple sources and free playlists. After developing on discord.js for all my projects, Seyfert provided every feature I wanted to develop a bot, while being the most resource-efficient I ever used, loved this project :D !!! "
         },
+        {
+            author: {
+                name: "Lumi",
+                handle: "@Lumi#4731",
+                avatar: "/bots/lumi.png"
+            },
+            text: "Lumi is a multi-funcion bot, designed to allow users to use features that would need multiple bots to do, developed with Seyfert for max optimization. I decided to change from discord.js to Seyfert because of it's optimizations and non-ram eating implementation. Would likely say to my friends to use it aswell!"
+        },
     ]
 
 export function UsedBySection() {
