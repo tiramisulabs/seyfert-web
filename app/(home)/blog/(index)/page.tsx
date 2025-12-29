@@ -1,24 +1,22 @@
-import { blogSource } from '@/lib/source';
-import type { Metadata } from 'next';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon } from "lucide-react";
+import type { Metadata } from "next";
+import { blogSource } from "@/lib/source";
 
 export const metadata: Metadata = {
-    title: 'Blog',
-    description: 'Updates, release notes, and news about Seyfert',
+    title: "Blog",
+    description: "Updates, release notes, and news about Seyfert",
 };
 
 export default function BlogIndexPage() {
     const pages = blogSource.getPages();
     const sortedPages = [...pages].sort(
-        (a, b) =>
-            b.data.date.getTime() -
-            a.data.date.getTime(),
-    )
+        (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+    );
 
     return (
         <div className="py-20 max-w-7xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-16">
-                <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-b from-gray-100 to-gray-400 bg-clip-text text-transparent sm:text-6xl mb-6">
+                <h1 className="text-5xl font-bold tracking-tight bg-linear-to-b from-gray-100 to-gray-400 bg-clip-text text-transparent sm:text-6xl mb-6">
                     Blog
                 </h1>
                 <p className="text-lg text-neutral-400 max-w-2xl mx-auto">
@@ -31,31 +29,33 @@ export default function BlogIndexPage() {
                     <a
                         href={page.url}
                         key={page.url}
-                        className="group block overflow-hidden rounded-sm border border-neutral-800 
+                        className="group flex flex-col overflow-hidden rounded-sm border border-neutral-800 
                             bg-neutral-900 hover:border-gray-600 hover:ring-2 hover:ring-gray-700/50 
                             transition-all duration-200"
                     >
-                        <div className="p-6">
+                        <div className="p-6 flex flex-col flex-1">
                             <h2 className="text-2xl font-semibold text-neutral-200 group-hover:text-gray-100 transition-colors">
-                                {page.data.title || 'Untitled'}
+                                {page.data.title || "Untitled"}
                             </h2>
 
                             {page.data.date && (
                                 <div className="flex items-center gap-2 text-sm text-neutral-500 mt-2 mb-3">
                                     <CalendarIcon className="h-4 w-4" />
                                     <span>
-                                        {new Date(page.data.date).toLocaleDateString('en-US', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            timeZone: 'UTC'
+                                        {new Date(page.data.date).toLocaleDateString("en-US", {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                            timeZone: "UTC",
                                         })}
                                     </span>
                                 </div>
                             )}
 
                             {page.data.description && (
-                                <p className="mt-2 line-clamp-3 text-neutral-400">{page.data.description}</p>
+                                <p className="mt-2 line-clamp-3 text-neutral-400 flex-1">
+                                    {page.data.description}
+                                </p>
                             )}
 
                             <div className="mt-4 flex items-center text-gray-400 font-medium group-hover:text-gray-300 transition-colors">
@@ -82,4 +82,4 @@ export default function BlogIndexPage() {
             </div>
         </div>
     );
-} 
+}

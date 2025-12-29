@@ -259,7 +259,6 @@ export default function Page() {
   const [metric, setMetric] = useState<"rss" | "heapUsed" | "heapTotal">("rss");
   const [isLoading, setIsLoading] = useState(false);
   const [runtime, setRuntime] = useState<"node" | "deno" | "bun">("node");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [runtimeData, setRuntimeData] = useState<any>(null);
   const [selectedLibraries, setSelectedLibraries] = useState<string[]>(Object.keys(LIBRARIES));
 
@@ -310,7 +309,7 @@ export default function Page() {
     <main className="min-h-screen mt-10 flex flex-col items-center space-y-4 mb-4 px-4">
       <div className="space-y-6 w-full max-w-6xl">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-neutral-200 to-neutral-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold bg-linear-to-r from-neutral-200 to-neutral-400 bg-clip-text text-transparent">
             Performance Benchmark
           </h1>
           <p className="text-base md:text-lg leading-relaxed text-neutral-200 max-w-2xl mx-auto text-justify">
