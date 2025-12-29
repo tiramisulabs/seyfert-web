@@ -1,42 +1,168 @@
 ---
-title: Seyfert v3.0.0
-description: Major improvements and breaking changes in Seyfert v3.0.0
+title: "Seyfert v3.0.0: The Next Chapter"
+description: A major version born from ambition. New patterns, refined APIs, and a foundation for the future.
 date: 2025-04-16
 ---
 
-It was meant to be a minor version, but FreeAoi took so long to make the new web that we reached v3.0.
+## How We Got Here
 
-## Breaking Changes
+Here's the truth: v3.0.0 was supposed to be v2.3.0.
 
-- `emojis` cache now stores `ApplicationEmoji` objects
-- `PermissionsBitField.has` now expects an array
-- `set`, `parse`, and `onFile` now expects `LangInstance` instead of `EventInstance`
-- Changed all `method(force?: boolean)` to `method(mode: 'cache' | 'rest' | 'flow')`
-- Changed `getAnswerVoters` to accept an optional parameter for client-side checking if the answer exists
+But FreeAoi took so long perfecting the new website that our changelog kept growing. Minor feature after minor feature stacked up until we looked at the diff and realized — this isn't a minor release anymore. This is a new era.
 
-## Bug Fixes
+So here we are. **Seyfert v3.0.0.** Bigger, faster, smarter.
 
-- `Message.url` for messages outside a guild or in MenuCommands
-- Node18 compatibility (why do y'all use old versions lmao)
-- Fix shard zombie connection
-- `overwrites` cache
-- Structures mixer
-- Added support for custom events (type was missing, already worked)
-- Fixed custom events parameters
+---
+
+## The Philosophy of v3
+
+This release is about **clarity**. We've revisited every API that felt inconsistent and asked: "How would a developer expect this to work?"
+
+The result is a more intuitive, more predictable Seyfert.
+
+---
+
+## Breaking Changes (That Make Sense)
+
+### Fetch Mode Consistency
+
+We replaced the confusing `force?: boolean` pattern with explicit modes:
+
+```ts
+// Before: What does "force" even mean?
+const guild = await ctx.guild(true);
+
+// After: Crystal clear intent
+const guild = await ctx.guild('rest');    // Always fetch from API
+const guild = await ctx.guild('cache');   // Only check cache
+const guild = await ctx.guild('flow');    // Smart: cache first, then API
+```
+
+Every method that fetches data now uses this pattern. Learn it once, use it everywhere.
+
+### Permissions as Arrays
+
+`PermissionsBitField.has()` now expects an array, matching how you think about permissions:
+
+```ts
+// Before
+member.permissions.has(PermissionFlagsBits.Administrator);
+
+// After
+member.permissions.has([PermissionFlagsBits.Administrator, PermissionFlagsBits.ManageGuild]);
+```
+
+Check multiple permissions in one call. Clean.
+
+### Language Instance Types
+
+If you're using i18n, the `set`, `parse`, and `onFile` functions now expect `LangInstance` instead of `EventInstance`. This better reflects their purpose.
+
+### Application Emoji Cache
+
+The `emojis` cache now stores `ApplicationEmoji` objects, aligning with Discord's data model.
+
+---
 
 ## New Features
 
-- `AnyContext.followup` shorter for `Interaction.followup` and a trick for MessageCommands.
-- Add `onError` callback on components collectors
-- Cache `presences` and `members` when `GUILD_MEMBERS_CHUNKS` event is emitted
-- `invites` shorter
-- `editEmoji`, `deleteEmoji`, `fetch`, and `getActivityInstance` method to `aplications` shorter
-- `filter` is now optional in `ComponentCommand` and `ModalCommand`
-- `customId` for statics `ComponentCommand` and `ModalCommand` (can use both `filter` and `customId`)
-- `MESSAGE_POLL_VOTE_ADD` event
-- `Application` structure
-- `Guild#invites` shorter
-- `BaseGuildChannel#invites` shorter
-- `attachmentSizeLimit` in interactions
-- Added `reconnectTimeout` and `connectionTimeout` to `ShardOptions`
-- Added `requestGuildMembers` to `Shard`
+### Universal Followup
+
+The new `AnyContext.followup` method works seamlessly across all command types:
+
+```ts
+// Works for slash commands, message commands, everything
+await ctx.followup({ content: "Following up!" });
+```
+
+No more checking command types before responding.
+
+### Component Error Handling
+
+Collectors now support an `onError` callback:
+
+```ts
+const collector = ctx.createCollector({
+  onError: (error, interaction) => {
+    console.error('Component failed:', error);
+    interaction.reply({ content: 'Something went wrong!' });
+  }
+});
+```
+
+Graceful error handling for interactive components.
+
+### Smarter Member Caching
+
+When `GUILD_MEMBERS_CHUNK` fires, we now cache both `presences` and `members`. If you're fetching members in bulk, they're now automatically available in cache.
+
+### Static Component Matching
+
+`ComponentCommand` and `ModalCommand` now support `customId` for static matching:
+
+```ts
+import { ComponentCommand, type ComponentContext } from 'seyfert';
+
+export default class ConfirmDelete extends ComponentCommand {
+  componentType = 'Button' as const;
+  customId = 'confirm-delete'; // Only triggers for exact match
+  
+  async run(ctx: ComponentContext<typeof this.componentType>) {
+    // Handle the interaction
+  }
+}
+```
+
+Use `customId` for exact matches, `filter` for dynamic patterns, or combine both.
+
+### More Shortcuts
+
+We've added convenience methods throughout:
+
+- `client.invites` — Manage server invites
+- `Guild.invites` — Guild-specific invite access
+- `BaseGuildChannel.invites` — Channel-level invites
+- `applications.editEmoji`, `applications.deleteEmoji` — Emoji management
+- `applications.getActivityInstance` — Activity instances
+
+---
+
+## Bug Fixes
+
+- **Message URLs** now work correctly outside guilds and in menu commands
+- **Node 18 compatibility** restored (though seriously, update your Node version 😅)
+- **Zombie shard connections** are properly terminated
+- **Permission overwrites** cache correctly
+- **Custom events** now have proper TypeScript types
+
+---
+
+## The Application Structure
+
+New `Application` structure gives you direct access to application data:
+
+```ts
+const app = await client.applications.fetch();
+console.log(app.name, app.description, app.icon);
+```
+
+---
+
+## Upgrade Guide
+
+```bash
+pnpm install seyfert@3.0.0
+```
+
+Key migrations:
+1. Replace `method(force)` with `method('rest' | 'cache' | 'flow')`
+2. Wrap `PermissionsBitField.has()` arguments in arrays
+3. Update i18n handlers to use `LangInstance`
+
+---
+
+## What's Next
+
+v3.0.0 is the foundation. The new website is live. The APIs are refined. The community is growing.
+
+This is just the beginning.

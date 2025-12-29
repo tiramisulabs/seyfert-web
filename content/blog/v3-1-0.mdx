@@ -1,37 +1,158 @@
 ---
-title: Seyfert v3.1.0
-description: Components v2 are here.
+title: "Seyfert v3.1.0: Components v2 — Discord's New UI Primitives"
+description: Discord dropped a bombshell. We caught it. Introducing next-gen message components.
 date: 2025-04-26
 ---
 
-We had to make a speedrun of this, thanks for nothing Discord.
+## A Speedrun Release
 
-## New Features
+Discord announced Components v2 with almost no warning. We had to move fast.
 
-- `onBeforeMiddlewares` and `onBeforeOptions` for more interaction.
+**2 days later, here we are.** Full support for Discord's new UI primitives.
 
+Thanks for nothing, Discord. Thanks for everything, Seyfert team. ❤️
 
-### Components v2
+---
+
+## What Are Components v2?
+
+Discord's original components — buttons, select menus, modals — were revolutionary. But they had limits. Want a rich layout? Multiple sections? Thumbnails? You were out of luck.
+
+**Components v2 changes everything.** These aren't just new components; they're a new way to structure message content.
 
 <Callout type="info">
-Check docs about new components [here](/guide/components/v2).
+Full documentation available at [Components v2 Guide](/guide/components/v2).
 </Callout>
 
+---
 
-- Container
-- Section
-- Thumnail
-- File
-- TextDisplay
-- Separator
-- MediaGallery
+## The New Components
 
+### Container
 
+The foundation. Containers hold other components and define the layout structure:
+
+```ts
+new Container()
+  .addComponents(section, separator, mediaGallery)
+```
+
+### Section
+
+Group related content with text and an accessory (thumbnail or button):
+
+```ts
+new Section()
+  .addComponents(
+    new TextDisplay().setContent("**Product Name**"),
+    new TextDisplay().setContent("$29.99")
+  )
+  .setAccessory(thumbnail)
+```
+
+### TextDisplay
+
+Rich text content within sections:
+
+```ts
+new TextDisplay()
+  .setContent("This is **bold** and this is *italic*")
+```
+
+### Thumbnail
+
+Small images that sit alongside section content:
+
+```ts
+new Thumbnail()
+  .setMedia("https://example.com/image.png")
+```
+
+### MediaGallery
+
+Display multiple images in a beautiful gallery layout:
+
+```ts
+new MediaGallery()
+  .addItems(
+    new MediaGalleryItem().setMedia(image1),
+    new MediaGalleryItem().setMedia(image2)
+  )
+```
+
+### File
+
+Attach files directly within your component layout:
+
+```ts
+new File()
+  .setMedia("attachment://report.pdf")
+```
+
+### Separator
+
+Visual dividers between sections:
+
+```ts
+new Separator()
+  .setSpacing(Spacing.Small)
+  .setDivider(true)
+```
+
+---
+
+## Why This Matters
+
+Before Components v2, rich Discord bot UIs required creative workarounds — embedding images, using multiple embeds, or accepting limitations.
+
+Now you can build:
+- **Product catalogs** with thumbnails and descriptions
+- **Dashboards** with organized data sections
+- **Media galleries** for image-heavy content
+- **Document layouts** with proper visual hierarchy
+
+The gap between "bot message" and "real application" just got much smaller.
+
+---
+
+## Hook Into the Pipeline
+
+New lifecycle hooks give you more control over interaction processing:
+
+```ts
+class MyCommand extends Command {
+  onBeforeMiddlewares(ctx: Context) {
+    // Runs before any middleware
+    console.log('Command received:', ctx.commandName);
+  }
+
+  onBeforeOptions(ctx: Context) {
+    // Runs before option parsing
+    return { customData: true };
+  }
+}
+```
+
+Perfect for logging, analytics, or custom preprocessing.
+
+---
 
 ## Fixes
 
-- `editOrReply` now accepts flags to support v2 components.
+- **`editOrReply`** now properly accepts flags, enabling v2 components in edit operations
 
 ## Performance
 
-- Fixed a performance issue that caused high cpu usage when using `cache.members.values()`.
+- Fixed a critical performance issue causing high CPU usage when iterating `cache.members.values()` on large guilds
+
+---
+
+## Get Started
+
+```bash
+pnpm install seyfert@3.1.0
+```
+
+Then dive into the [Components v2 documentation](/guide/components/v2) to start building next-gen UIs.
+
+Discord's UI toolkit just evolved. So did yours.

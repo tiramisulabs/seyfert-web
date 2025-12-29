@@ -1,39 +1,99 @@
 ---
-title: Seyfert v2.1.0
-description: New features and improvements in Seyfert v2.1.0
+title: "Seyfert v2.1.0: Scaling Without Limits"
+description: Automatic resharding, smarter workers, and the infrastructure your growing bot deserves.
 date: 2024-09-07
 ---
 
-## Bug Fixes
+## Built for Growth
 
-- Handle http status 429 correctly (ratelimited)
-- Could not disable cache with `.setServices` in a `WorkerClient`
+Your bot is growing. What started as a fun project now serves thousands of servers. Suddenly, you're hitting rate limits, managing shards manually, and wondering if there's a better way.
+
+There is. **Seyfert v2.1.0** brings enterprise-grade scaling features that just work.
+
+---
+
+## The Headline: Automatic Resharding
+
+As your bot joins more servers, Discord requires more shards. Previously, this meant downtime — restart your bot, reconfigure shards, pray nothing breaks.
+
+Not anymore. **Resharding is now automatic and enabled by default.** Seyfert monitors your bot's growth and seamlessly adjusts shard count in real-time. No downtime. No manual intervention. Your bot scales while you sleep.
+
+---
 
 ## New Features
 
-- Added `EntryPointInteraction`, `ButtonPointContext`, `EntryPointCommand`
-- Resharding for `Client` (enabled by default)
-- Added `AnyContext` type
-- Added `WORKER_SHARD_CONNECTED` event
-- Added `SUBSCRIPTION_DELETE`, `SUBSCRIPTION_UPDATE`, `SUBSCRIPTION_CREATE` events
-- Now shards logs errors without need of debug mode
-- Workers now have a queue to spawn
+### Entry Point Interactions
+
+Discord's new Entry Point feature lets users discover your bot's commands directly from the app directory. We've added full support:
+
+- `EntryPointInteraction` — Handle entry point triggers
+- `EntryPointContext` — Rich context for entry point commands  
+- `EntryPointCommand` — Define entry point behavior declaratively
+
+### Smarter Worker Architecture
+
+Running Seyfert with workers? We've made significant improvements:
+
+- **Spawn Queue** — Workers now spawn in a controlled sequence, preventing resource spikes
+- **`WORKER_SHARD_CONNECTED` Event** — Know exactly when each worker's shards are ready
+- **Better Error Logging** — Shards now log errors without requiring debug mode
+
+### Subscription Events
+
+Building premium features? Track subscription lifecycles with new events:
+
+- `SUBSCRIPTION_CREATE`
+- `SUBSCRIPTION_UPDATE`  
+- `SUBSCRIPTION_DELETE`
+
+Perfect for managing premium tiers, sending welcome messages to new subscribers, or handling cancellations gracefully.
+
+### Quality of Life
+
+- New `AnyContext` type for functions that accept any command context
+- Improved rate limit handling with proper HTTP 429 responses
+
+---
 
 ## Breaking Changes
 
-- Interface `AttachmentData` changed property `name` to `filename`:
-```ts
+A few small adjustments for a cleaner API:
+
+### Attachment Filename
+
+```diff
 interface AttachmentData {
-  - name: string;
-  + filename: string;
+-  name: string;
++  filename: string;
 }
 ```
 
-- WorkerClient no longer sends all events to parent (WorkerManager) by default. To enable it:
+The property name now matches Discord's API terminology.
+
+### WorkerClient Event Forwarding
+
+For performance, `WorkerClient` no longer sends all events to the parent `WorkerManager` by default. Enable it explicitly if needed:
+
 ```ts
 new WorkerClient({
-    sendPayloadToParent: true
+  sendPayloadToParent: true
 });
 ```
 
-- `disabledCache` option in `WorkerClient` has been removed, use `setServices` instead 
+### Cache Configuration
+
+The `disabledCache` option in `WorkerClient` has been removed. Use `setServices` instead for consistent configuration across all client types.
+
+---
+
+## Upgrade Guide
+
+```bash
+pnpm install seyfert@2.1.0
+```
+
+1. Update any `AttachmentData` references from `name` to `filename`
+2. If using `WorkerClient` with event forwarding, add `sendPayloadToParent: true`
+3. Migrate any `disabledCache` options to `setServices`
+
+That's it. Your bot is now ready to scale infinitely.

@@ -1,0 +1,199 @@
+---
+title: "Seyfert v4.0.0: Modals, Reimagined"
+description: Discord reinvented modals. We made them even better. File uploads, select menus, and rich content — all inside modals.
+date: 2025-11-10
+---
+
+## Modals Just Got Superpowers
+
+Remember when modals were just... text inputs? Those days are over.
+
+Discord has completely reimagined what modals can do, and **Seyfert v4.0.0** brings you the full experience. File uploads. Select menus. Rich text displays. The humble modal is now a complete data collection powerhouse.
+
+---
+
+## The New Modal Architecture
+
+### Label: The New Foundation
+
+Here's the breaking change you need to know: **Modals now use `Label` instead of `ActionRow`**.
+
+Think of `Label` as the evolution of ActionRow, specifically designed for the modal context. It's not just a rename — it enables the new component types that weren't possible before.
+
+```ts
+// Before (v3.x)
+new Modal()
+  .addComponents(
+    new ActionRow().addComponents(textInput)
+  )
+
+// After (v4.0)
+new Modal()
+  .addComponents(
+    new Label().setComponent(textInput),
+    new Label().setComponent(fileUpload),
+    new Label().setComponent(selectMenu)
+  )
+```
+
+Every component in a modal now lives inside a `Label`. This is the foundation for everything else.
+
+---
+
+## File Uploads in Modals
+
+This is the one everyone's been waiting for.
+
+Users can now upload files directly through modals. Forms, submissions, reports — anything that needs an attachment is now possible without awkward workarounds.
+
+```ts
+const modal = new Modal()
+  .setTitle('Submit Your Report')
+  .setCustomId('report-modal')
+  .addComponents(
+    new Label().setLabel('Describe the issue')
+    .setComponent(
+      new TextInput()
+        .setCustomId('description')
+        .setStyle(TextInputStyle.Paragraph)
+    ),
+    new Label().setLabel('Attach a screenshot')
+    .setComponent(
+      new FileUpload()
+        .setCustomId('screenshot')
+    )
+  );
+```
+
+Retrieving the files is just as clean:
+
+```ts
+async run(ctx: ModalContext) {
+  const files = ctx.interaction.getFiles();
+  
+  for (const file of files) {
+    console.log(`Received: ${file.filename} (${file.size} bytes)`);
+    // Process the uploaded file
+  }
+}
+```
+
+Build bug report systems, application forms, content submission workflows — the possibilities just expanded dramatically.
+
+---
+
+## Select Menus Everywhere
+
+All select menu types now work inside modals:
+
+```ts
+new Modal()
+  .addComponents(
+    new Label().setComponent(
+      new StringSelectMenu()
+        .setCustomId('category')
+        .setPlaceholder('Select a category')
+        .addOptions(
+          { label: 'Bug Report', value: 'bug' },
+          { label: 'Feature Request', value: 'feature' },
+          { label: 'Question', value: 'question' }
+        )
+    ),
+    new Label().setComponent(
+      new UserSelectMenu()
+        .setCustomId('assign-to')
+        .setPlaceholder('Assign to a team member')
+    )
+  )
+```
+
+String selects, user selects, role selects, channel selects, mentionable selects — they all work. Mix and match to create powerful data collection forms.
+
+---
+
+## Rich Text in Modals
+
+`TextDisplay` components can now appear inside modals via `Label`:
+
+```ts
+new Label().setComponent(
+  new TextDisplay()
+    .setContent('**Important:** Please read our guidelines before submitting.')
+)
+```
+
+Add instructions, warnings, or formatting to guide users through your modal flows.
+
+---
+
+## Enhancements
+
+### Smarter Guild Listing
+
+`guilds.list()` now returns properly typed results based on your parameters (cached or not):
+
+No more type assertions. The types just work.
+
+### Raw Message Access
+
+Need the untouched Discord data? We've got you:
+
+```ts
+const raw = await channel.messages.raw(messageId);
+// API response or cached object — no Seyfert transformations
+```
+
+Perfect for debugging, accessing fields we don't expose, or when you need the data exactly as Discord (or the cache) stores it.
+
+### Edit Your Bio
+
+`CurrentGuildMember` now supports bio editing:
+
+```ts
+await ctx.member.edit({
+  bio: 'Bot developed with Seyfert'
+});
+```
+
+Yes, bots can have bios now. Make yours count.
+
+---
+
+## Gateway Rate Limit Event
+
+A new event you'll probably never see — but it's there if you need it:
+
+```ts title="events/gatewayRateLimit.ts"
+import { createEvent } from 'seyfert';
+
+export default createEvent({
+  data: { name: 'gatewayRateLimit' },
+  run(info, client) {
+    client.logger.warn('Gateway rate limited:', info);
+  }
+});
+```
+
+Discord emits this if you send more than 2 `guild_member_request` calls with an empty query within 1 minute. Seyfert's gateway handling makes this nearly impossible to trigger, but transparency matters.
+
+---
+
+## Breaking Changes
+
+| Change | Migration |
+|--------|-----------|
+| Modals use `Label` instead of `ActionRow` | Replace `ActionRow` with `Label` in all modal code |
+
+That's it. One breaking change. The migration is straightforward — find and replace `ActionRow` with `Label` in your modal builders.
+
+---
+
+## Upgrade
+
+```bash
+pnpm install seyfert@4.0.0
+```
+
+Modals were always useful. Now they're unstoppable.
+
+Welcome to Seyfert v4.

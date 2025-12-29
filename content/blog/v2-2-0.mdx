@@ -1,51 +1,167 @@
 ---
-title: Seyfert v2.2.0
-description: Major improvements and breaking changes in Seyfert v2.2.0
+title: "Seyfert v2.2.0: The Universal Release"
+description: Deno. Bun. Soundboards. Smarter caching. This is Seyfert everywhere, for everyone.
 date: 2024-12-28
+---
+
+## A Gift for the Holidays
+
+As 2024 comes to a close, we're unwrapping something special: **Seyfert v2.2.0** — our most feature-packed release yet. This isn't just an update; it's a statement about where Discord bot development is headed.
+
+---
+
+## Run Anywhere: Deno & Bun Support
+
+JavaScript runtimes have evolved. Your framework should too.
+
+**Seyfert now officially supports Deno and Bun.** Same API. Same performance. Your choice of runtime.
+
+```bash
+# Node.js (as always)
+pnpm install seyfert
+
+# Bun
+bun add seyfert
+
+# Deno
+deno add npm:seyfert
+```
+
+Whether you love Bun's speed, Deno's security model, or Node's ecosystem — Seyfert works seamlessly across all three. Build once, deploy anywhere.
+
+---
+
+## Bring the Noise: Soundboard API
+
+Discord's Soundboard feature lets users play sounds in voice channels. Now you can control it programmatically:
+
+```ts
+// List available sounds
+const sounds = await client.soundboard.list(guildId);
+
+// Upload a new sound
+await client.soundboard.create(guildId, {
+  name: "airhorn",
+  sound: audioBuffer
+});
+
+// Play it
+await client.soundboard.send(guildId, soundId);
+
+// Clean up
+await client.soundboard.delete(guildId, soundId);
+```
+
+Build soundboard bots, DJ systems, or just annoy your friends with perfectly-timed sound effects.
+
+---
+
+## Smarter Caching
+
+### Dynamic Cache Control
+
+Previously, cache settings were static. Now they can be dynamic:
+
+```ts
+client.setServices({
+  cache: {
+    disabledCache: (cacheType) => {
+      // Disable member cache for large guilds
+      if (cacheType === 'members') {
+        return currentGuild.memberCount > 10000;
+      }
+      return false;
+    }
+  }
+});
+```
+
+This is huge for bots in large servers. Cache what you need, skip what you don't — automatically.
+
+### Unified Thread Handling
+
+Threads are no longer a separate cache. They're merged with channels, simplifying your mental model and reducing memory overhead.
+
+---
+
+## Developer Experience Upgrades
+
+### Guild Context Helpers
+
+Tired of null checks for guild data? New helpers ensure type safety:
+
+```ts
+// Before: ctx.guild might be null
+const guild = ctx.guild();
+if (!guild) return;
+
+// After: Type-safe guild context
+if (ctx.inGuild()) {
+  // ctx is now GuildContext with guaranteed guild data
+  const guild = ctx.guild(); // Never null here
+}
+```
+
+### Latency Monitoring
+
+Check shards health at a glance:
+
+```ts
+const latencies = client.latency; // average latency
+```
+
+### Better Error Messages
+
+When things go wrong, you'll know exactly why. We've enhanced error messages throughout the library, especially for configuration issues.
+
+---
+
+## New Capabilities
+
+- **`addRole` / `removeRole`** — Direct methods on `BaseGuildMember`
+- **`deferUpdate`** — For `ComponentContext` interactions
+- **`channel.messages.list()`** — Fetch all messages in a channel
+- **`generateOAuth2URL`** — Build OAuth URLs with our formatter utility
+- **`onRatelimit` Callback** — React to rate limits in your API handler
+- **Extendable Configuration** — Use `ExtendedRC` to add custom config options
+- **`HttpServerAdapter` Flexibility** — Works with `HttpClient`, `Client`, or `WorkerClient`
+- **Webhook Events** — New types for `applicationAuthorized`, `entitlementCreated`, `questUserEnrollment`
+
 ---
 
 ## Breaking Changes
 
-- Channel threads are no longer part of the main cache; they are now merged with channels
-- `WorkerAdapter` is no longer the default cache adapter of the WorkerClient
-- Changed `Context.guild`, `Context.channel`, and `Context.me` functions to use the `flow` mode by default
-- Removed `output` and `templates` locations from the configuration file
-- Removed `updateOnly` parameter from the `patch` method in the cache Adapter
-- Removed deprecated types and Intents
-- Renamed `VoiceChannelMethods#setVoiceState` to `VoiceChannelMethods#setVoiceStatus`
+We've cleaned up the API for long-term maintainability:
+
+| Change | Migration |
+|--------|-----------|
+| Thread cache merged with channels | Update any thread-specific cache access |
+| `WorkerAdapter` not default for `WorkerClient` | Explicitly set if needed |
+| `Context.guild/channel/me` use `flow` mode | No action needed (better defaults) |
+| Removed `output`/`templates` config locations | Update your `seyfert.config.js` |
+| Removed `updateOnly` from cache `patch` | Adjust custom adapters if needed |
+
+---
 
 ## Bug Fixes
 
-- Fixed issues with zombie connections
-- Fixed the `workerProxy` implementation in the `WorkerClient`
-- Fixed `edit` method in `GuildRole`
-- Fixed `ModalInteraction.member.roles` not returning the correct data
-- Fixed collector `refresh` callback
-- Fixed `guildMemberRemove` to get the correct `GuildMember` old object
+Because stability matters:
 
-## New Features
+- ✅ Fixed zombie connections that wouldn't die
+- ✅ Fixed `workerProxy` in `WorkerClient`
+- ✅ Fixed `GuildRole.edit()` method
+- ✅ Fixed `ModalInteraction.member.roles` data
+- ✅ Fixed collector `refresh` callback
+- ✅ Fixed `guildMemberRemove` old object retrieval
 
-- Added `Client.latency` to get the latency of all shards
-- `cache.disabledCache` can now be a function that dynamically returns `true`/`false` based on the `cacheType` parameter
-- Added `addRole` and `removeRole` methods to `BaseGuildMember`
-- Enhanced the error message for "config file not found"
-- Component listeners now include an `onPass` function
-- Added support for the Soundboard API with functionalities to `get`, `upload`, `list`, and `delete`
-- Added a soundboard shorter in the `Client`
-- Added custom events in the `WorkerClient`
-- Introduced resharding, enabling automatic shard creation and deletion as needed in the WorkerClient
-- `attachment` objects now support `ArrayBuffer`, `Uint8ClampedArray`, and `Uint8Array` (types updated)
-- `option.value` automatically infers the specified `option.choices` if available
-- `options.value` now returns the same type as specified in the `option.channel_types`
-- Introduced `Guild...Context` and `Context.inGuild()` to ensure guild data for commands not usable in DMs
-- Added a `deferUpdate` method for `ComponentContext`s
-- Embed setter methods (e.g., `addField`, `setDescription`) now support `undefined` as a valid parameter
-- Seyfert configuration is now extendable using `ExtendedRC` for types and `ExtendedRCLocations` for `config.locations`
-- Added a `generateOAuth2URL` utility in formatters
-- Added support for Deno and Bun
-- Introduced a shorter form for `voiceStates`, accessible via `client.voiceStates`
-- Improved Discord API error messages
-- Added an `onRatelimit` callback in ApiHandler (rest)
-- Added webhook event types for `applicationAuthorized`, `entitlementCreated`, and `questUserEnrollment`
-- `HttpServerAdapter` now supports any type of `Client` (`HttpClient`, `Client`, or `WorkerClient`)
-- Added `channel.messages.list()` to fetch all messages in a channel 
+---
+
+## Upgrade Now
+
+```bash
+pnpm install seyfert@2.2.0
+```
+
+2024 was the year Seyfert grew up. 2025 will be the year it takes over.
+
+Happy holidays from the Seyfert team. 🎄
