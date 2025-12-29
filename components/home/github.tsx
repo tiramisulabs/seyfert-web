@@ -87,15 +87,11 @@ function StarIcon({
         <motion.div
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
-            whileHover={{ scale: 1.2, rotate: 20 }}
+            whileHover={{ scale: 1.2, rotate: 20, transition: { duration: 0.2, ease: "easeOut" } }}
             transition={{
                 duration: 0.8,
                 delay,
                 ease: [0.16, 1, 0.3, 1],
-                hover: {
-                    duration: 0.2,
-                    ease: "easeOut",
-                },
             }}
             className={className}
         >

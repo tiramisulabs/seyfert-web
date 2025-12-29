@@ -4,7 +4,7 @@ import { rehypeCodeDefaultOptions } from 'fumadocs-core/mdx-plugins';
 import { z } from 'zod';
 import dacezuTheme from './dacezu.json';
 import { ThemeRegistrationAny } from 'shiki/types';
-export const { docs: guideContent, meta: guideMeta } = defineDocs({
+export const guide = defineDocs({
   dir: 'content/guide',
 });
 

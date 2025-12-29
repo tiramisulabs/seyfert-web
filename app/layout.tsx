@@ -1,9 +1,10 @@
-import { RootProvider } from "fumadocs-ui/provider";
+import { RootProvider } from "fumadocs-ui/provider/next";
 import { Metadata } from "next";
 import type { ReactNode } from "react";
 import "./global.css";
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://seyfert.dev'),
   title: "Seyfert | The Black Magic Framework",
   description: 'Powerful Discord Bots Made Simple with Seyfert',
   openGraph: {
