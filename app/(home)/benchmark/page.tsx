@@ -395,6 +395,7 @@ export default function Page() {
                 position: 'insideBottom',
                 offset: -15,
                 fill: '#a0a0a0',
+                // @ts-expect-error why not
                 style: { fontSize: '0.8rem', '@media (minWidth: 768px)': { fontSize: '1rem' } }
               }}
               tick={{ fill: '#a0a0a0', fontSize: '0.75rem' }}
@@ -408,6 +409,7 @@ export default function Page() {
                 angle: -90,
                 position: 'insideLeft',
                 fill: '#a0a0a0',
+                // @ts-expect-error why not
                 style: { fontSize: '0.8rem', '@media (minWidth: 768px)': { fontSize: '1rem' } }
               }}
               tick={{ fill: '#a0a0a0', fontSize: '0.75rem' }}

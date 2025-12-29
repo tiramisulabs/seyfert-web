@@ -1,13 +1,13 @@
-import { guideContent, guideMeta, blog as blogPosts } from '@/.source';
-import { createMDXSource } from 'fumadocs-mdx';
+import { blog as blogPosts, guide } from 'fumadocs-mdx:collections/server';
+import { toFumadocsSource } from 'fumadocs-mdx/runtime/server';
 import { loader } from 'fumadocs-core/source';
 
 export const guideSource = loader({
   baseUrl: '/guide',
-  source: createMDXSource(guideContent, guideMeta),
+  source: guide.toFumadocsSource(),
 });
 
 export const blogSource = loader({
   baseUrl: '/blog',
-  source: createMDXSource(blogPosts),
+  source: toFumadocsSource(blogPosts, []),
 });
