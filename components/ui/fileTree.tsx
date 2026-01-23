@@ -1,6 +1,6 @@
 'use client';
 
-import { File01Icon, FolderOpenIcon, JavaScriptIcon, Settings01Icon, Typescript01Icon } from 'hugeicons-react';
+import { File01Icon, FolderOpenIcon, JavaScriptIcon, Settings01Icon, Typescript01Icon } from '@hugeicons/react';
 import { FileJson, FolderIcon } from 'lucide-react';
 import React, { useState } from 'react';
 

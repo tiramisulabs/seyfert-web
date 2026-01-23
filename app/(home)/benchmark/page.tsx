@@ -2,7 +2,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, LineChart } from "recharts";
 import { TooltipProps } from 'recharts';
-import { Github01Icon } from 'hugeicons-react';
+import { Github01Icon } from '@hugeicons/react';
 import Link from "next/link";
 
 const data = {

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Typescript01Icon, ChartIncreaseIcon, SmileIcon, CustomizeIcon, DiscordIcon, PlusSignSquareIcon } from "hugeicons-react";
+import { Typescript01Icon, ChartIncreaseIcon, SmileIcon, CustomizeIcon, DiscordIcon, PlusSignSquareIcon } from "@hugeicons/react";
 
 export function FeaturesSectionWithHoverEffects() {
     const features = [

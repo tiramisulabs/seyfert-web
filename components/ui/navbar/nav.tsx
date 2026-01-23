@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { NavMenu } from "./nav-menu";
 import Image from "next/image";
 import logo from "@/public/logo.svg";
-import { Github01Icon } from "hugeicons-react";
+import { Github01Icon } from "@hugeicons/react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";

@@ -21,7 +21,7 @@ const config = {
     },
   },
   experimental: {
-    optimizePackageImports: ["hugeicons-react"],
+    optimizePackageImports: ["@hugeicons/react"],
     serverSourceMaps: false,
   },
   turbopack: {
