@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { NavMenu } from "./nav-menu";
 import Image from "next/image";
 import logo from "@/public/logo.svg";
-import { Github01Icon } from "@hugeicons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Github01Icon } from "@hugeicons/core-free-icons";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { config } from "@/app.config";
 const SCROLL_THRESHOLD = 50;
+
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -88,7 +90,7 @@ export default function Navbar() {
               size="icon"
               className="hidden sm:inline-flex cursor-pointer"
             >
-              <Github01Icon className="!w-5 !h-5 " />
+              <HugeiconsIcon icon={Github01Icon} className="w-5! h-5! " />
             </Button>
           </a>
 

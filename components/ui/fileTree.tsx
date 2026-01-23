@@ -1,6 +1,7 @@
 'use client';
 
-import { File01Icon, FolderOpenIcon, JavaScriptIcon, Settings01Icon, Typescript01Icon } from '@hugeicons/react';
+import { HugeiconsIcon } from "@hugeicons/react";
+import { File01Icon, FolderOpenIcon, JavaScriptIcon, Settings01Icon, Typescript01Icon } from '@hugeicons/core-free-icons';
 import { FileJson, FolderIcon } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -23,17 +24,17 @@ const getFileIcon = (fileName: string) => {
 
     switch (extension) {
         case 'js':
-            return <JavaScriptIcon className={iconClass} />;
+            return <HugeiconsIcon icon={JavaScriptIcon} className={iconClass} />;
         case 'ts':
-            return <Typescript01Icon className={iconClass} />;
+            return <HugeiconsIcon icon={Typescript01Icon} className={iconClass} />;
         case 'json':
             return <FileJson className={iconClass} />;
         case 'env':
-            return <Settings01Icon className={iconClass} />;
+            return <HugeiconsIcon icon={Settings01Icon} className={iconClass} />;
         case 'mjs':
-            return <JavaScriptIcon className={iconClass} />;
+            return <HugeiconsIcon icon={JavaScriptIcon} className={iconClass} />;
         default:
-            return <File01Icon className={iconClass} />;
+            return <HugeiconsIcon icon={File01Icon} className={iconClass} />;
     }
 };
 
@@ -64,7 +65,7 @@ export const Folder: React.FC<FolderProps> = ({ name, defaultOpen = false, child
             >
                 <span className="mr-2">
                     {isOpen ?
-                        <FolderOpenIcon className={iconClass} /> :
+                        <HugeiconsIcon icon={FolderOpenIcon} className={iconClass} /> :
                         <FolderIcon className={iconClass} />
                     }
                 </span>

@@ -2,7 +2,8 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Line, LineChart } from "recharts";
 import { TooltipProps } from 'recharts';
-import { Github01Icon } from '@hugeicons/react';
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Github01Icon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 
 const data = {
@@ -332,7 +333,7 @@ export default function Page() {
             href="https://github.com/tiramisulabs/benchmark"
             className="flex items-center gap-2 text-sm text-neutral-500 hover:text-neutral-300 transition-colors w-fit mx-auto group"
           >
-            <Github01Icon size={18} className="group-hover:scale-110 transition-transform" />
+            <HugeiconsIcon icon={Github01Icon} className="w-5! h-5! group-hover:scale-110 transition-transform" />
             View benchmark source code
           </Link>
         </div>

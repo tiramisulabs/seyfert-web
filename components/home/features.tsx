@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
-import { Typescript01Icon, ChartIncreaseIcon, SmileIcon, CustomizeIcon, DiscordIcon, PlusSignSquareIcon } from "@hugeicons/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Typescript01Icon, ChartIncreaseIcon, SmileIcon, CustomizeIcon, DiscordIcon, PlusSignSquareIcon } from "@hugeicons/core-free-icons";
 
 export function FeaturesSectionWithHoverEffects() {
     const features = [
@@ -7,37 +8,37 @@ export function FeaturesSectionWithHoverEffects() {
             title: "Written in TypeScript",
             description:
                 "Seyfert is written in TypeScript, so you can enjoy the benefits of type safety.",
-            icon: <Typescript01Icon />,
+            icon: <HugeiconsIcon icon={Typescript01Icon} className="w-5! h-5! " />,
         },
         {
             title: "Scalable",
             description:
                 "Seyfert is tested on both big and small bots and there were perfect performance results on both of them..",
-            icon: <ChartIncreaseIcon />,
+            icon: <HugeiconsIcon icon={ChartIncreaseIcon} className="w-5! h-5! " />,
         },
         {
             title: "Effortless Development",
             description:
                 "Developer experience is at the core of Seyfert, with a focus on easy setup to only worry about your bot's logic.",
-            icon: <SmileIcon />,
+            icon: <HugeiconsIcon icon={SmileIcon} className="w-5! h-5! " />,
         },
         {
             title: "Full customization",
             description:
                 "Seyfert makes customization easier, you can customize each aspect of seyfert if you need specific behavior.",
-            icon: <CustomizeIcon />,
+            icon: <HugeiconsIcon icon={CustomizeIcon} className="w-5! h-5! " />,
         },
         {
             title: "Latest Features",
             description:
                 "Seyfert is always up to date with the latest features of Discord.",
-            icon: <DiscordIcon />,
+            icon: <HugeiconsIcon icon={DiscordIcon} className="w-5! h-5! " />,
         },
         {
             title: "And more...",
             description:
                 "Actually I got out of ideas for this section, but I'm sure there are more features.",
-            icon: <PlusSignSquareIcon />,
+            icon: <HugeiconsIcon icon={PlusSignSquareIcon} className="w-5! h-5! " />,
         }
     ];
     return (
@@ -48,7 +49,7 @@ export function FeaturesSectionWithHoverEffects() {
 
             <div className="flex items-center justify-center my-2">
                 <div className="relative w-72 h-[2px] overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-neutral-600 to-transparent animate-[fade_3s_ease-in-out_infinite]" />
+                    <div className="absolute inset-0 bg-linear-to-r from-transparent via-neutral-600 to-transparent animate-[fade_3s_ease-in-out_infinite]" />
                 </div>
                 <div className="absolute">
                     <div className="w-1.5 h-1.5 border border-neutral-700 rotate-45" />
@@ -83,10 +84,10 @@ const Feature = ({
             )}
         >
             {index < 3 && (
-                <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-t from-neutral-100 dark:from-neutral-800 to-transparent pointer-events-none" />
+                <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-linear-to-t from-neutral-100 dark:from-neutral-800 to-transparent pointer-events-none" />
             )}
             {index >= 3 && (
-                <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-gradient-to-b from-neutral-100 dark:from-neutral-800 to-transparent pointer-events-none" />
+                <div className="opacity-0 group-hover/feature:opacity-100 transition duration-200 absolute inset-0 h-full w-full bg-linear-to-b from-neutral-100 dark:from-neutral-800 to-transparent pointer-events-none" />
             )}
             <div className="mb-4 relative z-10 px-10 text-neutral-600 dark:text-neutral-400">
                 {icon}
