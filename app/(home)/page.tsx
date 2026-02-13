@@ -25,7 +25,7 @@ export default function Home() {
               Announcement
             </Badge>
 
-            Released v4.1
+            Released v4.2
           </AnimatedGradientText>
           <h1 className="mt-6 text-4xl sm:text-5xl md:text-5xl font-bold leading-[1.1]">
             Powerful Discord Bots Made Simple with{" "}
