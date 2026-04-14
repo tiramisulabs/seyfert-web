@@ -1,0 +1,103 @@
+---
+title: Yuna Parser
+---
+
+[Yuna](https://www.npmjs.com/package/yunaforseyfert) is an advanced parser for prefix/text commands in Seyfert. It provides custom syntax for named options, dynamic prefixes, and watchers.
+
+```bash copy title="Installing..."
+pnpm add yunaforseyfert
+```
+
+## Setup
+
+Override the default command handling with Yuna's parser and resolver:
+
+```ts
+import { Client, type ParseClient } from 'seyfert';
+import { HandleCommand } from 'seyfert/lib/commands/handle';
+import { Yuna } from 'yunaforseyfert';
+
+const client = new Client({
+    commands: {
+        prefix: () => ['!', '?'],
+        reply: () => true,
+    },
+});
+
+client.setServices({
+    handleCommand: class extends HandleCommand {
+        argsParser = Yuna.parser({
+            syntax: { namedOptions: ['-', '--'] },
+        });
+
+        resolveCommandFromContent = Yuna.resolver({
+            client: this.client,
+            afterPrepare: (metadata) => {
+                this.client.logger.info(`Loaded ${metadata.commands.length} commands`);
+            },
+        });
+    },
+});
+
+await client.start();
+
+declare module 'seyfert' {
+    interface UsingClient extends ParseClient<Client<true>> {}
+
+    interface InternalOptions {
+        withPrefix: true;
+    }
+}
+```
+
+<Callout type="note">
+Remember to enable prefix support via `InternalOptions` module augmentation as shown above.
+</Callout>
+
+## Dynamic Prefix Per Guild
+
+Use an async prefix function to return different prefixes per guild:
+
+```ts
+import { Client } from 'seyfert';
+
+const client = new Client({
+    commands: {
+        prefix: async (message) => {
+            const config = await db.getGuildConfig(message.guildId);
+            return config?.prefixes ?? ['!'];
+        },
+        reply: () => true,
+    },
+});
+```
+
+## Watchers
+
+Watchers let you monitor text command interactions over time — useful for commands that need follow-up input:
+
+```ts
+import { Command, Declare, type CommandContext } from 'seyfert';
+import { Watch, Yuna } from 'yunaforseyfert';
+
+@Declare({
+    name: 'help',
+    description: 'Interactive help',
+})
+@Watch({
+    idle: 60_000,
+    beforeCreate(ctx) {
+        // Cancel any existing watcher for this user + command
+        const existing = Yuna.watchers.find(ctx.client, {
+            userId: ctx.author.id,
+            command: this,
+        });
+        if (existing) existing.stop('replaced');
+    },
+})
+export default class HelpCommand extends Command {
+    async run(ctx: CommandContext) {
+        await ctx.write({ content: 'What do you need help with? Reply with a topic.' });
+    }
+}
+```

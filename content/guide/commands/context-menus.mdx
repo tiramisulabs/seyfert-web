@@ -1,0 +1,102 @@
+---
+title: Context Menu Commands
+---
+
+Context menu commands appear when a user right-clicks on a user or a message in Discord. Unlike slash commands, they don't have options or descriptions visible to the user — they simply appear as actions in the context menu.
+
+Seyfert provides the `ContextMenuCommand` class specifically for these commands, so you don't need to manually set the `type` in `@Declare`.
+
+## User Commands
+
+User commands appear in the **Apps** section when right-clicking a user. They receive a `MenuCommandContext` with the target user:
+
+```ts twoslash
+import { ContextMenuCommand, Declare, type MenuCommandContext, type UserCommandInteraction} from 'seyfert';
+
+
+@Declare({
+    name: 'User Info',
+    description: 'Show user info'
+})
+export default class UserInfoCommand extends ContextMenuCommand {
+    async run(ctx: MenuCommandContext<UserCommandInteraction>) {
+        const target = ctx.target;
+
+        await ctx.write({
+            content: `**${target.username}** (${target.id})\nCreated: <t:${Math.floor(target.createdTimestamp / 1000)}:R>`,
+        });
+    }
+}
+```
+
+<Callout type="note">
+The `name` property in `@Declare` for context menu commands can include spaces and uppercase letters, unlike slash commands.
+</Callout>
+
+## Message Commands
+
+Message commands appear in the **Apps** section when right-clicking a message. They receive the target message:
+
+```ts twoslash
+import { ContextMenuCommand, Declare, type MenuCommandContext, type MessageCommandInteraction } from 'seyfert';
+
+@Declare({
+    name: 'Bookmark',
+    description: 'Bookmark a message'
+})
+export default class BookmarkCommand extends ContextMenuCommand {
+    async run(ctx: MenuCommandContext<MessageCommandInteraction>) {
+        const message = ctx.target;
+
+        await ctx.write({
+            content: `Bookmarked message from **${message.author.username}**: ${message.content.slice(0, 100)}`,
+        });
+    }
+}
+```
+
+## Restricting Context
+
+You can control where context menu commands can be used with `contexts` and `integrationTypes`:
+
+```ts twoslash
+import { ContextMenuCommand, Declare, type MenuCommandContext, type UserCommandInteraction } from 'seyfert';
+
+@Declare({
+    name: 'Report User',
+    description: 'Report a user',
+    // Only available in guilds
+    contexts: ['Guild'],
+    // Only for guild-installed apps
+    integrationTypes: ['GuildInstall'],
+    // Require specific permissions
+    defaultMemberPermissions: ['ModerateMembers'],
+})
+export default class ReportUserCommand extends ContextMenuCommand {
+    async run(ctx: MenuCommandContext<UserCommandInteraction>) {
+        await ctx.write({ content: `Reported ${ctx.target.username}` });
+    }
+}
+```
+
+## Type Guards
+
+When handling commands that could be either chat or context menu commands, use type guards to differentiate:
+
+```ts twoslash
+import { Command, type AnyContext } from 'seyfert';
+
+export default class MyCommand extends Command {
+    async run(ctx: AnyContext) {
+        if (ctx.isMenu()) {
+            // ctx is MenuCommandContext
+            ctx.client.logger.info(`Context menu used on: ${ctx.target}`);
+        }
+
+        if (ctx.isChat()) {
+            // ctx is CommandContext (slash or prefix)
+            ctx.client.logger.info(`Slash command: /${ctx.fullCommandName}`);
+        }
+    }
+}
+```

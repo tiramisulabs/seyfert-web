@@ -87,8 +87,8 @@ importers:
         specifier: ^3.7.0
         version: 3.7.0(@types/react@19.2.9)(react-dom@19.2.3(react@19.2.3))(react-is@18.3.1)(react@19.2.3)(redux@5.0.1)
       seyfert:
-        specifier: ^4.1.0
-        version: 4.1.0
+        specifier: ^4.3.0
+        version: 4.3.0
       shiki:
         specifier: ^3.21.0
         version: 3.21.0
@@ -3314,8 +3314,8 @@ packages:
   seyfert@3.2.6:
     resolution: {integrity: sha512-C0mghHl2mz+Qv3U+aOyCKAH3Xc2RGipfSwffXyOs4VuKygQyUbsVOpmzBNtDtdsTNtdsE/g35PAasDfi+7cv7A==}
 
-  seyfert@4.1.0:
-    resolution: {integrity: sha512-SIv40+9oOT8gNXIbtaQhxZWN/PuVP1vF2yU+ZM2XkmRwirqmonATHlNF2o/pCGsX9hudNuD59HJfHEixOmESlw==}
+  seyfert@4.3.0:
+    resolution: {integrity: sha512-IzLH1SBY45xFOjcI3WjNX7I23oQho8lOq+W3Plc3GvUHjGgAHb9o6EkWthh1hyGnd32I6IhqilDDhezVSrZ8Mg==}
 
   sharp@0.34.5:
     resolution: {integrity: sha512-Ou9I5Ft9WNcCbXrU9cMgPBcCK8LiwLqcbywW3t4oDV37n1pzpuNLsYiAV8eODnjbtQlSDwZ2cUEeQz4E54Hltg==}
@@ -7309,7 +7309,7 @@ snapshots:
 
   seyfert@3.2.6: {}
 
-  seyfert@4.1.0: {}
+  seyfert@4.3.0: {}
 
   sharp@0.34.5:
     dependencies:

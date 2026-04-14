@@ -1,0 +1,23 @@
+{
+    "title": "Recipes",
+    "pages": [
+        "sending-messages",
+        "embeds-and-formatting",
+        "api-access",
+        "cache",
+        "database",
+        "logger",
+        "cooldown",
+        "custom-events",
+        "presence",
+        "music",
+        "sharding",
+        "transformers",
+        "yuna",
+        "hot-reload",
+        "extending-config",
+        "monetization",
+        "cloudflare-workers",
+        "using-docker"
+    ]
+}

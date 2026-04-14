@@ -1,0 +1,86 @@
+---
+title: Gateway Intents
+---
+
+Gateway intents control which events your bot receives from Discord. You must declare the intents you need in `seyfert.config.mjs`.
+
+## Common Intents
+
+| Intent | Required For |
+| --- | --- |
+| `Guilds` | Guild events, channel access, role events |
+| `GuildMessages` | Message events in guild channels |
+| `MessageContent` | Reading `message.content` (required for prefix commands) |
+| `GuildMembers` | `guildMemberAdd`, `guildMemberRemove`, `guildMemberUpdate` |
+| `GuildVoiceStates` | `voiceStateUpdate` — needed for music bots |
+| `DirectMessages` | Message events in DMs |
+| `GuildMessageReactions` | Reaction add/remove events |
+| `GuildPresences` | `presenceUpdate` events |
+| `GuildModeration` | `guildBanAdd`, `guildBanRemove`, audit log events |
+| `GuildScheduledEvents` | Scheduled event create/update/delete |
+
+<Callout type="warn">
+`GuildMembers`, `GuildPresences`, and `MessageContent` are **privileged intents**. You must enable them in the [Discord Developer Portal](https://discord.com/developers/applications) under **Bot > Privileged Gateway Intents** before using them.
+</Callout>
+
+## Configuration
+
+Intents are set as an array of strings in `seyfert.config.mjs`:
+
+```ts twoslash title="seyfert.config.mjs" copy
+import { config } from 'seyfert';
+
+export default config.bot({
+    token: process.env.BOT_TOKEN ?? '',
+    intents: ['Guilds', 'GuildMessages', 'MessageContent', 'GuildVoiceStates'],
+    locations: {
+        base: 'dist',
+        commands: 'commands',
+        events: 'events',
+    },
+});
+```
+
+You can also use numeric values:
+
+```ts twoslash
+import { config } from 'seyfert';
+
+export default config.bot({
+    token: process.env.BOT_TOKEN ?? '',
+    intents: 32767, // All intents
+    locations: {
+        base: 'dist',
+        commands: 'commands',
+    },
+});
+```
+
+## Choosing the Right Intents
+
+Only enable the intents your bot actually needs. Fewer intents means less data processed and better performance.
+
+**Basic bot** (slash commands only):
+```ts
+intents: ['Guilds']
+```
+
+**Bot with prefix commands**:
+```ts
+intents: ['Guilds', 'GuildMessages', 'MessageContent']
+```
+
+**Moderation bot**:
+```ts
+intents: ['Guilds', 'GuildMessages', 'GuildMembers', 'GuildModeration']
+```
+
+**Music bot**:
+```ts
+intents: ['Guilds', 'GuildVoiceStates']
+```
+
+**Full-featured bot**:
+```ts
+intents: ['Guilds', 'GuildMessages', 'MessageContent', 'GuildMembers', 'GuildVoiceStates', 'DirectMessages']
+```

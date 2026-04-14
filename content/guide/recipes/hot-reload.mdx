@@ -1,0 +1,117 @@
+---
+title: Hot Reload
+---
+
+During development, Seyfert allows you to reload commands, events, components, and language files without restarting the bot.
+
+## Reloading Commands
+
+```ts
+// Reload all commands
+await client.commands.reloadAll();
+
+// Reload a specific command by name
+await client.commands.reload('ping');
+```
+
+## Reloading Events
+
+```ts
+await client.events.reloadAll();
+```
+
+## Reloading Components
+
+```ts
+await client.components.reloadAll();
+```
+
+## Reloading Language Files
+
+```ts
+// Reload all languages
+await client.langs.reloadAll();
+
+// Reload a specific locale
+await client.langs.reload('es');
+```
+
+## Reload Command
+
+A practical pattern is to create a developer-only command for hot reloading:
+
+```ts
+import {
+    Command,
+    Declare,
+    Options,
+    createStringOption,
+    type CommandContext,
+} from 'seyfert';
+
+const options = {
+    target: createStringOption({
+        description: 'What to reload',
+        required: true,
+        choices: [
+            { name: 'Commands', value: 'commands' },
+            { name: 'Events', value: 'events' },
+            { name: 'Components', value: 'components' },
+            { name: 'Languages', value: 'langs' },
+            { name: 'All', value: 'all' },
+        ] as const,
+    }),
+};
+
+@Declare({
+    name: 'reload',
+    description: 'Reload bot modules',
+})
+@Options(options)
+export default class ReloadCommand extends Command {
+    async run(ctx: CommandContext<typeof options>) {
+        const target = ctx.options.target;
+
+        if (target === 'all' || target === 'commands') await ctx.client.commands.reloadAll();
+        if (target === 'all' || target === 'events') await ctx.client.events?.reloadAll();
+        if (target === 'all' || target === 'components') await ctx.client.components.reloadAll();
+        if (target === 'all' || target === 'langs') await ctx.client.langs?.reloadAll();
+
+        await ctx.editOrReply({ content: `Reloaded **${target}** successfully.` });
+    }
+}
+```
+
+## Command Upload Caching
+
+When registering slash commands, use `cachePath` to avoid redundant API calls. Seyfert will compare the current commands with the cached version and only upload if they changed:
+
+```ts
+await client.uploadCommands({ cachePath: './commands.json' });
+```
+
+## Automatic Reload with @slipher/watcher
+
+For automatic reloading on file changes during development, use [`@slipher/watcher`](https://www.npmjs.com/package/@slipher/watcher):
+
+```bash copy title="Installing..."
+npm add -D @slipher/watcher
+```
+
+Create a `watch.config.ts` at the root of your project:
+
+```ts title="watch.config.ts"
+import { defineWatcherConfig } from '@slipher/watcher';
+
+export default defineWatcherConfig({
+    src: './src',
+});
+```
+
+Then run the watcher instead of your normal entry point:
+
+```bash copy
+npx watcher
+```
+
+The watcher will monitor your source files and automatically reload commands, events, and components when they change — no manual restart or reload command needed.

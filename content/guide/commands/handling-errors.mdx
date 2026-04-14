@@ -108,6 +108,111 @@ export class HandlingErrors extends Command {
 }
 ```
 
+### Missing member permissions
+
+When a member doesn't have the required permissions specified in `defaultMemberPermissions`:
+
+```ts twoslash
+import { Command, type CommandContext, type PermissionStrings } from "seyfert";
+
+export class HandlingErrors extends Command {
+  async onPermissionsFail(context: CommandContext, permissions: PermissionStrings) {
+    await context.editOrReply({
+      content: `You need the following permissions: ${permissions.join(', ')}`,
+    });
+  }
+}
+```
+
+### Missing bot permissions
+
+When the bot doesn't have the permissions specified in `botPermissions`:
+
+```ts twoslash
+import { Command, type CommandContext, type PermissionStrings } from "seyfert";
+
+export class HandlingErrors extends Command {
+  async onBotPermissionsFail(context: CommandContext, permissions: PermissionStrings) {
+    await context.editOrReply({
+      content: `I need the following permissions: ${permissions.join(', ')}`,
+    });
+  }
+}
+```
+
+## Lifecycle Hooks
+
+Beyond error handlers, Seyfert provides lifecycle hooks for additional control:
+
+```ts twoslash
+import { Command, type CommandContext, type UsingClient } from "seyfert";
+
+export class MyCommand extends Command {
+  // Called before middlewares run
+  async onBeforeMiddlewares(context: CommandContext) {}
+
+  // Called before options are parsed — useful for early deferral
+  async onBeforeOptions(context: CommandContext) {
+    await context.deferReply();
+  }
+
+  // Called after run() completes (with error if thrown)
+  async onAfterRun(context: CommandContext, error?: unknown) {}
+
+  // Called on internal Seyfert errors
+  async onInternalError(client: UsingClient, error: unknown) {}
+}
+```
+
+## Default Error Handlers
+
+Instead of defining error handlers on every command, you can set defaults in the Client constructor:
+
+```ts
+import { Client } from "seyfert";
+
+const client = new Client({
+  commands: {
+    defaults: {
+      onRunError: (context, error) => {
+        context.editOrReply({ content: 'Something went wrong!' });
+      },
+      onOptionsError: (context) => {
+        context.editOrReply({ content: 'Invalid options provided.' });
+      },
+      onPermissionsFail: (context, permissions) => {
+        context.editOrReply({ content: `Missing permissions: ${permissions.join(', ')}` });
+      },
+      onBotPermissionsFail: (context, permissions) => {
+        context.editOrReply({ content: `I need: ${permissions.join(', ')}` });
+      },
+      onMiddlewaresError: (context, error) => {
+        context.editOrReply({ content: error });
+      },
+      onInternalError: (client, error) => {
+        client.logger.fatal(error);
+      },
+    },
+  },
+  // Defaults for component handlers
+  components: {
+    defaults: {
+      onRunError: (context, error) => {
+        context.editOrReply({ content: 'Component error!' });
+      },
+    },
+  },
+  // Defaults for modal handlers
+  modals: {
+    defaults: {
+      onRunError: (context, error) => {
+        context.editOrReply({ content: 'Modal error!' });
+      },
+    },
+  },
+});
+```
+
 <Callout type="note">
-Although Seyfert provides a way to handle errors, you can do it in the way that best suits your needs (we recommend the way we showed, lol).
-</Callout> 
+Per-command error handlers override the defaults. If a command defines its own `onRunError`, the default won't be called for that command.
+</Callout>

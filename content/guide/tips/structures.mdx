@@ -1,0 +1,201 @@
+---
+title: Structures
+---
+
+When you fetch or receive Discord objects, Seyfert returns typed structures with useful methods and properties. Here's a reference for the most common ones.
+
+## Member
+
+```ts twoslash
+import { type GuildCommandContext } from 'seyfert';
+const ctx = {} as GuildCommandContext;
+// ---cut---
+const member = ctx.member;
+
+member.id;                          // User ID
+member.guildId;                     // Guild ID
+member.user;                        // User object
+member.roles.keys;                  // string[] — role IDs
+await member.roles.list();          // GuildRoleStructure[]
+```
+
+### Voice State
+
+```ts twoslash
+import { type GuildMember } from 'seyfert';
+const member = {} as GuildMember;
+// ---cut---
+// From cache
+const voice = await member.voice('cache');
+
+// Cache with API fallback
+const voiceFlow = await member.voice('flow');
+
+voice?.channelId;   // Voice channel ID or null
+```
+
+### Permissions
+
+```ts twoslash
+import { type GuildMember } from 'seyfert';
+const member = {} as GuildMember;
+// ---cut---
+// From cache
+const perms = await member.fetchPermissions();
+perms.has(['Administrator']);                       // boolean
+perms.missings(['SendMessages', 'EmbedLinks']);     // return missings permisions, empty array if not
+```
+
+### Actions
+
+```ts twoslash
+import { type GuildMember } from 'seyfert';
+const member = {} as GuildMember;
+// ---cut---
+await member.ban({ delete_message_seconds: 0 }, 'Reason');
+await member.kick('Reason');
+await member.edit({ nick: 'New Nickname' });
+await member.write({ content: 'DM message' });    // Send DM
+```
+
+## Guild
+
+```ts twoslash
+import { type GuildCommandContext } from 'seyfert';
+const ctx = {} as GuildCommandContext;
+// ---cut---
+const guild = await ctx.guild();
+
+guild.id;                                           // Guild ID
+guild.name;                                         // Guild name
+guild.memberCount;                                  // Approximate member count
+await guild.members.fetch('userId');                // Fetch a specific member
+await guild.members.list({ limit: 100 });          // List members
+```
+
+## Channel
+
+```ts twoslash
+import { type UsingClient } from 'seyfert';
+const client = {} as UsingClient;
+// ---cut---
+const channel = await client.channels.fetch('channelId');
+
+channel.id;                    // Channel ID
+
+// Type guards
+channel.isThread();            // ThreadChannel
+channel.isNews();              // AnnouncementChannel
+channel.isVoice();             // VoiceChannel
+channel.isStage();             // StageChannel
+
+// Send a message
+if (channel.isTextable()) await channel.messages.write({ content: 'Hello' });
+```
+
+## Message
+
+```ts twoslash
+import { type Message } from 'seyfert';
+const message = {} as Message;
+// ---cut---
+message.id;                    // Message ID
+message.content;               // Text content
+message.author;                // User who sent it
+message.guildId;               // Guild ID (null in DMs)
+message.channelId;             // Channel ID
+message.createdTimestamp;      // Unix timestamp
+
+// Actions
+await message.reply({ content: 'Reply!' });
+await message.edit({ content: 'Edited' });
+await message.delete();
+await message.crosspost();     // Publish in announcement channel
+
+// Create a component collector
+message.createComponentCollector({ /* ... */ });
+```
+
+## Permissions
+
+Common permission strings used in `defaultMemberPermissions`, `botPermissions`, and permission checks:
+
+| Permission | Description |
+| --- | --- |
+| `Administrator` | Full access to everything |
+| `ManageGuild` | Manage server settings |
+| `ManageRoles` | Create and edit roles |
+| `ManageChannels` | Create and edit channels |
+| `KickMembers` | Kick members |
+| `BanMembers` | Ban members |
+| `ManageMessages` | Delete and pin messages |
+| `SendMessages` | Send messages in channels |
+| `EmbedLinks` | Send embedded content |
+| `AttachFiles` | Upload files |
+| `ReadMessageHistory` | View channel history |
+| `ViewChannel` | View channels |
+| `Connect` | Connect to voice channels |
+| `Speak` | Speak in voice channels |
+| `MoveMembers` | Move members between voice channels |
+| `ModerateMembers` | Timeout members |
+
+## Interaction Type Guards
+
+<Callout type="warning">
+At Seyfert, we do not recommend using this event unless it is strictly necessary (such as for urgent support of a feature)
+</Callout>
+
+In the `interactionCreate` event or when manually handling interactions:
+
+```ts
+import { createEvent } from 'seyfert';
+
+export default createEvent({
+    data: { name: 'interactionCreate' },
+    run(interaction, client) {
+        if (interaction.isButton()) { /* ButtonInteraction */ }
+        if (interaction.isStringSelectMenu()) { /* StringSelectMenuInteraction */ }
+        if (interaction.isUserSelectMenu()) { /* UserSelectMenuInteraction */ }
+        if (interaction.isRoleSelectMenu()) { /* RoleSelectMenuInteraction */ }
+        if (interaction.isChannelSelectMenu()) { /* ChannelSelectMenuInteraction */ }
+        if (interaction.isMentionableSelectMenu()) { /* ... */ }
+        if (interaction.isModalSubmit()) { /* ModalSubmitInteraction */ }
+        if (interaction.isAutocomplete()) { /* AutocompleteInteraction */ }
+        if (interaction.isChatInput()) { /* ChatInputCommandInteraction */ }
+    },
+});
+```
+
+## Shorters
+
+Shorters are convenience methods on the client for common operations without needing to fetch full objects first:
+
+```ts twoslash
+import { type UsingClient } from 'seyfert';
+const client = {} as UsingClient;
+// ---cut---
+// Users
+await client.users.fetch('userId');
+await client.users.createDM('userId');
+
+// Messages
+await client.messages.write('channelId', { content: 'Hello' });
+await client.messages.edit('channelId', 'messageId', { content: 'Edited' });
+await client.messages.delete('channelId', 'messageId');
+
+// Members
+await client.members.fetch('guildId', 'userId');
+await client.members.edit('guildId', 'userId', { nick: 'New Name' });
+await client.members.kick('guildId', 'userId');
+await client.members.ban('guildId', 'userId');
+
+// Roles
+await client.roles.create('guildId', { name: 'New Role', color: 0xFF0000 });
+await client.roles.edit('guildId', 'roleId', { name: 'Updated' });
+
+// Guilds
+await client.guilds.fetch('guildId');
+await client.guilds.list();
+```
+
+For more on Shorters and the Proxy API, see [Shorters and Proxy](/guide/recipes/api-access).

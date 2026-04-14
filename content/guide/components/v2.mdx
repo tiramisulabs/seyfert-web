@@ -12,18 +12,24 @@ This section explains how to use the v2 components to build interfaces in Discor
 
 The Container component groups other components and lets you define a visual container to organize the layout. You can add child components and set an accent color or mark it as a spoiler.
 
-```js showLineNumbers
-import { Container, TextDisplay, ActionRow, Button, Separator, Spacing, MediaGallery, MediaGalleryItem } from 'seyfert';
+```ts twoslash
+import { type CommandContext } from 'seyfert';
+const ctx = {} as CommandContext;
+// ---cut---
+import { Container, TextDisplay, ActionRow, Button, File, Section, Thumbnail, Separator, MediaGallery, MediaGalleryItem } from 'seyfert';
+import { Spacing } from 'seyfert/lib/types';
 
-const section = new Section().setAccessory(new Thumbnail()
+const section = new Section()
+	.setAccessory(new Thumbnail()
 	.setMedia('https://example.com/image.png')
-	.setDescription('This is a thumbnail image')).addComponents(
+	.setDescription('This is a thumbnail image'))
+	.addComponents(
 		new TextDisplay().setContent('This is a message with a thumbnail')
-  );
+	);
 
 const file = new File()
-		.setMedia('attachment://example.png')
-		.setSpoiler(false);
+	.setMedia('attachment://example.png')
+	.setSpoiler(false);
 
 const separator = new Separator()
 	.setSpacing(Spacing.Small)
@@ -47,10 +53,13 @@ ctx.write({ components: [container] })
 # File
 The File component is used to display attachments within the content. It allows you to set the file's URL and mark it as a spoiler if needed.
 
-```js showLineNumbers
+```ts twoslash
+import { type CommandContext } from 'seyfert';
+const ctx = {} as CommandContext;
+// ---cut---
 import { File, AttachmentBuilder } from 'seyfert';
 
-const attachment = new Attachment().setName('example.png').setUrl('https://example.com/example.png');
+const attachment = new AttachmentBuilder().setName('example.png').setFile('url','https://example.com/example.png');
 
 const file = new File()
 		.setMedia('attachment://example.png')
@@ -64,8 +73,11 @@ ctx.write({ flags: 1 << 15, files: [attachment], components: [file] });
 # Section	
 The Section component allows you to group text elements and an accessory (like a Thumbnail or a button) within the same section. It is ideal for combining a summary with an image or an action.
 
-```js showLineNumbers
-import { Section, Thumbnail, TextDisplay} from 'seyfert';
+```ts twoslash
+import { type CommandContext } from 'seyfert';
+const ctx = {} as CommandContext;
+// ---cut---
+import { Section, Thumbnail, TextDisplay } from 'seyfert';
 
 const section = new Section().setAccessory(
 	new Thumbnail()
@@ -83,8 +95,9 @@ const section = new Section().setAccessory(
 
 The Separator is used to visually separate other components, either by adding space (padding) or displaying a dividing line. You can configure the spacing and enable or disable the visual divider.
 
-```js showLineNumbers
-import { Separator, Spacing } from 'seyfert';
+```ts twoslash
+import { Separator } from 'seyfert';
+import { Spacing } from 'seyfert/lib/types';
 
 const separator = new Separator()
 	.setSpacing(Spacing.Small)
@@ -97,7 +110,7 @@ const separator = new Separator()
 
 The MediaGallery lets you display between 1 and 10 images or multimedia files in a gallery format. Each item can be defined with its URL, a description, and optionally marked as a spoiler.
 
-```js showLineNumbers
+```ts twoslash
 import { MediaGallery, MediaGalleryItem } from 'seyfert';
 
 const gallery = new MediaGallery()
@@ -112,10 +125,12 @@ const gallery = new MediaGallery()
 
 ## Example
 
-Let's make a real presentation, let's recreate the discord presentation for the components v2.
+Let's recreate the discord presentation for the components v2.
 
-```js showLineNumbers
-
+```ts twoslash
+import { type CommandContext } from 'seyfert';
+const ctx = {} as CommandContext;
+// ---cut---
 import {
 	Button,
 	Container,

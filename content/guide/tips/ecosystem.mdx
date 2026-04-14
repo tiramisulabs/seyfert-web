@@ -1,0 +1,82 @@
+---
+title: Ecosystem Packages
+---
+
+The Seyfert ecosystem provides additional packages for common needs.
+
+## Official & Community Packages
+
+| Package | Purpose | Install |
+| --- | --- | --- |
+| `@slipher/cooldown` | Decorator-based command cooldowns | `pnpm add @slipher/cooldown` |
+| `@slipher/redis-adapter` | Redis cache adapter for distributed bots | `pnpm add @slipher/redis-adapter` |
+| `@slipher/generic-adapter` | HTTP server adapter for webhook-based bots | `pnpm add @slipher/generic-adapter` |
+| `yunaforseyfert` | Advanced prefix command parser | `pnpm add yunaforseyfert` |
+| `@slipher/webhooks` | Discord webhook event handling | `pnpm add @slipher/webhooks` |
+| `@slipher/watcher` | Hot-reload development tool | `pnpm add -D @slipher/watcher` |
+| `@slipher/proxy` | REST API proxy with uWebSockets.js | `pnpm add @slipher/proxy` |
+
+## Custom Decorator Factory
+
+You can create reusable decorators that assign metadata to command instances:
+
+```ts
+import type { Instantiable } from 'seyfert';
+
+interface CustomOptions {
+    cooldown?: number;
+    category?: string;
+    onlyDeveloper?: boolean;
+}
+
+export function MyOptions<A extends Instantiable<any>>(
+    options: CustomOptions,
+): (target: A) => A {
+    return (target: A) =>
+        class extends target {
+            constructor(...args: any[]) {
+                super(...args);
+                Object.assign(this, options);
+            }
+        } as A;
+}
+```
+
+Usage on commands:
+
+```ts
+import { Command, Declare, type CommandContext } from 'seyfert';
+
+@Declare({ name: 'eval', description: 'Evaluate code' })
+@MyOptions({ cooldown: 10, category: 'developer', onlyDeveloper: true })
+export default class EvalCommand extends Command {
+    async run(ctx: CommandContext) { /* ... */ }
+}
+```
+
+## Context Extension
+
+Add custom properties and methods available in all command/component contexts:
+
+```ts
+import { extendContext, Client } from 'seyfert';
+
+const extended = extendContext((interaction) => ({
+    startedAt: Date.now(),
+    getLocale: () => interaction.locale ?? 'en',
+}));
+
+const client = new Client({ context: extended });
+```
+
+Module augmentation for type safety:
+
+```ts
+declare module 'seyfert' {
+    interface ExtendContext extends ReturnType<typeof extended> {}
+}
+```
+
+Usage in commands: `ctx.startedAt`, `ctx.getLocale()`.
+
+For a dedicated guide on extending the command context, see [Extending CommandContext](/guide/commands/extend-commandcontext).

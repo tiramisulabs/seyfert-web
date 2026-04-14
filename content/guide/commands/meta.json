@@ -5,6 +5,7 @@
         "options",
         "middlewares",
         "subcommands",
+        "context-menus",
         "handling-errors",
         "prefix-commands",
         "extend-commandcontext"

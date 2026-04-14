@@ -1,0 +1,155 @@
+---
+title: Database Integration
+---
+
+Seyfert is database-agnostic — you can attach any database client (Prisma, Drizzle, Mongoose, etc.) to your bot. Here are the two recommended patterns.
+
+## Pattern 1: Module Augmentation
+
+The simplest approach. Attach the database client to the Seyfert client instance and declare its type:
+
+```ts twoslash
+import { Client, type ParseClient } from 'seyfert';
+
+// Replace with your actual database client (Prisma, Drizzle, etc.)
+declare class DatabaseClient {
+    connect(): Promise<void>;
+    findUser(id: string): Promise<{ id: string; balance: number } | null>;
+}
+
+const client = new Client() as Client & { db: DatabaseClient };
+
+client.db = new DatabaseClient();
+await client.db.connect();
+
+await client.start();
+await client.uploadCommands();
+
+declare module 'seyfert' {
+    interface UsingClient extends ParseClient<Client<true>> {}
+
+    interface Client {
+        db: DatabaseClient;
+    }
+}
+```
+
+## Pattern 2: Extended Client Class
+
+A more structured approach using class inheritance:
+
+```ts twoslash
+import { Client, type ParseClient } from 'seyfert';
+
+declare class DatabaseClient {
+    connect(): Promise<void>;
+}
+
+// ---cut---
+class MyBot extends Client<true> {
+    db = new DatabaseClient();
+
+    async run() {
+        await this.db.connect();
+
+        this.setServices({
+            // middlewares, cache, etc.
+        });
+
+        await this.start();
+        await this.uploadCommands();
+    }
+}
+
+const bot = new MyBot();
+await bot.run();
+
+declare module 'seyfert' {
+    interface UsingClient extends ParseClient<MyBot> {}
+}
+```
+
+## Usage in Commands
+
+Once the database client is attached, access it from any command via `ctx.client.db`:
+
+```ts
+import { Command, Declare, type CommandContext } from 'seyfert';
+
+@Declare({
+    name: 'balance',
+    description: 'Check your balance',
+})
+export default class BalanceCommand extends Command {
+    async run(ctx: CommandContext) {
+        const user = await ctx.client.db.findUser(ctx.author.id);
+
+        if (!user) {
+            return ctx.write({ content: 'You have no account yet.' });
+        }
+
+        await ctx.write({
+            content: `Your balance: **${user.balance}** coins`,
+        });
+    }
+}
+```
+
+## Usage in Events
+
+The same pattern works in events, since the client is always available:
+
+```ts
+import { createEvent } from 'seyfert';
+
+export default createEvent({
+    data: { name: 'guildMemberAdd' },
+    async run(member, client) {
+        await client.db.createUser(member.id, {
+            guildId: member.guildId,
+            joinedAt: new Date(),
+        });
+    },
+});
+```
+
+## Usage in Middlewares
+
+```ts
+import { createMiddleware } from 'seyfert';
+
+interface UserData {
+    id: string;
+    isPremium: boolean;
+}
+
+export const withUser = createMiddleware<UserData>(async ({ context, next, stop }) => {
+    const user = await context.client.db.findUser(context.author.id);
+
+    if (!user) {
+        return stop('You need to create an account first. Use /register.');
+    }
+
+    next(user);
+});
+```
+
+Then access the data in your command with type safety:
+
+```ts
+import { Command, Declare, Middlewares, type CommandContext } from 'seyfert';
+
+@Declare({
+    name: 'premium',
+    description: 'Check premium status',
+})
+@Middlewares(['withUser'])
+export default class PremiumCommand extends Command {
+    async run(ctx: CommandContext<never, 'withUser'>) {
+        const user = ctx.metadata.withUser;
+        await ctx.write({
+            content: user.isPremium ? 'You are a premium user!' : 'You are not premium.',
+        });
+    }
+}
+```

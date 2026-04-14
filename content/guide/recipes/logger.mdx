@@ -1,0 +1,117 @@
+---
+title: Custom Logger
+---
+
+Seyfert provides a built-in `Logger` class that can be customized to fit your needs.
+
+## Logger.customize()
+
+Override the default log format:
+
+```ts twoslash
+import { Logger } from 'seyfert';
+
+Logger.customize((data) => {
+    const timestamp = new Date().toISOString();
+    const mem = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(1);
+    return [`[${timestamp}]`, `[${mem}MB]`, `${data}`];
+});
+```
+
+## File-Based Logging
+
+Enable writing logs to files:
+
+```ts
+import { Logger } from 'seyfert';
+
+// Log everything to files
+Logger.saveOnFile = 'all';
+
+// Or only log errors to files
+Logger.saveOnFile = 'error';
+
+// Set the directory for log files
+Logger.dirname = 'logs';
+```
+
+## Custom Logger Methods
+
+Extend the Logger prototype to add custom methods:
+
+```ts
+import { Logger, LogLevels } from 'seyfert';
+
+Logger.prototype.success = function (...args: unknown[]) {
+    this.rawLog(LogLevels.Info, ...args);
+};
+
+Logger.prototype.cmd = function (...args: unknown[]) {
+    this.rawLog(LogLevels.Info, ...args);
+};
+
+declare module 'seyfert' {
+    interface Logger {
+        success(...args: unknown[]): void;
+        cmd(...args: unknown[]): void;
+    }
+}
+```
+
+Now you can use them throughout your bot:
+
+```ts
+import { createEvent } from 'seyfert';
+
+export default createEvent({
+    data: { name: 'botReady', once: true },
+    run(user, client) {
+        client.logger.success(`${user.username} is online!`);
+    },
+});
+```
+
+## Webhook Error Reporting
+
+A common pattern is to report errors to a Discord webhook for monitoring:
+
+```ts
+import { Embed, type Client } from 'seyfert';
+
+const WEBHOOK_ID = 'your-webhook-id';
+const WEBHOOK_TOKEN = 'your-webhook-token';
+
+async function reportError(client: Client, error: Error, context?: string) {
+    const embed = new Embed()
+        .setTitle('Error Report')
+        .setDescription(`\`\`\`\n${error.stack ?? error.message}\n\`\`\``)
+        .setColor(0xFF0000)
+        .setTimestamp();
+
+    if (context) {
+        embed.addFields({ name: 'Context', value: context });
+    }
+
+    await client.webhooks.writeMessage(WEBHOOK_ID, WEBHOOK_TOKEN, {
+        body: { embeds: [embed] },
+    });
+}
+```
+
+Use it in your error handlers:
+
+```ts twoslash
+import { Command, type CommandContext } from 'seyfert';
+declare function reportError(client: any, error: Error, context?: string): Promise<void>;
+// ---cut---
+
+export default class MyCommand extends Command {
+    async onRunError(ctx: CommandContext, error: unknown) {
+        await ctx.editOrReply({ content: 'Something went wrong!' });
+
+        if (error instanceof Error) {
+            await reportError(ctx.client, error, `Command: /${ctx.fullCommandName}`);
+        }
+    }
+}
+```

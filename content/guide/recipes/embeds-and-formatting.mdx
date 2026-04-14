@@ -1,0 +1,221 @@
+---
+title: Embeds, Formatting & Attachments
+---
+
+## Embed Builder
+
+The `Embed` builder allows you to create rich embedded messages with titles, descriptions, fields, images, and more.
+
+```ts twoslash
+import { Embed, Command, Declare, type CommandContext } from 'seyfert';
+
+@Declare({
+    name: 'embed',
+    description: 'Send a rich embed',
+})
+export default class EmbedCommand extends Command {
+    async run(ctx: CommandContext) {
+        const embed = new Embed()
+            .setTitle('Server Info')
+            .setDescription('Here is some information about this server.')
+            .setColor(0x5865F2)
+            .setAuthor({ name: ctx.author.username })
+            .setFooter({ text: 'Powered by Seyfert' })
+            .addFields(
+                { name: 'Members', value: '1,234', inline: true },
+                { name: 'Channels', value: '42', inline: true },
+                { name: 'Created', value: '<t:1609459200:R>', inline: true },
+            )
+            .setImage('https://example.com/banner.png')
+            .setTimestamp()
+            .setURL('https://discord.gg/example');
+
+        await ctx.write({ embeds: [embed] });
+    }
+}
+```
+
+You can also pass a partial embed object to the constructor, which is useful for i18n:
+
+```ts
+const embed = new Embed(ctx.t.commands.help.embed.get())
+    .setColor('Blurple');
+```
+
+### Color Options
+
+The `setColor` method accepts a numeric hex value or a named color string:
+
+```ts twoslash
+import { Embed } from 'seyfert';
+// ---cut---
+new Embed().setColor(0xFF0000);    // Hex value
+new Embed().setColor('Blue');      // Named color
+new Embed().setColor('Blurple');   // Discord's brand color
+```
+
+## Formatter Utilities
+
+Seyfert provides a `Formatter` class with static methods for Discord markdown formatting:
+
+```ts twoslash
+import { Formatter } from 'seyfert';
+import { TimestampStyle } from 'seyfert/lib/common';
+
+// Text formatting
+Formatter.bold('text');                     // **text**
+Formatter.italic('text');                   // *text*
+Formatter.underline('text');                // __text__
+Formatter.strikeThrough('text');            // ~~text~~
+Formatter.inlineCode('text');              // `text`
+Formatter.codeBlock('ts', 'const x = 1'); // ```ts\nconst x = 1\n```
+Formatter.spoiler('text');                 // ||text||
+Formatter.quote('text');                   // > text
+Formatter.blockQuote('text');              // >>> text
+Formatter.hyperlink('Click here', 'https://example.com'); // [Click here](https://example.com)
+```
+
+### Mentions
+
+```ts twoslash
+import { Formatter } from 'seyfert';
+// ---cut---
+Formatter.userMention('userId');            // <@userId>
+Formatter.channelMention('channelId');      // <#channelId>
+Formatter.roleMention('roleId');            // <@&roleId>
+```
+
+### Timestamps
+
+Discord renders timestamps in the user's local timezone:
+
+```ts twoslash
+import { Formatter } from 'seyfert';
+import { TimestampStyle } from 'seyfert/lib/common';
+// ---cut---
+const date = new Date();
+
+Formatter.timestamp(date, TimestampStyle.RelativeTime);         // "2 hours ago"
+Formatter.timestamp(date, TimestampStyle.LongDateShortTime);    // "April 20, 2021 at 16:20"
+Formatter.timestamp(date, TimestampStyle.LongDate);             // "April 20, 2021"
+Formatter.timestamp(date, TimestampStyle.ShortTime);            // "16:20"
+```
+
+### Practical Example
+
+```ts twoslash
+import { Embed, Formatter, Command, Declare, type CommandContext } from 'seyfert';
+import { TimestampStyle } from 'seyfert/lib/common';
+
+@Declare({
+    name: 'userinfo',
+    description: 'Get user information',
+})
+export default class UserInfoCommand extends Command {
+    async run(ctx: CommandContext) {
+        const user = ctx.author;
+
+        const embed = new Embed()
+            .setTitle(Formatter.bold(user.username))
+            .setDescription(
+                [
+                    `${Formatter.bold('ID:')} ${Formatter.inlineCode(user.id)}`,
+                    `${Formatter.bold('Created:')} ${Formatter.timestamp(new Date(), TimestampStyle.RelativeTime)}`,
+                ].join('\n')
+            )
+            .setColor(0x5865F2);
+
+        await ctx.write({ embeds: [embed] });
+    }
+}
+```
+
+## Attachment Builder
+
+Create file attachments from buffers or URLs:
+
+```ts twoslash
+import { AttachmentBuilder, Command, Declare, type CommandContext } from 'seyfert';
+
+@Declare({
+    name: 'attach',
+    description: 'Send a file attachment',
+})
+export default class AttachCommand extends Command {
+    async run(ctx: CommandContext) {
+        const buffer = Buffer.from('Hello, World!');
+        const attachment = new AttachmentBuilder()
+            .setName('hello.txt')
+            .setFile('buffer', buffer);
+
+        await ctx.write({
+            content: 'Here is the file:',
+            files: [attachment],
+        });
+    }
+}
+```
+
+### From a URL
+
+```ts twoslash
+import { AttachmentBuilder } from 'seyfert';
+// ---cut---
+const attachment = new AttachmentBuilder()
+    .setFile('url', 'https://example.com/image.png')
+    .setName('downloaded.png');
+```
+
+### Referencing in Embeds
+
+You can reference an attachment within an embed using the `attachment://` protocol:
+
+```ts twoslash
+import { AttachmentBuilder, Embed } from 'seyfert';
+declare const imageBuffer: Buffer;
+// ---cut---
+const attachment = new AttachmentBuilder()
+    .setName('chart.png')
+    .setFile('buffer', imageBuffer);
+
+const embed = new Embed()
+    .setTitle('Statistics')
+    .setImage('attachment://chart.png');
+```
+
+## Sending Components with Messages
+
+For a complete guide on building and handling interactive components (buttons, select menus, modals), see the [Components guide](/guide/components/building-components).
+
+### Quick Reference
+
+```ts twoslash
+import { ActionRow, Button } from 'seyfert';
+import { ButtonStyle, MessageFlags } from 'seyfert/lib/types';
+declare const ctx: any;
+// ---cut---
+// With embeds
+await ctx.write({ embeds: [], components: [] });
+
+// Ephemeral message (only visible to the user)
+await ctx.write({
+    content: 'Only you can see this',
+    flags: MessageFlags.Ephemeral,
+});
+
+// Disable buttons after use
+await ctx.editOrReply({
+    components: [
+        new ActionRow<Button>().addComponents(
+            new Button()
+                .setCustomId('done')
+                .setLabel('Done')
+                .setStyle(ButtonStyle.Secondary)
+                .setDisabled(true),
+        ),
+    ],
+});
+
+// Remove all components
+await ctx.editOrReply({ components: [] });
+```
