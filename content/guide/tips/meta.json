@@ -3,7 +3,6 @@
     "pages": [
         "structures",
         "intents",
-        "common-patterns",
         "ecosystem"
     ]
 }

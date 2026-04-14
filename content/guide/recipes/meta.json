@@ -18,6 +18,7 @@
         "extending-config",
         "monetization",
         "cloudflare-workers",
-        "using-docker"
+        "using-docker",
+        "common-patterns"
     ]
 }
