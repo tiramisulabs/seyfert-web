@@ -12,11 +12,12 @@ User commands appear in the **Apps** section when right-clicking a user. They re
 
 ```ts twoslash
 import { ContextMenuCommand, Declare, type MenuCommandContext, type UserCommandInteraction} from 'seyfert';
+import { ApplicationCommandType } from 'seyfert/lib/types';
 
 
 @Declare({
     name: 'User Info',
-    description: 'Show user info'
+    type: ApplicationCommandType.User
 })
 export default class UserInfoCommand extends ContextMenuCommand {
     async run(ctx: MenuCommandContext<UserCommandInteraction>) {
@@ -39,10 +40,11 @@ Message commands appear in the **Apps** section when right-clicking a message. T
 
 ```ts twoslash
 import { ContextMenuCommand, Declare, type MenuCommandContext, type MessageCommandInteraction } from 'seyfert';
+import { ApplicationCommandType } from 'seyfert/lib/types';
 
 @Declare({
     name: 'Bookmark',
-    description: 'Bookmark a message'
+    type: ApplicationCommandType.Message
 })
 export default class BookmarkCommand extends ContextMenuCommand {
     async run(ctx: MenuCommandContext<MessageCommandInteraction>) {
@@ -61,10 +63,11 @@ You can control where context menu commands can be used with `contexts` and `int
 
 ```ts twoslash
 import { ContextMenuCommand, Declare, type MenuCommandContext, type UserCommandInteraction } from 'seyfert';
+import { ApplicationCommandType } from 'seyfert/lib/types';
 
 @Declare({
     name: 'Report User',
-    description: 'Report a user',
+    type: ApplicationCommandType.User,
     // Only available in guilds
     contexts: ['Guild'],
     // Only for guild-installed apps
@@ -82,6 +85,10 @@ export default class ReportUserCommand extends ContextMenuCommand {
 ## Type Guards
 
 When handling commands that could be either chat or context menu commands, use type guards to differentiate:
+
+<Callout>
+This is useful in [middlewares](./middlewares), since two commands rarely overlap during a run
+</Callout>
 
 ```ts twoslash
 import { Command, type AnyContext } from 'seyfert';
