@@ -31,3 +31,4 @@ next-env.d.ts
 /content/docs
 # brainstorming companion
 .superpowers/
+.playwright-mcp/

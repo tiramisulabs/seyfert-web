@@ -2,13 +2,8 @@ import { baseOptions } from "@/app/layout.config";
 import Navbar from "@/components/ui/navbar/nav";
 import { HomeLayout } from "fumadocs-ui/layouts/home";
 import { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { GeistSans } from "geist/font/sans";
 import type { ReactNode } from "react";
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800", "900"],
-});
 
 export const metadata: Metadata = {
   title: "Seyfert | The Black Magic Framework",
@@ -31,7 +26,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           enabled: true,
           component: <Navbar />,
         }}
-        className={`${poppins.className} w-full max-w-none py-0`}
+        className={`${GeistSans.className} w-full max-w-none py-0`}
       >
         {children}
       </HomeLayout>

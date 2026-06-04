@@ -62,7 +62,7 @@ export default function Navbar() {
     >
       <div
         className={cn(
-          "border backdrop-blur-xs bg-background/70 w-full h-full absolute top-0 left-0 -z-10",
+          "border backdrop-blur-md bg-background/90 w-full h-full absolute top-0 left-0 -z-10",
           isHomePage && isScrolled ? "rounded-sm" : "rounded-none"
         )}
       />

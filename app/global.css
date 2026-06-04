@@ -308,3 +308,74 @@
   background-size: 88px 88px;
   background-repeat: repeat;
 }
+
+/* ── Spiral landing tokens ──────────────────────────────────────────
+   Two families, strictly separated:
+   · BRAND (old-site palette): indigo/purple/blue + pure neutrals — all UI
+     text, labels, data, buttons.
+   · ASTRO (astrophotography): amber/copper/warm-white — ONLY the black
+     hole, the orbital system and core glows. Never on UI copy. */
+.spiral-page {
+  /* deep blue-black space, never pure black */
+  --space-void: #05070d;
+  --space-deep: #0a0e18;
+  /* ASTRO family (reserved for the cosmos) */
+  --core-amber: #ffd9a0;
+  --core-white: #fff4e2;
+  --dust-copper: #b4683c;
+  --star-blue: #c8d8f0;
+  /* BRAND family (the old site's identity) */
+  --brand-indigo: #818cf8;  /* indigo-400 */
+  --brand-purple: #a855f7;  /* purple-500 */
+  --brand-blue: #2563eb;    /* blue-600 */
+  /* neutral text, like the old site */
+  --text-bright: #fafafa;
+  --text-dim: #a3a3a3;
+  background: var(--space-void);
+  color: var(--text-bright);
+}
+
+/* Warm AGN core glow used by hero fallback and final CTA */
+.core-glow {
+  background: radial-gradient(
+    circle,
+    rgba(255, 244, 226, 0.95),
+    rgba(255, 217, 160, 0.5) 26%,
+    rgba(180, 104, 60, 0.16) 55%,
+    transparent 75%
+  );
+}
+
+@keyframes spiral-pulse {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+.animate-spiral-pulse { animation: spiral-pulse 7s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-spiral-pulse { animation: none; }
+}
+
+/* Accretion orbit system — rings rotate, avatars counter-rotate to stay
+   upright. --orbit-d sets the period per ring. */
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes orbit-spin-reverse {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+.orbit-ring {
+  animation: orbit-spin var(--orbit-d, 60s) linear infinite;
+}
+.orbit-item {
+  animation: orbit-spin-reverse var(--orbit-d, 60s) linear infinite;
+}
+.orbit-system:hover .orbit-ring,
+.orbit-system:hover .orbit-item {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .orbit-ring, .orbit-item { animation: none; }
+}
