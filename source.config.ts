@@ -26,7 +26,13 @@ export default defineConfig({
       langs: ["python", "javascript", "typescript", "bash"],
       transformers: [
         ...(rehypeCodeDefaultOptions.transformers ?? []),
-        transformerTwoslash(),
+        transformerTwoslash({
+          twoslashOptions: {
+            compilerOptions: {
+              types: ['node'],
+            },
+          },
+        }),
       ],
     },
 
