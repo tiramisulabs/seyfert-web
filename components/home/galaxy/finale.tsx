@@ -72,7 +72,7 @@ export default function Finale({ repository }: { repository: string }) {
         <section className="flex flex-col gap-28">
             {/* ── 04 · OPEN SOURCE — observed as data ── */}
             <div className="flex flex-col gap-12">
-                <ArmLabel index="04" name="Open source" />
+                <ArmLabel index="05" name="Open source" />
 
                 <div className="grid grid-cols-12 items-end gap-y-12">
                     {/* oversized mono star figure */}
@@ -157,7 +157,7 @@ export default function Finale({ repository }: { repository: string }) {
 
                 <h2 className="relative max-w-2xl text-4xl font-semibold leading-[1.05] tracking-[-0.02em] sm:text-5xl">
                     Ignite{" "}
-                    <span className="animate-text-gradient bg-gradient-to-r from-indigo-400 via-purple-500 to-blue-600 bg-clip-text text-transparent">your core</span>
+                    <span className="text-[var(--brand-indigo)]">your core</span>
                 </h2>
 
                 <p className="relative max-w-md text-[15px] leading-relaxed text-[var(--text-dim)]">

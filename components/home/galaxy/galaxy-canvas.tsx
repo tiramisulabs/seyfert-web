@@ -569,6 +569,9 @@ export default function GalaxyCanvas() {
     const container = containerRef.current;
     if (!container) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // phones: the half-res raymarch reads as pixel noise at small sizes and
+    // eats battery — the static astrophoto fallback is the better hero there
+    if (window.matchMedia("(max-width: 767px)").matches) return;
 
     const probe = document.createElement("canvas");
     if (!probe.getContext("webgl2")) return;
@@ -672,7 +675,7 @@ export default function GalaxyCanvas() {
     resize();
 
     // ── mouse parallax ──
-    const PARALLAX = 0.035;
+    const PARALLAX = 0.06;
     const mouse = { x: 0, y: 0 };
     const target = { x: 0, y: 0 };
     const onMouseMove = (e: MouseEvent) => {
@@ -721,8 +724,8 @@ export default function GalaxyCanvas() {
       if (introElapsed < INTRO_DUR) introElapsed += dts;
       const intro = easeOutQuint(Math.min(1, introElapsed / INTRO_DUR));
 
-      mouse.x += (target.x - mouse.x) * 0.05;
-      mouse.y += (target.y - mouse.y) * 0.05;
+      mouse.x += (target.x - mouse.x) * 0.09;
+      mouse.y += (target.y - mouse.y) * 0.09;
       const diveTarget = smoothstep01(scrollT);
       zoom += (diveTarget - zoom) * 0.06;
 

@@ -14,10 +14,10 @@ export function GalaxyFallback() {
                 }}
             />
             {/* warm AGN core, off-center for asymmetry */}
-            <div className="core-glow animate-spiral-pulse absolute left-[62%] top-[34%] h-[36rem] w-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-80" />
+            <div className="core-glow animate-spiral-pulse absolute left-1/2 top-[6%] h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-45 md:left-[62%] md:top-[34%] md:h-[36rem] md:w-[36rem] md:opacity-80" />
             {/* coppery dust haze hugging the core */}
             <div
-                className="absolute left-[58%] top-[40%] h-[28rem] w-[44rem] -translate-x-1/2 -translate-y-1/2 rounded-[50%] opacity-25 blur-3xl"
+                className="absolute left-1/2 top-[8%] h-[14rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-[50%] opacity-15 blur-3xl md:left-[58%] md:top-[40%] md:h-[28rem] md:w-[44rem] md:opacity-25"
                 style={{ background: "radial-gradient(ellipse, rgba(180,104,60,0.55), transparent 65%)" }}
             />
         </div>

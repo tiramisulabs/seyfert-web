@@ -35,7 +35,7 @@ export function SpiralHome() {
 
                         <p className="max-w-md text-[15px] leading-relaxed text-[var(--text-dim)]">
                             Seyfert is a TypeScript framework built around a small,
-                            brutally efficient core — 84 MB under full gateway load,
+                            brutally efficient core — <Link href="/benchmark" className="underline decoration-[var(--brand-indigo)]/50 underline-offset-4 hover:decoration-[var(--brand-indigo)]">84 MB</Link> under full gateway load,
                             type-safe end to end, ready to scale from your first
                             command to millions of guilds.
                         </p>
@@ -59,7 +59,7 @@ export function SpiralHome() {
                     <div aria-hidden className="hidden lg:block" />
                 </div>
 
-                <div className={`${GeistMono.className} absolute bottom-8 left-6 z-10 text-[10px] tracking-[0.3em] text-[var(--text-dim)]/70 lg:left-12`}>
+                <div className={`${GeistMono.className} absolute bottom-8 left-16 z-10 text-[10px] tracking-[0.3em] text-[var(--text-dim)]/70 lg:left-12`}>
                     SCROLL INTO THE CORE ↓
                 </div>
             </div>

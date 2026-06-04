@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { GeistMono } from "geist/font/mono";
+import { AnimatePresence, motion } from "motion/react";
 import { ArmLabel } from "./arm-label";
 
 // Community bots as an accretion disc: matter in orbit around the active
@@ -82,10 +83,10 @@ export function Accretion() {
         <section className="flex flex-col gap-12">
             {/* 03 — In orbit */}
             <div className="flex flex-col gap-4">
-                <ArmLabel index="03" name="In orbit" />
+                <ArmLabel index="04" name="In orbit" />
                 <h2 className="max-w-lg text-4xl font-semibold leading-[1.05] tracking-[-0.02em]">
                     Production bots,{" "}
-                    <span className="animate-text-gradient bg-gradient-to-r from-indigo-400 via-purple-500 to-blue-600 bg-clip-text text-transparent">in orbit</span>
+                    <span className="text-[var(--brand-indigo)]">in orbit</span>
                 </h2>
                 <p className="max-w-md text-[15px] leading-relaxed text-[var(--text-dim)]">
                     Real deployments locked to the core. Trace a body to read its log entry.
@@ -221,12 +222,18 @@ export function Accretion() {
                 {/* editorial pull-quote column */}
                 <figure className="flex flex-col gap-7 md:col-span-5">
                     <div className="relative border-l-2 border-[var(--core-amber)]/60 pl-6">
-                        <blockquote
+                        <AnimatePresence mode="wait" initial={false}>
+                        <motion.blockquote
                             key={active.name}
+                            initial={{ opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -6 }}
+                            transition={{ duration: 0.22, ease: "easeOut" }}
                             className="text-xl font-medium leading-[1.45] tracking-[-0.01em] text-[var(--text-bright)] md:text-[1.45rem]"
                         >
                             {active.text}
-                        </blockquote>
+                        </motion.blockquote>
+                        </AnimatePresence>
                     </div>
 
                     {/* refined attribution — hairline + mono coordinates */}
