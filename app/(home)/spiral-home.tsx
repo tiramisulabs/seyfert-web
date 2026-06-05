@@ -26,7 +26,12 @@ export async function SpiralHome() {
                 <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 px-6 lg:grid-cols-[minmax(0,44rem)_1fr] lg:px-12">
                     <div className="flex flex-col items-start gap-8">
                         <div className={`${GeistMono.className} flex flex-wrap items-baseline gap-x-3 gap-y-1.5 text-[11px] tracking-[0.25em] text-[var(--text-dim)]`}>
-                            <span className="text-[var(--brand-indigo)]/80">SEYFERT</span>
+                            <span
+                                className="text-[var(--brand-indigo)]/80"
+                                title="it's a galaxy type. now it's also your stack."
+                            >
+                                SEYFERT
+                            </span>
                             <span>
                                 TYPESCRIPT FRAMEWORK FOR DISCORD{" "}
                                 <span className="whitespace-nowrap">· v4.3.0</span>

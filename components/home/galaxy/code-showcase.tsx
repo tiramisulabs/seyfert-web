@@ -59,7 +59,10 @@ export default async function CodeShowcase() {
                 </p>
 
                 {/* install line — mono pill with inline copy */}
-                <div className="flex items-center gap-3 rounded-md border border-white/10 bg-[var(--space-deep)]/70 px-3.5 py-2.5">
+                <div
+                    title="it's dangerous to go alone — take this."
+                    className="flex items-center gap-3 rounded-md border border-white/10 bg-[var(--space-deep)]/70 px-3.5 py-2.5"
+                >
                     <span
                         className={`${GeistMono.className} select-none text-[13px] leading-none text-[var(--text-dim)]/50`}
                         aria-hidden

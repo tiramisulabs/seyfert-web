@@ -94,7 +94,7 @@ export function KirbyEgg() {
     const layerRef = useRef<HTMLDivElement>(null);
     const [kirbys, setKirbys] = useState<number[]>([]);
     const nextId = useRef(0);
-    const scream = useRef<HTMLAudioElement | null>(null);
+    const screams = useRef<HTMLAudioElement[]>([]);
 
     useEffect(() => {
         const layer = layerRef.current;
@@ -102,9 +102,15 @@ export function KirbyEgg() {
         if (!layer || !hero) return;
         if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-        // preload THE scream so the first click plays with zero delay
-        scream.current = new Audio("/sfx/kirby-fall.mp3");
-        scream.current.preload = "auto";
+        // preload THE screams so the first click plays with zero delay;
+        // each fall rolls the dice on which one he lets out
+        screams.current = ["/sfx/kirby-fall-1.mp3", "/sfx/kirby-fall-2.mp3"].map(
+            (src) => {
+                const a = new Audio(src);
+                a.preload = "auto";
+                return a;
+            },
+        );
 
         const onClick = (e: MouseEvent) => {
             // desktop-only: the hole sits at 79%/48% only in the two-col layout
@@ -118,8 +124,10 @@ export function KirbyEgg() {
                 k.length >= MAX_KIRBYS ? k : [...k, nextId.current++],
             );
             // clone per fall so rapid clicks overlap instead of restarting
-            if (scream.current) {
-                const s = scream.current.cloneNode() as HTMLAudioElement;
+            const pool = screams.current;
+            if (pool.length) {
+                const pick = pool[Math.floor(Math.random() * pool.length)];
+                const s = pick.cloneNode() as HTMLAudioElement;
                 s.volume = 0.55;
                 void s.play().catch(() => {});
             }

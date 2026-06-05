@@ -12,6 +12,8 @@ type Feature = {
     description: string;
     icon: LucideIcon;
     proof: string;
+    /** hidden hover reference — for the ones who read everything */
+    wink?: string;
 };
 
 const FEATURES: Feature[] = [
@@ -42,6 +44,7 @@ const FEATURES: Feature[] = [
             "Custom cache, custom REST, custom client. Swap any piece the day you need it to behave differently. We won't take it personally.",
         icon: Blocks,
         proof: "100% hackable",
+        wink: "no information is lost in our cache. take that, Hawking.",
     },
     {
         title: "Updates on day one",
@@ -49,6 +52,7 @@ const FEATURES: Feature[] = [
             "Threads, components v2, polls, interactions — there to use the same day Discord ships them, not a release later.",
         icon: Zap,
         proof: "Day-1 support",
+        wink: "unlike half-life 3.",
     },
     {
         // the classic site closed this grid with "And more... actually I got
@@ -86,11 +90,13 @@ const FeatureCell = ({
     description,
     icon: Icon,
     proof,
+    wink,
     index,
 }: Feature & { index: number }) => {
     const num = String(index + 1).padStart(2, "0");
     return (
         <div
+            title={wink}
             className={cn(
                 "group relative flex min-h-[240px] flex-col bg-[var(--space-void)] p-7",
                 "transition-colors duration-200 hover:bg-white/[0.02]"

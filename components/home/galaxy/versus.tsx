@@ -97,7 +97,7 @@ export default async function Versus({ number = "0X" }: { number?: string }) {
                     label="seyfert"
                     code={SEYFERT}
                     html={seyfertHtml}
-                    caption="one class · registered for you · options inferred by the compiler"
+                    caption="one class · registered for you · options inferred by the compiler · it's super effective!"
                     accent
                 />
             </div>
@@ -114,8 +114,17 @@ export default async function Versus({ number = "0X" }: { number?: string }) {
                 <span aria-hidden className="text-[var(--text-dim)]/30">
                     ·
                 </span>
-                <span>0 unchecked casts</span>
+                <span title="these aren't the casts you're looking for.">
+                    0 unchecked casts
+                </span>
             </div>
+
+            {/* Miller's planet, but for migrations */}
+            <p
+                className={`${GeistMono.className} -mt-8 text-[11px] leading-relaxed tracking-[0.05em] text-[var(--text-dim)]/70`}
+            >
+                {"// one hour here is seven years in discord.js"}
+            </p>
         </section>
     );
 }
