@@ -1,11 +1,11 @@
-import { cn } from "@/lib/utils";
 import { GeistMono } from "geist/font/mono";
 import { AtSign, Blocks, Braces, Package, TrendingUp, Zap, type LucideIcon } from "lucide-react";
 import { ArmLabel } from "./arm-label";
 
-// Capabilities — the cell anatomy of the original site's grid (// F-0N
-// annotation, boxed icon, proof metric with a ✓, ghost number) wearing the
-// observatory skin: Geist semibold titles, brand-indigo accents, serious copy.
+// Capabilities — the instrument manifest. Same row language as the
+// luminosity readout (hairlines, mono annotations, bare icons, a ✓ receipt
+// per row) inside the page's editorial split: masthead rail left, readout
+// right. The F-0N index and proof receipts survive from the classic grid.
 
 type Feature = {
     title: string;
@@ -68,25 +68,32 @@ const FEATURES: Feature[] = [
 
 export function FeaturesSectionWithHoverEffects() {
     return (
-        <section className="flex flex-col gap-10">
-            <div className="flex flex-col gap-4">
+        <section className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-x-16">
+            {/* masthead — left rail, sticky like the toolkit's */}
+            <div className="flex flex-col gap-6 lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
                 <ArmLabel index="01" name="Capabilities" />
                 <h2 className="max-w-lg text-4xl font-semibold leading-[1.05] tracking-[-0.02em]">
                     Everything you need to{" "}
                     <span className="text-[var(--brand-indigo)]">ship</span>
                 </h2>
+                <p className="max-w-[42ch] text-[15px] leading-relaxed text-[var(--text-dim)]">
+                    Each line ships with a receipt. No refunds — you
+                    won&apos;t be needing one.
+                </p>
             </div>
 
-            <div className="grid w-full grid-cols-1 gap-px bg-white/8 md:grid-cols-2 lg:grid-cols-3">
+            {/* the manifest — instrument rows, same voice as the luminosity
+                readout: hairlines, mono annotations, no boxes */}
+            <div className="flex flex-col lg:col-span-8 lg:col-start-5">
                 {FEATURES.map((feature, index) => (
-                    <FeatureCell key={feature.title} {...feature} index={index} />
+                    <FeatureRow key={feature.title} {...feature} index={index} />
                 ))}
             </div>
         </section>
     );
 }
 
-const FeatureCell = ({
+const FeatureRow = ({
     title,
     description,
     icon: Icon,
@@ -98,40 +105,41 @@ const FeatureCell = ({
     return (
         <div
             title={wink}
-            className={cn(
-                "group relative flex min-h-[240px] flex-col bg-[var(--space-void)] p-7",
-                "transition-colors duration-200 hover:bg-white/[0.02]"
-            )}
+            className="group grid grid-cols-[2.5rem_1.75rem_1fr] items-start gap-x-4 gap-y-3 border-b border-white/8 px-5 py-6 transition-colors duration-200 first:border-t hover:bg-white/[0.02] sm:grid-cols-[3rem_2rem_1fr_auto]"
         >
-            {/* top row: annotation + boxed icon */}
-            <div className="relative z-10 mb-6 flex items-center justify-between">
-                <span className={`${GeistMono.className} text-[10px] uppercase tracking-[0.25em] text-[var(--text-dim)]/70`}>
-                    {"// F-"}{num}
-                </span>
-                <div className="flex h-10 w-10 items-center justify-center border border-white/10 text-[var(--text-dim)] transition-colors duration-200 group-hover:border-[var(--brand-indigo)]/60 group-hover:text-[var(--brand-indigo)]">
-                    <Icon className="size-[18px]" aria-hidden />
-                </div>
+            {/* mono index — the annotation voice */}
+            <span
+                className={`${GeistMono.className} pt-1 text-[10px] tracking-[0.2em] text-[var(--text-dim)]/60 transition-colors duration-200 group-hover:text-[var(--brand-indigo)]`}
+            >
+                F-{num}
+            </span>
+
+            {/* bare icon, no box */}
+            <Icon
+                aria-hidden
+                className="mt-0.5 size-[18px] text-[var(--text-dim)] transition-colors duration-200 group-hover:text-[var(--brand-indigo)]"
+            />
+
+            <div className="flex flex-col gap-1.5">
+                <h3 className="text-lg font-semibold leading-tight tracking-[-0.01em] text-[var(--text-bright)]">
+                    {title}
+                </h3>
+                <p className="max-w-[52ch] text-[15px] leading-relaxed text-[var(--text-dim)]">
+                    {description}
+                </p>
             </div>
 
-            {/* title — observatory voice, not brutal caps */}
-            <h3 className="relative z-10 mb-3 text-xl font-semibold leading-tight tracking-[-0.01em] text-[var(--text-bright)]">
-                {title}
-            </h3>
-
-            <p className="relative z-10 mb-6 flex-1 text-[15px] leading-relaxed text-[var(--text-dim)]">
-                {description}
-            </p>
-
-            {/* proof footer */}
-            <div className="relative z-10 flex items-center gap-2.5 border-t border-white/8 pt-4">
-                <span className="inline-flex h-4 w-4 items-center justify-center border border-[var(--brand-indigo)]/50 text-[9px] font-bold text-[var(--brand-indigo)]">
+            {/* proof — right-aligned receipt; wraps under the text on mobile */}
+            <div className="col-start-3 flex items-center gap-2.5 sm:col-start-4 sm:justify-end sm:pt-1">
+                <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center border border-[var(--brand-indigo)]/50 text-[9px] font-bold text-[var(--brand-indigo)]">
                     ✓
                 </span>
-                <span className={`${GeistMono.className} text-[10px] uppercase tracking-[0.2em] text-[var(--text-dim)]`}>
+                <span
+                    className={`${GeistMono.className} whitespace-nowrap text-[10px] uppercase tracking-[0.2em] text-[var(--text-dim)]`}
+                >
                     {proof}
                 </span>
             </div>
-
         </div>
     );
 };
