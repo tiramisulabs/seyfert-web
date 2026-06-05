@@ -72,7 +72,7 @@ export function FeaturesSectionWithHoverEffects() {
             {/* masthead — left rail, sticky like the toolkit's */}
             <div className="flex flex-col gap-6 lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
                 <ArmLabel index="01" name="Capabilities" />
-                <h2 className="max-w-lg text-4xl font-semibold leading-[1.05] tracking-[-0.02em]">
+                <h2 className="max-w-lg text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.02em]">
                     Everything you need to{" "}
                     <span className="text-[var(--brand-indigo)]">ship</span>
                 </h2>

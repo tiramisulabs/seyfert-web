@@ -55,18 +55,21 @@ export async function SpiralHome() {
                         </p>
 
                         <div className="flex items-center gap-5">
-                            <Link href="/guide">
-                                <Button className="group cursor-pointer gap-2 rounded-none bg-[var(--text-bright)] px-6 text-base font-medium text-[var(--space-void)] hover:bg-neutral-300">
+                            <Button
+                                asChild
+                                className="group cursor-pointer gap-2 rounded-none bg-[var(--text-bright)] px-6 text-base font-medium text-[var(--space-void)] hover:bg-neutral-300"
+                            >
+                                <Link href="/guide">
                                     Get started
-                                    <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                                </Button>
-                            </Link>
+                                    <ArrowRight aria-hidden className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                                </Link>
+                            </Button>
                             <Link
                                 href="https://discord.gg/hEeJNaSqnS"
                                 target="_blank"
                                 className={`${GeistMono.className} text-xs tracking-[0.2em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline`}
                             >
-                                DISCORD ↗
+                                DISCORD <span aria-hidden>↗</span>
                             </Link>
                         </div>
                     </div>
@@ -75,7 +78,7 @@ export async function SpiralHome() {
                 </div>
 
                 <div className={`${GeistMono.className} absolute bottom-8 left-16 z-10 text-[10px] tracking-[0.3em] text-[var(--text-dim)]/70 lg:left-12`}>
-                    SCROLL INTO THE CORE · IT&apos;S SAFE ↓
+                    SCROLL INTO THE CORE · IT’S SAFE ↓
                 </div>
             </div>
 

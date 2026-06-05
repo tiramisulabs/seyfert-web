@@ -22,7 +22,7 @@ export function BenchTeaser() {
             {/* masthead — offset left rail */}
             <div className="flex flex-col gap-6 lg:col-span-4">
                 <ArmLabel index="04" name="Luminosity" />
-                <h2 className="text-4xl font-semibold leading-[1.05] tracking-[-0.02em]">
+                <h2 className="text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.02em]">
                     Shine brighter,{" "}
                     <span className="text-[var(--brand-indigo)]">burn less</span>
                 </h2>
@@ -69,7 +69,7 @@ export function BenchTeaser() {
                                 />
                             </div>
                             <span className={`${GeistMono.className} w-14 sm:w-16 shrink-0 text-[11px] tabular-nums ${b.accent ? "text-[var(--brand-indigo)]" : "text-[var(--text-dim)]/70"}`}>
-                                {b.mb} MB
+                                {b.mb}&nbsp;MB
                             </span>
                         </div>
                     ))}

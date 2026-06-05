@@ -16,7 +16,6 @@ const SCROLL_THRESHOLD = 50;
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === "/";
 
@@ -37,27 +36,22 @@ export default function Navbar() {
     };
 
     checkScroll();
-    setIsLoaded(true);
 
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  if (!isLoaded) return null;
-
   return (
     <nav
       className={cn(
-        "p-3 z-50 transition-all duration-1000 ease-out relative",
+        // explicit property list (never transition-all) + reduced-motion off
+        "p-3 z-50 transition-[width,top] duration-500 ease-out relative motion-reduce:transition-none",
         "left-1/2 -translate-x-1/2",
         isHomePage ? "fixed" : "relative",
         isHomePage && isScrolled
           ? "w-[min(60rem,95vw)] top-3"
           : "w-full rounded-none top-0"
       )}
-      style={{
-        width: isHomePage && isScrolled ? "min(60rem,95vw)" : "100%",
-      }}
       aria-label="Navigation bar"
     >
       <div
@@ -70,7 +64,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3 sm:gap-6">
           <Link href="/">
             <div className="flex items-center">
-              <Image src={logo} alt="Logo" width={32} height={32} />
+              <Image src={logo} alt="Seyfert" width={32} height={32} />
               <h1 className="hidden text-2xl font-bold sm:block">eyfert</h1>
             </div>
           </Link>
@@ -80,19 +74,21 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <a
-            href={`https://github.com/${config.repository}`}
-            target="_blank"
-            rel="noreferrer"
+          <Button
+            asChild
+            variant="ghost"
+            size="icon"
+            className="inline-flex cursor-pointer"
           >
-            <Button
-              variant="ghost"
-              size="icon"
-              className="inline-flex cursor-pointer"
+            <a
+              href={`https://github.com/${config.repository}`}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Seyfert on GitHub"
             >
-              <HugeiconsIcon icon={Github01Icon} className="w-5! h-5! " />
-            </Button>
-          </a>
+              <HugeiconsIcon icon={Github01Icon} className="w-5! h-5! " aria-hidden />
+            </a>
+          </Button>
 
           {/* <Button size="icon" variant="outline">
                         <SunIcon className="!w-5 !h-5" />

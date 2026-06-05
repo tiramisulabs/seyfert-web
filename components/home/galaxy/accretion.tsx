@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { GeistMono } from "geist/font/mono";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArmLabel } from "./arm-label";
 
 // Community bots as an accretion disc: matter in orbit around the active
@@ -78,13 +78,14 @@ const RINGS = [
 
 export function Accretion() {
     const [active, setActive] = useState<Bot>(BOTS[0]);
+    const reduceMotion = useReducedMotion();
 
     return (
         <section className="flex flex-col gap-12">
             {/* 03 — In orbit */}
             <div className="flex flex-col gap-4">
                 <ArmLabel index="05" name="In orbit" />
-                <h2 className="max-w-lg text-4xl font-semibold leading-[1.05] tracking-[-0.02em]">
+                <h2 className="max-w-lg text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.02em]">
                     Production bots,{" "}
                     <span className="text-[var(--brand-indigo)]">in orbit</span>
                 </h2>
@@ -194,7 +195,7 @@ export function Accretion() {
                                                 {/* amber halo ring, fades in on select */}
                                                 <span
                                                     aria-hidden
-                                                    className={`pointer-events-none absolute -inset-[3px] rounded-full ring-1 transition-all duration-300 ${selected
+                                                    className={`pointer-events-none absolute -inset-[3px] rounded-full ring-1 transition-[box-shadow,--tw-ring-color] duration-300 ${selected
                                                         ? "ring-[var(--core-amber)] shadow-[0_0_22px_4px_rgba(255,217,160,0.4)]"
                                                         : "ring-transparent"
                                                         }`}
@@ -205,7 +206,7 @@ export function Accretion() {
                                                     width={44}
                                                     height={44}
                                                     unoptimized
-                                                    className={`relative size-11 max-w-none rounded-full border transition-all duration-300 ${selected
+                                                    className={`relative size-11 max-w-none rounded-full border transition-[opacity,border-color,filter] duration-300 ${selected
                                                         ? "border-[var(--core-amber)]/70 opacity-100 saturate-100"
                                                         : "border-white/15 opacity-55 saturate-[0.85] group-hover/orbit:opacity-90"
                                                         }`}
@@ -221,13 +222,16 @@ export function Accretion() {
 
                 {/* editorial pull-quote column */}
                 <figure className="flex flex-col gap-7 md:col-span-5">
-                    <div className="relative border-l-2 border-[var(--core-amber)]/60 pl-6">
+                    <div
+                        aria-live="polite"
+                        className="relative border-l-2 border-[var(--core-amber)]/60 pl-6"
+                    >
                         <AnimatePresence mode="wait" initial={false}>
                         <motion.blockquote
                             key={active.name}
-                            initial={{ opacity: 0, y: 6 }}
+                            initial={{ opacity: 0, y: reduceMotion ? 0 : 6 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -6 }}
+                            exit={{ opacity: 0, y: reduceMotion ? 0 : -6 }}
                             transition={{ duration: 0.22, ease: "easeOut" }}
                             className="text-xl font-medium leading-[1.45] tracking-[-0.01em] text-[var(--text-bright)] md:text-[1.45rem]"
                         >

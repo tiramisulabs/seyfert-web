@@ -59,7 +59,7 @@ export function ToolkitTabs({ panes }: { panes: ToolkitPane[] }) {
                         tabIndex={i === active ? 0 : -1}
                         onClick={() => setActive(i)}
                         onKeyDown={onKeyDown}
-                        className={`${GeistMono.className} cursor-pointer border-b pb-1 text-[11px] uppercase tracking-[0.22em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-indigo)] ${
+                        className={`${GeistMono.className} cursor-pointer touch-manipulation border-b pb-1 text-[11px] uppercase tracking-[0.22em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-indigo)] ${
                             i === active
                                 ? "border-[var(--brand-indigo)] text-[var(--text-bright)]"
                                 : "border-transparent text-[var(--text-dim)]/70 hover:text-[var(--text-dim)]"

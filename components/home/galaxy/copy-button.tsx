@@ -41,13 +41,17 @@ export function CopyButton({
                 GeistMono.className,
                 // -m/p pair: the glyph stays small but the hit area grows to
                 // ~37px — the install pill is the page's main mobile action
-                "-m-3 inline-flex items-center p-3 text-[11px] leading-none tracking-[0.1em] text-[var(--text-dim)]/70 transition-colors duration-200 hover:text-[var(--text-bright)] focus-visible:text-[var(--text-bright)] focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-[var(--brand-indigo)] data-[copied]:text-[var(--brand-indigo)]",
+                "-m-3 inline-flex touch-manipulation items-center p-3 text-[11px] leading-none tracking-[0.1em] text-[var(--text-dim)]/70 transition-colors duration-200 hover:text-[var(--text-bright)] focus-visible:text-[var(--text-bright)] focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-[var(--brand-indigo)] data-[copied]:text-[var(--brand-indigo)]",
                 className,
             )}
         >
             {/* icon only — the aria-label carries the words */}
             <span aria-hidden className="text-[13px] leading-none">
                 {copied ? "✓" : "⧉"}
+            </span>
+            {/* announce the async success to screen readers */}
+            <span role="status" className="sr-only">
+                {copied ? "Copied" : ""}
             </span>
         </button>
     );

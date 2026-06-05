@@ -53,7 +53,7 @@ export default function Finale({
                             <span
                                 className={`${GeistMono.className} text-[10px] uppercase tracking-[0.3em] text-[var(--text-dim)] underline-offset-4 group-hover:text-[var(--text-bright)] group-hover:underline`}
                             >
-                                github.com/{repository} ↗
+                                github.com/{repository} <span aria-hidden>↗</span>
                             </span>
                         </Link>
                     </div>
@@ -167,7 +167,7 @@ export default function Finale({
                         CORE · 0 PC FROM CENTER
                     </div>
 
-                    <h2 className="max-w-3xl text-5xl font-semibold leading-[1.04] tracking-[-0.02em] sm:text-6xl">
+                    <h2 className="max-w-3xl text-balance text-5xl font-semibold leading-[1.04] tracking-[-0.02em] sm:text-6xl">
                         Ready to build{" "}
                         <span className="text-[var(--brand-indigo)]">
                             your bot?
@@ -181,18 +181,21 @@ export default function Finale({
 
                     <div className="mt-2 flex flex-col items-center gap-6">
                         <div className="flex items-center gap-5">
-                            <Link href="/guide">
-                                <Button className="group cursor-pointer gap-2 rounded-none bg-[var(--text-bright)] px-6 text-base font-medium text-[var(--space-void)] hover:bg-neutral-300">
+                            <Button
+                                asChild
+                                className="group cursor-pointer gap-2 rounded-none bg-[var(--text-bright)] px-6 text-base font-medium text-[var(--space-void)] hover:bg-neutral-300"
+                            >
+                                <Link href="/guide">
                                     Get started
-                                    <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                                </Button>
-                            </Link>
+                                    <ArrowRight aria-hidden className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                                </Link>
+                            </Button>
                             <Link
                                 href="https://discord.gg/hEeJNaSqnS"
                                 target="_blank"
                                 className={`${GeistMono.className} text-xs tracking-[0.2em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline`}
                             >
-                                DISCORD ↗
+                                DISCORD <span aria-hidden>↗</span>
                             </Link>
                         </div>
                         {/* the last thing you see is the way in */}
@@ -207,6 +210,7 @@ export default function Finale({
                                 $
                             </span>
                             <code
+                                translate="no"
                                 className={`${GeistMono.className} text-[13px] leading-none text-[var(--text-bright)]`}
                             >
                                 npm i seyfert

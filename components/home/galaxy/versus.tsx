@@ -78,7 +78,7 @@ export default async function Versus({ number = "0X" }: { number?: string }) {
             {/* masthead */}
             <div className="flex flex-col gap-6">
                 <ArmLabel index={number} name="The difference" />
-                <h2 className="max-w-[18ch] text-4xl font-semibold leading-[1.05] tracking-[-0.02em] text-[var(--text-bright)]">
+                <h2 className="max-w-[18ch] text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.02em] text-[var(--text-bright)]">
                     Same boot,{" "}
                     <span className="text-[var(--brand-indigo)]">two</span>{" "}
                     worlds

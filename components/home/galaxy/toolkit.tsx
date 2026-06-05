@@ -112,7 +112,7 @@ export default async function Toolkit() {
             <div className="flex flex-col gap-6 lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
                 <ArmLabel index="02" name="The toolkit" />
 
-                <h2 className="text-4xl font-semibold leading-[1.05] tracking-[-0.02em] text-[var(--text-bright)]">
+                <h2 className="text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.02em] text-[var(--text-bright)]">
                     Your whole bot,{" "}
                     <span className="text-[var(--brand-indigo)]">
                         in four files
