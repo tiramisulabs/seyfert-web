@@ -29,7 +29,7 @@ export default function Finale({
         <section className="flex flex-col gap-14">
             {/* ── 04 · OPEN SOURCE — observed as data ── */}
             <div className="flex flex-col gap-12">
-                <ArmLabel index="05" name="Open source" />
+                <ArmLabel index="06" name="Open source" />
 
                 <div className="grid grid-cols-12 items-end gap-y-12">
                     {/* oversized mono star figure */}

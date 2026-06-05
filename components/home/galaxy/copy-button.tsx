@@ -39,14 +39,14 @@ export function CopyButton({
             data-copied={copied || undefined}
             className={cn(
                 GeistMono.className,
-                "inline-flex items-center gap-1.5 text-[11px] leading-none tracking-[0.1em] text-[var(--text-dim)]/70 transition-colors duration-200 hover:text-[var(--text-bright)] focus-visible:text-[var(--text-bright)] focus-visible:outline-none data-[copied]:text-[var(--brand-indigo)]",
+                "inline-flex items-center text-[11px] leading-none tracking-[0.1em] text-[var(--text-dim)]/70 transition-colors duration-200 hover:text-[var(--text-bright)] focus-visible:text-[var(--text-bright)] focus-visible:outline-none data-[copied]:text-[var(--brand-indigo)]",
                 className,
             )}
         >
+            {/* icon only — the aria-label carries the words */}
             <span aria-hidden className="text-[13px] leading-none">
                 {copied ? "✓" : "⧉"}
             </span>
-            <span aria-hidden>{copied ? "copied" : "copy"}</span>
         </button>
     );
 }

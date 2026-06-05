@@ -83,7 +83,7 @@ export function Accretion() {
         <section className="flex flex-col gap-12">
             {/* 03 — In orbit */}
             <div className="flex flex-col gap-4">
-                <ArmLabel index="04" name="In orbit" />
+                <ArmLabel index="05" name="In orbit" />
                 <h2 className="max-w-lg text-4xl font-semibold leading-[1.05] tracking-[-0.02em]">
                     Production bots,{" "}
                     <span className="text-[var(--brand-indigo)]">in orbit</span>

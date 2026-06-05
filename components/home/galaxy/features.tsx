@@ -23,6 +23,7 @@ const FEATURES: Feature[] = [
             "Inference everywhere: command options, event payloads, interaction responses. Quitting `as any` is hard. We made it mandatory.",
         icon: Braces,
         proof: "0 'as any'",
+        wink: "these aren't the casts you're looking for.",
     },
     {
         title: "Ready for the big leagues",

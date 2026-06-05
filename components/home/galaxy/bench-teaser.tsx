@@ -21,7 +21,7 @@ export function BenchTeaser() {
         <section className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-x-16">
             {/* masthead — offset left rail */}
             <div className="flex flex-col gap-6 lg:col-span-4">
-                <ArmLabel index="03" name="Luminosity" />
+                <ArmLabel index="04" name="Luminosity" />
                 <h2 className="text-4xl font-semibold leading-[1.05] tracking-[-0.02em]">
                     Shine brighter,{" "}
                     <span className="text-[var(--brand-indigo)]">burn less</span>

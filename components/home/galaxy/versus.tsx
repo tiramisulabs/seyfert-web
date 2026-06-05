@@ -3,61 +3,62 @@ import { GeistMono } from "geist/font/mono";
 import { ArmLabel } from "./arm-label";
 import { CopyButton } from "./copy-button";
 
-// The conversion weapon: the SAME task — define and handle a /greet slash
-// command with one required string option — written honestly on both sides.
-// discord.js v14 is idiomatic, no strawman (SlashCommandBuilder + a separate
-// handler + the implied REST registration step). Seyfert is the decorator
-// pattern from the guide, verbatim API. Code is rendered SERVER-SIDE with shiki
-// so there is no client runtime cost; the section reveal lives in the parent.
+// The conversion weapon: the SAME task — boot a working bot — written
+// honestly on both sides. discord.js v14 is idiomatic, no strawman: the
+// official-guide boot with its hand-rolled command loader, interaction
+// dispatcher and the deploy-commands script you run by hand. Seyfert is the
+// setup-project guide verbatim: a config that says where things live and a
+// start() that does the rest. Code is rendered SERVER-SIDE with shiki so
+// there is no client runtime cost; the section reveal lives in the parent.
 
 // ── the two sources ────────────────────────────────────────────────────────
-// Honest discord.js v14: a builder you export, a handler that re-fetches the
-// option by string name and trusts the `true` cast, and the registration step
-// you still owe the REST API yourself.
-const DISCORD_JS = `import { SlashCommandBuilder } from 'discord.js';
-import type { ChatInputCommandInteraction } from 'discord.js';
+// Honest discord.js v14 boot, straight from their guide: ceremony, loader,
+// dispatcher, login — and registration still lives in a separate script.
+const DISCORD_JS = `import { Client, Collection, GatewayIntentBits, Events } from 'discord.js';
+import { readdirSync } from 'node:fs';
 
-// 1 · build it — exported for a separate registration script
-export const data = new SlashCommandBuilder()
-  .setName('greet')
-  .setDescription('Greet someone')
-  .addStringOption((o) =>
-    o.setName('name').setDescription('Who to greet').setRequired(true),
-  );
+// 1 · the ceremony
+const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+client.commands = new Collection();
 
-// 2 · handle it — re-fetch the option by name, typed by faith
-export async function execute(i: ChatInputCommandInteraction) {
-  const name = i.options.getString('name', true); // true = trust me
-  await i.reply(\`Hello, \${name}!\`);
+// 2 · hand-roll a command loader
+for (const file of readdirSync('./commands')) {
+  const command = require(\`./commands/\${file}\`);
+  client.commands.set(command.data.name, command);
 }
 
-// 3 · still owed: register \`data\` with the REST API yourself.
+// 3 · hand-roll a dispatcher
+client.on(Events.InteractionCreate, async (i) => {
+  if (!i.isChatInputCommand()) return;
+  await client.commands.get(i.commandName)?.execute(i);
+});
+
+client.login(process.env.TOKEN);
+
+// 4 · still owed: node deploy-commands.js — every time they change
 `;
 
-// Honest Seyfert: one class. The option is declared once; the compiler infers
-// ctx.options.name as string through CommandContext<typeof options>. No name
-// lookup, no cast, and registration is the framework's job.
-const SEYFERT = `import {
-  Command, Declare, Options, createStringOption,
-  type CommandContext,
-} from 'seyfert';
+// Honest Seyfert, from the setup guide: the config declares where commands
+// live; start() connects, loads everything and uploads the commands itself.
+const SEYFERT = `// seyfert.config.mjs
+import { config } from 'seyfert';
 
-const options = {
-  name: createStringOption({
-    description: 'Who to greet',
-    required: true,
-  }),
-};
+export default config.bot({
+  token: process.env.BOT_TOKEN ?? '',
+  locations: { base: 'dist', commands: 'commands' },
+  intents: ['Guilds'],
+});
 
-@Declare({ name: 'greet', description: 'Greet someone' })
-@Options(options)
-export default class Greet extends Command {
-  async run(ctx: CommandContext<typeof options>) {
-    // ctx.options.name is string. the compiler did the paperwork.
-    await ctx.write({ content: \`Hello, \${ctx.options.name}!\` });
-  }
-}
-// registration script not found. you don't need one.
+// src/index.ts
+import { Client } from 'seyfert';
+
+const client = new Client();
+
+// connects, loads commands/events/components/langs — and uploads them
+client.start()
+  .then(() => client.uploadCommands({ cachePath: './commands.json' }));
+
+// that's the boot. all of it.
 `;
 
 export default async function Versus({ number = "0X" }: { number?: string }) {
@@ -74,7 +75,7 @@ export default async function Versus({ number = "0X" }: { number?: string }) {
             <div className="flex flex-col gap-6">
                 <ArmLabel index={number} name="The difference" />
                 <h2 className="max-w-[18ch] text-4xl font-semibold leading-[1.05] tracking-[-0.02em] text-[var(--text-bright)]">
-                    Same command,{" "}
+                    Same boot,{" "}
                     <span className="text-[var(--brand-indigo)]">two</span>{" "}
                     worlds
                 </h2>
@@ -85,19 +86,19 @@ export default async function Versus({ number = "0X" }: { number?: string }) {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-8">
                 <EditorCard
                     className="order-2 lg:order-1"
-                    filename="greet.ts"
+                    filename="index.js"
                     label="discord.js v14"
                     code={DISCORD_JS}
                     html={discordHtml}
-                    caption="builder + handler + manual registration · options re-fetched by name, typed by faith"
+                    caption="a loader, a dispatcher, a login — and a deploy script you still run by hand"
                 />
                 <EditorCard
                     className="order-1 lg:order-2"
-                    filename="greet.command.ts"
+                    filename="seyfert.config.mjs + index.ts"
                     label="seyfert"
                     code={SEYFERT}
                     html={seyfertHtml}
-                    caption="one class · registered for you · options inferred by the compiler · it's super effective!"
+                    caption="say where things live · start() does the rest · it's super effective!"
                     accent
                 />
             </div>
@@ -106,17 +107,15 @@ export default async function Versus({ number = "0X" }: { number?: string }) {
             <div
                 className={`${GeistMono.className} flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] uppercase tracking-[0.22em] text-[var(--text-dim)]/70`}
             >
-                <span className="text-[var(--brand-indigo)]">−40% lines</span>
+                <span className="text-[var(--brand-indigo)]">0 loaders</span>
                 <span aria-hidden className="text-[var(--text-dim)]/30">
                     ·
                 </span>
-                <span>0 manual registrations</span>
+                <span>0 dispatchers</span>
                 <span aria-hidden className="text-[var(--text-dim)]/30">
                     ·
                 </span>
-                <span title="these aren't the casts you're looking for.">
-                    0 unchecked casts
-                </span>
+                <span>0 deploy scripts</span>
             </div>
 
             {/* Miller's planet, but for migrations */}
