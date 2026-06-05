@@ -638,10 +638,11 @@ export default function GalaxyCanvas() {
     container.appendChild(gl.canvas);
     gl.clearColor(0, 0, 0, 0);
 
-    // fade out the CSS fallback once WebGL is painting
+    // The CSS fallback stays visible until the FIRST composited frame lands —
+    // fading it at boot left a beat of empty space while shaders compiled.
     const fallback =
       container.parentElement?.querySelector<HTMLElement>("[data-galaxy-fallback]") ?? null;
-    if (fallback) fallback.style.opacity = "0";
+    let fallbackHidden = false;
 
     // GPU resets, driver crashes and reclaimed background contexts would
     // otherwise leave a dead black rectangle — bring the astrophoto back.
@@ -903,6 +904,12 @@ export default function GalaxyCanvas() {
       compositeProgram.uniforms.uIntro.value = intro;
       // PASS 2: composite/upscale → screen (every frame: grain/CA/vignette)
       renderer.render({ scene: compositeMesh, camera });
+
+      // first real frame is on screen — now the fallback can go
+      if (!fallbackHidden && fallback) {
+        fallback.style.opacity = "0";
+        fallbackHidden = true;
+      }
     };
     raf = requestAnimationFrame(update);
 

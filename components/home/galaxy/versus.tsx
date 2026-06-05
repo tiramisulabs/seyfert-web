@@ -14,11 +14,15 @@ import { CopyButton } from "./copy-button";
 // ── the two sources ────────────────────────────────────────────────────────
 // Honest discord.js v14 boot, straight from their guide: ceremony, loader,
 // dispatcher, login — and registration still lives in a separate script.
-const DISCORD_JS = `import { Client, Collection, GatewayIntentBits, Events } from 'discord.js';
+const DISCORD_JS = `import {
+  Client, Collection, GatewayIntentBits, Events,
+} from 'discord.js';
 import { readdirSync } from 'node:fs';
 
 // 1 · the ceremony
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({
+  intents: [GatewayIntentBits.Guilds],
+});
 client.commands = new Collection();
 
 // 2 · hand-roll a command loader
@@ -35,7 +39,7 @@ client.on(Events.InteractionCreate, async (i) => {
 
 client.login(process.env.TOKEN);
 
-// 4 · still owed: node deploy-commands.js — every time they change
+// 4 · still owed: node deploy-commands.js, by hand
 `;
 
 // Honest Seyfert, from the setup guide: the config declares where commands
@@ -54,9 +58,9 @@ import { Client } from 'seyfert';
 
 const client = new Client();
 
-// connects, loads commands/events/components/langs — and uploads them
-client.start()
-  .then(() => client.uploadCommands({ cachePath: './commands.json' }));
+// connects, loads everything, uploads your commands
+client.start().then(() =>
+  client.uploadCommands({ cachePath: './commands.json' }));
 
 // that's the boot. all of it.
 `;

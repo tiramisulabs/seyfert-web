@@ -26,6 +26,20 @@ export function ToolkitTabs({ panes }: { panes: ToolkitPane[] }) {
     const [active, setActive] = useState(0);
     const pane = panes[active];
 
+    // full ARIA tabs pattern: arrow keys cycle, Home/End jump
+    const onKeyDown = (e: React.KeyboardEvent) => {
+        const last = panes.length - 1;
+        let next: number | null = null;
+        if (e.key === "ArrowRight") next = active === last ? 0 : active + 1;
+        else if (e.key === "ArrowLeft") next = active === 0 ? last : active - 1;
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = last;
+        if (next === null) return;
+        e.preventDefault();
+        setActive(next);
+        (e.currentTarget.parentElement?.children[next] as HTMLElement)?.focus();
+    };
+
     return (
         <div className="flex min-w-0 flex-col gap-3">
             {/* tab rail — mono, instrument-panel voice */}
@@ -37,11 +51,15 @@ export function ToolkitTabs({ panes }: { panes: ToolkitPane[] }) {
                 {panes.map((p, i) => (
                     <button
                         key={p.id}
+                        id={`toolkit-tab-${p.id}`}
                         role="tab"
                         type="button"
                         aria-selected={i === active}
+                        aria-controls={`toolkit-pane-${p.id}`}
+                        tabIndex={i === active ? 0 : -1}
                         onClick={() => setActive(i)}
-                        className={`${GeistMono.className} cursor-pointer border-b pb-1 text-[11px] uppercase tracking-[0.22em] transition-colors duration-200 focus-visible:outline-none ${
+                        onKeyDown={onKeyDown}
+                        className={`${GeistMono.className} cursor-pointer border-b pb-1 text-[11px] uppercase tracking-[0.22em] transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-indigo)] ${
                             i === active
                                 ? "border-[var(--brand-indigo)] text-[var(--text-bright)]"
                                 : "border-transparent text-[var(--text-dim)]/70 hover:text-[var(--text-dim)]"
@@ -53,7 +71,12 @@ export function ToolkitTabs({ panes }: { panes: ToolkitPane[] }) {
             </div>
 
             {/* the editor card — same chrome as the versus cards */}
-            <div className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-white/10 bg-[var(--space-deep)]/70">
+            <div
+                id={`toolkit-pane-${pane.id}`}
+                role="tabpanel"
+                aria-labelledby={`toolkit-tab-${pane.id}`}
+                className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-white/10 bg-[var(--space-deep)]/70"
+            >
                 <div className="flex items-center justify-between border-b border-white/8 px-4 py-2.5">
                     <span
                         className={`${GeistMono.className} inline-flex items-center gap-2 text-[11px] tracking-[0.15em] text-[var(--text-dim)]`}

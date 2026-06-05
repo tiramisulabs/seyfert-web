@@ -178,7 +178,7 @@ export function Accretion() {
                                             type="button"
                                             onMouseEnter={() => setActive(b)}
                                             onFocus={() => setActive(b)}
-                                            className="orbit-item group/orbit -ml-[22px] -mt-[22px] block cursor-pointer rounded-full outline-none"
+                                            className="orbit-item group/orbit -ml-[22px] -mt-[22px] block cursor-pointer rounded-full outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-indigo)]"
                                             style={{ "--orbit-d": `${r.period}s` } as React.CSSProperties}
                                             aria-label={b.name}
                                             aria-pressed={selected}

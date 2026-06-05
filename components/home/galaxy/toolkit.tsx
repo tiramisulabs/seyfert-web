@@ -122,7 +122,7 @@ export default async function Toolkit() {
                 <p className="max-w-[42ch] text-[15px] leading-relaxed text-[var(--text-dim)]">
                     A command. A guard in front of it. Buttons that talk back.
                     Replies in any language. The everyday machinery of a real
-                    bot — built in, not bolted on. Pick a tab, steal the code.
+                    bot, already wired in. Pick a tab, steal the code.
                 </p>
             </div>
 
