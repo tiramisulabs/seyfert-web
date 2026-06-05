@@ -108,10 +108,13 @@ const marchFrag = /* glsl */ `
   #define R_ISCO    2.2     // disk inner edge (~ marginally stable orbit)
   #define R_OUT     5.2     // disk outer edge
   #define R_MAX     24.0    // escape radius (ray has left the system)
+  #define R_ACT     7.0     // active sphere: disk (5.2), ring (1.5) and plane
+                            // glow (r≲5.8) all live inside — outside is sky
   #define STEPS     120     // integration steps (must cover grazing orbits)
   #define DT_BASE   0.095   // base proper step
   #define DT_GROW   0.028   // step grows per unit r beyond ~3 (adaptive)
-  #define MAX_CROSS 2       // equatorial crossings accumulated per ray
+  #define MAX_CROSS 3       // 3rd crossing = the underside image; capping
+                            // at 2 truncated the lower lens arc in a hard edge
 
   #define CAM_DIST  9.5     // camera distance from the hole
   #define CAM_ELEV  0.085   // camera elevation above disk plane (~5 deg) — near
@@ -350,6 +353,21 @@ const marchFrag = /* glsl */ `
     vec3 hvec = cross(pos, vel);
     float h2 = dot(hvec, hvec);
 
+    // ── active-sphere clip ──
+    // The camera sits at r≈9.5 but everything that can light a pixel lives in
+    // r < R_ACT. Spacetime out there is near-flat, so instead of integrating
+    // empty space, jump the straight ray to the sphere's entry point — and
+    // rays that miss the sphere entirely are pure sky, no marching at all.
+    // (pos×vel is invariant under pos += t·vel, so h2 stays exact.)
+    float bq = dot(pos, vel);                  // vel is normalized
+    float cq = dot(pos, pos) - R_ACT * R_ACT;
+    float discr = bq * bq - cq;
+    bool engaged = true;
+    if (cq > 0.0) {
+      if (discr < 0.0 || bq > 0.0) engaged = false;  // miss, or moving away
+      else pos += vel * (-bq - sqrt(discr));         // jump to sphere entry
+    }
+
     vec3 accum = vec3(0.0);        // disk-crossing emission (survives capture)
     vec3 accumFx = vec3(0.0);      // ring + volumetric glow (escape-only:
                                    // captured rays must stay black inside)
@@ -358,22 +376,18 @@ const marchFrag = /* glsl */ `
     int crossings = 0;
     float prevY = pos.y;
 
-    // velocity-Verlet needs an initial acceleration
-    float r0 = length(pos);
-    vec3 acc = -1.5 * h2 * pos / pow(r0, 5.0);
+    // velocity-Verlet needs an initial acceleration. r⁵ as multiplies — pow()
+    // is two transcendentals and this runs once per step below.
+    float r0sq = dot(pos, pos);
+    vec3 acc = -1.5 * h2 * pos / (r0sq * r0sq * sqrt(r0sq));
 
     for (int i = 0; i < STEPS; i++) {
+      if (!engaged) break;
       float r = length(pos);
 
       // adaptive step: coast through near-flat space far from the hole
       float dt = DT_BASE + max(r - 3.0, 0.0) * DT_GROW;
-      // plane-adaptive refinement: rays grazing the disk plane inside the
-      // annulus take finer steps, otherwise they hop straight over y=0 and
-      // the front band terminates in a hard horizontal cut
-      float rad2dStep = length(pos.xz);
-      if (abs(pos.y) < 0.22 && rad2dStep < R_OUT + 0.8) {
-        dt *= mix(0.35, 1.0, smoothstep(0.0, 0.22, abs(pos.y)));
-      }
+
 
       // ── volumetric near-plane glow (cheap atmosphere) ──
       float rad2d = length(pos.xz);
@@ -392,17 +406,44 @@ const marchFrag = /* glsl */ `
       // escaping/capturing; each step they spend near 1.5 adds to a brilliant
       // thin halo hugging the shadow. This is the bright ring that emerges from
       // the geodesics, not a painted circle.
-      float ringD = abs(r - 1.5);
-      float ring = exp(-ringD * ringD * 16.0);     // ~1.5px wide at full res
-      // floor the transmittance so the ring stays brilliant on every limb,
-      // even where the near disk has already gone opaque
-      accumFx += HOT * ring * RING_GAIN * max(transmit, 0.35) * dt;
+      // beyond r=3 the gaussian is < 1e-15 — skip the exp on far steps
+      if (r < 3.0) {
+        float ringD = abs(r - 1.5);
+        float ring = exp(-ringD * ringD * 16.0);   // ~1.5px wide at full res
+        // floor the transmittance so the ring stays brilliant on every limb,
+        // even where the near disk has already gone opaque
+        accumFx += HOT * ring * RING_GAIN * max(transmit, 0.35) * dt;
+      }
 
       // ── velocity-Verlet (leapfrog) step ──
       vec3 posNext = pos + vel * dt + 0.5 * acc * dt * dt;
-      float rN = length(posNext);
-      vec3 accNext = -1.5 * h2 * posNext / pow(rN, 5.0);
+      float rNsq = dot(posNext, posNext);
+      float rN = sqrt(rNsq);
+      vec3 accNext = -1.5 * h2 * posNext / (rNsq * rNsq * rN);
       vec3 velNext = vel + 0.5 * (acc + accNext) * dt;
+
+      // ── tangential graze: the y(t) parabola inside this step can touch the
+      // plane and return without an endpoint sign change. Solve its vertex
+      // analytically — no step refinement needed, no seam at any boundary. ──
+      if (posNext.y * prevY > 0.0 && crossings < MAX_CROSS && abs(acc.y) > 1e-6) {
+        float tv = -vel.y / acc.y;               // vertex of y(t) within step
+        if (tv > 0.0 && tv < dt) {
+          float yv = pos.y + vel.y * tv + 0.5 * acc.y * tv * tv;
+          if (yv * prevY < 0.0) {
+            // grazing double-crossing: emit once at the vertex point
+            vec3 hitG = pos + vel * tv + 0.5 * acc * tv * tv;
+            float radG = length(hitG.xz);
+            if (radG >= R_ISCO && radG <= R_OUT) {
+              float azG = atan(hitG.z, hitG.x);
+              vec3 eG = diskEmission(radG, azG, normalize(vel));
+              float densG = clamp(0.55 + 0.45 * (1.0 - (radG - R_ISCO) / (R_OUT - R_ISCO)), 0.3, 1.0);
+              accum += eG * transmit;
+              transmit *= (1.0 - densG * 0.7);
+              crossings++;
+            }
+          }
+        }
+      }
 
       // ── equatorial plane crossing (sign change in y) within annulus ──
       if (posNext.y * prevY < 0.0 && crossings < MAX_CROSS) {
@@ -432,7 +473,10 @@ const marchFrag = /* glsl */ `
 
       // ── termination ──
       if (rN < RS) { captured = true; break; }
-      if (rN > R_MAX) break;
+      // outward past the active sphere: in a central potential beyond the
+      // photon sphere an outbound ray never returns — nothing left to hit
+      if (rN > R_ACT && dot(posNext, velNext) > 0.0) break;
+      if (rN > R_MAX) break;          // safety net
       if (transmit < 0.02) break;     // disk fully opaque ahead
     }
 
@@ -574,12 +618,21 @@ export default function GalaxyCanvas() {
     if (window.matchMedia("(max-width: 767px)").matches) return;
 
     const probe = document.createElement("canvas");
-    if (!probe.getContext("webgl2")) return;
+    const probeGl = probe.getContext("webgl2");
+    if (!probeGl) return;
+    // release the probe context immediately — browsers cap live contexts and
+    // dev double-mount/HMR would otherwise slowly exhaust the budget
+    probeGl.getExtension("WEBGL_lose_context")?.loseContext();
 
     const renderer = new Renderer({
       depth: false,
       alpha: true,
-      dpr: Math.min(window.devicePixelRatio, 2),
+      // 1.5 dpr cap: the march pass is res-capped separately, but the full-res
+      // composite (grain/CA) at dpr 2 doubles fragment work for detail the
+      // film grain immediately re-textures anyway. 1.5 is visually identical.
+      dpr: Math.min(window.devicePixelRatio, 1.5),
+      // decorative hero: never spin up the discrete GPU on dual-GPU laptops
+      powerPreference: "low-power",
     });
     const gl = renderer.gl;
     container.appendChild(gl.canvas);
@@ -590,14 +643,30 @@ export default function GalaxyCanvas() {
       container.parentElement?.querySelector<HTMLElement>("[data-galaxy-fallback]") ?? null;
     if (fallback) fallback.style.opacity = "0";
 
+    // GPU resets, driver crashes and reclaimed background contexts would
+    // otherwise leave a dead black rectangle — bring the astrophoto back.
+    const onContextLost = (e: Event) => {
+      e.preventDefault();
+      if (fallback) fallback.style.opacity = "1";
+    };
+    gl.canvas.addEventListener("webglcontextlost", onContextLost);
+
     const camera = new Camera(gl);
     const geometry = new Triangle(gl);
 
     // ── half-resolution render target for the expensive geodesic pass ──
-    const RT_SCALE = 0.55;
+    // The scale is tiered: everyone starts at the full look, and the adaptive
+    // governor in the render loop steps down only on machines that
+    // demonstrably can't hold frame budget (then climbs back when they can).
+    const RT_TIERS = [0.6, 0.5, 0.42];
+    let tier = 0;
+    // forces the next frame to render the march pass regardless of cadence —
+    // set whenever the rt is (re)sized, because rt.setSize clears the texture
+    // and the composite would otherwise sample an empty scene for one frame
+    let marchDirty = true;
     const rt = new RenderTarget(gl, {
-      width: Math.max(2, Math.floor(gl.canvas.width * RT_SCALE)),
-      height: Math.max(2, Math.floor(gl.canvas.height * RT_SCALE)),
+      width: Math.max(2, Math.floor(gl.canvas.width * RT_TIERS[0])),
+      height: Math.max(2, Math.floor(gl.canvas.height * RT_TIERS[0])),
       depth: false,
       minFilter: gl.LINEAR,
       magFilter: gl.LINEAR,
@@ -641,23 +710,38 @@ export default function GalaxyCanvas() {
 
     // hole placement (same convention as the original)
     const center: [number, number] = [0, 0];
+
+    // rt-only sizing — what the governor calls on a tier change. Deliberately
+    // does NOT touch renderer.setSize: assigning canvas.width (even unchanged)
+    // reallocates and clears the full-res backbuffer, which a tier flip
+    // doesn't need.
+    const sizeRT = () => {
+      const w = gl.canvas.width;
+      const h = gl.canvas.height;
+      // cap the march target's longest side: on 4K/5K + dpr the geodesic
+      // loop would otherwise dominate (cost scales with fragment count)
+      const rtScale = RT_TIERS[tier];
+      const rtCap = Math.min(1, 1600 / Math.max(w * rtScale, h * rtScale));
+      rt.setSize(
+        Math.max(2, Math.floor(w * rtScale * rtCap)),
+        Math.max(2, Math.floor(h * rtScale * rtCap)),
+      );
+      compositeProgram.uniforms.uScene.value = rt.texture;
+      marchProgram.uniforms.uResolution.value = [w * rtScale * rtCap, h * rtScale * rtCap];
+      marchDirty = true; // rt was cleared — re-march before the next composite
+    };
+
     const resize = () => {
       renderer.setSize(container.clientWidth, container.clientHeight);
       const w = gl.canvas.width;
       const h = gl.canvas.height;
       const aspect = w / h;
 
-      rt.setSize(
-        Math.max(2, Math.floor(w * RT_SCALE)),
-        Math.max(2, Math.floor(h * RT_SCALE)),
-      );
-      compositeProgram.uniforms.uScene.value = rt.texture;
-
-      marchProgram.uniforms.uResolution.value = [w * RT_SCALE, h * RT_SCALE];
+      sizeRT();
       compositeProgram.uniforms.uResolution.value = [w, h];
 
-      // aspect-relative: hole center lands at ~79% across the viewport, clear
-      // of the text column on any wide screen
+      // aspect-relative: hole center lands at ~79% across the viewport,
+      // clear of the text column on any wide screen
       center[0] = aspect > 1 ? aspect * 0.58 : 0;
       center[1] = aspect > 1 ? 0.04 : 1.05;
       marchProgram.uniforms.uCenter.value = center;
@@ -690,6 +774,7 @@ export default function GalaxyCanvas() {
     const onScroll = () => {
       scrollT = Math.min(1, window.scrollY / window.innerHeight);
     };
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
 
     // pause when off-screen
@@ -709,17 +794,81 @@ export default function GalaxyCanvas() {
       return t * t * (3 - 2 * t);
     };
 
+    // backgrounded tabs keep firing throttled rAFs — skip the GPU work there
+    let hidden = document.hidden;
+    const onVisibility = () => {
+      hidden = document.hidden;
+      if (!hidden) last = performance.now(); // no dt spike on resume
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
     let raf = 0;
     let last = performance.now();
     let elapsed = 0;
     let zoom = 0;
+    // uTime is a float32 uniform; left unbounded it slowly degrades the
+    // sin()-driven star twinkle and the per-frame grain hash in very long
+    // sessions. Wrap it at an exact multiple of the disk's rotation period
+    // (2π / omegaRef, mirroring the shader's omegaRef = 0.55·(R_ISCO/3.2)^1.5
+    // with R_ISCO = 2.2) so the mod-2π spin stays perfectly continuous across
+    // the wrap — only twinkle/grain phases reseed, which is imperceptible.
+    const TIME_WRAP = ((Math.PI * 2) / (0.55 * Math.pow(2.2 / 3.2, 1.5))) * 30; // ≈ 601 s
+
+    // ── adaptive quality governor state ──
+    // Driven by the RAW rAF cadence (every callback, before the 60fps cap),
+    // which is the device's true frame delivery rate: a healthy 144 Hz panel
+    // reads ~6.9 ms, a healthy 60 Hz one ~16.7, a GPU-bound machine reads its
+    // real render interval. The PROCESSED dt is useless here — the cap
+    // quantizes it to ~20.8 ms on 144 Hz panels, indistinguishable from
+    // genuine strain. Hysteresis + cooldown + a climb ban keep it from ever
+    // hunting between two tiers.
+    let frame = 0;
+    let prevRaf = performance.now();
+    let rawEma = 16.7;
+    let strain = 0;
+    let relief = 0;
+    let cooldown = 0;      // processed frames until the governor may act again
+    let bannedTier = -1;   // quality level that re-strained right after a climb
+    let lastClimb = -1e9;  // frame index of the most recent climb
+
     const update = (t: number) => {
       raf = requestAnimationFrame(update);
+      const raw = t - prevRaf;
+      prevRaf = t;
+      if (!visible || hidden) { last = t; return; }
+      // ignore resume gaps / background-throttled callbacks
+      if (raw > 0 && raw < 250) rawEma += (raw - rawEma) * 0.05;
       const dt = Math.min(t - last, 64);
+      // ~60fps cap: on 120/144 Hz displays rAF would otherwise run the whole
+      // pipeline 2–2.4× more often for motion the disk doesn't have. Skipping
+      // without touching `last` lets dt accumulate, so elapsed stays real-time.
+      if (dt < 15.5) return;
       last = t;
-      if (!visible) return;
       const dts = dt * 0.001;
-      elapsed += dts;
+      elapsed = (elapsed + dts) % TIME_WRAP;
+      frame++;
+
+      // ── governor: step the march resolution to what THIS machine sustains.
+      // Armed only after the intro settles (first frames are compile/upload
+      // jank on every machine and would trigger a false drop). Strain means
+      // the device genuinely delivers < ~43 fps; relief covers every healthy
+      // cadence down to 50 Hz panels so a transient drop can always recover.
+      if (cooldown > 0) cooldown--;
+      else if (frame > 240) {
+        if (rawEma > 23) { strain++; relief = 0; }
+        else if (rawEma < 20.5) { relief++; strain = 0; }
+        else if (strain > 0) strain--;   // dead zone: bleed off jitter spikes
+        if (strain > 90 && tier < RT_TIERS.length - 1) {
+          // re-straining shortly after climbing into this level — ban it so
+          // a machine straddling a tier boundary can't flicker forever
+          if (frame - lastClimb < 1800) bannedTier = tier;
+          tier++; strain = 0; relief = 0; cooldown = 600;
+          sizeRT();
+        } else if (relief > 600 && tier > 0 && tier - 1 !== bannedTier) {
+          tier--; relief = 0; lastClimb = frame; cooldown = 600;
+          sizeRT();
+        }
+      }
 
       if (introElapsed < INTRO_DUR) introElapsed += dts;
       const intro = easeOutQuint(Math.min(1, introElapsed / INTRO_DUR));
@@ -729,17 +878,30 @@ export default function GalaxyCanvas() {
       const diveTarget = smoothstep01(scrollT);
       zoom += (diveTarget - zoom) * 0.06;
 
-      marchProgram.uniforms.uTime.value = elapsed;
-      marchProgram.uniforms.uTilt.value = [mouse.x, mouse.y];
-      marchProgram.uniforms.uZoom.value = zoom;
-      marchProgram.uniforms.uIntro.value = intro;
+      // ── march cadence ──
+      // PASS 1 (the geodesic march) is ~90% of the GPU bill and the scene it
+      // draws changes slowly — disk spin ω≈0.31 rad/s, slow-eased tilt. At
+      // rest it renders every OTHER frame, while PASS 2's film grain keeps
+      // animating at full rate over it, which reads as fully continuous (the
+      // grain-over-24fps cinema trick). Anything interactive — intro reveal,
+      // scroll dive, active mouse easing — forces the march back to full rate.
+      const interacting =
+        intro < 1 ||
+        Math.abs(diveTarget - zoom) > 0.002 ||
+        Math.abs(target.x - mouse.x) + Math.abs(target.y - mouse.y) > 0.004;
+      if (interacting || marchDirty || frame % 2 === 0) {
+        marchProgram.uniforms.uTime.value = elapsed;
+        marchProgram.uniforms.uTilt.value = [mouse.x, mouse.y];
+        marchProgram.uniforms.uZoom.value = zoom;
+        marchProgram.uniforms.uIntro.value = intro;
+        // PASS 1: geodesic march → half-res target
+        renderer.render({ scene: marchMesh, camera, target: rt });
+        marchDirty = false;
+      }
 
       compositeProgram.uniforms.uTime.value = elapsed;
       compositeProgram.uniforms.uIntro.value = intro;
-
-      // PASS 1: geodesic march → half-res target
-      renderer.render({ scene: marchMesh, camera, target: rt });
-      // PASS 2: composite/upscale → screen
+      // PASS 2: composite/upscale → screen (every frame: grain/CA/vignette)
       renderer.render({ scene: compositeMesh, camera });
     };
     raf = requestAnimationFrame(update);
@@ -749,8 +911,15 @@ export default function GalaxyCanvas() {
       window.removeEventListener("scroll", onScroll);
       container.removeEventListener("mousemove", onMouseMove);
       io.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+      gl.canvas.removeEventListener("webglcontextlost", onContextLost);
       cancelAnimationFrame(raf);
       if (container.contains(gl.canvas)) container.removeChild(gl.canvas);
+      // deterministic GL teardown (the contextlost listener is already
+      // removed above, so this won't resurrect the CSS fallback): without it,
+      // strict-mode double-mount + HMR accumulate live contexts until the
+      // browser starts reaping the oldest ones
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, []);
 
