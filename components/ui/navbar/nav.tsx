@@ -67,16 +67,16 @@ export default function Navbar() {
         )}
       />
       <div className="h-full flex items-center justify-between mx-auto px-4 sm:px-6 relative">
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 sm:gap-6">
           <Link href="/">
             <div className="flex items-center">
               <Image src={logo} alt="Logo" width={32} height={32} />
-              <h1 className="text-2xl font-bold">eyfert</h1>
+              <h1 className="hidden text-2xl font-bold sm:block">eyfert</h1>
             </div>
           </Link>
 
           {/* Desktop Menu */}
-          <NavMenu className="hidden md:block" />
+          <NavMenu />
         </div>
 
         <div className="flex items-center gap-3">
@@ -88,7 +88,7 @@ export default function Navbar() {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden sm:inline-flex cursor-pointer"
+              className="inline-flex cursor-pointer"
             >
               <HugeiconsIcon icon={Github01Icon} className="w-5! h-5! " />
             </Button>

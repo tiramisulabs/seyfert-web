@@ -6,6 +6,7 @@ import { BenchTeaser } from "@/components/home/galaxy/bench-teaser";
 import { Accretion } from "@/components/home/galaxy/accretion";
 import Finale from "@/components/home/galaxy/finale";
 import { config } from "@/app.config";
+import type { RepoStats } from "@/lib/github";
 
 // Each arm reveals once as it enters the viewport — drifting in like matter
 // falling toward the core.
@@ -20,7 +21,7 @@ const Arm = ({ children, delay = 0 }: { children: React.ReactNode; delay?: numbe
     </motion.div>
 );
 
-export default function SpiralSections() {
+export default function SpiralSections({ stats }: { stats: RepoStats }) {
     return (
         <>
             <Arm><CodeShowcase /></Arm>
@@ -33,7 +34,7 @@ export default function SpiralSections() {
 
             <Arm delay={0.08}><Accretion /></Arm>
 
-            <Arm delay={0.08}><Finale repository={config.repository} /></Arm>
+            <Arm delay={0.08}><Finale repository={config.repository} stats={stats} /></Arm>
         </>
     );
 }

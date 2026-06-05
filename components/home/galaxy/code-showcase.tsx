@@ -1,4 +1,4 @@
-import { codeToHtml } from "shiki";
+import { highlight } from "@/lib/highlight";
 import { GeistMono } from "geist/font/mono";
 import { ArmLabel } from "./arm-label";
 import { CopyButton } from "./copy-button";
@@ -8,7 +8,10 @@ import { CopyButton } from "./copy-button";
 // Async server component: codeToHtml runs at build/request time, the copy
 // buttons are the section's only client islands.
 
-const CODE = `import { Declare, Options, Command, createStringOption, type CommandContext } from 'seyfert';
+const CODE = `import {
+  Declare, Options, Command, createStringOption,
+  type CommandContext,
+} from 'seyfert';
 
 const options = {
   message: createStringOption({
@@ -24,12 +27,13 @@ export default class EchoCommand extends Command {
     //          ^ ctx.options.message is inferred as string
     await ctx.write({ content: ctx.options.message });
   }
-}`;
+}
+// that's the whole file.`;
 
 const INSTALL = "npm i seyfert";
 
 export default async function CodeShowcase() {
-    const html = await codeToHtml(CODE, { lang: "ts", theme: "vesper" });
+    const html = await highlight(CODE);
 
     return (
         <section className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-x-16">
@@ -43,13 +47,15 @@ export default async function CodeShowcase() {
                 </h2>
 
                 <p className="max-w-[42ch] text-[15px] leading-relaxed text-[var(--text-dim)]">
-                    Decorators declare it. The registry uploads it. And{" "}
-                    <span className="text-[var(--text-bright)]">ctx.options</span> is
-                    inferred straight from your schema — no casts, no{" "}
+                    You write the command once. Decorators declare it, the
+                    registry uploads it, and{" "}
+                    <span className="text-[var(--text-bright)]">ctx.options</span>{" "}
+                    is read straight from your schema — so the type already knows
+                    what you asked for. No casts, no{" "}
                     <span className={`${GeistMono.className} text-[var(--text-bright)]`}>
                         getString()
                     </span>
-                    , the type already knows what you asked for.
+                    , nothing to babysit.
                 </p>
 
                 {/* install line — mono pill with inline copy */}

@@ -89,7 +89,7 @@ export function Accretion() {
                     <span className="text-[var(--brand-indigo)]">in orbit</span>
                 </h2>
                 <p className="max-w-md text-[15px] leading-relaxed text-[var(--text-dim)]">
-                    Real deployments locked to the core. Trace a body to read its log entry.
+                    Real bots, really shipped, all circling one core. Hover one to hear it from the team.
                 </p>
             </div>
 

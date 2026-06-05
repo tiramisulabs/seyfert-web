@@ -77,7 +77,9 @@ export function BenchTeaser() {
 
                 <div className={`${GeistMono.className} mt-3 flex items-center gap-3 text-[9px] tracking-[0.2em] text-[var(--text-dim)]/60`}>
                     <span className="text-[var(--brand-indigo)]">◆ THIS FRAMEWORK</span>
-                    <span>MEDIAN RSS OF 24 SAMPLED RUNS · SAME GATEWAY WORKLOAD · NODE</span>
+                    {/* "no smart fridges" — callback to the classic site's
+                         memory-management testimonial */}
+                    <span>MEDIAN RSS OF 24 SAMPLED RUNS · SAME GATEWAY WORKLOAD · NODE · NO SMART FRIDGES REQUIRED</span>
                     <Link href="/benchmark" className="underline-offset-2 hover:text-[var(--text-bright)] hover:underline">RAW DATA ↗</Link>
                 </div>
             </div>

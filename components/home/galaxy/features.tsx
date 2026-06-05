@@ -1,125 +1,130 @@
-import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { GeistMono } from "geist/font/mono";
+import { AtSign, Blocks, Braces, Package, TrendingUp, Zap, type LucideIcon } from "lucide-react";
 import { ArmLabel } from "./arm-label";
 
-// Capabilities, published as an index table — the way an observatory lists the
-// instruments on its dome. No cards, no icons: six numbered entries, hairline
-// ruled, that emphasise on hover rather than lift. Each row links to the guide
-// page that backs it. Pure CSS hover state, so this stays a server component;
-// the section's whileInView reveal lives in the parent.
+// Capabilities — the cell anatomy of the original site's grid (// F-0N
+// annotation, boxed icon, proof metric with a ✓, ghost number) wearing the
+// observatory skin: Geist semibold titles, brand-indigo accents, serious copy.
 
-type Capability = {
+type Feature = {
     title: string;
     description: string;
-    href: string;
+    icon: LucideIcon;
+    proof: string;
 };
 
-const CAPABILITIES: Capability[] = [
+const FEATURES: Feature[] = [
     {
-        title: "Options typed end to end",
+        title: "Typed end to end",
         description:
-            "createStringOption and friends feed CommandContext<typeof options>, so ctx.options infers every choice, autocomplete and value as the literal type you declared.",
-        href: "/guide/commands/options",
+            "Inference everywhere: command options, event payloads, interaction responses. Quitting `as any` is hard. We made it mandatory.",
+        icon: Braces,
+        proof: "0 'as any'",
     },
     {
-        title: "Component and modal collectors",
+        title: "Ready for the big leagues",
         description:
-            "message.createComponentCollector scopes interactions to one message with a filter, idle timeout and onStop refresh — and modals attach a handler via .run().",
-        href: "/guide/components/collectors",
+            "Proven from tiny side projects to multi-million-guild bots. Sharding, presence chunking and raw gateway access come in the box.",
+        icon: TrendingUp,
+        proof: "1M+ guilds",
     },
     {
-        title: "Gateway and HTTP from one config",
+        title: "Let the decorators work",
         description:
-            "config.bot runs a websocket Client while config.http serves interactions over a webhook — the same commands, components and i18n load behind either entry point.",
-        href: "/guide/getting-started/setup-project",
+            "@Declare, @Options, @AutoLoad. No boilerplate, no manual REST calls, no bookkeeping. The decorators clock in so you don't have to.",
+        icon: AtSign,
+        proof: "<60s setup",
     },
     {
-        title: "Sharding handled internally",
+        title: "Yours to rebuild",
         description:
-            "the Client shards for you by default; switch WorkerManager mode between 'threads' and 'cluster' to spread shards across CPU threads or processes without restructuring your project.",
-        href: "/guide/recipes/sharding",
+            "Custom cache, custom REST, custom client. Swap any piece the day you need it to behave differently. We won't take it personally.",
+        icon: Blocks,
+        proof: "100% hackable",
     },
     {
-        title: "Cache you control",
+        title: "Updates on day one",
         description:
-            "client.setServices disables resources individually or wholesale, filters what each resource stores, and swaps the MemoryAdapter for Redis or your own Adapter implementation.",
-        href: "/guide/recipes/cache",
+            "Threads, components v2, polls, interactions — there to use the same day Discord ships them, not a release later.",
+        icon: Zap,
+        proof: "Day-1 support",
     },
     {
-        title: "Components v2 built in",
+        // the classic site closed this grid with "And more... actually I got
+        // out of ideas" — this cell carries that torch
+        title: "And a whole ecosystem",
         description:
-            "Container, Section, MediaGallery, File and Separator builders compose Discord's v2 component layouts with the same typed, chainable API as buttons and modals.",
-        href: "/guide/components/v2",
+            "Official plugins: Redis cache, uWS gateway, cooldowns — drop in what fits, swap what doesn't. And honestly, we ran out of room here.",
+        icon: Package,
+        proof: "Redis · uWS · +",
     },
 ];
 
 export function FeaturesSectionWithHoverEffects() {
     return (
-        <section className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-x-16">
-            {/* left rail — the section's masthead, offset and sticky on desktop */}
-            <div className="flex flex-col gap-6 lg:col-span-4 lg:sticky lg:top-28 lg:self-start">
+        <section className="flex flex-col gap-10">
+            <div className="flex flex-col gap-4">
                 <ArmLabel index="01" name="Capabilities" />
-                <h2 className="text-4xl font-semibold leading-[1.05] tracking-[-0.02em] text-[var(--text-bright)]">
+                <h2 className="max-w-lg text-4xl font-semibold leading-[1.05] tracking-[-0.02em]">
                     Everything you need to{" "}
                     <span className="text-[var(--brand-indigo)]">ship</span>
                 </h2>
-                <p
-                    className={`${GeistMono.className} max-w-[22ch] text-[10px] uppercase leading-relaxed tracking-[0.2em] text-[var(--text-dim)]`}
-                >
-                    Six entries, logged.
-                </p>
             </div>
 
-            {/* right column — the index table */}
-            <div className="lg:col-span-8 lg:col-start-5">
-                <ol className="border-t border-white/8">
-                    {CAPABILITIES.map((cap, i) => (
-                        <IndexRow key={cap.title} index={i} {...cap} />
-                    ))}
-                </ol>
+            <div className="grid w-full grid-cols-1 gap-px bg-white/8 md:grid-cols-2 lg:grid-cols-3">
+                {FEATURES.map((feature, index) => (
+                    <FeatureCell key={feature.title} {...feature} index={index} />
+                ))}
             </div>
         </section>
     );
 }
 
-function IndexRow({
+const FeatureCell = ({
     title,
     description,
-    href,
+    icon: Icon,
+    proof,
     index,
-}: Capability & { index: number }) {
+}: Feature & { index: number }) => {
     const num = String(index + 1).padStart(2, "0");
-
     return (
-        <li className="group/row relative border-b border-white/8">
-            <Link
-                href={href}
-                className="grid grid-cols-[auto_1fr] items-baseline gap-x-6 py-7 sm:gap-x-10 sm:py-8"
-            >
-                {/* oversized ghosted index — brightens to indigo on hover */}
-                <span
-                    className={`${GeistMono.className} select-none text-3xl font-medium leading-none tabular-nums text-white/[0.06] transition-colors duration-300 group-hover/row:text-[var(--brand-indigo)]/50 sm:text-4xl`}
-                    aria-hidden
-                >
-                    {num}
+        <div
+            className={cn(
+                "group relative flex min-h-[240px] flex-col bg-[var(--space-void)] p-7",
+                "transition-colors duration-200 hover:bg-white/[0.02]"
+            )}
+        >
+            {/* top row: annotation + boxed icon */}
+            <div className="relative z-10 mb-6 flex items-center justify-between">
+                <span className={`${GeistMono.className} text-[10px] uppercase tracking-[0.25em] text-[var(--text-dim)]/70`}>
+                    {"// F-"}{num}
                 </span>
-
-                <div className="flex flex-col gap-2">
-                    <h3 className="text-lg font-semibold leading-tight tracking-[-0.01em] text-[var(--text-bright)] underline-offset-4 group-hover/row:underline sm:text-xl">
-                        {title}
-                    </h3>
-                    {/* description sits dim by default, lifts to full read on hover/focus */}
-                    <p className="max-w-md text-[15px] leading-relaxed text-[var(--text-dim)]/60 transition-colors duration-300 group-hover/row:text-[var(--text-dim)]">
-                        {description}
-                    </p>
+                <div className="flex h-10 w-10 items-center justify-center border border-white/10 text-[var(--text-dim)] transition-colors duration-200 group-hover:border-[var(--brand-indigo)]/60 group-hover:text-[var(--brand-indigo)]">
+                    <Icon className="size-[18px]" aria-hidden />
                 </div>
-            </Link>
+            </div>
 
-            {/* coordinate tick — a hairline mark that grows from the row's left edge */}
-            <span
-                className="pointer-events-none absolute left-0 top-0 h-px w-0 bg-[var(--brand-indigo)]/60 transition-all duration-300 group-hover/row:w-10"
-                aria-hidden
-            />
-        </li>
+            {/* title — observatory voice, not brutal caps */}
+            <h3 className="relative z-10 mb-3 text-xl font-semibold leading-tight tracking-[-0.01em] text-[var(--text-bright)]">
+                {title}
+            </h3>
+
+            <p className="relative z-10 mb-6 flex-1 text-[15px] leading-relaxed text-[var(--text-dim)]">
+                {description}
+            </p>
+
+            {/* proof footer */}
+            <div className="relative z-10 flex items-center gap-2.5 border-t border-white/8 pt-4">
+                <span className="inline-flex h-4 w-4 items-center justify-center border border-[var(--brand-indigo)]/50 text-[9px] font-bold text-[var(--brand-indigo)]">
+                    ✓
+                </span>
+                <span className={`${GeistMono.className} text-[10px] uppercase tracking-[0.2em] text-[var(--text-dim)]`}>
+                    {proof}
+                </span>
+            </div>
+
+        </div>
     );
-}
+};

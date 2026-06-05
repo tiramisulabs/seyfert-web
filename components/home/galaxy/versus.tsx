@@ -1,4 +1,4 @@
-import { codeToHtml } from "shiki";
+import { highlight } from "@/lib/highlight";
 import { GeistMono } from "geist/font/mono";
 import { ArmLabel } from "./arm-label";
 import { CopyButton } from "./copy-button";
@@ -27,7 +27,7 @@ export const data = new SlashCommandBuilder()
 
 // 2 · handle it — re-fetch the option by name, typed by faith
 export async function execute(i: ChatInputCommandInteraction) {
-  const name = i.options.getString('name', true);
+  const name = i.options.getString('name', true); // true = trust me
   await i.reply(\`Hello, \${name}!\`);
 }
 
@@ -53,18 +53,19 @@ const options = {
 @Options(options)
 export default class Greet extends Command {
   async run(ctx: CommandContext<typeof options>) {
-    // ctx.options.name is string — inferred, never cast
+    // ctx.options.name is string. the compiler did the paperwork.
     await ctx.write({ content: \`Hello, \${ctx.options.name}!\` });
   }
 }
+// registration script not found. you don't need one.
 `;
 
 export default async function Versus({ number = "0X" }: { number?: string }) {
     // Render both sides server-side. vesper is a warm-dark bundled shiki theme
     // that sits naturally on the page's deep-space surface.
     const [discordHtml, seyfertHtml] = await Promise.all([
-        codeToHtml(DISCORD_JS, { lang: "ts", theme: "vesper" }),
-        codeToHtml(SEYFERT, { lang: "ts", theme: "vesper" }),
+        highlight(DISCORD_JS),
+        highlight(SEYFERT),
     ]);
 
     return (
