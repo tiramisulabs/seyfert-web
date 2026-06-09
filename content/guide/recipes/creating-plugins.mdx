@@ -114,23 +114,36 @@ A few rules keep this predictable:
 
 ## Typing Your App
 
-For app-wide plugin typing, use `Register`.
+For app-wide plugin typing, define one plugin tuple and reuse it in `Register` and `Client`.
 
 ```ts title="src/index.ts"
-import { Client } from 'seyfert';
+import { Client, definePlugins } from 'seyfert';
 import { loggerPlugin } from './logger-plugin';
 
 const logger = loggerPlugin({ name: 'support-bot' });
+const plugins = definePlugins(logger);
 
 declare module 'seyfert' {
     interface Register {
-        plugins: [typeof logger];
+        plugins: typeof plugins;
     }
 }
 
 const client = new Client({
-    plugins: [logger],
+    plugins,
 });
+```
+
+`definePlugins(...)` keeps the exact plugin tuple type instead of widening it to a generic array. That makes `Register` easier to maintain when the same list is used by the client and the type system.
+
+You can pass plugins as rest arguments or as an existing array:
+
+```ts
+const logger = loggerPlugin();
+const storage = storagePlugin();
+
+const plugins = definePlugins(logger, storage);
+const samePlugins = definePlugins([logger, storage]);
 ```
 
 Now commands can see both the client helper and the context helper:
@@ -146,7 +159,7 @@ export default class ProfileCommand extends Command {
 }
 ```
 
-If a plugin imports another plugin, that helps the importing plugin internally. If your app code wants global types from both, include both plugin instances in `Register`.
+If a plugin imports another plugin, that helps the importing plugin internally. If your app code wants global types from both, include both plugin instances in the `definePlugins(...)` tuple used by `Register`.
 
 ## Lifecycle
 
