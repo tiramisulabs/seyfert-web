@@ -4,17 +4,30 @@ title: Ecosystem Packages
 
 The Seyfert ecosystem provides additional packages for common needs.
 
+If you want to build one of these packages yourself, start with [Creating Plugins](/guide/recipes/creating-plugins). That page covers the public `createPlugin(...)` contract for client helpers, context helpers, lifecycle work, and runtime registration.
+
 ## Official & Community Packages
 
-| Package | Purpose | Install |
-| --- | --- | --- |
-| `@slipher/cooldown` | Decorator-based command cooldowns | `pnpm add @slipher/cooldown` |
-| `@slipher/redis-adapter` | Redis cache adapter for distributed bots | `pnpm add @slipher/redis-adapter` |
-| `@slipher/generic-adapter` | HTTP server adapter for webhook-based bots | `pnpm add @slipher/generic-adapter` |
-| `yunaforseyfert` | Advanced prefix command parser | `pnpm add yunaforseyfert` |
-| `@slipher/webhooks` | Discord webhook event handling | `pnpm add @slipher/webhooks` |
-| `@slipher/watcher` | Hot-reload development tool | `pnpm add -D @slipher/watcher` |
-| `@slipher/proxy` | REST API proxy with uWebSockets.js | `pnpm add @slipher/proxy` |
+| Package | Type | Purpose | Install |
+| --- | --- | --- | --- |
+| `@slipher/logger` | Plugin | Request-aware logging helpers | `pnpm add @slipher/logger` |
+| `@slipher/queues` | Plugin | Queue registry exposed through Seyfert | `pnpm add @slipher/queues` |
+| `@slipher/scheduler` | Plugin | Scheduled jobs managed from Seyfert lifecycle | `pnpm add @slipher/scheduler` |
+| `@slipher/cooldown` | Plugin | Decorator-based command cooldowns | `pnpm add @slipher/cooldown` |
+| `@slipher/redis-adapter` | Adapter | Redis cache adapter for distributed bots | `pnpm add @slipher/redis-adapter` |
+| `@slipher/generic-adapter` | Adapter | HTTP server adapter for webhook-based bots | `pnpm add @slipher/generic-adapter` |
+| `yunaforseyfert` | Utility | Advanced prefix command parser | `pnpm add yunaforseyfert` |
+| `@slipher/webhooks` | Utility | Discord webhook event handling | `pnpm add @slipher/webhooks` |
+| `@slipher/watcher` | Utility | Hot-reload development tool | `pnpm add -D @slipher/watcher` |
+| `@slipher/proxy` | Adapter | REST API proxy with uWebSockets.js | `pnpm add @slipher/proxy` |
+
+## Plugins, Adapters, And Utilities
+
+A plugin is installed in `new Client({ plugins: [...] })` and is composed by Seyfert. It can add client helpers, context helpers, lifecycle work, commands, components, modals, events, middlewares, or option fragments.
+
+An adapter swaps infrastructure such as cache, REST, HTTP, gateway, or storage behavior. A plugin can use an adapter, but the adapter itself is not the plugin contract.
+
+A utility exports functions, classes, decorators, or helpers that users import manually. Utilities are still useful; they just do not need plugin lifecycle unless they are being composed by the client.
 
 ## Custom Decorator Factory
 

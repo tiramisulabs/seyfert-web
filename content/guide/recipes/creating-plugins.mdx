@@ -1,0 +1,281 @@
+---
+title: Creating Plugins
+---
+
+A Seyfert plugin is an object you pass to the client:
+
+```ts
+import { Client } from 'seyfert';
+import { loggerPlugin } from './logger-plugin';
+
+const logger = loggerPlugin();
+
+const client = new Client({
+    plugins: [logger],
+});
+```
+
+Use a plugin when your package needs to add behavior to the client, the interaction context, lifecycle, commands, components, modals, events, middlewares, or runtime options.
+
+If you only swap infrastructure like cache, REST, HTTP, or gateway behavior, you are probably writing an adapter. If users import a function and call it manually, you are probably writing a utility. Plugins can use adapters and utilities, but they are installed through `new Client({ plugins })`.
+
+## Minimal Plugin
+
+The smallest useful plugin exports `createPlugin(...)` and contributes something through `register(api)`:
+
+```ts title="src/ping-plugin.ts"
+import { createPlugin } from 'seyfert';
+import PingCommand from './commands/ping';
+
+export const pingPlugin = createPlugin({
+    name: 'ping-plugin',
+    register(api) {
+        api.commands.add(PingCommand);
+    },
+});
+```
+
+Then install it on the client:
+
+```ts title="src/index.ts"
+import { Client } from 'seyfert';
+import { pingPlugin } from './ping-plugin';
+
+const client = new Client({
+    plugins: [pingPlugin],
+});
+```
+
+That's the core loop: export a plugin object, put it in `plugins`, and let Seyfert compose it.
+
+## Client And Context Helpers
+
+Use `client` for app-wide resources and `ctx` for per-interaction helpers.
+
+This example is intentionally tiny. Real logging packages can care about transports, formatting, and levels later; the plugin shape comes first.
+
+```ts title="src/logger-plugin.ts"
+import { createPlugin } from 'seyfert';
+
+export interface LoggerPluginOptions {
+    name?: string;
+}
+
+class SimpleLogger {
+    constructor(
+        private readonly name = 'bot',
+        private readonly fields: Record<string, string> = {},
+    ) {}
+
+    child(fields: Record<string, string>) {
+        return new SimpleLogger(this.name, { ...this.fields, ...fields });
+    }
+
+    info(message: string) {
+        console.info(`[${this.name}]`, this.fields, message);
+    }
+
+    flush() {
+        return Promise.resolve();
+    }
+}
+
+export function loggerPlugin(options: LoggerPluginOptions = {}) {
+    const root = new SimpleLogger(options.name);
+
+    return createPlugin({
+        name: 'example-logger',
+        client: {
+            exampleLogger: () => root,
+        },
+        ctx: {
+            logger: (interaction) =>
+                root.child({
+                    interactionId: interaction.id,
+                }),
+        },
+        setup(client) {
+            client.exampleLogger.info('logger plugin ready');
+        },
+        teardown(client) {
+            return client.exampleLogger.flush();
+        },
+    });
+}
+```
+
+A few rules keep this predictable:
+
+- `client` factories are synchronous and run before `setup`.
+- `ctx` factories are synchronous and run when Seyfert builds an interaction context.
+- Async startup belongs in `setup(client)`.
+- Cleanup belongs in `teardown(client)`.
+- Declare typed client keys in `client`, not by assigning new properties inside `setup`.
+
+## Typing Your App
+
+For app-wide plugin typing, use `Register`.
+
+```ts title="src/index.ts"
+import { Client } from 'seyfert';
+import { loggerPlugin } from './logger-plugin';
+
+const logger = loggerPlugin({ name: 'support-bot' });
+
+declare module 'seyfert' {
+    interface Register {
+        plugins: [typeof logger];
+    }
+}
+
+const client = new Client({
+    plugins: [logger],
+});
+```
+
+Now commands can see both the client helper and the context helper:
+
+```ts title="src/commands/profile.ts"
+import { Command, type CommandContext } from 'seyfert';
+
+export default class ProfileCommand extends Command {
+    async run(ctx: CommandContext) {
+        ctx.logger.info('profile opened');
+        ctx.client.exampleLogger.info('root logger is available');
+    }
+}
+```
+
+If a plugin imports another plugin, that helps the importing plugin internally. If your app code wants global types from both, include both plugin instances in `Register`.
+
+## Lifecycle
+
+`register(api)` is synchronous and declarative. Use it to tell Seyfert what the plugin contributes.
+
+`setup(client)` runs during `client.start()` after plugin client properties exist. It is the right place to open connections, start queues, warm caches, or schedule work.
+
+`teardown(client)` runs through `client.close()` in reverse plugin order. It should flush, close, or restore whatever the plugin started.
+
+Plugin commands are applied after disk-loaded commands, then Seyfert emits `commandsLoaded`. Plugin components and modals are applied after disk-loaded components, then Seyfert emits `componentsLoaded`.
+
+## Registering Behavior
+
+`register(api)` can add commands, components, modals, events, middlewares, and option fragments:
+
+```ts title="src/audit-plugin.ts"
+import { createPlugin } from 'seyfert';
+import HealthCommand from './commands/health';
+import RefreshButton from './components/refresh-button';
+import ProfileModal from './modals/profile-modal';
+import { auditEvent } from './audit-event';
+import { auditMiddleware } from './middlewares/audit';
+
+export const auditPlugin = createPlugin({
+    name: 'audit-plugin',
+    register(api) {
+        api.commands.add(HealthCommand);
+        api.components.add(RefreshButton);
+        api.modals.add(ProfileModal);
+        api.middlewares.add('audit', auditMiddleware, { global: true });
+
+        api.events.on('commandsLoaded', (commands, client) => {
+            client.logger.info(`${commands.length} commands loaded`);
+        });
+
+        api.events.onAny((name) => {
+            auditEvent(name);
+        });
+
+        api.options.set({
+            allowedMentions: { parse: [] },
+        });
+    },
+});
+```
+
+Conflicts are errors, not silent overwrites:
+
+- duplicate command names fail
+- duplicate static component or modal custom IDs fail
+- duplicate `client` keys fail
+- duplicate `ctx` keys fail
+- different plugin instances with the same `name` fail
+- multiple event listeners are allowed
+
+Subcommands are not registered as top-level plugin commands.
+
+## Imports And Ordering
+
+Use `imports` when a plugin brings another plugin with it.
+
+```ts title="src/economy-plugin.ts"
+import { createPlugin } from 'seyfert';
+import { storagePlugin } from './storage-plugin';
+import { EconomyService } from './economy-service';
+
+const storage = storagePlugin();
+
+export const economyPlugin = createPlugin({
+    name: 'economy',
+    imports: [storage],
+    client: {
+        economy: (client) => new EconomyService(client),
+    },
+});
+```
+
+Imported plugins resolve before the plugin that imports them. The same plugin instance is deduped. Different instances with the same `name` are treated as conflicts.
+
+There is no shipped `dependsOn`, priority, or `PluginEnforce` API yet, so don't build your public package around those names.
+
+## Diagnostics
+
+Seyfert exposes the resolved plugin state on `client.plugins`.
+
+```ts
+client.logger.info(client.plugins.resolved);
+client.logger.info(client.plugins.diagnostics);
+```
+
+Diagnostics include the resolved order, imports, client keys, context keys, contribution counts, events, and middlewares. When a plugin fails, errors are attributed to the plugin name and phase, which is much easier to debug than a random stack trace from inside your package.
+
+## Package Metadata
+
+For third-party packages, keep `seyfert` as a peer dependency. That avoids installing a second copy of Seyfert beside the user's app.
+
+```json title="package.json"
+{
+    "name": "seyfert-plugin-example",
+    "type": "module",
+    "exports": {
+        ".": {
+            "types": "./lib/index.d.ts",
+            "import": "./lib/index.js",
+            "require": "./lib/index.js",
+            "default": "./lib/index.js"
+        },
+        "./package.json": "./package.json"
+    },
+    "peerDependencies": {
+        "seyfert": ">=5.0.0-0"
+    },
+    "devDependencies": {
+        "seyfert": ">=5.0.0-0",
+        "typescript": "^5.9.3"
+    }
+}
+```
+
+Export the plugin factory from your package root, and keep public examples on root imports from `seyfert`. Avoid `seyfert/lib/...` imports in docs for users.
+
+## When Not To Make A Plugin
+
+Make the category obvious before you publish:
+
+| Category | Use it for |
+| --- | --- |
+| `SeyfertPlugin` | Client helpers, context helpers, lifecycle work, runtime registration, or composed behavior installed through `plugins` |
+| Adapter | Cache, HTTP, REST, gateway, storage, or other infrastructure replacement |
+| Utility | Functions, classes, decorators, or helpers that users import and call manually |
+
+Real packages such as `@slipher/logger`, `@slipher/queues`, `@slipher/scheduler`, and `@slipher/cooldown` can be more complete than this guide example. Start small here, then grow the package only where the package actually needs it.
