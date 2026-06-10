@@ -72,13 +72,13 @@ A plugin can use adapters and utilities internally. They do not become plugins u
 
 ## Real Packages
 
-These packages are useful references for different plugin shapes:
+These packages are practical modern `createPlugin(...)` examples. They are more complete than the guide's introductory sample.
 
 | Package | What to study |
 | --- | --- |
 | `@slipher/cooldown` | `createPlugin`, `client` and `ctx` helpers, command metadata, option fragments, decorators, and cache-backed behavior |
 | `@slipher/scheduler` | lifecycle setup and teardown, `client.scheduler`, `ctx.scheduler`, decorators, driver abstraction, and optional persistent backends |
-| `@slipher/logger` | legacy structural plugin shape, context logging, command/component/modal defaults, and setup-time logger installation |
-| `@slipher/queues` | legacy structural plugin shape, registry-style APIs, queue decorators, processors, producers, event hooks, and optional BullMQ backing |
+| `@slipher/logger` | context logger lifecycle, command/component/modal defaults, and setup-time logger installation |
+| `@slipher/queues` | shared registry exposed on client and context, queue decorators, processors, producers, event hooks, and optional BullMQ backing |
 
-Use `@slipher/cooldown` and `@slipher/scheduler` as the current `createPlugin(...)` references. `@slipher/logger` and `@slipher/queues` are still useful for package behavior patterns, but their inspected implementations use the older structural plugin style.
+The guide uses a smaller logger as the first walkthrough because these packages carry more production behavior than a beginner example needs.
