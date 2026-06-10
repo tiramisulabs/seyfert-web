@@ -78,5 +78,7 @@ These packages are useful references for different plugin shapes:
 | --- | --- |
 | `@slipher/cooldown` | `createPlugin`, `client` and `ctx` helpers, command metadata, option fragments, decorators, and cache-backed behavior |
 | `@slipher/scheduler` | lifecycle setup and teardown, `client.scheduler`, `ctx.scheduler`, decorators, driver abstraction, and optional persistent backends |
-| `@slipher/logger` | context logging, command/component/modal defaults, and setup-time logger installation |
-| `@slipher/queues` | registry-style APIs, queue decorators, processors, producers, event hooks, and optional BullMQ backing |
+| `@slipher/logger` | legacy structural plugin shape, context logging, command/component/modal defaults, and setup-time logger installation |
+| `@slipher/queues` | legacy structural plugin shape, registry-style APIs, queue decorators, processors, producers, event hooks, and optional BullMQ backing |
+
+Use `@slipher/cooldown` and `@slipher/scheduler` as the current `createPlugin(...)` references. `@slipher/logger` and `@slipher/queues` are still useful for package behavior patterns, but their inspected implementations use the older structural plugin style.

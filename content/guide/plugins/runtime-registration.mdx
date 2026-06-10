@@ -76,7 +76,7 @@ register(api) {
 
 Plugin listeners are additive. Multiple plugins can observe the same event, and a listener failure is wrapped with the plugin name and phase without skipping the other listeners.
 
-Plugins can emit custom events with `api.events.emit(...)`. Gateway event names cannot be emitted from plugins.
+Plugins can emit custom events with `api.events.emit(...)` after the client event runner exists, such as from a plugin listener or runtime callback. Do not call `emit(...)` immediately during `register(api)`, because registration runs before events are bound. Gateway event names cannot be emitted from plugins.
 
 ## Loaded Metadata
 
@@ -124,4 +124,4 @@ register(api) {
 }
 ```
 
-Plugin option fragments are composed before final user options. The app can still override its own final configuration.
+Plugin option fragments are composed before final user options. Plain option values can still be overridden by app configuration through normal option merging. Command, component, and modal default hooks are composed, so plugin hooks and app hooks both run instead of one replacing the other.

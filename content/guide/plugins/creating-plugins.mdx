@@ -128,7 +128,7 @@ export default class ProfileCommand extends Command {
 
 ## Package Metadata
 
-Third-party plugin packages should keep `seyfert` as a peer dependency. That avoids installing a second copy beside the app.
+Third-party plugin packages should keep `seyfert` as a peer dependency. That avoids installing a second copy beside the app. Use the Seyfert release line your plugin targets; packages written against this v5 plugin contract should target the v5 range.
 
 ```json title="package.json"
 {

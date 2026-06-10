@@ -9,25 +9,32 @@ Plugin lifecycle has three different jobs:
 - `teardown(client)` cleans those resources through `client.close()`.
 
 ```ts
-export const schedulerPlugin = createPlugin({
-    name: 'scheduler',
-    client: {
-        scheduler: () => new SchedulerRegistry(),
-    },
-    setup(client) {
-        return client.scheduler.start();
-    },
-    teardown(client) {
-        return client.scheduler.stop();
-    },
-});
+export function schedulerPlugin(options: SchedulerOptions) {
+    const registry = new SchedulerRegistry(options);
+
+    return createPlugin({
+        name: 'scheduler',
+        client: {
+            scheduler: () => registry,
+        },
+        ctx: {
+            scheduler: () => registry,
+        },
+        setup(client) {
+            return client.scheduler.setup(client);
+        },
+        teardown(client) {
+            return client.scheduler.close();
+        },
+    });
+}
 ```
 
 ## Startup Order
 
 During client construction, Seyfert resolves plugins, validates static keys and requirements, runs `register(api)`, merges plugin option fragments, and binds client/context/service registries.
 
-During `client.start()`:
+During the plugin-loading part of `client.start()`:
 
 1. plugin setup runs
 2. cache adapter starts
@@ -38,6 +45,8 @@ During `client.start()`:
 7. disk components load
 8. plugin components and modals apply
 9. `componentsLoaded` emits
+
+For `Client`, disk event files load after this sequence, before gateway execution.
 
 `setup` can use client helpers declared by its own plugin and imported plugins.
 
