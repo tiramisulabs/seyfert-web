@@ -5,6 +5,7 @@
         "commands",
         "i18n",
         "components",
+        "plugins",
         "recipes",
         "tips",
         "api"

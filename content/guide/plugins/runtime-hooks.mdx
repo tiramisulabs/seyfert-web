@@ -1,0 +1,91 @@
+---
+title: Runtime Hooks
+---
+
+Plugins can hook specific runtime paths. Use these only when your package needs framework-level behavior.
+
+## Autocomplete
+
+`api.autocomplete.wrap(...)` wraps command option autocomplete execution.
+
+```ts
+import { createPlugin } from 'seyfert';
+import { metrics } from './metrics';
+
+export const metricsPlugin = createPlugin({
+    name: 'autocomplete-metrics',
+    register(api) {
+        api.autocomplete.wrap(async ({ command, interaction, optionsResolver }, next) => {
+            const startedAt = Date.now();
+
+            try {
+                await next();
+            } finally {
+                metrics.recordAutocomplete({
+                    command: command?.name,
+                    fullCommandName: optionsResolver.fullCommandName,
+                    interactionId: interaction.id,
+                    duration: Date.now() - startedAt,
+                });
+            }
+        });
+    },
+});
+```
+
+Wrappers compose around the original autocomplete handler. Call `next()` when the original autocomplete logic should continue.
+
+## Gateway Intents
+
+Plugins can contribute gateway intents.
+
+```ts
+register(api) {
+    api.gateway.addIntents('Guilds');
+}
+```
+
+Intent names are resolved from `GatewayIntentBits`. Numeric values are also accepted.
+
+## Gateway Payload Wrappers
+
+`api.gateway.wrapPayload(...)` runs before gateway send payloads leave the client.
+
+```ts
+register(api) {
+    api.gateway.wrapPayload(({ payload, shardId }) => {
+        if (shouldDropHeartbeat(payload, shardId)) return null;
+
+        return {
+            ...payload,
+            d: patchPayload(payload.d),
+        };
+    });
+}
+```
+
+Return behavior:
+
+- return a payload to replace the current payload
+- return `undefined` to keep the current payload
+- return `null` to consume the payload and stop sending it
+
+This is a low-level hook. Prefer normal events or services unless your package specifically needs to modify gateway send behavior.
+
+## Upload Commands Metadata
+
+Plugins can observe command uploads through the custom `uploadCommands` event.
+
+```ts
+register(api) {
+    api.events.on('uploadCommands', (metadata) => {
+        metadata.applicationId;
+        metadata.commands;
+        metadata.scope; // "global" or "guild"
+        metadata.status; // "uploaded" or "skipped"
+        metadata.reason; // "cache-hit", "cache-miss", or "forced"
+    });
+}
+```
+
+This is useful for metrics, audit logs, or deployment tooling.

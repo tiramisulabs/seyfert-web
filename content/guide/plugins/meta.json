@@ -1,0 +1,11 @@
+{
+    "title": "Plugins",
+    "pages": [
+        "index",
+        "creating-plugins",
+        "runtime-registration",
+        "services-and-requirements",
+        "runtime-hooks",
+        "lifecycle-and-diagnostics"
+    ]
+}

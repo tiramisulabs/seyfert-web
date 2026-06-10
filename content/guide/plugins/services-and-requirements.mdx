@@ -1,0 +1,99 @@
+---
+title: Services and Requirements
+---
+
+Use services when plugins need to share runtime objects without adding another `client.*` property.
+
+```ts
+import { createPlugin, createServiceKey } from 'seyfert';
+
+class LedgerService {
+    readBalance(userId: string) {
+        return 100;
+    }
+}
+
+export const ledgerKey = createServiceKey<LedgerService>('ledger');
+
+export const ledgerPlugin = createPlugin({
+    name: 'ledger',
+    register(api) {
+        api.services.set(ledgerKey, () => new LedgerService());
+    },
+});
+```
+
+Services resolve lazily:
+
+```ts
+const ledger = client.services.get(ledgerKey);
+const requiredLedger = client.services.require(ledgerKey);
+```
+
+`get(...)` returns `undefined` when a service is missing. `require(...)` throws when it is missing.
+
+## Typed Service Names
+
+For app-wide service names, augment `RegisteredPluginServices`.
+
+```ts
+import type { RegisteredPluginServices } from 'seyfert';
+
+declare module 'seyfert' {
+    interface RegisteredPluginServices {
+        ledger: LedgerService;
+    }
+}
+```
+
+Now string-based service access is typed too:
+
+```ts
+client.services.get('ledger');
+client.services.require('ledger');
+```
+
+Service names are claimed once. If two plugins register the same service name, Seyfert throws an attributed conflict.
+
+## Requirements
+
+Use `imports` when your plugin brings another plugin with it. Use `requires` when your plugin expects another plugin to be present.
+
+```ts
+const storage = storagePlugin();
+
+export const economy = createPlugin({
+    name: 'economy',
+    imports: [storage],
+    requires: ['plugin:storage', { req: 'plugin:redis', optional: true }],
+    register(api) {
+        if (api.has('plugin:redis')) {
+            api.diagnostics.warn('Redis support enabled.', { code: 'redis-enabled' });
+        }
+    },
+});
+```
+
+Rules:
+
+- `imports` affects ordering and dedupes the same plugin instance.
+- `requires` validates that a requirement is present.
+- required missing requirements throw during plugin resolution.
+- optional missing requirements create diagnostics warnings.
+- the supported requirement shape is currently `plugin:<name>`.
+
+`requires` is not a priority system. If your plugin must run after another plugin and you own that relationship, put the dependency in `imports`.
+
+## Diagnostics Warnings
+
+Use `api.diagnostics.warn(...)` for degraded but usable states.
+
+```ts
+register(api) {
+    api.diagnostics.warn('Optional package "redis" was not found.', {
+        code: 'missing-optional-peer',
+    });
+}
+```
+
+Warnings appear in `client.plugins.diagnostics` with plugin name, index, phase, code, and message.

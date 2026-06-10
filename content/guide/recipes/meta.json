@@ -7,7 +7,6 @@
         "cache",
         "database",
         "logger",
-        "creating-plugins",
         "cooldown",
         "custom-events",
         "presence",

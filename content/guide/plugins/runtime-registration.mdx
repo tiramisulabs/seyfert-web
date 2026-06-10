@@ -1,0 +1,127 @@
+---
+title: Runtime Registration
+---
+
+`register(api)` is synchronous. It declares what the plugin contributes to Seyfert.
+
+```ts
+import { createPlugin } from 'seyfert';
+import HealthCommand from './commands/health';
+import RefreshButton from './components/refresh-button';
+import ProfileModal from './modals/profile-modal';
+import { auditService } from './audit-service';
+import { auditMiddleware } from './middlewares/audit';
+
+export const auditPlugin = createPlugin({
+    name: 'audit-plugin',
+    client: {
+        audit: () => auditService,
+    },
+    register(api) {
+        api.commands.add(HealthCommand);
+        api.components.add(RefreshButton);
+        api.modals.add(ProfileModal);
+        api.middlewares.add('audit', auditMiddleware, { global: true });
+
+        api.events.on('commandsLoaded', (metadata) => {
+            auditService.recordCommandsLoaded(metadata);
+        });
+
+        api.options.set({
+            allowedMentions: { parse: [] },
+        });
+    },
+});
+```
+
+Do not return a promise from `register(api)`. Open connections in `setup`, not in `register`.
+
+## Commands, Components, and Modals
+
+Plugin commands load after disk commands. Plugin components and modals load after disk components.
+
+```ts
+register(api) {
+    api.commands.add(HealthCommand);
+    api.components.add(RefreshButton);
+    api.modals.add(ProfileModal);
+}
+```
+
+Conflicts are attributed errors:
+
+- duplicate command names fail
+- duplicate static component or modal custom IDs fail
+- subcommands are not top-level plugin commands
+
+## Events
+
+Plugins can listen to client, gateway, and custom events.
+
+```ts
+register(api) {
+    api.events.on('botReady', (user, client) => {
+        client.logger.info(`${user.username} is online`);
+    });
+
+    api.events.once('commandsLoaded', (metadata) => {
+        auditService.recordCommandSources(metadata.plugin.sources);
+    });
+
+    api.events.onAny((name) => {
+        auditService.recordEvent(name);
+    });
+}
+```
+
+Plugin listeners are additive. Multiple plugins can observe the same event, and a listener failure is wrapped with the plugin name and phase without skipping the other listeners.
+
+Plugins can emit custom events with `api.events.emit(...)`. Gateway event names cannot be emitted from plugins.
+
+## Loaded Metadata
+
+`commandsLoaded` and `componentsLoaded` receive metadata, not a raw array.
+
+```ts
+api.events.on('commandsLoaded', (metadata) => {
+    metadata.kind; // "commands"
+    metadata.total; // all loaded commands
+    metadata.items; // loaded command objects
+    metadata.plugin.total; // plugin-contributed commands
+    metadata.plugin.sources; // count by plugin name
+});
+```
+
+The same shape is used for components with `kind: "components"`.
+
+## Middlewares
+
+`api.middlewares.add(...)` registers a named middleware. `{ global: true }` also contributes the middleware name to `globalMiddlewares`.
+
+```ts
+register(api) {
+    api.middlewares.add('audit', auditMiddleware, { global: true });
+}
+```
+
+Duplicate middleware names fail.
+
+## Option Fragments
+
+`api.options.set(...)` contributes partial client options.
+
+```ts
+register(api) {
+    api.options.set({
+        commands: {
+            defaults: {
+                onRunError(ctx, error) {
+                    ctx.client.logger.error(error);
+                },
+            },
+        },
+    });
+}
+```
+
+Plugin option fragments are composed before final user options. The app can still override its own final configuration.
