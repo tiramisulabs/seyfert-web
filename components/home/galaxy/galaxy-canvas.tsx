@@ -60,7 +60,8 @@ import { Renderer, Camera, Program, Mesh, Triangle, RenderTarget } from "ogl";
 // hard crossings — so the disk has glow/body, not a paper-thin sheet.
 //
 // ── PERFORMANCE ──────────────────────────────────────────────────────────────
-// Pass 1 (expensive): raymarch into a HALF-RESOLUTION RenderTarget.
+// Pass 1 (expensive): raymarch into a HALF-RESOLUTION RenderTarget
+// (tiers 0.6 → 0.42 by the adaptive governor).
 // Pass 2 (cheap, full-res): upscale with linear filtering + ACES tonemap +
 // chromatic aberration + film grain, so grain/CA stay crisp at native res while
 // the costly geodesics run at quarter the pixels.
@@ -70,7 +71,7 @@ import { Renderer, Camera, Program, Mesh, Triangle, RenderTarget } from "ogl";
 // luminance so empty sky is transparent and the CSS fallback shows through —
 // ONLY the event-horizon shadow is opaque black. Uniforms/behaviors preserved:
 // uTime, uResolution, uCenter, uZoom (eased scroll dive), uScale, uTilt (mouse
-// parallax), uIntro (2.5s reveal). prefers-reduced-motion / no-WebGL2 bail.
+// parallax), uIntro (0.9s reveal). prefers-reduced-motion / no-WebGL2 bail.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const vertex = /* glsl */ `
@@ -305,19 +306,21 @@ const marchFrag = /* glsl */ `
     vec2 ndc = (vUv * 2.0 - 1.0);
     ndc.x *= aspect;
 
-    // intro framing nudge (start ~5% wider, settle)
-    float introZoomOut = (1.0 - uIntro) * 0.05;
+    // NO intro framing nudge: the static fallback photo is captured at the
+    // settled framing, and any boot-time zoom drift against it reads as a pop
 
     // scroll dive pulls the camera in
     float dive = uZoom;
-    float zoom = (1.0 - dive * 0.22 + introZoomOut) * uScale;
+    float zoom = (1.0 - dive * 0.30) * uScale;
 
     // screen-space hole offset (same NDC convention as before)
     vec2 sc = (ndc - uCenter) / zoom;
     // camera roll: rotate the image plane around the hole so the accretion
-    // band crosses the frame diagonally (the promotional-shot composition)
-    sc = vec2(sc.x * cos(ROLL) - sc.y * sin(ROLL),
-              sc.x * sin(ROLL) + sc.y * cos(ROLL));
+    // band crosses the frame diagonally (the promotional-shot composition).
+    // The dive adds a slow extra twist — falling, not just zooming.
+    float roll = ROLL + dive * 0.18;
+    sc = vec2(sc.x * cos(roll) - sc.y * sin(roll),
+              sc.x * sin(roll) + sc.y * cos(roll));
 
     // sky window: stars/milky band live AROUND the hole only — they fade to
     // nothing toward the text column so the left half of the hero stays clean.
@@ -329,8 +332,11 @@ const marchFrag = /* glsl */ `
     // base azimuth flips the doppler-bright (approaching) limb toward the
     // visible left side of the shadow
     float orbit = 3.14159265 + uTilt.x * 1.1;            // azimuth parallax
-    float elev  = CAM_ELEV + uTilt.y * 0.45 + dive * 0.05; // higher when diving
-    float dist  = CAM_DIST * (1.0 - dive * 0.18);        // dive shortens distance
+    // the dive is a real camera move, not a zoom: the orbit RISES (the disk
+    // opens from edge-on band into a visible annulus) while the distance
+    // closes to just above the outer rim (9.5 → ~6.2 rs)
+    float elev  = CAM_ELEV + uTilt.y * 0.45 + dive * 0.30;
+    float dist  = CAM_DIST * (1.0 - dive * 0.35);
 
     vec3 camPos = vec3(
       cos(orbit) * cos(elev),
@@ -516,6 +522,8 @@ const compositeFrag = /* glsl */ `
   varying vec2 vUv;
 
   uniform sampler2D uScene;     // half-res march result (premultiplied)
+  uniform sampler2D uBloom;     // blurred bright-pass (straight color, tiny RT)
+  uniform float uBloomGain;
   uniform vec2  uResolution;    // full-res
   uniform float uTime;
   uniform float uIntro;
@@ -561,6 +569,12 @@ const compositeFrag = /* glsl */ `
     vec3 cb = straight(texture2D(uScene, uv - rdir * split));
     vec3 col = vec3(cr.r, base.g, cb.b);
 
+    // ── bloom ──
+    // blurred bright-pass added BEFORE the tonemap so the halo rolls through
+    // the same filmic shoulder as the disk: the doppler limb and photon ring
+    // RADIATE over the shadow and the sky instead of ending in a hard cut.
+    col += texture2D(uBloom, uv).rgb * uBloomGain;
+
     // ── exposure + ACES filmic ──
     col *= 1.08;
     col = acesFilmic(col);
@@ -599,10 +613,49 @@ const compositeFrag = /* glsl */ `
     // The event-horizon shadow arrives as alpha≈1 with ~black rgb from pass 1;
     // preserve its opacity. Everything else: alpha follows scene luminance so
     // empty sky stays transparent over the DOM.
-    float isShadow = step(0.999, c0.a) * step(sceneLum, 0.02);
+    // captured rays stay opaque regardless of luminance: bloom spilling over
+    // the horizon must ADD light on black, not punch a translucent hole that
+    // lets the page background bleed through the shadow.
+    float isShadow = step(0.999, c0.a);
     float a = clamp(sceneLum * 1.15, 0.0, 1.0);
     a = max(a, isShadow * uIntro);
     gl_FragColor = vec4(col * a, a);
+  }
+`;
+
+// ── BLOOM CHAIN: bright-pass + separable gaussian (tiny RTs, ~free) ──────────
+const brightFrag = /* glsl */ `
+  precision highp float;
+  varying vec2 vUv;
+  uniform sampler2D uScene;   // premultiplied march target
+
+  void main() {
+    vec4 c = texture2D(uScene, vUv);
+    vec3 col = c.rgb / max(c.a, 1e-4);
+    float l = max(col.r, max(col.g, col.b));
+    // soft knee: the doppler limb, photon ring and brightest stars pass;
+    // the dim copper floor and the milky band barely register
+    float w = smoothstep(0.55, 1.0, l);
+    gl_FragColor = vec4(col * w, 1.0);
+  }
+`;
+
+// linear-sampled 9-tap gaussian (5 fetches), run twice per axis
+const blurFrag = /* glsl */ `
+  precision highp float;
+  varying vec2 vUv;
+  uniform sampler2D uScene;
+  uniform vec2 uDir;          // (texel.x, 0) or (0, texel.y)
+
+  void main() {
+    vec2 off1 = uDir * 1.3846153846;
+    vec2 off2 = uDir * 3.2307692308;
+    vec3 acc = texture2D(uScene, vUv).rgb * 0.2270270270;
+    acc += texture2D(uScene, vUv + off1).rgb * 0.3162162162;
+    acc += texture2D(uScene, vUv - off1).rgb * 0.3162162162;
+    acc += texture2D(uScene, vUv + off2).rgb * 0.0702702703;
+    acc += texture2D(uScene, vUv - off2).rgb * 0.0702702703;
+    gl_FragColor = vec4(acc, 1.0);
   }
 `;
 
@@ -648,6 +701,7 @@ export default function GalaxyCanvas() {
     // otherwise leave a dead black rectangle — bring the astrophoto back.
     const onContextLost = (e: Event) => {
       e.preventDefault();
+      container.style.opacity = "0"; // dead canvas must not sit over the photo
       if (fallback) fallback.style.opacity = "1";
     };
     gl.canvas.addEventListener("webglcontextlost", onContextLost);
@@ -659,6 +713,14 @@ export default function GalaxyCanvas() {
     // The scale is tiered: everyone starts at the full look, and the adaptive
     // governor in the render loop steps down only on machines that
     // demonstrably can't hold frame budget (then climbs back when they can).
+    // Tier 0 (0.6) IS the look — the soft half-res rendering under crisp
+    // full-res grain is the intended astrophoto texture, and it keeps the
+    // GPU bill modest. (A 0.9 "razor-sharp" baseline was tried and rejected:
+    // too much for this page.) The scale NEVER changes upward mid-view; the
+    // governor only steps down on machines that can't hold frame budget.
+    // NOTE: the fallback photos in public/ are captured at this exact tier-0
+    // look — re-raising the baseline requires recapturing them (?bhfreeze=0)
+    // or the photo→live handoff pops.
     const RT_TIERS = [0.6, 0.5, 0.42];
     let tier = 0;
     // forces the next frame to render the march pass regardless of cadence —
@@ -687,10 +749,43 @@ export default function GalaxyCanvas() {
         uZoom: { value: 0 },
         uScale: { value: 1 },
         uTilt: { value: [0, 0] },
-        uIntro: { value: 0 },
+        uIntro: { value: 1 }, // no reveal ramp — the fallback photo IS frame 0
       },
     });
     const marchMesh = new Mesh(gl, { geometry, program: marchProgram });
+
+    // ── bloom ping-pong pair (1/8 res, sized in sizeRT) ──
+    const mkBloomRT = () =>
+      new RenderTarget(gl, {
+        width: 2,
+        height: 2,
+        depth: false,
+        minFilter: gl.LINEAR,
+        magFilter: gl.LINEAR,
+      });
+    const bloomA = mkBloomRT();
+    const bloomB = mkBloomRT();
+
+    const brightProgram = new Program(gl, {
+      vertex,
+      fragment: brightFrag,
+      depthTest: false,
+      depthWrite: false,
+      uniforms: { uScene: { value: rt.texture } },
+    });
+    const brightMesh = new Mesh(gl, { geometry, program: brightProgram });
+
+    const blurProgram = new Program(gl, {
+      vertex,
+      fragment: blurFrag,
+      depthTest: false,
+      depthWrite: false,
+      uniforms: {
+        uScene: { value: bloomA.texture },
+        uDir: { value: [0, 0] },
+      },
+    });
+    const blurMesh = new Mesh(gl, { geometry, program: blurProgram });
 
     // ── pass 2 program (composite/upscale, to screen) ──
     const compositeProgram = new Program(gl, {
@@ -701,9 +796,11 @@ export default function GalaxyCanvas() {
       depthWrite: false,
       uniforms: {
         uScene: { value: rt.texture },
+        uBloom: { value: bloomA.texture },
+        uBloomGain: { value: 0.85 },
         uResolution: { value: [1, 1] },
         uTime: { value: 0 },
-        uIntro: { value: 0 },
+        uIntro: { value: 1 }, // no reveal ramp — the fallback photo IS frame 0
         uHole: { value: [0.5, 0.5] },
       },
     });
@@ -729,6 +826,13 @@ export default function GalaxyCanvas() {
       );
       compositeProgram.uniforms.uScene.value = rt.texture;
       marchProgram.uniforms.uResolution.value = [w * rtScale * rtCap, h * rtScale * rtCap];
+      // bloom pair tracks the canvas (not the tier): 1/8 res, longest side
+      // ≤ 280 — setSize early-returns when unchanged, so tier flips are free
+      const bCap = Math.min(1, 280 / Math.max(w / 8, h / 8));
+      const bw = Math.max(2, Math.floor((w / 8) * bCap));
+      const bh = Math.max(2, Math.floor((h / 8) * bCap));
+      bloomA.setSize(bw, bh);
+      bloomB.setSize(bw, bh);
       marchDirty = true; // rt was cleared — re-march before the next composite
     };
 
@@ -785,10 +889,11 @@ export default function GalaxyCanvas() {
     });
     io.observe(container);
 
-    // ── cinematic intro reveal (2.5s ease-out-quint) ──
-    const INTRO_DUR = 2.5;
-    let introElapsed = 0;
-    const easeOutQuint = (x: number) => 1 - Math.pow(1 - x, 5);
+    // NO shader intro. The fallback photo IS this scene's t=0 frame, so any
+    // radiance ramp would visibly dim the photo and re-brighten — that's a
+    // pop. uIntro stays hardwired to 1; the only entrance is the CSS
+    // crossfade, and since the live render boots at the same time-phase the
+    // photo was captured at, the handoff is the photo starting to move.
 
     const smoothstep01 = (x: number) => {
       const t = Math.min(1, Math.max(0, x));
@@ -814,6 +919,12 @@ export default function GalaxyCanvas() {
     // with R_ISCO = 2.2) so the mod-2π spin stays perfectly continuous across
     // the wrap — only twinkle/grain phases reseed, which is imperceptible.
     const TIME_WRAP = ((Math.PI * 2) / (0.55 * Math.pow(2.2 / 3.2, 1.5))) * 30; // ≈ 601 s
+
+    // capture hook: /?bhfreeze=<seconds> freezes scene time, so the static
+    // fallback photos are shot at the exact phase (t=0) the live shader
+    // boots with — that phase-match is what makes the handoff invisible
+    const freezeParam = new URLSearchParams(window.location.search).get("bhfreeze");
+    const freeze = freezeParam === null ? null : Number(freezeParam) || 0;
 
     // ── adaptive quality governor state ──
     // Driven by the RAW rAF cadence (every callback, before the 60fps cap),
@@ -846,7 +957,7 @@ export default function GalaxyCanvas() {
       if (dt < 15.5) return;
       last = t;
       const dts = dt * 0.001;
-      elapsed = (elapsed + dts) % TIME_WRAP;
+      elapsed = freeze ?? (elapsed + dts) % TIME_WRAP;
       frame++;
 
       // ── governor: step the march resolution to what THIS machine sustains.
@@ -855,24 +966,28 @@ export default function GalaxyCanvas() {
       // the device genuinely delivers < ~43 fps; relief covers every healthy
       // cadence down to 50 Hz panels so a transient drop can always recover.
       if (cooldown > 0) cooldown--;
-      else if (frame > 240) {
-        if (rawEma > 23) { strain++; relief = 0; }
+      else if (frame > 90) {
+        // armed earlier than the old 240 (the 0.9 baseline must not gift a
+        // weak machine seconds of jank), and severe strain — a genuinely
+        // sub-25fps cadence — walks down the ladder 3× faster. The EMA has
+        // already washed out the frame-1 compile/upload spikes by frame 90.
+        if (rawEma > 23) { strain += rawEma > 40 ? 3 : 1; relief = 0; }
         else if (rawEma < 20.5) { relief++; strain = 0; }
         else if (strain > 0) strain--;   // dead zone: bleed off jitter spikes
         if (strain > 90 && tier < RT_TIERS.length - 1) {
           // re-straining shortly after climbing into this level — ban it so
           // a machine straddling a tier boundary can't flicker forever
           if (frame - lastClimb < 1800) bannedTier = tier;
-          tier++; strain = 0; relief = 0; cooldown = 600;
+          // short demote cooldown: the fine ladder means a struggling machine
+          // may need several notches — let it walk them quickly (each step is
+          // invisible) instead of janking for 10s per step
+          tier++; strain = 0; relief = 0; cooldown = 300;
           sizeRT();
         } else if (relief > 600 && tier > 0 && tier - 1 !== bannedTier) {
           tier--; relief = 0; lastClimb = frame; cooldown = 600;
           sizeRT();
         }
       }
-
-      if (introElapsed < INTRO_DUR) introElapsed += dts;
-      const intro = easeOutQuint(Math.min(1, introElapsed / INTRO_DUR));
 
       mouse.x += (target.x - mouse.x) * 0.09;
       mouse.y += (target.y - mouse.y) * 0.09;
@@ -886,28 +1001,47 @@ export default function GalaxyCanvas() {
       // animating at full rate over it, which reads as fully continuous (the
       // grain-over-24fps cinema trick). Anything interactive — intro reveal,
       // scroll dive, active mouse easing — forces the march back to full rate.
-      const interacting =
-        intro < 1 ||
-        Math.abs(diveTarget - zoom) > 0.002 ||
-        Math.abs(target.x - mouse.x) + Math.abs(target.y - mouse.y) > 0.004;
-      if (interacting || marchDirty || frame % 2 === 0) {
+      // march at a UNIFORM half rate, interacting or not — never slower
+      // (sub-1/2 cadences make the disk's rotation visibly snap when they
+      // engage), and never faster either: full-rate march during scroll and
+      // mouse parallax was the single biggest GPU spike on the page — 2.25×
+      // the old interactive bill at the 0.9 baseline, i.e. jank exactly while
+      // the user is moving. The dive and parallax are slow eased motions;
+      // sampled at 30fps under the 60fps film grain they read identical, and
+      // one fixed cadence means there is no smoothness mode-switch to notice.
+      if (marchDirty || frame % 2 === 0) {
         marchProgram.uniforms.uTime.value = elapsed;
         marchProgram.uniforms.uTilt.value = [mouse.x, mouse.y];
         marchProgram.uniforms.uZoom.value = zoom;
-        marchProgram.uniforms.uIntro.value = intro;
         // PASS 1: geodesic march → half-res target
         renderer.render({ scene: marchMesh, camera, target: rt });
+        // bloom chain re-renders only when the march does — between marches
+        // the composite keeps sampling the previous (still-valid) halo
+        brightProgram.uniforms.uScene.value = rt.texture;
+        renderer.render({ scene: brightMesh, camera, target: bloomA });
+        for (let p = 0; p < 2; p++) {
+          blurProgram.uniforms.uScene.value = bloomA.texture;
+          blurProgram.uniforms.uDir.value = [1 / bloomA.width, 0];
+          renderer.render({ scene: blurMesh, camera, target: bloomB });
+          blurProgram.uniforms.uScene.value = bloomB.texture;
+          blurProgram.uniforms.uDir.value = [0, 1 / bloomB.height];
+          renderer.render({ scene: blurMesh, camera, target: bloomA });
+        }
         marchDirty = false;
       }
 
       compositeProgram.uniforms.uTime.value = elapsed;
-      compositeProgram.uniforms.uIntro.value = intro;
       // PASS 2: composite/upscale → screen (every frame: grain/CA/vignette)
       renderer.render({ scene: compositeMesh, camera });
 
-      // first real frame is on screen — now the fallback can go
-      if (!fallbackHidden && fallback) {
-        fallback.style.opacity = "0";
+      // First real frame is on screen — crossfade: canvas in, fallback out.
+      // Shader compilation can stall the first draw for seconds (cold cache),
+      // and an instant swap after that wait reads as detail popping out of
+      // nowhere. The CSS transition makes the entrance a fade no matter how
+      // long the driver took.
+      if (!fallbackHidden) {
+        container.style.opacity = "1";
+        if (fallback) fallback.style.opacity = "0";
         fallbackHidden = true;
       }
     };
@@ -930,5 +1064,12 @@ export default function GalaxyCanvas() {
     };
   }, []);
 
-  return <div ref={containerRef} aria-hidden className="absolute inset-0" />;
+  // starts transparent; the render loop fades it in on the first real frame
+  return (
+    <div
+      ref={containerRef}
+      aria-hidden
+      className="absolute inset-0 opacity-0 transition-opacity duration-500 ease-out"
+    />
+  );
 }

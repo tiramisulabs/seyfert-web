@@ -1,9 +1,20 @@
-// Static galaxy: warm CSS core glow + faint starfield. Server-rendered under
-// the WebGL canvas so LCP and no-WebGL/reduced-motion users get the full look.
+// Static galaxy: a REAL captured frame of the WebGL render, not a CSS
+// approximation. The first paint already shows the full-detail black hole,
+// so when the live canvas crossfades in there is nothing left to "appear" —
+// no glow→detail pop, no matter how long shader compilation takes. Also what
+// no-WebGL and reduced-motion users keep.
+//
+// Alignment contract with the shaders: hole center sits at 79% of the width
+// (desktop march) / 86.8% (phone lite), vertical position and scale are
+// height-proportional. Rendering the photo at h-full/w-auto and anchoring it
+// with left = holeFraction·100% − holeFraction·imageWidth(vh) keeps the
+// photo's hole exactly on the live hole for any viewport aspect; captures
+// are wide enough to cover up to ~2.8:1.
 export function GalaxyFallback() {
     return (
-        <div aria-hidden data-galaxy-fallback className="absolute inset-0 overflow-hidden transition-opacity duration-1000">
-            {/* starfield — two offset layers, cool faint stars */}
+        <div aria-hidden data-galaxy-fallback className="absolute inset-0 overflow-hidden transition-opacity duration-500">
+            {/* faint dot starfield behind the photo — covers the slivers the
+                 photo can't reach on extreme aspect ratios */}
             <div
                 className="absolute inset-0 opacity-50"
                 style={{
@@ -13,13 +24,18 @@ export function GalaxyFallback() {
                     backgroundPosition: "0 0, 23px 37px",
                 }}
             />
-            {/* warm AGN core, off-center for asymmetry */}
-            <div className="core-glow animate-spiral-pulse absolute left-1/2 top-[6%] h-[22rem] w-[22rem] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-45 md:left-[62%] md:top-[34%] md:h-[36rem] md:w-[36rem] md:opacity-80" />
-            {/* coppery dust haze hugging the core */}
-            <div
-                className="absolute left-1/2 top-[8%] h-[14rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-[50%] opacity-15 blur-3xl md:left-[58%] md:top-[40%] md:h-[28rem] md:w-[44rem] md:opacity-25"
-                style={{ background: "radial-gradient(ellipse, rgba(180,104,60,0.55), transparent 65%)" }}
-            />
+            <picture>
+                <source media="(min-width: 768px)" srcSet="/galaxy-static-wide.webp" />
+                {/* plain img on purpose: full-bleed photo with calc() anchoring,
+                    next/image adds nothing here */}
+                <img
+                    src="/galaxy-static-mobile.webp"
+                    alt=""
+                    fetchPriority="high"
+                    decoding="async"
+                    className="absolute top-0 h-full w-auto max-w-none left-[calc(86.8%_-_38.57vh)] md:left-[calc(79%_-_139.57vh)]"
+                />
+            </picture>
         </div>
     );
 }

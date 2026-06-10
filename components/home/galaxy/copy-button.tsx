@@ -45,9 +45,15 @@ export function CopyButton({
                 className,
             )}
         >
-            {/* icon only — the aria-label carries the words */}
-            <span aria-hidden className="text-[13px] leading-none">
-                {copied ? "✓" : "⧉"}
+            {/* icon only — the aria-label carries the words. Both glyphs stay
+                stacked in one grid cell; t-icon-swap cross-fades them. */}
+            <span
+                aria-hidden
+                className="t-icon-swap text-[13px] leading-none"
+                data-state={copied ? "b" : "a"}
+            >
+                <span className="t-icon" data-icon="a">⧉</span>
+                <span className="t-icon" data-icon="b">✓</span>
             </span>
             {/* announce the async success to screen readers */}
             <span role="status" className="sr-only">

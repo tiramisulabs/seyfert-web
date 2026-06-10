@@ -16,6 +16,9 @@ const Arm = ({ children, delay = 0 }: { children: React.ReactNode; delay?: numbe
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
         transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+        // offscreen sections (shiki panes, orbit animations, avatar rows)
+        // cost zero style/paint while the hero canvas is running
+        style={{ contentVisibility: "auto", containIntrinsicSize: "auto 700px" }}
     >
         {children}
     </motion.div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { GeistMono } from "geist/font/mono";
 import { CopyButton } from "./copy-button";
 
@@ -24,6 +24,11 @@ export interface ToolkitPane {
 
 export function ToolkitTabs({ panes }: { panes: ToolkitPane[] }) {
     const [active, setActive] = useState(0);
+    // slide direction for the t-page-enter animation: moving right in the
+    // tab rail slides the pane in from the right, and vice versa
+    const prev = useRef(0);
+    const dir = active >= prev.current ? 1 : -1;
+    prev.current = active;
     const pane = panes[active];
 
     // full ARIA tabs pattern: arrow keys cycle, Home/End jump
@@ -70,36 +75,44 @@ export function ToolkitTabs({ panes }: { panes: ToolkitPane[] }) {
                 ))}
             </div>
 
-            {/* the editor card — same chrome as the versus cards */}
+            {/* keyed remount per pane → t-page-enter slides the card + caption
+                 in from the direction of travel (transitions.dev 08, enter half) */}
             <div
-                id={`toolkit-pane-${pane.id}`}
-                role="tabpanel"
-                aria-labelledby={`toolkit-tab-${pane.id}`}
-                className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-white/10 bg-[var(--space-deep)]/70"
+                key={pane.id}
+                className="t-page-enter flex min-w-0 flex-col gap-3"
+                style={{ "--t-page-from-x": `calc(var(--page-slide-distance) * ${dir})` } as React.CSSProperties}
             >
-                <div className="flex items-center justify-between border-b border-white/8 px-4 py-2.5">
-                    <span
-                        className={`${GeistMono.className} inline-flex items-center gap-2 text-[11px] tracking-[0.15em] text-[var(--text-dim)]`}
-                    >
-                        <span
-                            className="h-1.5 w-1.5 rounded-full bg-[var(--brand-indigo)]/70"
-                            aria-hidden
-                        />
-                        {pane.file}
-                    </span>
-                    <CopyButton text={pane.code} label={`copy ${pane.file}`} />
-                </div>
+                {/* the editor card — same chrome as the versus cards */}
                 <div
-                    className={`${GeistMono.className} overflow-x-auto px-4 py-4 text-[13px] leading-relaxed [&_code]:!bg-transparent [&_pre]:!bg-transparent [&_pre]:!outline-none`}
-                    dangerouslySetInnerHTML={{ __html: pane.html }}
-                />
-            </div>
+                    id={`toolkit-pane-${pane.id}`}
+                    role="tabpanel"
+                    aria-labelledby={`toolkit-tab-${pane.id}`}
+                    className="flex min-w-0 flex-col overflow-hidden rounded-lg border border-white/10 bg-[var(--space-deep)]/70"
+                >
+                    <div className="flex items-center justify-between border-b border-white/8 px-4 py-2.5">
+                        <span
+                            className={`${GeistMono.className} inline-flex items-center gap-2 text-[11px] tracking-[0.15em] text-[var(--text-dim)]`}
+                        >
+                            <span
+                                className="h-1.5 w-1.5 rounded-full bg-[var(--brand-indigo)]/70"
+                                aria-hidden
+                            />
+                            {pane.file}
+                        </span>
+                        <CopyButton text={pane.code} label={`copy ${pane.file}`} />
+                    </div>
+                    <div
+                        className={`${GeistMono.className} overflow-x-auto px-4 py-4 text-xs leading-relaxed sm:text-[13px] [&_code]:!bg-transparent [&_pre]:!bg-transparent [&_pre]:!outline-none`}
+                        dangerouslySetInnerHTML={{ __html: pane.html }}
+                    />
+                </div>
 
-            <p
-                className={`${GeistMono.className} px-1 text-[10px] uppercase leading-relaxed tracking-[0.18em] text-[var(--text-dim)]/55`}
-            >
-                {pane.caption}
-            </p>
+                <p
+                    className={`${GeistMono.className} px-1 text-[10px] uppercase leading-relaxed tracking-[0.18em] text-[var(--text-dim)]/55`}
+                >
+                    {pane.caption}
+                </p>
+            </div>
         </div>
     );
 }

@@ -4,10 +4,13 @@ import { GeistMono } from "geist/font/mono";
 import { Button } from "@/components/ui/button";
 import { GalaxyFallback } from "@/components/home/galaxy/galaxy-fallback";
 import GalaxyCanvas from "@/components/home/galaxy/galaxy-canvas";
+import GalaxyLite from "@/components/home/galaxy/galaxy-lite";
+import { CoreDistance } from "@/components/home/galaxy/core-distance";
 import { KirbyEgg } from "@/components/home/galaxy/kirby-egg";
 import SpiralSections from "./spiral-sections";
 import { config } from "@/app.config";
-import { getRepoStats } from "@/lib/github";
+import { getRepoStats, releaseRecency } from "@/lib/github";
+import { InstallPill } from "@/components/home/galaxy/install-pill";
 
 // Spiral landing — astrophotographic, editorial. Strict two-column hero: the
 // copy owns the left column, the black hole owns the right. Hero text stays
@@ -20,6 +23,7 @@ export async function SpiralHome() {
             <div className="relative flex min-h-screen flex-col justify-center overflow-hidden">
                 <GalaxyFallback />
                 <GalaxyCanvas />
+                <GalaxyLite />
                 <KirbyEgg />
 
                 {/* two-column editorial hero: text left, hole right */}
@@ -34,7 +38,15 @@ export async function SpiralHome() {
                             </span>
                             <span>
                                 TYPESCRIPT FRAMEWORK FOR DISCORD{" "}
-                                <span className="whitespace-nowrap">· v4.3.0</span>
+                                <span className="whitespace-nowrap">
+                                    · {stats.latestTag ?? "v4.3.0"}
+                                </span>
+                                {/* the "is this abandoned?" answer, live */}
+                                {stats.publishedAt && (
+                                    <span className="whitespace-nowrap">
+                                        {" "}· SHIPPED {releaseRecency(stats.publishedAt)}
+                                    </span>
+                                )}
                             </span>
                         </div>
 
@@ -54,37 +66,45 @@ export async function SpiralHome() {
                             million guilds.
                         </p>
 
-                        <div className="flex items-center gap-5">
-                            <Button
-                                asChild
-                                className="group cursor-pointer gap-2 rounded-none bg-[var(--text-bright)] px-6 text-base font-medium text-[var(--space-void)] hover:bg-neutral-300"
-                            >
-                                <Link href="/guide">
-                                    Get started
-                                    <ArrowRight aria-hidden className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center gap-5">
+                                <Button
+                                    asChild
+                                    className="group cursor-pointer gap-2 rounded-none bg-[var(--text-bright)] px-6 text-base font-medium text-[var(--space-void)] hover:bg-neutral-300"
+                                >
+                                    <Link href="/guide">
+                                        Get started
+                                        <ArrowRight aria-hidden className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                                    </Link>
+                                </Button>
+                                <Link
+                                    href="https://discord.gg/hEeJNaSqnS"
+                                    target="_blank"
+                                    className={`${GeistMono.className} text-xs tracking-[0.2em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline`}
+                                >
+                                    DISCORD <span aria-hidden>↗</span>
                                 </Link>
-                            </Button>
-                            <Link
-                                href="https://discord.gg/hEeJNaSqnS"
-                                target="_blank"
-                                className={`${GeistMono.className} text-xs tracking-[0.2em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline`}
-                            >
-                                DISCORD <span aria-hidden>↗</span>
-                            </Link>
+                            </div>
+                            {/* the install command lives in the hero, Bun-style —
+                                 not 5400px away at the finale */}
+                            <InstallPill />
                         </div>
                     </div>
                     {/* right column intentionally empty — the black hole lives here */}
                     <div aria-hidden className="hidden lg:block" />
                 </div>
 
-                <div className={`${GeistMono.className} absolute bottom-8 left-16 z-10 text-[10px] tracking-[0.3em] text-[var(--text-dim)]/70 lg:left-12`}>
+                <div className={`${GeistMono.className} absolute bottom-8 left-6 z-10 text-[10px] tracking-[0.3em] text-[var(--text-dim)]/70 lg:left-12`}>
                     SCROLL INTO THE CORE · IT’S SAFE ↓
                 </div>
             </div>
 
-            <div className="relative mx-auto mt-16 w-full max-w-xs space-y-32 sm:max-w-md md:max-w-2xl lg:max-w-5xl xl:max-w-6xl">
+            <div className="relative mx-auto mt-16 w-full max-w-md space-y-32 px-5 sm:max-w-md sm:px-0 md:max-w-2xl lg:max-w-5xl xl:max-w-6xl">
                 <SpiralSections stats={stats} />
             </div>
+
+            {/* the dive, instrumented: scroll progress as distance in rs */}
+            <CoreDistance />
         </main>
     );
 }

@@ -1,19 +1,19 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "motion/react";
 import { ArrowRight } from "lucide-react";
 import { GeistMono } from "geist/font/mono";
 import { Button } from "@/components/ui/button";
 import { ArmLabel } from "./arm-label";
 import type { RepoStats } from "@/lib/github";
-import { CopyButton } from "./copy-button";
 
 // FINALE — the journey's last two beats fused into one composition:
 // (04) the open-source observation, read off as live data, then the arrival at
 // the core. Stats arrive as props from the server (single cached GitHub fetch
-// in lib/github); this stays a client component only for the motion hovers.
+// in lib/github); this stays a client component only for the avatar-group
+// hover (transitions.dev 11: distance-falloff lift, bouncy spring on return).
 // The surrounding whileInView reveal is applied externally by the page's <Arm>.
 
 export default function Finale({
@@ -24,6 +24,49 @@ export default function Finale({
     stats: RepoStats;
 }) {
     const contributors = stats.contributors.slice(0, 9);
+    const stripRef = useRef<HTMLAnchorElement>(null);
+
+    // transitions.dev avatar-group orchestration: the timing-function is set
+    // inline BEFORE the variable writes so hover-in gets the clean ease and
+    // mouseleave gets the overshoot spring on the same property.
+    const setShifts = (activeIdx: number | null, phase: "in" | "out") => {
+        if (!stripRef.current) return;
+        const cs = getComputedStyle(document.documentElement);
+        const num = (name: string, fb: number) => {
+            const v = parseFloat(cs.getPropertyValue(name));
+            return Number.isFinite(v) ? v : fb;
+        };
+        const ease = (name: string, fb: string) =>
+            cs.getPropertyValue(name).trim() || fb;
+
+        const lift = num("--avatar-lift", -4);
+        const falloff = num("--avatar-falloff", 0.45);
+        const scale = num("--avatar-scale", 1.05);
+        const tf =
+            phase === "out"
+                ? ease("--avatar-ease-out", "cubic-bezier(0.34, 3.85, 0.64, 1)")
+                : ease("--avatar-ease-in", "cubic-bezier(0.22, 1, 0.36, 1)");
+
+        stripRef.current
+            .querySelectorAll<HTMLElement>(".t-avatar")
+            .forEach((el, i) => {
+                el.style.transitionTimingFunction = tf;
+                if (activeIdx == null) {
+                    el.style.setProperty("--shift", "0px");
+                    el.style.setProperty("--scale-active", "1");
+                    return;
+                }
+                const d = Math.abs(i - activeIdx);
+                el.style.setProperty(
+                    "--shift",
+                    (lift * Math.pow(falloff, d)).toFixed(3) + "px",
+                );
+                el.style.setProperty(
+                    "--scale-active",
+                    i === activeIdx ? String(scale) : "1",
+                );
+            });
+    };
 
     return (
         <section className="flex flex-col gap-14">
@@ -77,27 +120,20 @@ export default function Finale({
                         </div>
 
                         <Link
+                            ref={stripRef}
                             href={`https://github.com/${repository}/graphs/contributors`}
                             target="_blank"
                             rel="noreferrer"
                             className="-ml-1 flex flex-wrap"
                             aria-label="View all contributors"
+                            onMouseLeave={() => setShifts(null, "out")}
                         >
                             {contributors.map((c, i) => (
-                                <motion.span
+                                <span
                                     key={c.login}
-                                    whileHover={{
-                                        scale: 1.12,
-                                        y: -3,
-                                        zIndex: 10,
-                                    }}
-                                    transition={{
-                                        type: "spring",
-                                        stiffness: 400,
-                                        damping: 17,
-                                    }}
-                                    className="relative -ml-1 block"
+                                    className="t-avatar relative -ml-1 block"
                                     style={{ zIndex: contributors.length - i }}
+                                    onMouseEnter={() => setShifts(i, "in")}
                                 >
                                     <Image
                                         src={c.avatar_url}
@@ -107,7 +143,7 @@ export default function Finale({
                                         unoptimized
                                         className="size-9 max-w-none rounded-full border border-[var(--space-void)] grayscale transition-[filter] duration-300 hover:grayscale-0"
                                     />
-                                </motion.span>
+                                </span>
                             ))}
                         </Link>
 
@@ -197,28 +233,6 @@ export default function Finale({
                             >
                                 DISCORD <span aria-hidden>↗</span>
                             </Link>
-                        </div>
-                        {/* the last thing you see is the way in */}
-                        <div
-                            title="it's dangerous to go alone — take this."
-                            className="flex items-center gap-3 rounded-md border border-white/10 bg-[var(--space-deep)]/70 px-3.5 py-2.5"
-                        >
-                            <span
-                                className={`${GeistMono.className} select-none text-[13px] leading-none text-[var(--text-dim)]/50`}
-                                aria-hidden
-                            >
-                                $
-                            </span>
-                            <code
-                                translate="no"
-                                className={`${GeistMono.className} text-[13px] leading-none text-[var(--text-bright)]`}
-                            >
-                                npm i seyfert
-                            </code>
-                            <CopyButton
-                                text="npm i seyfert"
-                                label="copy install command"
-                            />
                         </div>
                     </div>
                 </div>

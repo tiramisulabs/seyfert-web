@@ -54,9 +54,12 @@ export default function Navbar() {
       )}
       aria-label="Navigation bar"
     >
+      {/* no backdrop-blur: blurring the 60fps hero canvas underneath costs a
+          full nav-strip blur every frame, and behind ~95% opacity it was
+          invisible anyway */}
       <div
         className={cn(
-          "border backdrop-blur-md bg-background/90 w-full h-full absolute top-0 left-0 -z-10",
+          "border bg-background/95 w-full h-full absolute top-0 left-0 -z-10",
           isHomePage && isScrolled ? "rounded-sm" : "rounded-none"
         )}
       />
