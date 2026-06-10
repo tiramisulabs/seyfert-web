@@ -106,6 +106,27 @@ register(api) {
 
 Duplicate middleware names fail.
 
+If a command references a middleware name that is not registered, Seyfert warns and continues with the registered middlewares that are available.
+
+For public packages, type middleware contributions on the plugin so app code can use `Middlewares([...])` without extra casts.
+
+```ts
+import { createPlugin, type CommandContext, type MiddlewareContext, type SeyfertPlugin } from 'seyfert';
+
+type AuthMiddleware = MiddlewareContext<{ userId: string }, CommandContext>;
+
+const auth: AuthMiddleware = ({ next }) => next({ userId: '1' });
+
+export const authPlugin: SeyfertPlugin<{}, {}, readonly [], { auth: AuthMiddleware }> = createPlugin({
+    name: 'auth',
+    register(api) {
+        api.middlewares.add('auth', auth);
+    },
+});
+```
+
+When the app includes that plugin in the tuple used by `RegisterPlugins`, `Middlewares(['auth'])` and `ctx.metadata.auth` are typed.
+
 ## Option Fragments
 
 `api.options.set(...)` contributes partial client options.
@@ -125,3 +146,16 @@ register(api) {
 ```
 
 Plugin option fragments are composed before final user options. Plain option values can still be overridden by app configuration through normal option merging. Command, component, and modal default hooks are composed, so plugin hooks and app hooks both run instead of one replacing the other.
+
+Use `options(current)` when the fragment depends on options already composed before your plugin:
+
+```ts
+export const plugin = createPlugin({
+    name: 'mentions',
+    options(current) {
+        return {
+            allowedMentions: current.allowedMentions ?? { parse: [] },
+        };
+    },
+});
+```

@@ -31,6 +31,9 @@ export const plugin = createPlugin({
     requires: [],
     client: {},
     ctx: {},
+    options(current) {
+        return {};
+    },
     register(api) {},
     setup(client) {},
     teardown(client) {},
@@ -46,6 +49,7 @@ You usually do not need every field.
 | `requires` | Runtime requirements such as `plugin:storage`, required or optional |
 | `client` | App-wide helpers exposed as `client.*` |
 | `ctx` | Per-interaction helpers exposed as `ctx.*` |
+| `options(current)` | Option fragments that need the current merged options |
 | `register(api)` | Synchronous registration for commands, events, services, hooks, and options |
 | `setup(client)` | Async startup after client helpers exist |
 | `teardown(client)` | Cleanup through `client.close()` in reverse plugin order |

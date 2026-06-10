@@ -2,91 +2,182 @@
 title: Cooldown
 ---
 
-Although you can implement your own cooldown logic, you might wanna try `@slipher/cooldown` first.
+`@slipher/cooldown` is a Seyfert plugin for per-command cooldowns.
 
 ```bash copy title="Installing..."
-npm add @slipher/cooldown
+pnpm add @slipher/cooldown
 ```
 
-First you need to add `cooldown` property to `client` as shown below
+## Plugin Setup
 
-```ts twoslash
-// @noErrors
-import { Client, type UsingClient } from "seyfert";
-import { CooldownManager } from "@slipher/cooldown";
+Install it like any other plugin:
 
-const client = new Client() as UsingClient & Client;
+```ts
+import { Client, definePlugins, type RegisterPlugins } from 'seyfert';
+import { cooldown } from '@slipher/cooldown';
 
-client.start().then(() => {
-	client.cooldown = new CooldownManager(client);
-})
+const cooldownPlugin = cooldown();
+const plugins = definePlugins(cooldownPlugin);
 
-declare module "seyfert" {
-	interface UsingClient {
-		cooldown: CooldownManager;
-	}
+declare module 'seyfert' {
+    interface Register extends RegisterPlugins<typeof plugins> {}
 }
-```
 
-And then we can use `@Cooldown()` decorator in our commands, it takes 3 arguments:
-
-| Property   | Type          | Description                           |
-| ---------- | ------------- | ------------------------------------- |
-| type       | CooldownType  | target type, can be user, guild or channel |
-| interval   | number        | time to refresh uses                  |
-| uses       | number        | how many uses user can use this command in the given interval |
-
-```ts twoslash
-// @noErrors
-import { Declare, Command, type CommandContext } from "seyfert";
-import { CooldownType, Cooldown } from "@slipher/cooldown";
-
-@Declare({
-	name: 'cool',
-	description: 'Reference command'
-})
-@Cooldown({
-	type: CooldownType.User,
-	interval: 1000 * 60,
-	uses: {
-		default: 2
-	},
-})
-export default class Cool extends Command {
-  async run(ctx: CommandContext) {
-    await ctx.write({
-      content: `A cool command`
-    });
-  }
-
-  onMiddlewaresError(context: CommandContext, error: string) {
-    context.editOrReply({ content: error })
-  }
-}
-```
-
-And then we need to create a [middleware](/guide/commands/middlewares) for handle when the user is in cooldown:
-
-```ts twoslash
-// @noErrors
-import { CooldownManager } from "@slipher/cooldown";
-
-declare module "seyfert" {
-	interface UsingClient {
-		cooldown: CooldownManager;
-	}
-}
-// ---cut---
-import { createMiddleware, Formatter } from 'seyfert';
-import { TimestampStyle } from 'seyfert/lib/common';
-
-export default createMiddleware<void>(async ({ context, next, stop }) => {
-	const inCooldown = context.client.cooldown.context(context);
-
-	typeof inCooldown === 'number'
-		? stop(
-				`You're in cooldown, try again ${Formatter.timestamp(new Date(Date.now() + inCooldown), TimestampStyle.RelativeTime)}`,
-			)
-		: next();
+const client = new Client({
+    plugins,
 });
+```
+
+The plugin exposes one `CooldownManager` on `client.cooldown` and `ctx.cooldown`. Storage is backed by the client's cache adapter.
+
+## Declaring Cooldowns
+
+Use the `@Cooldown` decorator on commands.
+
+```ts
+import { Command, type CommandContext, Declare } from 'seyfert';
+import { Cooldown } from '@slipher/cooldown';
+
+@Declare({ name: 'ping', description: 'Ping' })
+@Cooldown.user(5_000)
+export default class PingCommand extends Command {
+    async run(ctx: CommandContext) {
+        await ctx.write({ content: 'Pong!' });
+    }
+}
+```
+
+Decorator shortcuts cover the common scopes:
+
+```ts
+@Cooldown.user(5_000)
+@Cooldown.guild(60_000, { default: 5 })
+@Cooldown.channel(10_000)
+@Cooldown.global(1_000)
+@Cooldown.custom((ctx) => `${ctx.guildId}:${ctx.author.id}`, 5_000)
+```
+
+## Middleware
+
+Enable the built-in middleware when you want Seyfert to stop commands that are cooling down:
+
+```ts
+const cooldownPlugin = cooldown({ middleware: true });
+```
+
+The default middleware name is `cooldown`, and the package registers that name for TypeScript, so commands can reference it directly:
+
+```ts
+import { Command, type CommandContext, Declare, Middlewares } from 'seyfert';
+import { Cooldown } from '@slipher/cooldown';
+
+@Declare({ name: 'ping', description: 'Ping' })
+@Cooldown.user(5_000)
+@Middlewares(['cooldown'])
+export default class PingCommand extends Command {
+    async run(ctx: CommandContext) {
+        await ctx.write({ content: 'Pong!' });
+    }
+}
+```
+
+Register it globally when every command should pass through cooldown handling:
+
+```ts
+const cooldownPlugin = cooldown({
+    middleware: { global: true },
+});
+```
+
+Customize the stop message with `middleware.message`. It accepts either a string or a callback that receives the blocked cooldown result:
+
+```ts
+import { Formatter } from 'seyfert';
+
+const cooldownPlugin = cooldown({
+    middleware: {
+        message: (result) =>
+            result.reason === 'over_capacity'
+                ? 'This command cannot run with its current cooldown settings.'
+                : `Try again ${Formatter.timestamp(result.retryAfter)}.`,
+    },
+});
+```
+
+If you use a custom middleware name, augment `RegisteredMiddlewares` with `CooldownMiddlewares`:
+
+```ts
+import type { CooldownMiddlewares } from '@slipher/cooldown';
+
+declare module 'seyfert' {
+    interface RegisteredMiddlewares extends CooldownMiddlewares<'commandCooldown'> {}
+}
+
+const cooldownPlugin = cooldown({
+    middleware: { name: 'commandCooldown' },
+});
+```
+
+## Custom Handling
+
+You can still handle the result yourself when a command or middleware needs custom behavior. For a reusable policy, register your own Seyfert middleware and call `context.cooldown.context()` there:
+
+```ts
+import { createMiddleware, Formatter } from 'seyfert';
+
+export const friendlyCooldown = createMiddleware(async ({ context, next, stop }) => {
+    const result = await context.cooldown.context();
+
+    if (!result || result.allowed) {
+        return next(result);
+    }
+
+    return stop(
+        result.reason === 'over_capacity'
+            ? 'This command cannot run with its current cooldown settings.'
+            : `Try again ${Formatter.timestamp(result.retryAfter)}.`,
+    );
+});
+```
+
+Then use that middleware like any other command middleware:
+
+```ts
+import { Command, type CommandContext, Declare, Middlewares } from 'seyfert';
+import { Cooldown } from '@slipher/cooldown';
+
+@Declare({ name: 'ping', description: 'Ping' })
+@Cooldown.user(5_000)
+@Middlewares(['friendlyCooldown'])
+export default class PingCommand extends Command {
+    async run(ctx: CommandContext) {
+        await ctx.write({ content: 'Pong!' });
+    }
+}
+```
+
+You can also handle a one-off command directly:
+
+```ts
+import { Command, type CommandContext, Declare, Formatter } from 'seyfert';
+import { Cooldown } from '@slipher/cooldown';
+
+@Declare({ name: 'ping', description: 'Ping' })
+@Cooldown.user(5_000)
+export default class PingCommand extends Command {
+    async run(ctx: CommandContext) {
+        const result = await ctx.cooldown.context();
+
+        if (result && !result.allowed) {
+            return ctx.write({
+                content:
+                    result.reason === 'over_capacity'
+                        ? 'This command cannot run with its current cooldown settings.'
+                        : `Try again ${Formatter.timestamp(result.retryAfter)}.`,
+            });
+        }
+
+        await ctx.write({ content: 'Pong!' });
+    }
+}
 ```
