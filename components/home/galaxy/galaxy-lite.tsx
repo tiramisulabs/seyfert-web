@@ -265,6 +265,7 @@ export default function GalaxyLite() {
     let last = performance.now();
     let elapsed = 0;
     let zoom = 0;
+    let fadeStart = 0; // disk held at t=0 until the canvas fade-in ends
     const TIME_WRAP = (Math.PI * 2 / 0.16) * 30; // exact spin periods ≈ 1178 s
 
     // capture hook: /?bhfreeze=<seconds> — see galaxy-canvas; the fallback
@@ -279,7 +280,10 @@ export default function GalaxyLite() {
       if (dt < 31) return; // 30fps cap — battery first, the motion is slow
       last = t;
       const dts = dt * 0.001;
-      elapsed = freeze ?? (elapsed + dts) % TIME_WRAP;
+      // hold the disk frozen at its captured t=0 phase through the 500ms fade so
+      // it doesn't rotate under the still photo (reads as a load displacement)
+      const settling = fadeStart === 0 || t < fadeStart + 560;
+      elapsed = freeze ?? (settling ? 0 : (elapsed + dts) % TIME_WRAP);
 
       zoom += (scrollT - zoom) * 0.08;
 
@@ -292,6 +296,7 @@ export default function GalaxyLite() {
         container.style.opacity = "1";
         if (fallback) fallback.style.opacity = "0";
         fallbackHidden = true;
+        fadeStart = t;
       }
     };
     raf = requestAnimationFrame(update);

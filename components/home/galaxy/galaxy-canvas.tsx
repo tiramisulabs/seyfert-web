@@ -845,9 +845,9 @@ export default function GalaxyCanvas() {
       sizeRT();
       compositeProgram.uniforms.uResolution.value = [w, h];
 
-      // aspect-relative: hole center lands at ~79% across the viewport,
-      // clear of the text column on any wide screen
-      center[0] = aspect > 1 ? aspect * 0.58 : 0;
+      // v5 "Cygnus": hole centered (matches the static fallback's 50% anchor so
+      // there's no jump on boot), behind the centered SEYFERT title
+      center[0] = 0;
       center[1] = aspect > 1 ? 0.04 : 1.05;
       marchProgram.uniforms.uCenter.value = center;
       marchProgram.uniforms.uScale.value = aspect > 1 ? 0.92 : 0.5;
@@ -912,6 +912,9 @@ export default function GalaxyCanvas() {
     let last = performance.now();
     let elapsed = 0;
     let zoom = 0;
+    // set on the frame the canvas fades in; the disk is held at its t=0 phase
+    // until the fade finishes (see settling below) so it materialises settled
+    let fadeStart = 0;
     // uTime is a float32 uniform; left unbounded it slowly degrades the
     // sin()-driven star twinkle and the per-frame grain hash in very long
     // sessions. Wrap it at an exact multiple of the disk's rotation period
@@ -957,7 +960,11 @@ export default function GalaxyCanvas() {
       if (dt < 15.5) return;
       last = t;
       const dts = dt * 0.001;
-      elapsed = freeze ?? (elapsed + dts) % TIME_WRAP;
+      // hold the disk frozen at its captured t=0 phase until the photo→canvas
+      // crossfade has fully finished. Otherwise the live disk rotates UNDER the
+      // still photo during the 500ms fade and reads as a displacement on load.
+      const settling = fadeStart === 0 || t < fadeStart + 560;
+      elapsed = freeze ?? (settling ? 0 : (elapsed + dts) % TIME_WRAP);
       frame++;
 
       // ── governor: step the march resolution to what THIS machine sustains.
@@ -1039,10 +1046,12 @@ export default function GalaxyCanvas() {
       // and an instant swap after that wait reads as detail popping out of
       // nowhere. The CSS transition makes the entrance a fade no matter how
       // long the driver took.
+      // first rendered frame is up — fade the canvas in from black
       if (!fallbackHidden) {
         container.style.opacity = "1";
         if (fallback) fallback.style.opacity = "0";
         fallbackHidden = true;
+        fadeStart = t; // freeze the disk until this fade-in completes
       }
     };
     raf = requestAnimationFrame(update);

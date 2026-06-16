@@ -185,6 +185,13 @@
   }
 }
 
+/* Reserve the scrollbar gutter from the first paint so the centered hero never
+   shifts sideways when the vertical scrollbar appears (e.g. dev streaming grows
+   the page after first paint). Plain rule, not @layer, to beat fumadocs resets. */
+html {
+  scrollbar-gutter: stable;
+}
+
 @keyframes gradient {
   to {
     background-position: var(--bg-size) 0;
