@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 import { codeToTokens } from 'shiki';
 import type { ThemeRegistrationAny } from 'shiki/types';
 import { Box, ExternalLink, Wrench } from 'lucide-react';
+import { ServerCodeBlock } from 'fumadocs-ui/components/codeblock.rsc';
 import {
   DocsBody,
   DocsDescription,
@@ -318,6 +319,7 @@ const docTagLabel: Record<string, string> = {
   param: 'Parameters',
   returns: 'Returns',
   return: 'Returns',
+  link: 'Links',
 };
 
 function tagTextParts(text: string) {
@@ -338,6 +340,24 @@ function tagTextParts(text: string) {
 
 function tagTitle(name: string) {
   return docTagLabel[name] ?? `@${name}`;
+}
+
+function linkTagParts(text: string) {
+  const trimmed = text.trim();
+  const match = trimmed.match(/https?:\/\/[^\s)]+/);
+
+  if (!match) return undefined;
+
+  const href = match[0];
+  const label = trimmed
+    .replace(href, '')
+    .replace(/^[-:]\s*/, '')
+    .trim();
+
+  return {
+    href,
+    label: label || href,
+  };
 }
 
 type IndexedDocTag = ApiDocTag & {
@@ -378,8 +398,9 @@ function DocTags({
   const paramTags = visibleTags.filter((tag) => tag.name === 'param');
   const returnTags = visibleTags.filter((tag) => tag.name === 'returns' || tag.name === 'return');
   const exampleTags = visibleTags.filter((tag) => tag.name === 'example');
+  const linkTags = visibleTags.filter((tag) => tag.name === 'link');
   const otherTags = visibleTags.filter(
-    (tag) => !['deprecated', 'param', 'returns', 'return', 'example'].includes(tag.name),
+    (tag) => !['deprecated', 'param', 'returns', 'return', 'example', 'link'].includes(tag.name),
   );
 
   return (
@@ -387,8 +408,8 @@ function DocTags({
       id={compact ? undefined : 'jsdoc'}
       className={
         compact
-          ? 'space-y-3 rounded-md border border-fd-border bg-fd-secondary/20 p-3'
-          : 'space-y-4 rounded-lg border border-fd-border bg-fd-background p-4'
+          ? 'space-y-2 rounded-md border border-fd-border bg-fd-secondary/20 p-2.5'
+          : 'space-y-3 rounded-lg border border-fd-border bg-fd-background p-3'
       }
     >
       {!compact && (
@@ -406,9 +427,9 @@ function DocTags({
       ))}
 
       {paramTags.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <h3 className="text-sm font-semibold text-fd-foreground">Parameters</h3>
-          <dl className="grid gap-2">
+          <dl className="grid gap-1.5">
             {paramTags.map((tag) => {
               const parts = tagTextParts(tag.text);
 
@@ -432,7 +453,7 @@ function DocTags({
       )}
 
       {returnTags.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <h3 className="text-sm font-semibold text-fd-foreground">Returns</h3>
           {returnTags.map((tag) => (
             <p key={tag.key} className="text-sm leading-6 text-fd-muted-foreground">
@@ -443,16 +464,51 @@ function DocTags({
       )}
 
       {exampleTags.length > 0 && (
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <h3 className="text-sm font-semibold text-fd-foreground">Examples</h3>
           {exampleTags.map((tag) => (
-            <pre
+            <ServerCodeBlock
               key={tag.key}
-              className="overflow-x-auto rounded-md bg-fd-secondary p-3 text-xs leading-5 text-fd-foreground"
-            >
-              <code>{tag.text}</code>
-            </pre>
+              code={tag.text}
+              lang="ts"
+              codeblock={{ className: 'my-0' }}
+            />
           ))}
+        </div>
+      )}
+
+      {linkTags.length > 0 && (
+        <div className="space-y-1.5">
+          <h3 className="text-sm font-semibold text-fd-foreground">Links</h3>
+          <div className="flex flex-col gap-1">
+            {linkTags.map((tag) => {
+              const link = linkTagParts(tag.text);
+
+              if (!link) {
+                return (
+                  <span
+                    key={tag.key}
+                    className="text-sm leading-6 text-fd-muted-foreground"
+                  >
+                    {tag.text}
+                  </span>
+                );
+              }
+
+              return (
+                <a
+                  key={tag.key}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex min-w-0 items-center gap-1 rounded-sm text-sm font-medium leading-6 text-sky-600 underline-offset-4 transition-colors hover:text-sky-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring dark:text-sky-300 dark:hover:text-sky-200"
+                >
+                  <span className="min-w-0 break-all">{link.label}</span>
+                  <ExternalLink className="size-3.5 shrink-0 text-current" aria-hidden />
+                </a>
+              );
+            })}
+          </div>
         </div>
       )}
 

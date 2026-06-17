@@ -16,7 +16,7 @@ import { GeistSans } from "geist/font/sans";
 import { config } from "@/app.config";
 import { DocsHeader } from "@/components/docs/docs-header";
 import { SidebarSearchSeparator } from "@/components/docs/sidebar-search-separator";
-import { type ApiKind } from "@/lib/api-reference/generated";
+import { apiEntries, type ApiEntry, type ApiKind } from "@/lib/api-reference/generated";
 import {
   apiKindLabel,
   apiKindOrder,
@@ -41,9 +41,24 @@ const apiKindIcons: Record<ApiKind, typeof Box> = {
   Enum: ListTree,
   Variable: VariableIcon,
 };
+const apiEntriesByKind = new Map<ApiKind, ApiEntry[]>();
+
+for (const entry of apiEntries) {
+  const entries = apiEntriesByKind.get(entry.kind);
+
+  if (entries) {
+    entries.push(entry);
+  } else {
+    apiEntriesByKind.set(entry.kind, [entry]);
+  }
+}
 
 function apiKindUrl(kind: ApiKind) {
   return `/docs/api/${apiKindSlug[kind]}`;
+}
+
+function apiEntryUrl(entry: ApiEntry) {
+  return `/docs/api/${entry.slug}`;
 }
 
 function apiKindIcon(kind: ApiKind) {
@@ -78,13 +93,23 @@ function apiKindOverview(kind: ApiKind): PageTree.Item {
 }
 
 function apiFolder(kind: ApiKind): PageTree.Folder {
+  const entries = apiEntriesByKind.get(kind) ?? [];
+
   return {
     type: "folder",
     $id: `api-${kind.toLowerCase()}`,
     name: apiKindLabel[kind],
     icon: apiKindIcon(kind),
     defaultOpen: false,
-    children: [apiKindOverview(kind)],
+    children: [
+      apiKindOverview(kind),
+      ...entries.map((entry) => ({
+        type: "page" as const,
+        $id: `api-entry-${entry.slug}`,
+        name: entry.name,
+        url: apiEntryUrl(entry),
+      })),
+    ],
   };
 }
 
