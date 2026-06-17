@@ -223,7 +223,7 @@
   background-color: var(--color-fd-background) !important;
 }
 .seyfert-docs #nd-sidebar {
-  --seyfert-sidebar-marker-offset: calc(2.5 * var(--spacing) + 0.25px);
+  --seyfert-sidebar-marker-offset: calc(2 * var(--spacing));
 }
 
 /* Reserve the TOC grid column - our custom TocRail replaces the default TOC
@@ -292,7 +292,8 @@
   color: var(--color-fd-foreground);
   font-weight: 700;
 }
-.seyfert-docs #nd-sidebar a[data-active="true"]:not(:has(.lucide-chevron-down))::before {
+.seyfert-docs #nd-sidebar [class*="animate-fd-collapsible"] a[data-active="true"]:not(:has(.lucide-chevron-down))::before,
+.seyfert-docs #nd-sidebar p ~ a[data-active="true"]:not(:has(.lucide-chevron-down))::before {
   content: '' !important;
   display: block !important;
   position: absolute !important;
@@ -306,6 +307,13 @@
   border-radius: 0 0.4rem 0.4rem 0 !important;
   z-index: -1 !important;
 }
+.seyfert-docs #nd-sidebar [data-radix-scroll-area-viewport] > div > a[data-active="true"]:not(:has(.lucide-chevron-down)) {
+  background-color: color-mix(in oklab, var(--color-fd-primary) 9%, transparent) !important;
+  border-radius: 0.4rem;
+}
+.seyfert-docs #nd-sidebar [data-radix-scroll-area-viewport] > div > a:not(:has(.lucide-chevron-down))::before {
+  display: none !important;
+}
 
 /* Inactive items: the same left bar as the active item but in dark gray
    (forms a subtle rail aligned with the active indicator); on hover it fills
@@ -313,7 +321,8 @@
 .seyfert-docs #nd-sidebar a:not([href="/"]):not(:has(.lucide-chevron-down)):hover {
   background-color: transparent !important;
 }
-.seyfert-docs #nd-sidebar a:not([href="/"]):not(:has(.lucide-chevron-down)):not([data-active="true"])::before {
+.seyfert-docs #nd-sidebar [class*="animate-fd-collapsible"] a:not([href="/"]):not(:has(.lucide-chevron-down)):not([data-active="true"])::before,
+.seyfert-docs #nd-sidebar p ~ a:not([href="/"]):not(:has(.lucide-chevron-down)):not([data-active="true"])::before {
   content: '' !important;
   display: block !important;
   position: absolute !important;
@@ -327,7 +336,8 @@
   border-radius: 0 0.4rem 0.4rem 0 !important;
   z-index: -1 !important;
 }
-.seyfert-docs #nd-sidebar a:not([href="/"]):not(:has(.lucide-chevron-down)):not([data-active="true"]):hover::before {
+.seyfert-docs #nd-sidebar [class*="animate-fd-collapsible"] a:not([href="/"]):not(:has(.lucide-chevron-down)):not([data-active="true"]):hover::before,
+.seyfert-docs #nd-sidebar p ~ a:not([href="/"]):not(:has(.lucide-chevron-down)):not([data-active="true"]):hover::before {
   background-color: var(--color-fd-accent) !important;
 }
 
@@ -419,6 +429,7 @@
   color: var(--color-fd-muted-foreground);
 }
 .seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down) {
+  background-color: transparent !important;
   cursor: pointer;
   margin-top: 0.625rem;
   border-radius: 0.4rem;
@@ -427,18 +438,37 @@
     color 160ms ease;
 }
 .seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down):hover,
-.seyfert-docs #nd-sidebar a:has(.lucide-chevron-down)[data-active="true"] {
-  background-color: color-mix(in oklab, var(--color-fd-primary) 7%, transparent);
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down)[data-active="true"],
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down):has(+ div a[data-active="true"]) {
+  background-color: transparent !important;
   color: var(--color-fd-foreground);
 }
-.seyfert-docs #nd-sidebar a:has(.lucide-chevron-down)[data-active="true"]::before {
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down) > svg:not([data-icon]),
+.seyfert-docs #nd-sidebar p > svg {
+  color: currentColor !important;
+  transition: color 160ms ease;
+}
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down)[data-active="true"] > svg:not([data-icon]),
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down):has(+ div a[data-active="true"]) > svg:not([data-icon]) {
+  color: var(--seyfert-sidebar-icon-color, var(--color-fd-primary)) !important;
+}
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down) > svg[data-icon] {
+  order: 3;
+}
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down)[data-active="true"]::before,
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down):has(+ div a[data-active="true"])::before {
   display: none !important;
 }
-.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down):hover > svg:not([data-icon]),
-.seyfert-docs #nd-sidebar a:has(.lucide-chevron-down)[data-active="true"] > svg:not([data-icon]) {
-  color: var(--color-fd-primary);
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down)[data-active="true"]::after,
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down):has(+ div a[data-active="true"])::after {
+  content: '';
+  order: 2;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background-color: #22c55e;
+  box-shadow: 0 0 0 2px color-mix(in oklab, #22c55e 16%, transparent);
 }
-
 /* TOC tree-metro gold fill - deeper/readable on light, hero-gold on the void */
 .seyfert-docs {
   --toc-g0: #c2740a;

@@ -1,4 +1,4 @@
-import { console } from 'node:console';
+import console from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -6,13 +6,28 @@ import ts from 'typescript';
 
 const root = process.cwd();
 const packageRoot = path.join(root, 'node_modules', 'seyfert');
-const entry = path.join(packageRoot, 'lib', 'index.d.ts');
 const output = path.join(root, 'lib', 'api-reference', 'generated.ts');
+const detailsOutput = path.join(root, 'lib', 'api-reference', 'details.ts');
 const packageJson = JSON.parse(
   fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8'),
 );
+const declarationRoot = path.join(packageRoot, 'lib');
 
-const program = ts.createProgram([entry], {
+function declarationFiles(dir = declarationRoot) {
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .flatMap((entry) => {
+      const entryPath = path.join(dir, entry.name);
+
+      if (entry.isDirectory()) return declarationFiles(entryPath);
+      return entry.name.endsWith('.d.ts') ? [entryPath] : [];
+    })
+    .sort((a, b) => a.localeCompare(b));
+}
+
+const declarations = declarationFiles();
+
+const program = ts.createProgram(declarations, {
   declaration: true,
   skipLibCheck: true,
   module: ts.ModuleKind.ESNext,
@@ -141,6 +156,46 @@ function membersFor(node) {
     .filter(Boolean);
 }
 
+function exportedDeclarations(source) {
+  const declarations = [];
+
+  for (const statement of source.statements) {
+    if (ts.isVariableStatement(statement)) {
+      const isExported =
+        (ts.getCombinedModifierFlags(statement) & ts.ModifierFlags.Export) !== 0;
+      if (!isExported) continue;
+
+      for (const declaration of statement.declarationList.declarations) {
+        declarations.push(declaration);
+      }
+
+      continue;
+    }
+
+    if (!kindMap.has(statement.kind)) continue;
+    const isExported =
+      (ts.getCombinedModifierFlags(statement) & ts.ModifierFlags.Export) !== 0;
+    if (isExported) declarations.push(statement);
+  }
+
+  return declarations;
+}
+
+function declarationName(node) {
+  if (!('name' in node) || !node.name) return undefined;
+
+  if (ts.isIdentifier(node.name) || ts.isStringLiteral(node.name)) {
+    return node.name.text;
+  }
+
+  return undefined;
+}
+
+function declarationSymbol(node) {
+  if (!('name' in node) || !node.name) return undefined;
+  return checker.getSymbolAtLocation(node.name);
+}
+
 function slugFor(name, kind, used) {
   const safeName = name.replace(/[^A-Za-z0-9_$.-]/g, '-');
   const base = `${safeName}:${kind}`;
@@ -150,46 +205,47 @@ function slugFor(name, kind, used) {
 }
 
 function publicExports() {
-  const source = program.getSourceFile(entry);
-  if (!source) throw new Error(`Cannot read ${entry}`);
-
-  const moduleSymbol = checker.getSymbolAtLocation(source);
-  if (!moduleSymbol) throw new Error('Cannot resolve seyfert module symbol');
-
   const used = new Map();
+  const entries = [];
 
-  return checker
-    .getExportsOfModule(moduleSymbol)
-    .map((exportSymbol) => {
-      const name = exportSymbol.getName();
-      if (name.startsWith('__')) return undefined;
+  for (const file of declarations) {
+    const source = program.getSourceFile(file);
+    if (!source) continue;
 
-      const resolved =
-        exportSymbol.flags & ts.SymbolFlags.Alias
-          ? checker.getAliasedSymbol(exportSymbol)
-          : exportSymbol;
-      const declarations = resolved.getDeclarations() ?? exportSymbol.getDeclarations() ?? [];
-      const declaration = declarations.find((node) => kindMap.has(node.kind));
-      if (!declaration) return undefined;
+    for (const declaration of exportedDeclarations(source)) {
+      const name = declarationName(declaration);
+      if (!name || name.startsWith('__')) continue;
+
+      const symbol = declarationSymbol(declaration);
+      if (!symbol) continue;
 
       const kind = kindMap.get(declaration.kind);
-      const summary = documentation(resolved) || documentation(exportSymbol);
-
-      return {
+      entries.push({
         name,
         kind,
         slug: slugFor(name, kind, used),
-        summary,
+        summary: documentation(symbol),
         source: sourcePath(declaration),
-        signature: declarationSignature(name, kind, declaration, resolved),
+        signature: declarationSignature(name, kind, declaration, symbol),
         members: membersFor(declaration),
-      };
-    })
-    .filter(Boolean)
+      });
+    }
+  }
+
+  return entries
     .sort((a, b) => a.name.localeCompare(b.name) || a.kind.localeCompare(b.kind));
 }
 
 const entries = publicExports();
+const entryManifest = entries.map((entry) => ({
+  name: entry.name,
+  kind: entry.kind,
+  slug: entry.slug,
+  summary: entry.summary,
+}));
+const entryDetails = Object.fromEntries(
+  entries.map((entry) => [entry.slug, entry]),
+);
 
 fs.mkdirSync(path.dirname(output), { recursive: true });
 fs.writeFileSync(
@@ -208,6 +264,8 @@ fs.writeFileSync(
     `  kind: ApiKind;\n` +
     `  slug: string;\n` +
     `  summary: string;\n` +
+    `};\n\n` +
+    `export type ApiEntryDetail = ApiEntry & {\n` +
     `  source: string;\n` +
     `  signature: string;\n` +
     `  members: ApiMember[];\n` +
@@ -217,7 +275,15 @@ fs.writeFileSync(
       null,
       2,
     )} as const;\n\n` +
-    `export const apiEntries = ${JSON.stringify(entries, null, 2)} satisfies readonly ApiEntry[];\n`,
+    `export const apiEntries = ${JSON.stringify(entryManifest, null, 2)} satisfies readonly ApiEntry[];\n`,
+);
+
+fs.writeFileSync(
+  detailsOutput,
+  `// This file is generated by scripts/generate-api-reference.mjs.\n` +
+    `// Do not edit it by hand.\n\n` +
+    `import type { ApiEntryDetail } from './generated';\n\n` +
+    `export const apiEntryDetails = ${JSON.stringify(entryDetails, null, 2)} satisfies Record<string, ApiEntryDetail>;\n`,
 );
 
 console.log(`Generated ${entries.length} API exports in ${path.relative(root, output)}`);

@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "api:generate": "node scripts/generate-api-reference.mjs",
+    "prebuild": "pnpm api:generate",
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint .",
-    "postinstall": "fumadocs-mdx",
+    "postinstall": "fumadocs-mdx && pnpm api:generate",
     "start": "next start"
   },
   "dependencies": {
@@ -37,7 +38,7 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "recharts": "^3.8.1",
-    "seyfert": "^4.3.0",
+    "seyfert": "4.3.0",
     "shiki": "^4.2.0",
     "tailwind-merge": "^3.6.0",
     "tailwindcss-animate": "^1.0.7",

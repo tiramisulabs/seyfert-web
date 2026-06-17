@@ -1,7 +1,7 @@
 import { DocsLayout } from "fumadocs-ui/layouts/notebook";
 import type { LayoutTab } from "fumadocs-ui/layouts/shared";
 import type * as PageTree from "fumadocs-core/page-tree";
-import { createElement, type ReactNode } from "react";
+import { createElement, type CSSProperties, type ReactNode } from "react";
 import {
   Box,
   Component as InterfaceIcon,
@@ -56,7 +56,9 @@ function apiKindIcon(kind: ApiKind) {
   return createElement(Icon, {
     key: `api-${kind}-icon`,
     size: 16,
-    className: apiKindStyles[kind].icon,
+    style: {
+      "--seyfert-sidebar-icon-color": apiKindStyles[kind].iconColor,
+    } as CSSProperties,
   });
 }
 
@@ -70,6 +72,15 @@ function apiRootIndex(node: PageTree.Folder): PageTree.Item {
   };
 }
 
+function apiKindOverview(kind: ApiKind): PageTree.Item {
+  return {
+    type: "page",
+    $id: `api-kind-${kind.toLowerCase()}-overview`,
+    name: "Overview",
+    url: apiKindUrl(kind),
+  };
+}
+
 function apiFolder(kind: ApiKind): PageTree.Folder | undefined {
   const entries = apiEntries.filter((entry) => entry.kind === kind);
   if (entries.length === 0) return undefined;
@@ -79,21 +90,17 @@ function apiFolder(kind: ApiKind): PageTree.Folder | undefined {
     $id: `api-${kind.toLowerCase()}`,
     name: apiKindLabel[kind],
     icon: apiKindIcon(kind),
-    index: {
-      type: "page",
-      $id: `api-kind-${kind.toLowerCase()}`,
-      name: apiKindLabel[kind],
-      url: apiKindUrl(kind),
-      icon: apiKindIcon(kind),
-    },
     defaultOpen: false,
-    children: entries.map((entry) => ({
-      type: "page",
-      $id: `api-entry-${entry.slug}`,
-      name: entry.name,
-      url: apiEntryUrl(entry),
-      description: entry.summary,
-    })),
+    children: [
+      apiKindOverview(kind),
+      ...entries.map((entry) => ({
+        type: "page" as const,
+        $id: `api-entry-${entry.slug}`,
+        name: entry.name,
+        url: apiEntryUrl(entry),
+        description: entry.summary,
+      })),
+    ],
   };
 }
 
@@ -105,17 +112,57 @@ function isApiRootFolder(node: PageTree.Folder) {
   );
 }
 
+function isRecipesRootFolder(node: PageTree.Folder) {
+  return node.root === true && firstUrl(node)?.startsWith("/guide/recipes");
+}
+
+function groupRecipeSections(children: PageTree.Node[]) {
+  const grouped: PageTree.Node[] = [];
+  let currentFolder: PageTree.Folder | undefined;
+  let sectionIndex = 0;
+
+  for (const child of children) {
+    if (child.type === "separator" && child.name) {
+      currentFolder = {
+        type: "folder",
+        $id: `${child.$id ?? "recipes-section"}-${sectionIndex}`,
+        name: child.name,
+        icon: child.icon,
+        defaultOpen: true,
+        children: [],
+      };
+      grouped.push(currentFolder);
+      sectionIndex += 1;
+      continue;
+    }
+
+    if (currentFolder) {
+      currentFolder.children.push(child);
+      continue;
+    }
+
+    grouped.push(child);
+  }
+
+  return grouped;
+}
+
 function withApiReference(node: PageTree.Node): PageTree.Node {
   if (node.type !== "folder") return node;
 
   if (isApiRootFolder(node)) {
+    const overview = apiRootIndex(node);
+
     return {
       ...node,
-      index: apiRootIndex(node),
-      children: apiKindOrder.flatMap((kind) => {
-        const folder = apiFolder(kind);
-        return folder ? [folder] : [];
-      }),
+      index: overview,
+      children: [
+        overview,
+        ...apiKindOrder.flatMap((kind) => {
+          const folder = apiFolder(kind);
+          return folder ? [folder] : [];
+        }),
+      ],
     };
   }
 
@@ -125,11 +172,29 @@ function withApiReference(node: PageTree.Node): PageTree.Node {
   };
 }
 
+function withRecipeFolders(node: PageTree.Node): PageTree.Node {
+  if (node.type !== "folder") return node;
+
+  const children = node.children.map(withRecipeFolders);
+
+  if (isRecipesRootFolder({ ...node, children })) {
+    return {
+      ...node,
+      children: groupRecipeSections(children),
+    };
+  }
+
+  return {
+    ...node,
+    children,
+  };
+}
+
 function createApiPageTree(tree: PageTree.Root): PageTree.Root {
   return {
     ...tree,
     $id: `${tree.$id ?? "guide-root"}-with-api`,
-    children: tree.children.map(withApiReference),
+    children: tree.children.map((node) => withRecipeFolders(withApiReference(node))),
   };
 }
 

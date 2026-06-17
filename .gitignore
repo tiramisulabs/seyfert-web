@@ -27,8 +27,10 @@ yarn-error.log*
 .vercel
 next-env.d.ts
 
-# api reference (this is generated on vercel side)
+# api reference (generated on Vercel/local build)
 /content/docs
+/lib/api-reference/generated.ts
+/lib/api-reference/details.ts
 # brainstorming companion
 .superpowers/
 .playwright-mcp/

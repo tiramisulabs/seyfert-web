@@ -14,6 +14,7 @@ import {
   apiEntries,
   apiPackage,
   type ApiEntry,
+  type ApiEntryDetail,
   type ApiMember,
   type ApiKind,
 } from '@/lib/api-reference/generated';
@@ -58,6 +59,18 @@ for (const entry of apiEntries) {
 const fallbackTypeNames = [...entriesByName.keys()]
   .filter((name) => name.length >= 4)
   .sort((a, b) => b.length - a.length);
+
+const featuredEntries = featuredNames.flatMap((name) => {
+  const entry = entriesByName.get(name);
+  return entry ? [entry] : [];
+});
+
+async function detailFor(entry: ApiEntry) {
+  const { apiEntryDetails } = await import('@/lib/api-reference/details');
+  const details = apiEntryDetails as Partial<Record<string, ApiEntryDetail>>;
+
+  return details[entry.slug];
+}
 
 function getApiTarget(apiSlug: string[]): ApiTarget | undefined {
   if (apiSlug.length === 0) return { type: 'index' };
@@ -122,14 +135,10 @@ function EntryRow({ entry }: { entry: ApiEntry }) {
   return (
     <Link
       href={entryHref(entry)}
-      className={`group grid gap-1 rounded-lg border border-transparent px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring ${apiKindStyles[entry.kind].rowHover}`}
+      className="group grid gap-1 rounded-lg border border-transparent px-3 py-2 transition-colors hover:border-fd-border hover:bg-fd-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring"
     >
       <span className="flex min-w-0 items-center gap-2">
-        <span
-          className={`size-1.5 shrink-0 rounded-full ${apiKindStyles[entry.kind].dot}`}
-          aria-hidden
-        />
-        <code className={`truncate text-[13px] font-semibold ${apiKindStyles[entry.kind].name}`}>
+        <code className="truncate text-[13px] font-semibold text-fd-foreground">
           {entry.name}
         </code>
         <KindBadge kind={entry.kind} />
@@ -148,18 +157,12 @@ function ApiKindCard({ kind }: { kind: ApiKind }) {
   return (
     <Link
       href={kindHref(kind)}
-      className={`group rounded-lg border border-fd-border bg-fd-background p-4 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring ${apiKindStyles[kind].rowHover}`}
+      className="group rounded-lg border border-fd-border bg-fd-background p-4 transition-colors hover:bg-fd-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring"
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="space-y-1">
-          <h2 className="text-base font-semibold text-fd-foreground">
-            {apiKindLabel[kind]}
-          </h2>
-          <p className="text-xs leading-5 text-fd-muted-foreground">
-            {entries.length} public {apiKindLabel[kind].toLowerCase()} exported by{' '}
-            {apiPackage.name}.
-          </p>
-        </div>
+        <h2 className="text-base font-semibold text-fd-foreground">
+          {apiKindLabel[kind]}
+        </h2>
         <KindBadge kind={kind} />
       </div>
       {preview.length > 0 && (
@@ -179,33 +182,8 @@ function ApiKindCard({ kind }: { kind: ApiKind }) {
 }
 
 function ApiIndex() {
-  const featured = featuredNames
-    .flatMap((name) => {
-      const entry = apiEntries.find((candidate) => candidate.name === name);
-      return entry ? [entry] : [];
-    });
-
   return (
     <div className="not-prose space-y-8">
-      <section
-        id="overview"
-        className="rounded-lg border border-fd-border bg-fd-secondary/30 p-4"
-      >
-        <div className="flex flex-wrap items-center gap-2 text-sm text-fd-muted-foreground">
-          <span>
-            <strong className="font-semibold text-fd-foreground">{apiEntries.length}</strong>{' '}
-            exports
-          </span>
-          <span aria-hidden>/</span>
-          <span>
-            <strong className="font-semibold text-fd-foreground">{apiPackage.name}</strong>{' '}
-            {apiPackage.version}
-          </span>
-          <span aria-hidden>/</span>
-          <span>generated from TypeScript declarations</span>
-        </div>
-      </section>
-
       <section id="types" className="space-y-3">
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="text-base font-semibold text-fd-foreground">Browse by type</h2>
@@ -218,11 +196,11 @@ function ApiIndex() {
         </div>
       </section>
 
-      {featured.length > 0 && (
+      {featuredEntries.length > 0 && (
         <section id="featured" className="space-y-3">
           <h2 className="text-base font-semibold text-fd-foreground">Featured exports</h2>
           <div className="grid gap-2 sm:grid-cols-2">
-            {featured.map((entry) => (
+            {featuredEntries.map((entry) => (
               <EntryRow key={entry.slug} entry={entry} />
             ))}
           </div>
@@ -239,9 +217,10 @@ function ApiKindPage({ kind }: { kind: ApiKind }) {
     <div className="not-prose space-y-6">
       <section
         id="overview"
-        className={`rounded-lg border p-4 ${apiKindStyles[kind].badge}`}
+        className="rounded-lg border border-fd-border bg-fd-secondary/30 p-4"
       >
         <div className="flex flex-wrap items-center gap-2 text-sm">
+          <KindBadge kind={kind} />
           <strong className="font-semibold">{entries.length}</strong>
           <span>{apiKindLabel[kind].toLowerCase()}</span>
           <span aria-hidden>/</span>
@@ -268,7 +247,7 @@ function ApiKindPage({ kind }: { kind: ApiKind }) {
   );
 }
 
-function SourceLine({ entry }: { entry: ApiEntry }) {
+function SourceLine({ entry }: { entry: ApiEntryDetail }) {
   return (
     <div className="not-prose flex flex-wrap items-center gap-2 text-xs text-fd-muted-foreground">
       <KindBadge kind={entry.kind} />
@@ -323,16 +302,14 @@ function linkedEntryForToken(token: string) {
 function CodeToken({
   children,
   highlightName,
-  kind,
 }: {
   children: string;
   highlightName?: string;
-  kind: ApiKind;
 }) {
   if (/^\s+$/.test(children)) return children;
 
   if (children === highlightName) {
-    return <span className={apiKindStyles[kind].codeName}>{children}</span>;
+    return <span className="font-semibold text-zinc-50">{children}</span>;
   }
 
   if (codeKeywords.has(children)) {
@@ -345,7 +322,7 @@ function CodeToken({
       <Link
         href={entryHref(linkedEntry)}
         prefetch={false}
-        className={`${apiKindStyles[linkedEntry.kind].codeName} rounded-sm underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60`}
+        className="rounded-sm text-sky-300 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60"
         title={linkedEntry.name === children ? undefined : `Open ${linkedEntry.name}`}
       >
         {children}
@@ -375,17 +352,15 @@ function CodeToken({
 function HighlightedCode({
   children,
   highlightName,
-  kind,
 }: {
   children: string;
   highlightName?: string;
-  kind: ApiKind;
 }) {
   return children
     .split(codeTokenPattern)
     .filter(Boolean)
     .map((part, index) => (
-      <CodeToken key={`${part}-${index}`} highlightName={highlightName} kind={kind}>
+      <CodeToken key={`${part}-${index}`} highlightName={highlightName}>
         {part}
       </CodeToken>
     ));
@@ -394,16 +369,14 @@ function HighlightedCode({
 function CodePanel({
   children,
   highlightName,
-  kind,
 }: {
   children: string;
   highlightName?: string;
-  kind: ApiKind;
 }) {
   return (
     <pre className="not-prose overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-950 p-4 text-[13px] leading-6 text-zinc-100 shadow-sm">
       <code className="block min-w-max">
-        <HighlightedCode highlightName={highlightName} kind={kind}>
+        <HighlightedCode highlightName={highlightName}>
           {children}
         </HighlightedCode>
       </code>
@@ -430,7 +403,7 @@ function memberId(member: IndexedMember) {
   );
 }
 
-function memberGroups(entry: ApiEntry) {
+function memberGroups(entry: ApiEntryDetail) {
   const groups = {
     properties: [] as IndexedMember[],
     methods: [] as IndexedMember[],
@@ -493,7 +466,7 @@ function MemberOverviewCard({
   );
 }
 
-function MemberOverview({ entry }: { entry: ApiEntry }) {
+function MemberOverview({ entry }: { entry: ApiEntryDetail }) {
   const groups = memberGroups(entry);
 
   if (entry.members.length === 0) {
@@ -527,13 +500,7 @@ function MemberOverview({ entry }: { entry: ApiEntry }) {
   );
 }
 
-function MemberDetailList({
-  entry,
-  members,
-}: {
-  entry: ApiEntry;
-  members: IndexedMember[];
-}) {
+function MemberDetailList({ members }: { members: IndexedMember[] }) {
   if (members.length === 0) return null;
 
   return (
@@ -541,7 +508,7 @@ function MemberDetailList({
       {members.map((member) => (
         <article id={memberId(member)} key={memberId(member)} className="scroll-mt-24 space-y-2 p-4">
           <div className="flex flex-wrap items-center gap-2">
-            <code className={`text-sm font-semibold ${apiKindStyles[entry.kind].name}`}>
+            <code className="text-sm font-semibold text-fd-foreground">
               {member.name}
             </code>
             <span className="rounded-md bg-fd-secondary px-1.5 py-0.5 text-[11px] font-medium text-fd-muted-foreground">
@@ -551,7 +518,7 @@ function MemberDetailList({
           {member.summary && (
             <p className="text-sm leading-6 text-fd-muted-foreground">{member.summary}</p>
           )}
-          <CodePanel highlightName={member.name} kind={entry.kind}>
+          <CodePanel highlightName={member.name}>
             {member.signature}
           </CodePanel>
         </article>
@@ -560,7 +527,7 @@ function MemberDetailList({
   );
 }
 
-function MemberSections({ entry }: { entry: ApiEntry }) {
+function MemberSections({ entry }: { entry: ApiEntryDetail }) {
   if (entry.members.length === 0) {
     return null;
   }
@@ -572,26 +539,26 @@ function MemberSections({ entry }: { entry: ApiEntry }) {
       {groups.properties.length > 0 && (
         <section id="properties" className="space-y-3">
           <h2 className="text-base font-semibold text-fd-foreground">Properties</h2>
-          <MemberDetailList entry={entry} members={groups.properties} />
+          <MemberDetailList members={groups.properties} />
         </section>
       )}
       {groups.methods.length > 0 && (
         <section id="methods" className="space-y-3">
           <h2 className="text-base font-semibold text-fd-foreground">Methods</h2>
-          <MemberDetailList entry={entry} members={groups.methods} />
+          <MemberDetailList members={groups.methods} />
         </section>
       )}
       {groups.other.length > 0 && (
         <section id="other-members" className="space-y-3">
           <h2 className="text-base font-semibold text-fd-foreground">Other Members</h2>
-          <MemberDetailList entry={entry} members={groups.other} />
+          <MemberDetailList members={groups.other} />
         </section>
       )}
     </div>
   );
 }
 
-function ApiDetail({ entry }: { entry: ApiEntry }) {
+function ApiDetail({ entry }: { entry: ApiEntryDetail }) {
   return (
     <div className="not-prose space-y-8">
       <SourceLine entry={entry} />
@@ -600,7 +567,7 @@ function ApiDetail({ entry }: { entry: ApiEntry }) {
 
       <section id="signature" className="space-y-3">
         <h2 className="text-base font-semibold text-fd-foreground">Signature</h2>
-        <CodePanel highlightName={entry.name} kind={entry.kind}>
+        <CodePanel highlightName={entry.name}>
           {entry.signature}
         </CodePanel>
       </section>
@@ -610,7 +577,7 @@ function ApiDetail({ entry }: { entry: ApiEntry }) {
   );
 }
 
-function entryTocItems(entry: ApiEntry) {
+function entryTocItems(entry: ApiEntryDetail) {
   const groups = memberGroups(entry);
 
   return [
@@ -622,13 +589,15 @@ function entryTocItems(entry: ApiEntry) {
   ];
 }
 
+export const dynamicParams = true;
+
 export function generateStaticParams() {
   return [
     { apiSlug: [] },
     ...apiKindOrder.map((kind) => ({
       apiSlug: [apiKindSlug[kind]],
     })),
-    ...apiEntries.map((entry) => ({
+    ...featuredEntries.map((entry) => ({
       apiSlug: [entry.slug],
     })),
   ];
@@ -676,45 +645,36 @@ export default async function ApiPage({
 
   if (!target) notFound();
 
-  const title =
-    target.type === 'entry'
-      ? target.entry.name
-      : target.type === 'kind'
-        ? apiKindLabel[target.kind]
-        : 'API Reference';
-  const description =
-    target.type === 'entry'
-      ? summaryFor(target.entry)
-      : target.type === 'kind'
-        ? `${entriesByKind(target.kind).length} public ${apiKindLabel[target.kind].toLowerCase()} exported by ${apiPackage.name}.`
-        : `Public TypeScript exports from ${apiPackage.name} ${apiPackage.version}.`;
-  const tocItems =
-    target.type === 'entry'
-      ? entryTocItems(target.entry)
-      : target.type === 'kind'
-        ? [
-            { title: 'Overview', url: '#overview' },
-            { title: 'Exports', url: '#exports' },
-          ]
-        : [
-            { title: 'Overview', url: '#overview' },
-            { title: 'Browse by type', url: '#types' },
-            { title: 'Featured exports', url: '#featured' },
-          ];
-  const titleClass =
-    target.type === 'entry'
-      ? apiKindStyles[target.entry.kind].name
-      : target.type === 'kind'
-        ? apiKindStyles[target.kind].name
-        : '';
-  const body =
-    target.type === 'entry' ? (
-      <ApiDetail entry={target.entry} />
-    ) : target.type === 'kind' ? (
-      <ApiKindPage kind={target.kind} />
-    ) : (
-      <ApiIndex />
-    );
+  let title: string;
+  let description: string;
+  let tocItems: Array<{ title: string; url: string; depth?: number }>;
+  let body: ReactNode;
+
+  if (target.type === 'entry') {
+    const entry = await detailFor(target.entry);
+    if (!entry) notFound();
+
+    title = entry.name;
+    description = summaryFor(entry);
+    tocItems = entryTocItems(entry);
+    body = <ApiDetail entry={entry} />;
+  } else if (target.type === 'kind') {
+    title = apiKindLabel[target.kind];
+    description = `${entriesByKind(target.kind).length} public ${apiKindLabel[target.kind].toLowerCase()} exported by ${apiPackage.name}.`;
+    tocItems = [
+      { title: 'Overview', url: '#overview' },
+      { title: 'Exports', url: '#exports' },
+    ];
+    body = <ApiKindPage kind={target.kind} />;
+  } else {
+    title = 'API Reference';
+    description = `Public TypeScript exports from ${apiPackage.name} ${apiPackage.version}.`;
+    tocItems = [
+      { title: 'Browse by type', url: '#types' },
+      { title: 'Featured exports', url: '#featured' },
+    ];
+    body = <ApiIndex />;
+  }
 
   return (
     <DocsPage
@@ -724,7 +684,7 @@ export default async function ApiPage({
     >
       <DocsTitle
         id="_top"
-        className={`scroll-mt-24 text-balance text-[2.35rem] font-bold leading-[1.1] ${titleClass}`}
+        className="scroll-mt-24 text-balance text-[2.35rem] font-bold leading-[1.1]"
       >
         {title}
       </DocsTitle>
