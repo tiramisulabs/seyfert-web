@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { codeToTokens } from 'shiki';
 import type { ThemeRegistrationAny } from 'shiki/types';
-import { Box, Wrench } from 'lucide-react';
+import { Box, ExternalLink, Wrench } from 'lucide-react';
 import {
   DocsBody,
   DocsDescription,
   DocsPage,
   DocsTitle,
 } from 'fumadocs-ui/layouts/notebook/page';
+import { config } from '@/app.config';
 import { TocRail } from '@/components/docs/toc-rail';
 import dacezuTheme from '@/dacezu.json';
 import {
@@ -105,6 +106,18 @@ function kindHref(kind: ApiKind) {
   return `/docs/api/${apiKindSlug[kind]}`;
 }
 
+function githubSourceUrl(source: string) {
+  if (!source.startsWith(`${apiPackage.name}/lib/`)) {
+    return `https://github.com/${config.repository}`;
+  }
+
+  const implementationPath = source
+    .replace(`${apiPackage.name}/lib/`, 'src/')
+    .replace(/\.d\.ts$/, '.ts');
+
+  return `https://github.com/${config.repository}/blob/main/${implementationPath}`;
+}
+
 function summaryFor(entry: ApiEntry) {
   return entry.summary || `Public ${apiKindSingleLabel[entry.kind].toLowerCase()} exported by ${apiPackage.name}.`;
 }
@@ -173,7 +186,15 @@ function ApiKindCard({ kind }: { kind: ApiKind }) {
         <h2 className="text-base font-semibold text-fd-foreground">
           {apiKindLabel[kind]}
         </h2>
-        <KindBadge kind={kind} />
+        <div className="flex shrink-0 items-center gap-1.5">
+          <KindBadge kind={kind} />
+          <span
+            className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-fd-border bg-fd-secondary px-1.5 text-[11px] font-semibold text-fd-muted-foreground"
+            aria-label={`${entries.length} ${apiKindLabel[kind].toLowerCase()}`}
+          >
+            {entries.length}
+          </span>
+        </div>
       </div>
       {preview.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-1.5">
@@ -258,12 +279,29 @@ function ApiKindPage({ kind }: { kind: ApiKind }) {
 }
 
 function SourceLine({ entry }: { entry: ApiEntryDetail }) {
+  const sourceUrl = githubSourceUrl(entry.source);
+
   return (
-    <div className="not-prose flex flex-wrap items-center gap-2 text-xs text-fd-muted-foreground">
+    <div className="not-prose flex min-w-0 flex-wrap items-center gap-2 text-xs text-fd-muted-foreground">
       <KindBadge kind={entry.kind} />
-      <span>{apiPackage.name}</span>
+      <a
+        href={`https://github.com/${config.repository}`}
+        target="_blank"
+        rel="noreferrer"
+        className="rounded-sm transition-colors hover:text-fd-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring"
+      >
+        {apiPackage.name}
+      </a>
       <span aria-hidden>/</span>
-      <code className="rounded-md bg-fd-secondary px-1.5 py-0.5">{entry.source}</code>
+      <a
+        href={sourceUrl}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex min-w-0 max-w-full items-center gap-1 rounded-md bg-fd-secondary px-1.5 py-0.5 font-mono transition-colors hover:text-fd-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring"
+      >
+        <span className="min-w-0 break-all">{entry.source}</span>
+        <ExternalLink className="size-3 shrink-0" aria-hidden />
+      </a>
     </div>
   );
 }
@@ -503,12 +541,12 @@ function MemberOverview({ entry }: { entry: ApiEntryDetail }) {
   return (
     <div id="members" className="grid gap-3 md:grid-cols-2">
       <MemberOverviewCard
-        icon={<Wrench className="size-5 text-fd-muted-foreground" aria-hidden />}
+        icon={<Wrench className="size-5 text-amber-600 dark:text-amber-300" aria-hidden />}
         members={groups.properties}
         title="Properties"
       />
       <MemberOverviewCard
-        icon={<Box className="size-5 text-fd-muted-foreground" aria-hidden />}
+        icon={<Box className="size-5 text-indigo-600 dark:text-indigo-300" aria-hidden />}
         members={groups.methods}
         title="Methods"
       />
@@ -579,14 +617,14 @@ function ApiDetail({ entry }: { entry: ApiEntryDetail }) {
     <div className="not-prose space-y-8">
       <SourceLine entry={entry} />
 
-      <MemberOverview entry={entry} />
-
       <section id="signature" className="space-y-3">
         <h2 className="text-base font-semibold text-fd-foreground">Signature</h2>
         <CodePanel highlightName={entry.name}>
           {entry.signature}
         </CodePanel>
       </section>
+
+      <MemberOverview entry={entry} />
 
       <MemberSections entry={entry} />
     </div>
@@ -597,8 +635,8 @@ function entryTocItems(entry: ApiEntryDetail) {
   const groups = memberGroups(entry);
 
   return [
-    { title: 'Members', url: '#members' },
     { title: 'Signature', url: '#signature' },
+    { title: 'Members', url: '#members' },
     ...(groups.properties.length > 0 ? [{ title: 'Properties', url: '#properties' }] : []),
     ...(groups.methods.length > 0 ? [{ title: 'Methods', url: '#methods' }] : []),
     ...(groups.other.length > 0 ? [{ title: 'Other Members', url: '#other-members' }] : []),
@@ -700,7 +738,7 @@ export default async function ApiPage({
     >
       <DocsTitle
         id="_top"
-        className="scroll-mt-24 text-balance text-[2.35rem] font-bold leading-[1.1]"
+        className="scroll-mt-24 max-w-full text-balance text-[2.35rem] font-bold leading-[1.1] [overflow-wrap:anywhere]"
       >
         {title}
       </DocsTitle>
