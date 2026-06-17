@@ -24,7 +24,7 @@ const iconSidebarColors: Partial<Record<keyof typeof icons, string>> = {
 };
 
 export const guideSource = loader({
-  baseUrl: '/guide',
+  baseUrl: '/docs',
   source: guide.toFumadocsSource(),
   icon(name) {
     if (name && name in icons) {

@@ -87,7 +87,7 @@ export async function SpiralHome() {
                                 asChild
                                 className="group h-10 cursor-pointer gap-2 rounded-none bg-[#f8f1e4] px-12 text-sm font-semibold text-[var(--space-void)] shadow-[0_0_34px_8px_rgba(240,206,142,0.36)] transition-all hover:bg-white hover:shadow-[0_0_48px_13px_rgba(240,206,142,0.52)]"
                             >
-                                <Link href="/guide/learn/getting-started">
+                                <Link href="/docs/learn/getting-started">
                                     Get started
                                     <ArrowRight aria-hidden className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                                 </Link>

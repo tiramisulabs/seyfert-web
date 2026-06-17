@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { codeToTokens } from 'shiki';
+import type { ThemeRegistrationAny } from 'shiki/types';
 import { Box, Wrench } from 'lucide-react';
 import {
   DocsBody,
@@ -10,6 +12,7 @@ import {
   DocsTitle,
 } from 'fumadocs-ui/layouts/notebook/page';
 import { TocRail } from '@/components/docs/toc-rail';
+import dacezuTheme from '@/dacezu.json';
 import {
   apiEntries,
   apiPackage,
@@ -31,6 +34,13 @@ type ApiTarget =
   | { type: 'index' }
   | { type: 'kind'; kind: ApiKind }
   | { type: 'entry'; entry: ApiEntry };
+type ApiCodeToken = {
+  content: string;
+  color?: string;
+  bgColor?: string;
+  htmlStyle?: Record<string, string>;
+};
+type ShikiStyle = CSSProperties & Record<`--${string}`, string | undefined>;
 
 const featuredNames = [
   'Client',
@@ -88,11 +98,11 @@ function entriesByKind(kind: ApiKind) {
 }
 
 function entryHref(entry: ApiEntry) {
-  return `/guide/api/${entry.slug}`;
+  return `/docs/api/${entry.slug}`;
 }
 
 function kindHref(kind: ApiKind) {
-  return `/guide/api/${apiKindSlug[kind]}`;
+  return `/docs/api/${apiKindSlug[kind]}`;
 }
 
 function summaryFor(entry: ApiEntry) {
@@ -258,34 +268,12 @@ function SourceLine({ entry }: { entry: ApiEntryDetail }) {
   );
 }
 
-const codeKeywords = new Set([
-  'abstract',
-  'as',
-  'async',
-  'class',
-  'const',
-  'constructor',
-  'declare',
-  'enum',
-  'export',
-  'extends',
-  'function',
-  'get',
-  'implements',
-  'import',
-  'interface',
-  'new',
-  'private',
-  'protected',
-  'public',
-  'readonly',
-  'set',
-  'static',
-  'type',
-]);
-
 const codeTokenPattern =
   /(\s+|=>|\.{3}|["'`][^"'`]*["'`]|[A-Za-z_$][\w$]*|\d+|[{}()[\]<>.,;:=?&|*/+-])/g;
+const codeThemes = {
+  light: 'min-light',
+  dark: dacezuTheme as ThemeRegistrationAny,
+};
 
 function linkedEntryForToken(token: string) {
   const exactEntry = entriesByName.get(token);
@@ -302,19 +290,13 @@ function linkedEntryForToken(token: string) {
 function CodeToken({
   children,
   highlightName,
+  style,
 }: {
   children: string;
   highlightName?: string;
+  style: ShikiStyle;
 }) {
   if (/^\s+$/.test(children)) return children;
-
-  if (children === highlightName) {
-    return <span className="font-semibold text-zinc-50">{children}</span>;
-  }
-
-  if (codeKeywords.has(children)) {
-    return <span className="text-fuchsia-300">{children}</span>;
-  }
 
   const linkedEntry = linkedEntryForToken(children);
   if (linkedEntry) {
@@ -322,7 +304,8 @@ function CodeToken({
       <Link
         href={entryHref(linkedEntry)}
         prefetch={false}
-        className="rounded-sm text-sky-300 underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300/60"
+        className="rounded-sm text-(--shiki-light) underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring dark:text-(--shiki-dark)"
+        style={style}
         title={linkedEntry.name === children ? undefined : `Open ${linkedEntry.name}`}
       >
         {children}
@@ -330,55 +313,88 @@ function CodeToken({
     );
   }
 
-  if (/^["'`]/.test(children)) {
-    return <span className="text-amber-200">{children}</span>;
-  }
-
-  if (/^[A-Z]/.test(children)) {
-    return <span className="text-sky-200">{children}</span>;
-  }
-
-  if (/^\d+$/.test(children)) {
-    return <span className="text-amber-200">{children}</span>;
-  }
-
-  if (/^[{}()[\]<>.,;:=?&|*/+-]+$/.test(children) || children === '=>') {
-    return <span className="text-zinc-500">{children}</span>;
-  }
-
-  return children;
+  return (
+    <span className={children === highlightName ? 'font-semibold' : undefined} style={style}>
+      {children}
+    </span>
+  );
 }
 
 function HighlightedCode({
-  children,
   highlightName,
+  lines,
 }: {
-  children: string;
   highlightName?: string;
+  lines: ApiCodeToken[][];
 }) {
-  return children
-    .split(codeTokenPattern)
-    .filter(Boolean)
-    .map((part, index) => (
-      <CodeToken key={`${part}-${index}`} highlightName={highlightName}>
-        {part}
-      </CodeToken>
-    ));
+  return lines.map((line, lineIndex) => (
+    <span key={lineIndex} className="line block">
+      {line.flatMap((token, tokenIndex) => {
+        const style = tokenStyle(token);
+
+        return token.content
+          .split(codeTokenPattern)
+          .filter(Boolean)
+          .map((part, partIndex) => (
+            <CodeToken
+              key={`${lineIndex}-${tokenIndex}-${partIndex}`}
+              highlightName={highlightName}
+              style={style}
+            >
+              {part}
+            </CodeToken>
+          ));
+      })}
+    </span>
+  ));
 }
 
-function CodePanel({
+function shikiValue(value: string | undefined, fallback: string) {
+  return value?.split(';')[0] || fallback;
+}
+
+function shikiVar(value: string | undefined, name: string, fallback: string) {
+  const match = value?.match(new RegExp(`${name}:([^;]+)`));
+
+  return match?.[1] ?? fallback;
+}
+
+function tokenStyle(token: ApiCodeToken): ShikiStyle {
+  const htmlStyle = token.htmlStyle ?? {};
+
+  return {
+    '--shiki-light': htmlStyle.color ?? token.color,
+    '--shiki-dark': htmlStyle['--shiki-dark'],
+    '--shiki-light-font-style': htmlStyle.fontStyle,
+    '--shiki-dark-font-style': htmlStyle['--shiki-dark-font-style'],
+  };
+}
+
+async function CodePanel({
   children,
   highlightName,
 }: {
   children: string;
   highlightName?: string;
 }) {
+  const highlighted = await codeToTokens(children, {
+    lang: 'ts',
+    themes: codeThemes,
+  });
+  const style = {
+    '--shiki-light': shikiValue(highlighted.fg, '#24292eff'),
+    '--shiki-dark': shikiVar(highlighted.fg, '--shiki-dark', '#bbbbbb'),
+    '--shiki-light-bg': shikiValue(highlighted.bg, '#ffffff'),
+    '--shiki-dark-bg': shikiVar(highlighted.bg, '--shiki-dark-bg', '#101010'),
+  } as ShikiStyle;
+
   return (
-    <pre className="not-prose overflow-x-auto rounded-lg border border-zinc-800 bg-zinc-950 p-4 text-[13px] leading-6 text-zinc-100 shadow-sm">
+    <pre
+      className="shiki not-prose overflow-x-auto rounded-lg border border-fd-border bg-(--shiki-light-bg) py-4 text-[13px] leading-6 shadow-sm dark:bg-(--shiki-dark-bg)"
+      style={style}
+    >
       <code className="block min-w-max">
-        <HighlightedCode highlightName={highlightName}>
-          {children}
-        </HighlightedCode>
+        <HighlightedCode highlightName={highlightName} lines={highlighted.tokens} />
       </code>
     </pre>
   );

@@ -39,42 +39,52 @@ const config = {
     return [
       {
         source: "/guide",
-        destination: "/guide/learn/getting-started",
+        destination: "/docs/learn/getting-started",
         permanent: true,
       },
       {
-        source: "/guide/learn",
-        destination: "/guide/learn/getting-started",
+        source: "/guide/:slug*",
+        destination: "/docs/:slug*",
         permanent: true,
       },
       {
-        source: "/guide/tips/ecosystem",
-        destination: "/guide/plugins/using/ecosystem",
+        source: "/docs",
+        destination: "/docs/learn/getting-started",
         permanent: true,
       },
       {
-        source: "/guide/recipes/creating-plugins",
-        destination: "/guide/plugins/building/creating-plugins",
+        source: "/docs/learn",
+        destination: "/docs/learn/getting-started",
         permanent: true,
       },
       {
-        source: "/guide/plugins",
-        destination: "/guide/plugins/using",
+        source: "/docs/tips/ecosystem",
+        destination: "/docs/plugins/using/ecosystem",
         permanent: true,
       },
       {
-        source: "/guide/plugins/ecosystem",
-        destination: "/guide/plugins/using/ecosystem",
+        source: "/docs/recipes/creating-plugins",
+        destination: "/docs/plugins/building/creating-plugins",
+        permanent: true,
+      },
+      {
+        source: "/docs/plugins",
+        destination: "/docs/plugins/using",
+        permanent: true,
+      },
+      {
+        source: "/docs/plugins/ecosystem",
+        destination: "/docs/plugins/using/ecosystem",
         permanent: true,
       },
       ...building.map((s) => ({
-        source: `/guide/plugins/${s}`,
-        destination: `/guide/plugins/building/${s}`,
+        source: `/docs/plugins/${s}`,
+        destination: `/docs/plugins/building/${s}`,
         permanent: true,
       })),
       ...learn.map((s) => ({
-        source: `/guide/${s}/:slug*`,
-        destination: `/guide/learn/${s}/:slug*`,
+        source: `/docs/${s}/:slug*`,
+        destination: `/docs/learn/${s}/:slug*`,
         permanent: true,
       })),
     ];

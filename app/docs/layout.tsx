@@ -43,11 +43,11 @@ const apiKindIcons: Record<ApiKind, typeof Box> = {
 };
 
 function apiEntryUrl(entry: ApiEntry) {
-  return `/guide/api/${entry.slug}`;
+  return `/docs/api/${entry.slug}`;
 }
 
 function apiKindUrl(kind: ApiKind) {
-  return `/guide/api/${apiKindSlug[kind]}`;
+  return `/docs/api/${apiKindSlug[kind]}`;
 }
 
 function apiKindIcon(kind: ApiKind) {
@@ -68,7 +68,7 @@ function apiRootIndex(node: PageTree.Folder): PageTree.Item {
     type: "page",
     $id: "api-root-index",
     name: "API Reference",
-    url: "/guide/api",
+    url: "/docs/api",
   };
 }
 
@@ -107,13 +107,13 @@ function apiFolder(kind: ApiKind): PageTree.Folder | undefined {
 function isApiRootFolder(node: PageTree.Folder) {
   return (
     node.root === true &&
-    (node.index?.url === "/guide/api" ||
-      node.children.some((child) => child.type === "page" && child.url === "/guide/api"))
+    (node.index?.url === "/docs/api" ||
+      node.children.some((child) => child.type === "page" && child.url === "/docs/api"))
   );
 }
 
 function isRecipesRootFolder(node: PageTree.Folder) {
-  return node.root === true && firstUrl(node)?.startsWith("/guide/recipes");
+  return node.root === true && firstUrl(node)?.startsWith("/docs/recipes");
 }
 
 function groupRecipeSections(children: PageTree.Node[]) {

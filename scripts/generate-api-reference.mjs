@@ -58,6 +58,16 @@ function cleanText(value) {
     .trim();
 }
 
+function cleanSignatureText(value) {
+  return value
+    .replace(/\r\n?/g, '\n')
+    .split('\n')
+    .map((line) => line.replace(/[ \t]+$/g, ''))
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
 function documentation(symbol) {
   return cleanText(ts.displayPartsToString(symbol.getDocumentationComment(checker)));
 }
@@ -71,7 +81,7 @@ function sourcePath(node) {
 
 function printable(node) {
   const text = printer.printNode(ts.EmitHint.Unspecified, node, node.getSourceFile());
-  return cleanText(text);
+  return cleanSignatureText(text);
 }
 
 function typeParameters(node) {
