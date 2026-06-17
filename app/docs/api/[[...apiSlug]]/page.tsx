@@ -418,6 +418,24 @@ function indexedDocTags(tags: ApiDocTag[]): IndexedDocTag[] {
   return indexedTags;
 }
 
+function DocTagHeading({
+  children,
+  level = 3,
+}: {
+  children: ReactNode;
+  level?: 2 | 3;
+}) {
+  return (
+    <div
+      role="heading"
+      aria-level={level}
+      className="text-sm font-semibold leading-5 text-fd-foreground"
+    >
+      {children}
+    </div>
+  );
+}
+
 function DocTags({
   compact = false,
   tags,
@@ -447,7 +465,7 @@ function DocTags({
       }
     >
       {!compact && (
-        <h2 className="text-base font-semibold text-fd-foreground">JSDoc</h2>
+        <DocTagHeading level={2}>JSDoc</DocTagHeading>
       )}
 
       {deprecatedTags.map((tag) => (
@@ -462,7 +480,7 @@ function DocTags({
 
       {paramTags.length > 0 && (
         <div className="flex flex-col gap-1.5">
-          <h3 className="text-sm font-semibold leading-5 text-fd-foreground">Parameters</h3>
+          <DocTagHeading>Parameters</DocTagHeading>
           <dl className="grid gap-1">
             {paramTags.map((tag) => {
               const parts = tagTextParts(tag.text);
@@ -488,7 +506,7 @@ function DocTags({
 
       {returnTags.length > 0 && (
         <div className="flex flex-col gap-1.5">
-          <h3 className="text-sm font-semibold leading-5 text-fd-foreground">Returns</h3>
+          <DocTagHeading>Returns</DocTagHeading>
           {returnTags.map((tag) => (
             <p key={tag.key} className="text-sm leading-5 text-fd-muted-foreground">
               {tag.text}
@@ -499,7 +517,7 @@ function DocTags({
 
       {exampleTags.length > 0 && (
         <div className="flex flex-col gap-1.5">
-          <h3 className="text-sm font-semibold leading-5 text-fd-foreground">Examples</h3>
+          <DocTagHeading>Examples</DocTagHeading>
           {exampleTags.map((tag) => {
             const example = codeExampleParts(tag.text);
 
@@ -517,7 +535,7 @@ function DocTags({
 
       {linkTags.length > 0 && (
         <div className="flex flex-col gap-1.5">
-          <h3 className="text-sm font-semibold leading-5 text-fd-foreground">Links</h3>
+          <DocTagHeading>Links</DocTagHeading>
           <div className="flex flex-col gap-1">
             {linkTags.map((tag) => {
               const link = linkTagParts(tag.text);
