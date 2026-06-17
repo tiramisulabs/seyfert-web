@@ -27,6 +27,19 @@ export const apiKindSingleLabel: Record<ApiKind, string> = {
   Variable: 'Variable',
 };
 
+export const apiKindSlug: Record<ApiKind, string> = {
+  Class: 'classes',
+  Function: 'functions',
+  Interface: 'interfaces',
+  TypeAlias: 'type-aliases',
+  Enum: 'enums',
+  Variable: 'variables',
+};
+
+export const apiKindBySlug = new Map(
+  apiKindOrder.map((kind) => [apiKindSlug[kind], kind]),
+);
+
 export const apiKindStyles: Record<
   ApiKind,
   {

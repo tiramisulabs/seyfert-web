@@ -223,7 +223,7 @@
   background-color: var(--color-fd-background) !important;
 }
 .seyfert-docs #nd-sidebar {
-  --seyfert-sidebar-marker-offset: calc(2.5 * var(--spacing) + 0.5px);
+  --seyfert-sidebar-marker-offset: calc(2.5 * var(--spacing) + 0.25px);
 }
 
 /* Reserve the TOC grid column - our custom TocRail replaces the default TOC
@@ -287,12 +287,12 @@
 
 /* Active sidebar item (Variant B): bright bold text, and a tinted block with a
    thin indigo left bar + rounded right, inset from the item row edge. */
-.seyfert-docs #nd-sidebar a[data-active="true"] {
+.seyfert-docs #nd-sidebar a[data-active="true"]:not(:has(.lucide-chevron-down)) {
   background-color: transparent;
   color: var(--color-fd-foreground);
   font-weight: 700;
 }
-.seyfert-docs #nd-sidebar a[data-active="true"]::before {
+.seyfert-docs #nd-sidebar a[data-active="true"]:not(:has(.lucide-chevron-down))::before {
   content: '' !important;
   display: block !important;
   position: absolute !important;
@@ -310,10 +310,10 @@
 /* Inactive items: the same left bar as the active item but in dark gray
    (forms a subtle rail aligned with the active indicator); on hover it fills
    into the gray block - same shape as the active block. */
-.seyfert-docs #nd-sidebar a:not([href="/"]):hover {
+.seyfert-docs #nd-sidebar a:not([href="/"]):not(:has(.lucide-chevron-down)):hover {
   background-color: transparent !important;
 }
-.seyfert-docs #nd-sidebar a:not([href="/"]):not([data-active="true"])::before {
+.seyfert-docs #nd-sidebar a:not([href="/"]):not(:has(.lucide-chevron-down)):not([data-active="true"])::before {
   content: '' !important;
   display: block !important;
   position: absolute !important;
@@ -327,12 +327,12 @@
   border-radius: 0 0.4rem 0.4rem 0 !important;
   z-index: -1 !important;
 }
-.seyfert-docs #nd-sidebar a:not([href="/"]):not([data-active="true"]):hover::before {
+.seyfert-docs #nd-sidebar a:not([href="/"]):not(:has(.lucide-chevron-down)):not([data-active="true"]):hover::before {
   background-color: var(--color-fd-accent) !important;
 }
 
 /* Sidebar item type: light weight when inactive; active stays bright + bold. */
-.seyfert-docs #nd-sidebar a:not([href="/"]):not([data-active="true"]) {
+.seyfert-docs #nd-sidebar a:not([href="/"]):not(:has(.lucide-chevron-down)):not([data-active="true"]) {
   font-weight: 400;
 }
 
@@ -364,7 +364,7 @@
   .seyfert-docs #nd-sidebar [class*="overscroll"] > * {
     gap: 0 !important;
   }
-  .seyfert-docs #nd-sidebar button:has(.lucide-chevron-down),
+  .seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down),
   .seyfert-docs #nd-sidebar p {
     padding-inline-start: 0 !important;
     padding-inline-end: 0 !important;
@@ -373,6 +373,9 @@
   .seyfert-docs #nd-sidebar a:not([href="/"]) {
     padding-block: 0.25rem !important;
     min-height: 0 !important;
+  }
+  .seyfert-docs #nd-sidebar a:has(.lucide-chevron-down):not([href="/"]) {
+    padding-block: 0.5rem !important;
   }
   .seyfert-docs #nd-sidebar div[data-state] > div > a:not([href="/"]) {
     padding-block: 0.3125rem !important;
@@ -407,7 +410,7 @@
 /* Sidebar section labels to flat uppercase (the B sidebar). Two kinds:
    folder triggers (<button> with a chevron, e.g. Guide tab) and separators
    (<p>, e.g. the Using/Building Plugins headings in the Plugins tab). */
-.seyfert-docs #nd-sidebar button:has(.lucide-chevron-down),
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down),
 .seyfert-docs #nd-sidebar p {
   text-transform: uppercase;
   font-weight: 700;
@@ -415,7 +418,7 @@
   letter-spacing: 0.1em;
   color: var(--color-fd-muted-foreground);
 }
-.seyfert-docs #nd-sidebar button:has(.lucide-chevron-down) {
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down) {
   cursor: pointer;
   margin-top: 0.625rem;
   border-radius: 0.4rem;
@@ -423,11 +426,16 @@
     background-color 160ms ease,
     color 160ms ease;
 }
-.seyfert-docs #nd-sidebar button:has(.lucide-chevron-down):hover {
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down):hover,
+.seyfert-docs #nd-sidebar a:has(.lucide-chevron-down)[data-active="true"] {
   background-color: color-mix(in oklab, var(--color-fd-primary) 7%, transparent);
   color: var(--color-fd-foreground);
 }
-.seyfert-docs #nd-sidebar button:has(.lucide-chevron-down):hover > svg:not([data-icon]) {
+.seyfert-docs #nd-sidebar a:has(.lucide-chevron-down)[data-active="true"]::before {
+  display: none !important;
+}
+.seyfert-docs #nd-sidebar :is(button, a):has(.lucide-chevron-down):hover > svg:not([data-icon]),
+.seyfert-docs #nd-sidebar a:has(.lucide-chevron-down)[data-active="true"] > svg:not([data-icon]) {
   color: var(--color-fd-primary);
 }
 

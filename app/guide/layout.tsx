@@ -3,7 +3,6 @@ import type { LayoutTab } from "fumadocs-ui/layouts/shared";
 import type * as PageTree from "fumadocs-core/page-tree";
 import { createElement, type ReactNode } from "react";
 import {
-  BookOpen,
   Box,
   Component as InterfaceIcon,
   FunctionSquare,
@@ -21,6 +20,7 @@ import { apiEntries, type ApiEntry, type ApiKind } from "@/lib/api-reference/gen
 import {
   apiKindLabel,
   apiKindOrder,
+  apiKindSlug,
   apiKindStyles,
 } from "@/lib/api-reference/kinds";
 
@@ -46,33 +46,27 @@ function apiEntryUrl(entry: ApiEntry) {
   return `/guide/api/${entry.slug}`;
 }
 
+function apiKindUrl(kind: ApiKind) {
+  return `/guide/api/${apiKindSlug[kind]}`;
+}
+
 function apiKindIcon(kind: ApiKind) {
   const Icon = apiKindIcons[kind];
 
   return createElement(Icon, {
+    key: `api-${kind}-icon`,
     size: 16,
     className: apiKindStyles[kind].icon,
   });
 }
 
-function apiEntryIcon(entry: ApiEntry) {
-  return createElement("span", {
-    "aria-hidden": true,
-    className: `inline-block size-1.5 rounded-full ${apiKindStyles[entry.kind].dot}`,
-  });
-}
-
-function apiOverviewPage(node: PageTree.Folder): PageTree.Item {
+function apiRootIndex(node: PageTree.Folder): PageTree.Item {
   return {
     ...(node.index ?? {}),
     type: "page",
-    $id: "api-overview",
-    name: "Overview",
+    $id: "api-root-index",
+    name: "API Reference",
     url: "/guide/api",
-    icon: createElement(BookOpen, {
-      size: 16,
-      className: "text-fd-muted-foreground",
-    }),
   };
 }
 
@@ -85,6 +79,13 @@ function apiFolder(kind: ApiKind): PageTree.Folder | undefined {
     $id: `api-${kind.toLowerCase()}`,
     name: apiKindLabel[kind],
     icon: apiKindIcon(kind),
+    index: {
+      type: "page",
+      $id: `api-kind-${kind.toLowerCase()}`,
+      name: apiKindLabel[kind],
+      url: apiKindUrl(kind),
+      icon: apiKindIcon(kind),
+    },
     defaultOpen: false,
     children: entries.map((entry) => ({
       type: "page",
@@ -92,7 +93,6 @@ function apiFolder(kind: ApiKind): PageTree.Folder | undefined {
       name: entry.name,
       url: apiEntryUrl(entry),
       description: entry.summary,
-      icon: apiEntryIcon(entry),
     })),
   };
 }
@@ -111,13 +111,11 @@ function withApiReference(node: PageTree.Node): PageTree.Node {
   if (isApiRootFolder(node)) {
     return {
       ...node,
-      children: [
-        apiOverviewPage(node),
-        ...apiKindOrder.flatMap((kind) => {
-          const folder = apiFolder(kind);
-          return folder ? [folder] : [];
-        }),
-      ],
+      index: apiRootIndex(node),
+      children: apiKindOrder.flatMap((kind) => {
+        const folder = apiFolder(kind);
+        return folder ? [folder] : [];
+      }),
     };
   }
 
