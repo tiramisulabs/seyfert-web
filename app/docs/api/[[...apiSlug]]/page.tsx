@@ -360,9 +360,42 @@ function linkTagParts(text: string) {
   };
 }
 
+function codeExampleParts(text: string) {
+  const trimmed = text.trim();
+  const fenced = trimmed.match(/^```([\w-]+)?[^\n]*\n([\s\S]*?)\n?```$/);
+
+  if (!fenced) {
+    return {
+      code: trimmed,
+      lang: 'ts',
+    };
+  }
+
+  const lang = fenced[1] === 'typescript'
+    ? 'ts'
+    : fenced[1] === 'javascript'
+      ? 'js'
+      : fenced[1] || 'ts';
+
+  return {
+    code: fenced[2].trimEnd(),
+    lang,
+  };
+}
+
 type IndexedDocTag = ApiDocTag & {
   key: string;
 };
+
+function tagKeyHash(value: string) {
+  let hash = 5381;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = (hash * 33) ^ value.charCodeAt(index);
+  }
+
+  return (hash >>> 0).toString(36);
+}
 
 function indexedDocTags(tags: ApiDocTag[]): IndexedDocTag[] {
   const counts = new Map<string, number>();
@@ -374,10 +407,11 @@ function indexedDocTags(tags: ApiDocTag[]): IndexedDocTag[] {
     const baseKey = `${tag.name}:${tag.text}`;
     const count = counts.get(baseKey) ?? 0;
     counts.set(baseKey, count + 1);
+    const hash = tagKeyHash(baseKey);
 
     indexedTags.push({
       ...tag,
-      key: count === 0 ? baseKey : `${baseKey}:${count}`,
+      key: count === 0 ? `${tag.name}-${hash}` : `${tag.name}-${hash}-${count}`,
     });
   }
 
@@ -408,8 +442,8 @@ function DocTags({
       id={compact ? undefined : 'jsdoc'}
       className={
         compact
-          ? 'space-y-2 rounded-md border border-fd-border bg-fd-secondary/20 p-2.5'
-          : 'space-y-3 rounded-lg border border-fd-border bg-fd-background p-3'
+          ? 'not-prose flex flex-col gap-2 rounded-md border border-fd-border bg-fd-secondary/20 px-3 py-2.5'
+          : 'not-prose flex flex-col gap-3 rounded-lg border border-fd-border bg-fd-background p-3'
       }
     >
       {!compact && (
@@ -422,14 +456,14 @@ function DocTags({
           className="rounded-md border border-amber-400/25 bg-amber-400/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-200"
         >
           <strong className="font-semibold">{tagTitle(tag.name)}</strong>
-          {tag.text && <p className="mt-1 leading-6">{tag.text}</p>}
+          {tag.text && <p className="mt-1 leading-5">{tag.text}</p>}
         </div>
       ))}
 
       {paramTags.length > 0 && (
-        <div className="space-y-1.5">
-          <h3 className="text-sm font-semibold text-fd-foreground">Parameters</h3>
-          <dl className="grid gap-1.5">
+        <div className="flex flex-col gap-1.5">
+          <h3 className="text-sm font-semibold leading-5 text-fd-foreground">Parameters</h3>
+          <dl className="grid gap-1">
             {paramTags.map((tag) => {
               const parts = tagTextParts(tag.text);
 
@@ -444,7 +478,7 @@ function DocTags({
                       <span className="text-fd-muted-foreground">parameter</span>
                     )}
                   </dt>
-                  <dd className="leading-6 text-fd-muted-foreground">{parts.description}</dd>
+                  <dd className="leading-5 text-fd-muted-foreground">{parts.description}</dd>
                 </div>
               );
             })}
@@ -453,10 +487,10 @@ function DocTags({
       )}
 
       {returnTags.length > 0 && (
-        <div className="space-y-1.5">
-          <h3 className="text-sm font-semibold text-fd-foreground">Returns</h3>
+        <div className="flex flex-col gap-1.5">
+          <h3 className="text-sm font-semibold leading-5 text-fd-foreground">Returns</h3>
           {returnTags.map((tag) => (
-            <p key={tag.key} className="text-sm leading-6 text-fd-muted-foreground">
+            <p key={tag.key} className="text-sm leading-5 text-fd-muted-foreground">
               {tag.text}
             </p>
           ))}
@@ -464,22 +498,26 @@ function DocTags({
       )}
 
       {exampleTags.length > 0 && (
-        <div className="space-y-1.5">
-          <h3 className="text-sm font-semibold text-fd-foreground">Examples</h3>
-          {exampleTags.map((tag) => (
-            <ServerCodeBlock
-              key={tag.key}
-              code={tag.text}
-              lang="ts"
-              codeblock={{ className: 'my-0' }}
-            />
-          ))}
+        <div className="flex flex-col gap-1.5">
+          <h3 className="text-sm font-semibold leading-5 text-fd-foreground">Examples</h3>
+          {exampleTags.map((tag) => {
+            const example = codeExampleParts(tag.text);
+
+            return (
+              <ServerCodeBlock
+                key={tag.key}
+                code={example.code}
+                lang={example.lang}
+                codeblock={{ className: 'my-0' }}
+              />
+            );
+          })}
         </div>
       )}
 
       {linkTags.length > 0 && (
-        <div className="space-y-1.5">
-          <h3 className="text-sm font-semibold text-fd-foreground">Links</h3>
+        <div className="flex flex-col gap-1.5">
+          <h3 className="text-sm font-semibold leading-5 text-fd-foreground">Links</h3>
           <div className="flex flex-col gap-1">
             {linkTags.map((tag) => {
               const link = linkTagParts(tag.text);
@@ -488,7 +526,7 @@ function DocTags({
                 return (
                   <span
                     key={tag.key}
-                    className="text-sm leading-6 text-fd-muted-foreground"
+                    className="text-sm leading-5 text-fd-muted-foreground"
                   >
                     {tag.text}
                   </span>
@@ -501,7 +539,7 @@ function DocTags({
                   href={link.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex min-w-0 items-center gap-1 rounded-sm text-sm font-medium leading-6 text-sky-600 underline-offset-4 transition-colors hover:text-sky-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring dark:text-sky-300 dark:hover:text-sky-200"
+                  className="inline-flex min-w-0 items-center gap-1 rounded-sm text-sm font-medium leading-5 text-sky-600 underline-offset-4 transition-colors hover:text-sky-500 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring dark:text-sky-300 dark:hover:text-sky-200"
                 >
                   <span className="min-w-0 break-all">{link.label}</span>
                   <ExternalLink className="size-3.5 shrink-0 text-current" aria-hidden />
