@@ -1,5 +1,6 @@
 import { guideSource } from '@/lib/source';
 import { apiEntries, apiPackage, type ApiEntry } from '@/lib/api-reference/generated';
+import { apiSearchEntries } from '@/lib/api-reference/search';
 import {
   apiKindLabel,
   apiKindOrder,
@@ -18,7 +19,6 @@ type GuidePageData = GuidePage['data'] & {
   structuredData?: StructuredData | (() => Promise<StructuredData>);
   load?: () => Promise<{ structuredData?: StructuredData }>;
 };
-type SearchMode = 'full' | 'vector';
 type SearchResult = {
   id: string;
   url: string;
@@ -29,6 +29,20 @@ type SearchResult = {
 
 const apiEntryByUrl = new Map(apiEntries.map((entry) => [apiEntryUrl(entry), entry]));
 const apiEntryByName = new Map(apiEntries.map((entry) => [entry.name.toLowerCase(), entry]));
+const apiMatchCandidates = [
+  'api reference',
+  ...apiKindOrder.flatMap((kind) => [
+    apiKindLabel[kind],
+    apiKindSingleLabel[kind],
+    apiKindSlug[kind],
+  ]),
+  ...apiEntries.map((entry) => `${entry.name} ${entry.slug}`),
+].map((candidate) => candidate.toLowerCase());
+const apiSearchContentBySlug = new Map(
+  apiSearchEntries.map((entry) => [entry.slug, entry.content]),
+);
+const maxSearchLimit = 50;
+const maxSearchQueryLength = 160;
 
 function text(value: unknown) {
   return typeof value === 'string' ? value : undefined;
@@ -84,6 +98,7 @@ function apiStructuredData(content: string): StructuredData {
 
 function apiEntryIndex(entry: ApiEntry): AdvancedIndex {
   const kind = apiKindSingleLabel[entry.kind];
+  const searchContent = apiSearchContentBySlug.get(entry.slug);
 
   return {
     id: `api:${entry.slug}`,
@@ -92,7 +107,7 @@ function apiEntryIndex(entry: ApiEntry): AdvancedIndex {
     breadcrumbs: ['Guide', 'API Reference', apiKindLabel[entry.kind]],
     url: apiEntryUrl(entry),
     structuredData: apiStructuredData(
-      [entry.name, kind, apiKindLabel[entry.kind], entry.slug, entry.summary]
+      [entry.name, kind, apiKindLabel[entry.kind], entry.slug, entry.summary, searchContent]
         .filter(Boolean)
         .join(' '),
     ),
@@ -124,8 +139,12 @@ function apiIndexes(): AdvancedIndex[] {
 }
 
 async function indexes() {
+  const guidePages = guideSource
+    .getPages()
+    .filter((page) => page.url !== '/docs/api');
+
   return [
-    ...(await Promise.all(guideSource.getPages().map(guideIndex))),
+    ...(await Promise.all(guidePages.map(guideIndex))),
     ...apiIndexes(),
   ];
 }
@@ -134,28 +153,28 @@ function normalized(value: string) {
   return value.trim().toLowerCase();
 }
 
+function requestedQuery(url: URL) {
+  const query = url.searchParams.get('query')?.trim();
+  if (!query) return undefined;
+
+  return query.slice(0, maxSearchQueryLength);
+}
+
 function requestedLimit(url: URL) {
   const limit = url.searchParams.has('limit')
     ? Number(url.searchParams.get('limit'))
     : undefined;
 
-  return Number.isInteger(limit) ? limit : undefined;
-}
+  if (typeof limit !== 'number' || !Number.isInteger(limit)) return undefined;
 
-function searchMode(url: URL): SearchMode {
-  return url.searchParams.get('mode') === 'vector' ? 'vector' : 'full';
+  return Math.min(Math.max(limit, 1), maxSearchLimit);
 }
 
 function hasApiMatch(query: string) {
   const value = normalized(query);
   if (!value) return false;
 
-  return apiEntries.some((entry) => {
-    const name = entry.name.toLowerCase();
-    const slug = entry.slug.toLowerCase();
-
-    return name.includes(value) || slug.includes(value);
-  });
+  return apiMatchCandidates.some((candidate) => candidate.includes(value));
 }
 
 function shouldPromoteApi(query: string) {
@@ -166,13 +185,11 @@ function shouldPromoteApi(query: string) {
 }
 
 function apiSearchLimit(query: string, limit: number | undefined) {
-  if (limit === undefined || !shouldPromoteApi(query) || !hasApiMatch(query)) {
+  if (!shouldPromoteApi(query) || !hasApiMatch(query)) {
     return limit;
   }
 
-  if (apiEntryByName.has(normalized(query))) return undefined;
-
-  return Math.max(limit, 50);
+  return Math.max(limit ?? maxSearchLimit, maxSearchLimit);
 }
 
 function resultApiEntry(result: SearchResult) {
@@ -186,7 +203,96 @@ function resultTypeRank(type: SearchResult['type']) {
   return 2;
 }
 
+function dedupeResultsByUrl(results: SearchResult[]) {
+  const resultsByUrl = new Map<string, SearchResult>();
+
+  for (const result of results) {
+    const existing = resultsByUrl.get(result.url);
+    if (!existing || resultTypeRank(result.type) < resultTypeRank(existing.type)) {
+      resultsByUrl.set(result.url, result);
+    }
+  }
+
+  return Array.from(resultsByUrl.values());
+}
+
+function searchCandidateMatches(value: string, candidates: string[]) {
+  return candidates.some(
+    (candidate) => candidate === value || candidate.startsWith(value) || candidate.includes(value),
+  );
+}
+
+function apiNavigationResults(query: string): SearchResult[] {
+  const value = normalized(query);
+  const results: SearchResult[] = [];
+
+  if (searchCandidateMatches(value, ['api reference'])) {
+    results.push({
+      id: 'api:index',
+      url: '/docs/api',
+      type: 'page',
+      content: 'API Reference',
+      breadcrumbs: ['Guide'],
+    });
+  }
+
+  for (const kind of apiKindOrder) {
+    const candidates = [
+      apiKindLabel[kind],
+      apiKindSingleLabel[kind],
+      apiKindSlug[kind],
+    ].map((candidate) => candidate.toLowerCase());
+
+    if (!searchCandidateMatches(value, candidates)) continue;
+
+    results.push({
+      id: `api:${apiKindSlug[kind]}`,
+      url: `/docs/api/${apiKindSlug[kind]}`,
+      type: 'page',
+      content: apiKindLabel[kind],
+      breadcrumbs: ['Guide', 'API Reference'],
+    });
+  }
+
+  return results;
+}
+
+function apiNavigationResultRank(result: SearchResult, query: string) {
+  const value = normalized(query);
+  const url = result.url.split('#')[0];
+  const typeRank = resultTypeRank(result.type);
+
+  if (url === '/docs/api') {
+    if (value === 'api reference') return typeRank;
+    if ('api reference'.startsWith(value)) return 10 + typeRank;
+    if (value.includes('api reference')) return 20 + typeRank;
+    if (value === 'api') return typeRank;
+
+    return undefined;
+  }
+
+  for (const kind of apiKindOrder) {
+    const kindUrl = `/docs/api/${apiKindSlug[kind]}`;
+    if (url !== kindUrl) continue;
+
+    const candidates = [
+      apiKindLabel[kind],
+      apiKindSingleLabel[kind],
+      apiKindSlug[kind],
+    ].map((candidate) => candidate.toLowerCase());
+
+    if (candidates.includes(value)) return typeRank;
+    if (candidates.some((candidate) => candidate.startsWith(value))) return 10 + typeRank;
+    if (candidates.some((candidate) => candidate.includes(value))) return 20 + typeRank;
+  }
+
+  return undefined;
+}
+
 function apiResultRank(result: SearchResult, query: string) {
+  const navigationRank = apiNavigationResultRank(result, query);
+  if (navigationRank !== undefined) return navigationRank;
+
   const entry = resultApiEntry(result);
   if (!entry) return 1000;
 
@@ -221,17 +327,23 @@ export const { staticGET } = searchApi;
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const query = url.searchParams.get('query');
+  const query = requestedQuery(url);
 
   if (!query) return Response.json([]);
 
   const limit = requestedLimit(url);
+  const searchLimit = apiSearchLimit(query, limit);
   const results = (await searchApi.search(query, {
     tag: url.searchParams.get('tag')?.split(','),
     locale: url.searchParams.get('locale'),
-    limit: apiSearchLimit(query, limit),
-    mode: searchMode(url),
+    limit: searchLimit,
+    mode: 'full',
   })) as SearchResult[];
 
-  return Response.json(rankApiResults(results, query, limit));
+  const uniqueResults = dedupeResultsByUrl([
+    ...apiNavigationResults(query),
+    ...results,
+  ]);
+
+  return Response.json(rankApiResults(uniqueResults, query, limit ?? searchLimit));
 }

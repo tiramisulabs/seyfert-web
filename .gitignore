@@ -30,6 +30,8 @@ next-env.d.ts
 # api reference (generated on Vercel/local build)
 /lib/api-reference/generated.ts
 /lib/api-reference/details.ts
+/lib/api-reference/details/
+/lib/api-reference/search.ts
 # brainstorming companion
 .superpowers/
 .playwright-mcp/

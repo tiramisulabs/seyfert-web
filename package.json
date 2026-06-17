@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "api:generate": "node scripts/generate-api-reference.mjs",
+    "bench:combine": "node scripts/combine-benchmarks.mjs",
     "prebuild": "pnpm api:generate",
     "build": "next build",
     "dev": "next dev",

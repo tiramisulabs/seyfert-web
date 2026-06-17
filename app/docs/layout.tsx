@@ -16,7 +16,7 @@ import { GeistSans } from "geist/font/sans";
 import { config } from "@/app.config";
 import { DocsHeader } from "@/components/docs/docs-header";
 import { SidebarSearchSeparator } from "@/components/docs/sidebar-search-separator";
-import { apiEntries, type ApiEntry, type ApiKind } from "@/lib/api-reference/generated";
+import { type ApiKind } from "@/lib/api-reference/generated";
 import {
   apiKindLabel,
   apiKindOrder,
@@ -41,10 +41,6 @@ const apiKindIcons: Record<ApiKind, typeof Box> = {
   Enum: ListTree,
   Variable: VariableIcon,
 };
-
-function apiEntryUrl(entry: ApiEntry) {
-  return `/docs/api/${entry.slug}`;
-}
 
 function apiKindUrl(kind: ApiKind) {
   return `/docs/api/${apiKindSlug[kind]}`;
@@ -81,26 +77,14 @@ function apiKindOverview(kind: ApiKind): PageTree.Item {
   };
 }
 
-function apiFolder(kind: ApiKind): PageTree.Folder | undefined {
-  const entries = apiEntries.filter((entry) => entry.kind === kind);
-  if (entries.length === 0) return undefined;
-
+function apiFolder(kind: ApiKind): PageTree.Folder {
   return {
     type: "folder",
     $id: `api-${kind.toLowerCase()}`,
     name: apiKindLabel[kind],
     icon: apiKindIcon(kind),
     defaultOpen: false,
-    children: [
-      apiKindOverview(kind),
-      ...entries.map((entry) => ({
-        type: "page" as const,
-        $id: `api-entry-${entry.slug}`,
-        name: entry.name,
-        url: apiEntryUrl(entry),
-        description: entry.summary,
-      })),
-    ],
+    children: [apiKindOverview(kind)],
   };
 }
 
@@ -158,10 +142,7 @@ function withApiReference(node: PageTree.Node): PageTree.Node {
       index: overview,
       children: [
         overview,
-        ...apiKindOrder.flatMap((kind) => {
-          const folder = apiFolder(kind);
-          return folder ? [folder] : [];
-        }),
+        ...apiKindOrder.map((kind) => apiFolder(kind)),
       ],
     };
   }

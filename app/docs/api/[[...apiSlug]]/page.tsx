@@ -17,6 +17,7 @@ import dacezuTheme from '@/dacezu.json';
 import {
   apiEntries,
   apiPackage,
+  type ApiDocTag,
   type ApiEntry,
   type ApiEntryDetail,
   type ApiMember,
@@ -77,10 +78,8 @@ const featuredEntries = featuredNames.flatMap((name) => {
 });
 
 async function detailFor(entry: ApiEntry) {
-  const { apiEntryDetails } = await import('@/lib/api-reference/details');
-  const details = apiEntryDetails as Partial<Record<string, ApiEntryDetail>>;
-
-  return details[entry.slug];
+  const { detailForSlug } = await import('@/lib/api-reference/details');
+  return detailForSlug(entry.slug, entry.kind);
 }
 
 function getApiTarget(apiSlug: string[]): ApiTarget | undefined {
@@ -116,6 +115,12 @@ function githubSourceUrl(source: string) {
     .replace(/\.d\.ts$/, '.ts');
 
   return `https://github.com/${config.repository}/blob/main/${implementationPath}`;
+}
+
+function displaySourcePath(source: string) {
+  return source.startsWith(`${apiPackage.name}/`)
+    ? source.slice(apiPackage.name.length + 1)
+    : source;
 }
 
 function summaryFor(entry: ApiEntry) {
@@ -280,6 +285,7 @@ function ApiKindPage({ kind }: { kind: ApiKind }) {
 
 function SourceLine({ entry }: { entry: ApiEntryDetail }) {
   const sourceUrl = githubSourceUrl(entry.source);
+  const sourcePath = displaySourcePath(entry.source);
 
   return (
     <div className="not-prose flex min-w-0 flex-wrap items-center gap-2 text-xs text-fd-muted-foreground">
@@ -299,10 +305,171 @@ function SourceLine({ entry }: { entry: ApiEntryDetail }) {
         rel="noreferrer"
         className="inline-flex min-w-0 max-w-full items-center gap-1 rounded-md bg-fd-secondary px-1.5 py-0.5 font-mono transition-colors hover:text-fd-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring"
       >
-        <span className="min-w-0 break-all">{entry.source}</span>
+        <span className="min-w-0 break-all">{sourcePath}</span>
         <ExternalLink className="size-3 shrink-0" aria-hidden />
       </a>
     </div>
+  );
+}
+
+const docTagLabel: Record<string, string> = {
+  deprecated: 'Deprecated',
+  example: 'Examples',
+  param: 'Parameters',
+  returns: 'Returns',
+  return: 'Returns',
+};
+
+function tagTextParts(text: string) {
+  const match = text.match(/^([^\s-]+)\s*-?\s*(.*)$/);
+
+  if (!match) {
+    return {
+      name: undefined,
+      description: text,
+    };
+  }
+
+  return {
+    name: match[1],
+    description: match[2] || '',
+  };
+}
+
+function tagTitle(name: string) {
+  return docTagLabel[name] ?? `@${name}`;
+}
+
+type IndexedDocTag = ApiDocTag & {
+  key: string;
+};
+
+function indexedDocTags(tags: ApiDocTag[]): IndexedDocTag[] {
+  const counts = new Map<string, number>();
+  const indexedTags: IndexedDocTag[] = [];
+
+  for (const tag of tags) {
+    if (!tag.name && !tag.text) continue;
+
+    const baseKey = `${tag.name}:${tag.text}`;
+    const count = counts.get(baseKey) ?? 0;
+    counts.set(baseKey, count + 1);
+
+    indexedTags.push({
+      ...tag,
+      key: count === 0 ? baseKey : `${baseKey}:${count}`,
+    });
+  }
+
+  return indexedTags;
+}
+
+function DocTags({
+  compact = false,
+  tags,
+}: {
+  compact?: boolean;
+  tags: ApiDocTag[];
+}) {
+  const visibleTags = indexedDocTags(tags);
+  if (visibleTags.length === 0) return null;
+
+  const deprecatedTags = visibleTags.filter((tag) => tag.name === 'deprecated');
+  const paramTags = visibleTags.filter((tag) => tag.name === 'param');
+  const returnTags = visibleTags.filter((tag) => tag.name === 'returns' || tag.name === 'return');
+  const exampleTags = visibleTags.filter((tag) => tag.name === 'example');
+  const otherTags = visibleTags.filter(
+    (tag) => !['deprecated', 'param', 'returns', 'return', 'example'].includes(tag.name),
+  );
+
+  return (
+    <section
+      id={compact ? undefined : 'jsdoc'}
+      className={
+        compact
+          ? 'space-y-3 rounded-md border border-fd-border bg-fd-secondary/20 p-3'
+          : 'space-y-4 rounded-lg border border-fd-border bg-fd-background p-4'
+      }
+    >
+      {!compact && (
+        <h2 className="text-base font-semibold text-fd-foreground">JSDoc</h2>
+      )}
+
+      {deprecatedTags.map((tag) => (
+        <div
+          key={tag.key}
+          className="rounded-md border border-amber-400/25 bg-amber-400/10 px-3 py-2 text-sm text-amber-900 dark:text-amber-200"
+        >
+          <strong className="font-semibold">{tagTitle(tag.name)}</strong>
+          {tag.text && <p className="mt-1 leading-6">{tag.text}</p>}
+        </div>
+      ))}
+
+      {paramTags.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold text-fd-foreground">Parameters</h3>
+          <dl className="grid gap-2">
+            {paramTags.map((tag) => {
+              const parts = tagTextParts(tag.text);
+
+              return (
+                <div key={tag.key} className="grid gap-1 text-sm sm:grid-cols-[10rem_1fr]">
+                  <dt>
+                    {parts.name ? (
+                      <code className="rounded-md bg-fd-secondary px-1.5 py-0.5 text-xs text-fd-foreground">
+                        {parts.name}
+                      </code>
+                    ) : (
+                      <span className="text-fd-muted-foreground">parameter</span>
+                    )}
+                  </dt>
+                  <dd className="leading-6 text-fd-muted-foreground">{parts.description}</dd>
+                </div>
+              );
+            })}
+          </dl>
+        </div>
+      )}
+
+      {returnTags.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold text-fd-foreground">Returns</h3>
+          {returnTags.map((tag) => (
+            <p key={tag.key} className="text-sm leading-6 text-fd-muted-foreground">
+              {tag.text}
+            </p>
+          ))}
+        </div>
+      )}
+
+      {exampleTags.length > 0 && (
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold text-fd-foreground">Examples</h3>
+          {exampleTags.map((tag) => (
+            <pre
+              key={tag.key}
+              className="overflow-x-auto rounded-md bg-fd-secondary p-3 text-xs leading-5 text-fd-foreground"
+            >
+              <code>{tag.text}</code>
+            </pre>
+          ))}
+        </div>
+      )}
+
+      {otherTags.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {otherTags.map((tag) => (
+            <span
+              key={tag.key}
+              className="inline-flex items-center gap-1 rounded-md bg-fd-secondary px-2 py-1 text-xs text-fd-muted-foreground"
+            >
+              <strong className="font-medium text-fd-foreground">@{tag.name}</strong>
+              {tag.text}
+            </span>
+          ))}
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -572,6 +739,7 @@ function MemberDetailList({ members }: { members: IndexedMember[] }) {
           {member.summary && (
             <p className="text-sm leading-6 text-fd-muted-foreground">{member.summary}</p>
           )}
+          <DocTags compact tags={member.tags} />
           <CodePanel highlightName={member.name}>
             {member.signature}
           </CodePanel>
@@ -624,6 +792,8 @@ function ApiDetail({ entry }: { entry: ApiEntryDetail }) {
         </CodePanel>
       </section>
 
+      <DocTags tags={entry.tags} />
+
       <MemberOverview entry={entry} />
 
       <MemberSections entry={entry} />
@@ -636,6 +806,7 @@ function entryTocItems(entry: ApiEntryDetail) {
 
   return [
     { title: 'Signature', url: '#signature' },
+    ...(entry.tags.length > 0 ? [{ title: 'JSDoc', url: '#jsdoc' }] : []),
     { title: 'Members', url: '#members' },
     ...(groups.properties.length > 0 ? [{ title: 'Properties', url: '#properties' }] : []),
     ...(groups.methods.length > 0 ? [{ title: 'Methods', url: '#methods' }] : []),
