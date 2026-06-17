@@ -5,7 +5,7 @@ import { z } from 'zod';
 import dacezuTheme from './dacezu.json';
 import { ThemeRegistrationAny } from 'shiki/types';
 export const guide = defineDocs({
-  dir: 'content/guide',
+  dir: 'content/docs',
 });
 
 export const blog = defineCollections({
