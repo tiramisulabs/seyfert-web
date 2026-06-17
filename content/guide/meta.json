@@ -2,6 +2,7 @@
     "pages": [
         "learn",
         "plugins",
-        "recipes"
+        "recipes",
+        "api"
     ]
 }

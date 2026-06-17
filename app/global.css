@@ -269,6 +269,9 @@
   width: 100%;
   max-width: 44rem !important;
 }
+.seyfert-docs #nd-page[data-full="true"] > * {
+  max-width: min(100%, 68rem) !important;
+}
 @media (max-width: 768px) {
   .seyfert-docs #nd-page {
     border-inline: 0;

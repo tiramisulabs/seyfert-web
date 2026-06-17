@@ -1,13 +1,28 @@
 import { DocsLayout } from "fumadocs-ui/layouts/notebook";
 import type { LayoutTab } from "fumadocs-ui/layouts/shared";
 import type * as PageTree from "fumadocs-core/page-tree";
-import type { ReactNode } from "react";
+import { createElement, type ReactNode } from "react";
+import {
+  BookOpen,
+  Box,
+  Component as InterfaceIcon,
+  FunctionSquare,
+  ListTree,
+  Sigma,
+  Variable as VariableIcon,
+} from "lucide-react";
 import { baseOptions } from "@/app/layout.config";
 import { guideSource } from "@/lib/source";
 import { GeistSans } from "geist/font/sans";
 import { config } from "@/app.config";
 import { DocsHeader } from "@/components/docs/docs-header";
 import { SidebarSearchSeparator } from "@/components/docs/sidebar-search-separator";
+import { apiEntries, type ApiEntry, type ApiKind } from "@/lib/api-reference/generated";
+import {
+  apiKindLabel,
+  apiKindOrder,
+  apiKindStyles,
+} from "@/lib/api-reference/kinds";
 
 const sidebarSearchId = "seyfert-sidebar-search";
 
@@ -15,6 +30,108 @@ function sidebarSearchNode(id: string): PageTree.Separator {
   return {
     type: "separator",
     $id: `${sidebarSearchId}-${id}`,
+  };
+}
+
+const apiKindIcons: Record<ApiKind, typeof Box> = {
+  Class: Box,
+  Function: FunctionSquare,
+  Interface: InterfaceIcon,
+  TypeAlias: Sigma,
+  Enum: ListTree,
+  Variable: VariableIcon,
+};
+
+function apiEntryUrl(entry: ApiEntry) {
+  return `/guide/api/${entry.slug}`;
+}
+
+function apiKindIcon(kind: ApiKind) {
+  const Icon = apiKindIcons[kind];
+
+  return createElement(Icon, {
+    size: 16,
+    className: apiKindStyles[kind].icon,
+  });
+}
+
+function apiEntryIcon(entry: ApiEntry) {
+  return createElement("span", {
+    "aria-hidden": true,
+    className: `inline-block size-1.5 rounded-full ${apiKindStyles[entry.kind].dot}`,
+  });
+}
+
+function apiOverviewPage(node: PageTree.Folder): PageTree.Item {
+  return {
+    ...(node.index ?? {}),
+    type: "page",
+    $id: "api-overview",
+    name: "Overview",
+    url: "/guide/api",
+    icon: createElement(BookOpen, {
+      size: 16,
+      className: "text-fd-muted-foreground",
+    }),
+  };
+}
+
+function apiFolder(kind: ApiKind): PageTree.Folder | undefined {
+  const entries = apiEntries.filter((entry) => entry.kind === kind);
+  if (entries.length === 0) return undefined;
+
+  return {
+    type: "folder",
+    $id: `api-${kind.toLowerCase()}`,
+    name: apiKindLabel[kind],
+    icon: apiKindIcon(kind),
+    defaultOpen: false,
+    children: entries.map((entry) => ({
+      type: "page",
+      $id: `api-entry-${entry.slug}`,
+      name: entry.name,
+      url: apiEntryUrl(entry),
+      description: entry.summary,
+      icon: apiEntryIcon(entry),
+    })),
+  };
+}
+
+function isApiRootFolder(node: PageTree.Folder) {
+  return (
+    node.root === true &&
+    (node.index?.url === "/guide/api" ||
+      node.children.some((child) => child.type === "page" && child.url === "/guide/api"))
+  );
+}
+
+function withApiReference(node: PageTree.Node): PageTree.Node {
+  if (node.type !== "folder") return node;
+
+  if (isApiRootFolder(node)) {
+    return {
+      ...node,
+      children: [
+        apiOverviewPage(node),
+        ...apiKindOrder.flatMap((kind) => {
+          const folder = apiFolder(kind);
+          return folder ? [folder] : [];
+        }),
+      ],
+    };
+  }
+
+  return {
+    ...node,
+    children: node.children.map(withApiReference),
+  };
+}
+
+function createApiPageTree(tree: PageTree.Root): PageTree.Root {
+  return {
+    ...tree,
+    $id: `${tree.$id ?? "guide-root"}-with-api`,
+    children: tree.children.map(withApiReference),
   };
 }
 
@@ -57,9 +174,10 @@ function firstUrl(node: PageTree.Folder): string | undefined {
 }
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const tree = createSidebarTree(guideSource.pageTree);
+  const pageTree = createApiPageTree(guideSource.pageTree);
+  const tree = createSidebarTree(pageTree);
 
-  const tabs: LayoutTab[] = guideSource.pageTree.children.flatMap((node) =>
+  const tabs: LayoutTab[] = pageTree.children.flatMap((node) =>
     node.type === "folder" && node.root
       ? [
           {

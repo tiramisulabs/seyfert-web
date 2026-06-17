@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "api:generate": "node scripts/generate-api-reference.mjs",
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint .",
