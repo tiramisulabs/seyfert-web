@@ -4,11 +4,12 @@ import {
   DocsBody,
   DocsDescription,
   DocsTitle,
-} from 'fumadocs-ui/page';
+} from 'fumadocs-ui/layouts/notebook/page';
 import { notFound } from 'next/navigation';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import { Popup, PopupContent, PopupTrigger } from 'fumadocs-twoslash/ui';
 import { AutoTypeTable } from 'fumadocs-typescript/ui';
+import { TocRail } from '@/components/docs/toc-rail';
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
 }) {
@@ -18,12 +19,25 @@ export default async function Page(props: {
 
   const MDX = page.data.body;
 
+  const tocItems = [
+    { title: page.data.title, url: '#_top', depth: 2 },
+    ...page.data.toc,
+  ];
+
   return (
     <DocsPage toc={page.data.toc} full={page.data.full} tableOfContent={{
-      style: 'clerk'
+      component: (
+        <div className="sticky top-16 [grid-area:toc] flex max-h-[calc(100vh-4rem)] w-(--fd-toc-width) flex-col self-start overflow-y-auto pt-12 pe-4 pb-2 max-xl:hidden">
+          <TocRail items={tocItems} />
+        </div>
+      ),
     }}>
-      <DocsTitle>{page.data.title}</DocsTitle>
-      <DocsDescription>{page.data.description}</DocsDescription>
+      <DocsTitle id="_top" className="scroll-mt-24 text-balance text-[2.4rem] font-bold leading-[1.1] tracking-[-0.03em] sm:text-[2.6rem]">
+        {page.data.title}
+      </DocsTitle>
+      <DocsDescription className="mt-3 text-[1.0625rem] leading-relaxed text-fd-foreground/70">
+        {page.data.description}
+      </DocsDescription>
       <DocsBody>
         <MDX components={{
           ...defaultMdxComponents,

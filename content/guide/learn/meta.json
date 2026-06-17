@@ -1,0 +1,12 @@
+{
+    "root": true,
+    "title": "Guide",
+    "icon": "GraduationCap",
+    "pages": [
+        "getting-started",
+        "commands",
+        "components",
+        "i18n",
+        "tips"
+    ]
+}

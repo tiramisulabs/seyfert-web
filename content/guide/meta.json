@@ -1,13 +1,7 @@
 {
     "pages": [
-        "index",
-        "getting-started",
-        "commands",
-        "i18n",
-        "components",
+        "learn",
         "plugins",
-        "recipes",
-        "tips",
-        "api"
+        "recipes"
     ]
 }

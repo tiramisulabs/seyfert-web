@@ -1,11 +1,9 @@
 {
+    "root": true,
     "title": "Plugins",
+    "icon": "Plug",
     "pages": [
-        "index",
-        "creating-plugins",
-        "runtime-registration",
-        "services-and-requirements",
-        "runtime-hooks",
-        "lifecycle-and-diagnostics"
+        "using",
+        "building"
     ]
 }

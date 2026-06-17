@@ -221,7 +221,7 @@ export default function Finale({
                                 asChild
                                 className="group cursor-pointer gap-2 rounded-none bg-[var(--text-bright)] px-6 text-base font-medium text-[var(--space-void)] hover:bg-neutral-300"
                             >
-                                <Link href="/guide">
+                                <Link href="/guide/learn/getting-started">
                                     Get started
                                     <ArrowRight aria-hidden className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                                 </Link>

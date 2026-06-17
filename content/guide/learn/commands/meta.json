@@ -1,5 +1,7 @@
 {
     "title": "Commands",
+    "icon": "Terminal",
+    "defaultOpen": true,
     "pages": [
         "intro",
         "options",

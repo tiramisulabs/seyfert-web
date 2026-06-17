@@ -1,5 +1,7 @@
 {
     "title": "Internationalization",
+    "icon": "Languages",
+    "defaultOpen": true,
     "pages": [
         "languages",
         "usage"

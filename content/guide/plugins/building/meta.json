@@ -1,0 +1,12 @@
+{
+    "title": "Building Plugins",
+    "icon": "Wrench",
+    "defaultOpen": true,
+    "pages": [
+        "creating-plugins",
+        "runtime-registration",
+        "services-and-requirements",
+        "runtime-hooks",
+        "lifecycle-and-diagnostics"
+    ]
+}

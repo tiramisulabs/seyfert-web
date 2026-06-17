@@ -185,6 +185,261 @@
   }
 }
 
+/* Docs theme: Cygnus Editorial (fumadocs)
+   Reskins the fumadocs UI tokens to the chosen "Variant B" editorial
+   palette. Only fumadocs components read --color-fd-*, so the home
+   (custom, non-fumadocs) is unaffected. */
+:root {
+  --color-fd-primary: #6366f1;
+  --color-fd-ring: #6366f1;
+  --color-fd-info: #6366f1;
+}
+.dark {
+  --color-fd-background: #060606;
+  --color-fd-foreground: #fafafa;
+  --color-fd-card: #111114;
+  --color-fd-card-foreground: #fafafa;
+  --color-fd-popover: #111114;
+  --color-fd-popover-foreground: #ededed;
+  --color-fd-muted: rgba(255, 255, 255, 0.05);
+  --color-fd-muted-foreground: rgba(255, 255, 255, 0.6);
+  --color-fd-border: rgba(255, 255, 255, 0.08);
+  --color-fd-secondary: rgba(255, 255, 255, 0.05);
+  --color-fd-secondary-foreground: #fafafa;
+  --color-fd-accent: rgba(255, 255, 255, 0.06);
+  --color-fd-accent-foreground: #fafafa;
+  --color-fd-primary: #818cf8;
+  --color-fd-ring: #818cf8;
+  --color-fd-info: #818cf8;
+}
+
+/* Sidebar + nav: seamless void surface (editorial), matching the content area
+   instead of a distinct card panel; the border-e stays as the only divider.
+   Scoped with .seyfert-docs so it out-specifies fumadocs' `.dark #nd-sidebar`. */
+.seyfert-docs #nd-sidebar,
+.seyfert-docs #nd-subnav,
+.seyfert-docs #nd-nav {
+  --color-fd-card: var(--color-fd-background);
+  background-color: var(--color-fd-background) !important;
+}
+.seyfert-docs #nd-sidebar {
+  --seyfert-sidebar-marker-offset: calc(2.5 * var(--spacing) + 0.5px);
+}
+
+/* Reserve the TOC grid column - our custom TocRail replaces the default TOC
+   element that normally bumps this var, so the grid keeps it at 0. Set it on
+   the notebook grid itself (ID beats fumadocs' arbitrary-property class) at the
+   xl breakpoint where the TOC column appears. */
+@media (min-width: 1280px) {
+  #nd-notebook-layout {
+    --fd-sidebar-width: 268px;
+    --fd-toc-width: 220px;
+    grid-template:
+      "sidebar header header header"
+      "sidebar toc-popover toc-popover toc-popover"
+      "sidebar main toc ." 1fr /
+      var(--fd-sidebar-col)
+      minmax(0, min(calc(100vw - var(--fd-sidebar-col) - var(--fd-toc-width) - 1rem), calc(var(--fd-layout-width, 97rem) - var(--fd-sidebar-col) - var(--fd-toc-width))))
+      var(--fd-toc-width)
+      minmax(0, 1fr) !important;
+  }
+}
+
+/* Editorial content column (the B signature)
+   Frame the main article in a centered measure with a hairline border-x and
+   generous inner padding, instead of fumadocs' wide left-aligned 900px body. */
+.seyfert-docs #nd-page {
+  align-items: center;
+  border-inline-start: 1px solid var(--color-fd-border);
+  padding-inline: 3.25rem;
+}
+
+/* Header tab icons - fumadocs wraps the icon in a div that stretches to the
+   tab height (36px) and the svg fills it; collapse the wrapper, size the svg. */
+.seyfert-docs #nd-subnav nav[aria-label="Sections"] a > :not(svg) {
+  display: inline-flex;
+  align-items: center;
+  height: auto;
+}
+.seyfert-docs #nd-subnav nav[aria-label="Sections"] a svg {
+  width: 1rem !important;
+  height: 1rem !important;
+}
+.seyfert-docs #nd-page > * {
+  width: 100%;
+  max-width: 44rem !important;
+}
+@media (max-width: 768px) {
+  .seyfert-docs #nd-page {
+    border-inline: 0;
+    padding-inline: 1rem;
+  }
+}
+
+/* Hide fumadocs' gray tree rail (the hairline before the collapsible content) -
+   inactive items show nothing; only the active item is marked. */
+.seyfert-docs #nd-sidebar [class*="animate-fd-collapsible"]::before {
+  display: none !important;
+}
+
+/* Active sidebar item (Variant B): bright bold text, and a tinted block with a
+   thin indigo left bar + rounded right, inset from the item row edge. */
+.seyfert-docs #nd-sidebar a[data-active="true"] {
+  background-color: transparent;
+  color: var(--color-fd-foreground);
+  font-weight: 700;
+}
+.seyfert-docs #nd-sidebar a[data-active="true"]::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  inset-block: 0 !important;
+  inset-inline-start: var(--seyfert-sidebar-marker-offset) !important;
+  inset-inline-end: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  background-color: color-mix(in oklab, var(--color-fd-primary) 9%, transparent) !important;
+  border-inline-start: 1.5px solid var(--color-fd-primary) !important;
+  border-radius: 0 0.4rem 0.4rem 0 !important;
+  z-index: -1 !important;
+}
+
+/* Inactive items: the same left bar as the active item but in dark gray
+   (forms a subtle rail aligned with the active indicator); on hover it fills
+   into the gray block - same shape as the active block. */
+.seyfert-docs #nd-sidebar a:not([href="/"]):hover {
+  background-color: transparent !important;
+}
+.seyfert-docs #nd-sidebar a:not([href="/"]):not([data-active="true"])::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  inset-block: 0 !important;
+  inset-inline-start: var(--seyfert-sidebar-marker-offset) !important;
+  inset-inline-end: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  background-color: transparent !important;
+  border-inline-start: 1.5px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 0 0.4rem 0.4rem 0 !important;
+  z-index: -1 !important;
+}
+.seyfert-docs #nd-sidebar a:not([href="/"]):not([data-active="true"]):hover::before {
+  background-color: var(--color-fd-accent) !important;
+}
+
+/* Sidebar item type: light weight when inactive; active stays bright + bold. */
+.seyfert-docs #nd-sidebar a:not([href="/"]):not([data-active="true"]) {
+  font-weight: 400;
+}
+
+.seyfert-docs #nd-sidebar :is(a, button, p) {
+  position: relative;
+  z-index: 1;
+}
+
+.seyfert-docs #nd-sidebar button[aria-label="Collapse Sidebar"] {
+  display: none;
+}
+.seyfert-docs [data-sidebar-placeholder] > div:first-child:not(#nd-sidebar) {
+  display: none !important;
+  pointer-events: none !important;
+}
+.seyfert-docs #nd-sidebar[data-collapsed="true"] {
+  box-shadow: none !important;
+  translate: calc(var(--fd-sidebar-width) * -1) 0 !important;
+}
+
+/* No gap between items so the per-item rail reads continuous. The Recipes list
+   gets its gap from an !important Tailwind utility (*:gap-0.5) in @layer
+   utilities, so this override must live in the same layer to win by specificity. */
+@layer utilities {
+  .seyfert-docs #nd-sidebar [data-radix-scroll-area-viewport] {
+    padding: 0.5rem 1rem 1rem !important;
+  }
+  .seyfert-docs #nd-sidebar div:has(> a),
+  .seyfert-docs #nd-sidebar [class*="overscroll"] > * {
+    gap: 0 !important;
+  }
+  .seyfert-docs #nd-sidebar button:has(.lucide-chevron-down),
+  .seyfert-docs #nd-sidebar p {
+    padding-inline-start: 0 !important;
+    padding-inline-end: 0 !important;
+  }
+  /* Tighter item rows (fumadocs' p-2 is an important utility in this layer). */
+  .seyfert-docs #nd-sidebar a:not([href="/"]) {
+    padding-block: 0.25rem !important;
+    min-height: 0 !important;
+  }
+  .seyfert-docs #nd-sidebar div[data-state] > div > a:not([href="/"]) {
+    padding-block: 0.3125rem !important;
+    padding-inline-start: calc(6 * var(--spacing)) !important;
+  }
+  .seyfert-docs #nd-sidebar p ~ a:not([href="/"]) {
+    padding-block: 0.3125rem !important;
+    padding-inline-start: calc(6 * var(--spacing)) !important;
+  }
+}
+
+.seyfert-docs #nd-sidebar p ~ a:not([href="/"]) {
+  padding-block: 0.3125rem !important;
+  padding-inline-start: calc(6 * var(--spacing)) !important;
+}
+
+/* More breathing room - Variant B was spacious. */
+.seyfert-docs #nd-page {
+  padding-block-start: 3.75rem;
+  gap: 0.25rem;
+}
+.seyfert-docs .prose :where(h2):not(:first-child) {
+  margin-top: 3.25rem;
+}
+.seyfert-docs .prose :where(h3) {
+  margin-top: 2.25rem;
+}
+.seyfert-docs #nd-sidebar [class*="animate-fd-collapsible"] {
+  padding-bottom: 0.625rem;
+}
+
+/* Sidebar section labels to flat uppercase (the B sidebar). Two kinds:
+   folder triggers (<button> with a chevron, e.g. Guide tab) and separators
+   (<p>, e.g. the Using/Building Plugins headings in the Plugins tab). */
+.seyfert-docs #nd-sidebar button:has(.lucide-chevron-down),
+.seyfert-docs #nd-sidebar p {
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  color: var(--color-fd-muted-foreground);
+}
+.seyfert-docs #nd-sidebar button:has(.lucide-chevron-down) {
+  cursor: pointer;
+  margin-top: 0.625rem;
+  border-radius: 0.4rem;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+.seyfert-docs #nd-sidebar button:has(.lucide-chevron-down):hover {
+  background-color: color-mix(in oklab, var(--color-fd-primary) 7%, transparent);
+  color: var(--color-fd-foreground);
+}
+.seyfert-docs #nd-sidebar button:has(.lucide-chevron-down):hover > svg:not([data-icon]) {
+  color: var(--color-fd-primary);
+}
+
+/* TOC tree-metro gold fill - deeper/readable on light, hero-gold on the void */
+.seyfert-docs {
+  --toc-g0: #c2740a;
+  --toc-g1: #d97706;
+  --toc-g2: #f59e0b;
+}
+.dark .seyfert-docs {
+  --toc-g0: #ffe7ad;
+  --toc-g1: #ffeec6;
+  --toc-g2: #fff4dc;
+}
+
 /* Reserve the scrollbar gutter from the first paint so the centered hero never
    shifts sideways when the vertical scrollbar appears (e.g. dev streaming grows
    the page after first paint). Plain rule, not @layer, to beat fumadocs resets. */
