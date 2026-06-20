@@ -12,7 +12,7 @@ The most straightforward way to define your bot’s status and activity is durin
 
 ```ts twoslash title="src/index.ts" showLineNumbers wrap
 import { Client } from "seyfert";
-import { ActivityType, PresenceUpdateStatus } from 'seyfert/lib/types';
+import { ActivityType, PresenceUpdateStatus } from 'seyfert';
 
 const client = new Client({
     presence: (shardId) => ({
@@ -39,7 +39,7 @@ To display your bot as if it’s running on a mobile device, you can specify cus
 
 ```ts twoslash showLineNumbers wrap
 import { Client } from "seyfert";
-import { ActivityType, GatewayPresenceUpdateData, PresenceUpdateStatus } from 'seyfert/lib/types';
+import { ActivityType, GatewayPresenceUpdateData, PresenceUpdateStatus } from 'seyfert';
 // ---cut---
 const client = new Client({
     gateway: {
@@ -76,7 +76,7 @@ declare module 'seyfert' {
 }
 // ---cut---
 import { Command, Declare, GuildCommandContext } from "seyfert";
-import { ActivityType, PresenceUpdateStatus } from 'seyfert/lib/types';
+import { ActivityType, PresenceUpdateStatus } from 'seyfert';
 
 @Declare({
     name: 'presence',

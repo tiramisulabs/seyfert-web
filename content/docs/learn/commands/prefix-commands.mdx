@@ -5,7 +5,7 @@ import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
 
 ## Prefix Configuration
 
-Seyfert handles not only application commands but also `prefix commands`. They are not enabled by default, but you can enable them by configuring an option within [`ClientOptions`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/client/client.ts#L230). We have access to the `command` option where we can specify a suboption called `prefix`. This option expects a callback that returns an array of possible prefixes for that command. Since the callback returns a [`Message`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/structures/Message.ts#L123), we have access to the `command` option where we can specify a suboption called `prefix`. This option expects a callback returning an array of possible prefixes for that command. As the callback returns a [`Message`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/structures/Message.ts#L123) property inside [`CommandContext`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/commands/applications/chatcontext.ts#L24), it is quite simple to handle different prefixes per server.
+Seyfert handles not only application commands but also `prefix commands`. They are not enabled by default, but you can enable them through the `commands.prefix` option in [`ClientOptions`](/docs/api/ClientOptions:Interface). This callback receives the incoming [`Message`](/docs/api/MessageStructure:TypeAlias) and returns an array of possible prefixes, so it is simple to handle different prefixes per server.
 
 Here's an example where we configure multiple prefixes for all commands.
 
@@ -26,9 +26,9 @@ const client = new Client({
 
 After configuring our prefixes for commands, it's time to make them work.
 
-Fortunately, handling them works the same way as application commands. The only difference is that we receive an optional [`Message`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/structures/Message.ts#L123) property inside the [`CommandContext`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/commands/applications/chatcontext.ts#L24).
+Fortunately, handling them works the same way as application commands. The only difference is that we receive an optional [`Message`](/docs/api/MessageStructure:TypeAlias) property inside the [`CommandContext`](/docs/api/CommandContext:Class).
 
-To make this property appear in our CommandContext, all we need to do is declare the Seyfert module and set the `withPrefix` property inside [`InternalOptions`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/commands/applications/shared.ts#L11) to true. You can see this [detailed example](/docs/learn/getting-started/declare-module#internal-options).
+To make this property appear in our CommandContext, all we need to do is declare the Seyfert module and set the `withPrefix` property inside [`InternalOptions`](/docs/api/InternalOptions:Interface) to true. You can see this [detailed example](/docs/learn/getting-started/declare-module#internal-options).
 
 In this example, we are going to create a command that `crossposts` the message sent in an announcement channel.
 
@@ -94,7 +94,7 @@ Seyfert supports subcommands within prefix commands.
 
 ## Responding to Prefix Commands
 
-By default, when you use the `write` or `editOrReply` function, it will only send a message to the channel where the command was triggered. To make the command respond, you need to configure the `reply` suboption within the `command` option in the client options. This option is a callback whose first parameter is the [`CommandContext`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/commands/applications/chatcontext.ts#L24) and expects a boolean to be returned: if `true`, it will reply to the command; if not, it will just send a message.
+By default, when you use the `write` or `editOrReply` function, it will only send a message to the channel where the command was triggered. To make the command respond, you need to configure the `reply` suboption within the `commands` option in the client options. This option is a callback whose first parameter is the [`CommandContext`](/docs/api/CommandContext:Class) and expects a boolean to be returned: if `true`, it will reply to the command; if not, it will just send a message.
 
 Here's a detailed example of what your client will look like with all the modifications mentioned in this guide:
 
@@ -114,7 +114,7 @@ const client = new Client({
 
 ## Prefix Command Options
 
-Just like with `application commands`, you can configure options for `prefix commands`. The only thing you need to do is declare them as you do with application commands. They are parsed with a regex that indicates that options will be split when followed by `-`. You can replace the parser with your own parser in the `argsParser` suboption within the `commands` options in the client options. This is a callback whose parameters are `content`, the message content, and `command`, the command that was executed, and expects an object whose keys are the options and values are the option values.
+Just like with `application commands`, you can configure options for `prefix commands`. The only thing you need to do is declare them as you do with application commands. They are parsed with a regex that indicates that options will be split when followed by `-`. To replace the parser, subclass [`HandleCommand`](/docs/api/HandleCommand:Class), override `argsParser(content, command, message)`, and pass that class with `client.setServices({ handleCommand })`.
 
 Here's a short template showing how options work in prefix commands.
 
@@ -207,4 +207,4 @@ export default class CrosspostCommand extends Command {
 };
 ```
   </Tab>
-</Tabs> 
+</Tabs>

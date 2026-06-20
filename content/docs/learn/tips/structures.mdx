@@ -15,7 +15,7 @@ const member = ctx.member;
 member.id;                          // User ID
 member.guildId;                     // Guild ID
 member.user;                        // User object
-member.roles.keys;                  // string[] — role IDs
+member.roles.keys;                  // readonly string[] — role IDs, including @everyone
 await member.roles.list();          // GuildRoleStructure[]
 ```
 
@@ -180,8 +180,8 @@ await client.users.createDM('userId');
 
 // Messages
 await client.messages.write('channelId', { content: 'Hello' });
-await client.messages.edit('channelId', 'messageId', { content: 'Edited' });
-await client.messages.delete('channelId', 'messageId');
+await client.messages.edit('messageId', 'channelId', { content: 'Edited' });
+await client.messages.delete('messageId', 'channelId');
 
 // Members
 await client.members.fetch('guildId', 'userId');

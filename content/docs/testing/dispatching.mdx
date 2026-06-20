@@ -118,14 +118,13 @@ A `Dispatch` runs to completion the first time you `await` it. Call `.until(...)
 The mock boots a real Seyfert client, so app augmentations such as `RegisteredMiddlewares`, `UsingClient`, and `DefaultLocale` apply in tests too:
 
 ```ts
-import type { ParseMiddlewares } from 'seyfert';
-import { InteractionResponseType } from 'seyfert/lib/types';
+import { InteractionResponseType } from 'seyfert';
 import { TEST_BOT_ID, createMockBot } from '@slipher/testing';
 import { GuardedCommand } from '../src/commands/guarded';
 import { middlewares } from '../src/middlewares';
 
 declare module 'seyfert' {
-	interface RegisteredMiddlewares extends ParseMiddlewares<typeof middlewares> {}
+	interface SeyfertRegistry { middlewares: typeof middlewares }
 }
 
 await using bot = await createMockBot({

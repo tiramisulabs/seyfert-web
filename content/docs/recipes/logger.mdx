@@ -11,10 +11,10 @@ Override the default log format:
 ```ts twoslash
 import { Logger } from 'seyfert';
 
-Logger.customize((data) => {
+Logger.customize((logger, level, args) => {
     const timestamp = new Date().toISOString();
     const mem = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(1);
-    return [`[${timestamp}]`, `[${mem}MB]`, `${data}`];
+    return [`[${timestamp}]`, `[${mem}MB]`, `${logger.name ?? ''} >`, ...args];
 });
 ```
 
@@ -28,8 +28,8 @@ import { Logger } from 'seyfert';
 // Log everything to files
 Logger.saveOnFile = 'all';
 
-// Or only log errors to files
-Logger.saveOnFile = 'error';
+// Or only log selected logger names to files
+Logger.saveOnFile = ['[Seyfert]'];
 
 // Set the directory for log files
 Logger.dirname = 'logs';
@@ -40,7 +40,8 @@ Logger.dirname = 'logs';
 Extend the Logger prototype to add custom methods:
 
 ```ts
-import { Logger, LogLevels } from 'seyfert';
+import { Logger } from 'seyfert';
+import { LogLevels } from 'seyfert/lib/common';
 
 Logger.prototype.success = function (...args: unknown[]) {
     this.rawLog(LogLevels.Info, ...args);

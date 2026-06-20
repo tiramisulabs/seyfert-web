@@ -100,9 +100,9 @@ createEvent({ data: { name: 'channelUpdate' }, run([newChannel, oldChannel], cli
 createEvent({ data: { name: 'channelDelete' }, run(channel, client) {} });
 
 // Roles
-createEvent({ data: { name: 'roleCreate' }, run(role, client) {} });
-createEvent({ data: { name: 'roleUpdate' }, run([newRole, oldRole], client) {} });
-createEvent({ data: { name: 'roleDelete' }, run(role, client) {} });
+createEvent({ data: { name: 'guildRoleCreate' }, run(role, client) {} });
+createEvent({ data: { name: 'guildRoleUpdate' }, run([newRole, oldRole], client) {} });
+createEvent({ data: { name: 'guildRoleDelete' }, run(role, client) {} });
 
 // Threads
 createEvent({ data: { name: 'threadCreate' }, run(thread, client) {} });
@@ -136,7 +136,7 @@ Ensure the user is in a voice channel before running music commands:
 
 ```ts title="src/middlewares/checkVoice.ts" copy
 import { createMiddleware } from 'seyfert';
-import { MessageFlags } from 'seyfert/lib/types';
+import { MessageFlags } from 'seyfert';
 
 export const checkVoice = createMiddleware<void>(async ({ context, next, pass }) => {
     if (!context.guildId) return pass();
@@ -233,7 +233,7 @@ client.gateway.totalShards;
 client.gateway.calculateShardId('guildId');
 
 // Set presence
-import { PresenceUpdateStatus, ActivityType } from 'seyfert/lib/types';
+import { PresenceUpdateStatus, ActivityType } from 'seyfert';
 
 client.gateway.setPresence({
     status: PresenceUpdateStatus.Online,
@@ -265,7 +265,7 @@ cache.has('user-123');
 Cycle through different activities:
 
 ```ts
-import { PresenceUpdateStatus, ActivityType } from 'seyfert/lib/types';
+import { PresenceUpdateStatus, ActivityType } from 'seyfert';
 
 const activities = [
     { name: 'with Seyfert', type: ActivityType.Playing },

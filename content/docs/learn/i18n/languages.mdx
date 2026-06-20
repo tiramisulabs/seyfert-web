@@ -93,10 +93,11 @@ const client = new Client();
 client.start();
 
 declare module 'seyfert' {
-  interface SeyfertRegistry { client: ParseClient<Client<true>> }
-  // interface SeyfertRegistry { client: ParseClient<HttpClient> } // If you are using the rest api
-
-  interface SeyfertRegistry { langs: ParseLocales<typeof English> }
+  interface SeyfertRegistry {
+    client: ParseClient<Client<true>>;
+    // client: ParseClient<HttpClient>; // If you are using the rest api
+    langs: ParseLocales<typeof English>;
+  }
 }
 ```
 
@@ -133,9 +134,10 @@ const English = {
   }
 };
 declare module 'seyfert' {
-  interface SeyfertRegistry { client: ParseClient<Client<true>> }
-
-  interface SeyfertRegistry { langs: ParseLocales<typeof English> }
+  interface SeyfertRegistry {
+    client: ParseClient<Client<true>>;
+    langs: ParseLocales<typeof English>;
+  }
 }
 // ---cut---
 import {
@@ -146,7 +148,7 @@ import {
   createStringOption,
   type CommandContext
 } from 'seyfert';
-import { MessageFlags } from 'seyfert/lib/types';
+import { MessageFlags } from 'seyfert';
 
 const options = {
   hide: createBooleanOption({

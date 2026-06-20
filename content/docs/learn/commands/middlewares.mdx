@@ -54,10 +54,11 @@ client.setServices({
 });
 
 declare module "seyfert" {
-  interface SeyfertRegistry { client: ParseClient<Client<true>> }
-
-  // Register the middlewares on seyfert types
-  interface SeyfertRegistry { middlewares: typeof middlewares }
+  interface SeyfertRegistry {
+    client: ParseClient<Client<true>>;
+    // Register the middlewares on seyfert types
+    middlewares: typeof middlewares;
+  }
 }
 ```
 
@@ -93,7 +94,7 @@ Let's take a look adding some logic to the logger middleware.
 
 ```ts title="logger.middleware.ts" ins={2, 11-13} copy wrap 
 import { createMiddleware } from "seyfert";
-import { ChannelType } from 'seyfert/lib/types';
+import { ChannelType } from 'seyfert';
 
 export const loggerMiddleware = createMiddleware<void>((middle) => {
   // Log the command
@@ -121,7 +122,7 @@ On the other hand we could skip the interaction (ignore the interaction and lite
 
 ```ts title="logger.middleware.ts" {12} copy
 import { createMiddleware } from "seyfert";
-import { ChannelType } from 'seyfert/lib/types';
+import { ChannelType } from 'seyfert';
 
 export const loggerMiddleware = createMiddleware<void>((middle) => {
   // Log the command
@@ -182,7 +183,7 @@ export default class PingCommand extends Command {
     async run(ctx: CommandContext<never, "logger">) {
         const time = ctx.metadata.logger.time;
         console.log(time);
-        await ctx.reply({
+        await ctx.write({
             content: `Pong! Time: ${time}`,
         });
     }

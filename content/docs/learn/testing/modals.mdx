@@ -19,8 +19,7 @@ This page's examples assume a `feedback` command whose `run()` opens a modal, wa
 
 ```ts
 // src/commands/feedback.ts
-import { Command, Declare, Modal, TextInput, ActionRow, type CommandContext } from 'seyfert';
-import { TextInputStyle } from 'seyfert/lib/types';
+import { Command, Declare, Label, Modal, TextInput, TextInputStyle, type CommandContext } from 'seyfert';
 
 @Declare({ name: 'feedback', description: 'Send feedback' })
 export class FeedbackCommand extends Command {
@@ -29,9 +28,9 @@ export class FeedbackCommand extends Command {
 			.setCustomId('feedback-modal')
 			.setTitle('Feedback')
 			.addComponents(
-				new ActionRow<TextInput>().addComponents(
-					new TextInput().setCustomId('rating').setStyle(TextInputStyle.Short).setLabel('Rating'),
-				),
+				new Label()
+					.setLabel('Rating')
+					.setComponent(new TextInput().setCustomId('rating').setStyle(TextInputStyle.Short)),
 			);
 
 		const submit = await ctx.modal(modal, { waitFor: 60_000 });

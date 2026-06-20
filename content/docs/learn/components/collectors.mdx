@@ -12,7 +12,7 @@ If the process where you created the component collector stops, the collector wi
 
 ## Building Collectors
 
-Collectors are built using the [`createComponentCollector`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/components/handler.ts#L39) method on a message, which is inherited by [`BaseMessage`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/structures/Message.ts#L44). This method returns an object representing a collector.
+Collectors are built using the [`createComponentCollector`](/docs/api/BaseMessage:Class#member-Method-createComponentCollector-3) method on a message, which is inherited by [`BaseMessage`](/docs/api/BaseMessage:Class). This method returns an object representing a collector.
 
 Here's an example of how to build a simple collector after sending a message with an attached button in a "hello world" command.
 
@@ -25,7 +25,7 @@ import {
   type CommandContext,
 } from 'seyfert';
 
-import { ButtonStyle } from 'seyfert/lib/types';
+import { ButtonStyle } from 'seyfert';
 
 @Declare({
   name: 'hello',
@@ -68,7 +68,7 @@ import {
   type CommandContext,
 } from 'seyfert';
 
-import { ButtonStyle } from 'seyfert/lib/types';
+import { ButtonStyle } from 'seyfert';
 
 @Declare({
   name: 'hello',
@@ -126,7 +126,7 @@ import {
   type CommandContext,
 } from 'seyfert';
 
-import { ButtonStyle } from 'seyfert/lib/types';
+import { ButtonStyle } from 'seyfert';
 
 @Declare({
   name: 'hello',
@@ -181,7 +181,7 @@ import {
   type CommandContext,
 } from 'seyfert';
 
-import { ButtonStyle } from 'seyfert/lib/types';
+import { ButtonStyle } from 'seyfert';
 
 @Declare({
   name: 'hello',
@@ -253,4 +253,4 @@ export default class HelloWorldCommand extends Command {
     return i.write({ content: 'Hello World 👋' });
   }
 }
-``` 
+```

@@ -17,7 +17,7 @@ import { type CommandContext } from 'seyfert';
 const ctx = {} as CommandContext;
 // ---cut---
 import { Container, TextDisplay, ActionRow, Button, File, Section, Thumbnail, Separator, MediaGallery, MediaGalleryItem } from 'seyfert';
-import { Spacing } from 'seyfert/lib/types';
+import { Spacing } from 'seyfert';
 
 const section = new Section()
 	.setAccessory(new Thumbnail()
@@ -97,7 +97,7 @@ The Separator is used to visually separate other components, either by adding sp
 
 ```ts twoslash
 import { Separator } from 'seyfert';
-import { Spacing } from 'seyfert/lib/types';
+import { Spacing } from 'seyfert';
 
 const separator = new Separator()
 	.setSpacing(Spacing.Small)
@@ -141,7 +141,7 @@ import {
 	Separator,
 	TextDisplay,
 } from "seyfert";
-import { ButtonStyle, MessageFlags } from "seyfert/lib/types";
+import { ButtonStyle, MessageFlags } from "seyfert";
 
 const components = new Container().addComponents(
 	new MediaGallery().addItems(

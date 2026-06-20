@@ -9,7 +9,7 @@ There are diffrent types of components' builders with diffrent customization but
 
 ## ActionRow
 
-All the builders are sent within an [`ActionRow`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/ActionRow.ts#L16). Each message can contain a maxium of 5 actions row.
+All the builders are sent within an [`ActionRow`](/docs/api/ActionRow:Class). Each message can contain a maxium of 5 actions row.
 
 Here is how we create a basic ActionRow:
 
@@ -33,7 +33,7 @@ An ActionRow shouldn't contain more than 5 buttons.
 
 ```ts twoslash showLineNumbers copy
 import { ActionRow, Button } from 'seyfert';
-import { ButtonStyle } from 'seyfert/lib/types';
+import { ButtonStyle } from 'seyfert';
 
 const button = new Button()
   .setCustomId('first-button')
@@ -46,7 +46,7 @@ const row = new ActionRow<Button>().setComponents([button]);
   <Tab value="Select Menus">
 An ActionRow shouldn't contain more than one select menu.
 
-There are diffrent types of select menus: [`StringSelectMenu`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/SelectMenu.ts#L276), [`UserSelectMenu`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/SelectMenu.ts#L114), [`RoleSelectMenu`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/SelectMenu.ts#L149), [`ChannelSelectMenu`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/SelectMenu.ts#L227) and [`MentionableSelectMenu`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/SelectMenu.ts#L185).
+There are diffrent types of select menus: [`StringSelectMenu`](/docs/api/StringSelectMenu:Class), [`UserSelectMenu`](/docs/api/UserSelectMenu:Class), [`RoleSelectMenu`](/docs/api/RoleSelectMenu:Class), [`ChannelSelectMenu`](/docs/api/ChannelSelectMenu:Class) and [`MentionableSelectMenu`](/docs/api/MentionableSelectMenu:Class).
 
 We are going to make diffrent action rows for each select menu. 
 
@@ -124,7 +124,7 @@ declare module 'seyfert' {
 }
 // ---cut---
 import { Declare, Command, type CommandContext, ActionRow, Button } from 'seyfert';
-import { ButtonStyle } from 'seyfert/lib/types';
+import { ButtonStyle } from 'seyfert';
 
 @Declare({
   name: 'ping',
@@ -147,4 +147,4 @@ export default class PingCommand extends Command {
     });
   }
 }
-``` 
+```

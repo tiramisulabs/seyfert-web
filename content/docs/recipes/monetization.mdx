@@ -89,7 +89,7 @@ This type of button does not need a CustomID or Label, but it does need a SkuID,
 
 ```ts twoslash showLineNumbers
 import { Button } from 'seyfert';
-import { ButtonStyle } from 'seyfert/lib/types';
+import { ButtonStyle } from 'seyfert';
 
 new Button()
 .setSKUId('STORE_ITEM_SKU_ID')
@@ -109,7 +109,7 @@ In each **Interaction** you can also get all the active entitlements, with them 
 Example:
 ```ts twoslash title='commands/premium.ts' showLineNumbers
 import { Declare, Command, type CommandContext, ActionRow, Button } from 'seyfert';
-import { ButtonStyle } from 'seyfert/lib/types';
+import { ButtonStyle } from 'seyfert';
 
 @Declare({
   name: 'premium',

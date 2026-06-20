@@ -12,7 +12,7 @@ User commands appear in the **Apps** section when right-clicking a user. They re
 
 ```ts twoslash
 import { ContextMenuCommand, Declare, type MenuCommandContext, type UserCommandInteraction} from 'seyfert';
-import { ApplicationCommandType } from 'seyfert/lib/types';
+import { ApplicationCommandType } from 'seyfert';
 
 
 @Declare({
@@ -40,7 +40,7 @@ Message commands appear in the **Apps** section when right-clicking a message. T
 
 ```ts twoslash
 import { ContextMenuCommand, Declare, type MenuCommandContext, type MessageCommandInteraction } from 'seyfert';
-import { ApplicationCommandType } from 'seyfert/lib/types';
+import { ApplicationCommandType } from 'seyfert';
 
 @Declare({
     name: 'Bookmark',
@@ -63,7 +63,7 @@ You can control where context menu commands can be used with `contexts` and `int
 
 ```ts twoslash
 import { ContextMenuCommand, Declare, type MenuCommandContext, type UserCommandInteraction } from 'seyfert';
-import { ApplicationCommandType } from 'seyfert/lib/types';
+import { ApplicationCommandType } from 'seyfert';
 
 @Declare({
     name: 'Report User',

@@ -46,7 +46,7 @@ Emit full Discord event shapes, not partial patches. The mock applies a canonica
 Beyond dispatching events, `MockGateway` stands in for Seyfert's `ShardManager`: it records outbound traffic and exposes the shards the bot reads in tests. Shape it through `createMockBot()` with `shards` and `shardLatency`, then reach it as `bot.gateway` (or `bot.client.gateway`):
 
 ```ts
-import { ActivityType, GatewayOpcodes, PresenceUpdateStatus } from 'seyfert/lib/types';
+import { ActivityType, GatewayOpcodes, PresenceUpdateStatus } from 'seyfert';
 import { createMockBot } from '@slipher/testing';
 import { expect, test } from 'vitest';
 

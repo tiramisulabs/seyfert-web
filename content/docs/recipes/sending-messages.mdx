@@ -82,7 +82,7 @@ export default class HelloWorldCommand extends Command {
 
 Discord adds the ability to send embedded messages within a channel.
 
-To send these embedded messages with Seyfert, we need to construct the embed using the Embed builder. For more information about customizing the embedded message, you can check out the [Embed builder](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/Embed.ts#L13) within this documentation.
+To send these embedded messages with Seyfert, we need to construct the embed using the Embed builder. For more information about customizing the embedded message, you can check out the [Embed builder](/docs/api/Embed:Class) within this documentation.
 
 Here’s an example of how to send an embed with a custom title and description.
 
@@ -104,11 +104,11 @@ export default class HelloWorldCommand extends Command {
 
 ## Sending Components Attached to the Message
 
-Discord includes the ability to send components attached to a message within an `ActionRow`. These components can be [`Buttons`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/Button.ts#L8) or [`SelectMenus`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/SelectMenu.ts#L60).
+Discord includes the ability to send components attached to a message within an `ActionRow`. These components can be [`Buttons`](/docs/api/Button:Class) or [`SelectMenus`](/docs/api/BuilderSelectMenus:TypeAlias).
 
-Components are stored in an [`ActionRow`](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/ActionRow.ts#L16), which can contain up to 5 different buttons and only one select menu and cannot contain another ActionRow inside.
+Components are stored in an [`ActionRow`](/docs/api/ActionRow:Class), which can contain up to 5 different buttons and only one select menu and cannot contain another ActionRow inside.
 
-In this example, we are going to send two action rows within the message. Each row will have a button and a [string select menu](https://github.com/tiramisulabs/seyfert/blob/455ed12b0ebcb3ddf55bc8b3274b0ce904becc62/src/builders/SelectMenu.ts#L276) attached, respectively.
+In this example, we are going to send two action rows within the message. Each row will have a button and a [string select menu](/docs/api/StringSelectMenu:Class) attached, respectively.
 
 ```ts twoslash title="src/commands/helloworld.ts" ins={1-7} {"1. Building button": 14-21} {"2. Building selectmenu": 23-32} ins={32} showLineNumbers
 import {
@@ -119,7 +119,7 @@ import {
   Command,
   type CommandContext
 } from 'seyfert';
-import { ButtonStyle } from 'seyfert/lib/types'
+import { ButtonStyle } from 'seyfert'
 
 export default class HelloWorldCommand extends Command {
   async run(ctx: CommandContext) {

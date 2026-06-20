@@ -14,7 +14,7 @@ This page's examples assume a `poll` command whose `run()` sends a button, then 
 ```ts
 // src/commands/poll.ts
 import { Command, Declare, ActionRow, Button, type CommandContext } from 'seyfert';
-import { ButtonStyle } from 'seyfert/lib/types';
+import { ButtonStyle } from 'seyfert';
 
 @Declare({ name: 'poll', description: 'Open a poll' })
 export class PollCommand extends Command {

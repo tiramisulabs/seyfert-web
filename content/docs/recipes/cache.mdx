@@ -25,13 +25,13 @@ In Seyfert, the cache is global, meaning everything is stored in the same resour
 | guilds          | Guild                                                  |
 | messages        | Message                                                |
 | overwrites      | PermissionsOverwrites                                  |
-| presence        | Presence                                               |
+| presences       | Presence                                               |
 | members         | GuildMember                                            |
 | roles           | GuildRole                                              |
 | users           | User                                                   |
 | stickers        | Sticker                                                |
 | voiceStates     | VoiceStates                                            |
-| stagesInstances | StageChannel                                           |
+| stageInstances  | StageChannel                                           |
 
 ```ts twoslash
 import { Client } from 'seyfert';
@@ -42,14 +42,14 @@ client.setServices({ cache: { disabledCache: { bans: true } } })
 ```
 The example above disables the bans cache, and that resource would not exist at runtime.
 
-<Callout title="Disabling the Cache">
-You can completely remove the cache functionality:
+<Callout title="Disabling Gateway Writes">
+You can stop gateway packets from writing data into the cache:
 ```ts twoslash
 import { Client } from 'seyfert';
 
 const client = new Client();
 // ---cut---
-client.setServices({ cache: { disabledCache: true } })
+client.setServices({ cache: { disabledCache: { onPacket: true } } })
 ```
 </Callout>
 
@@ -59,7 +59,7 @@ You can filter which data gets stored in a resource. For example, if your applic
 
 ```ts twoslash title="index.ts" copy showLineNumbers
 import { Client } from "seyfert";
-import { type APIChannel, ChannelType } from "seyfert/lib/types";
+import { type APIChannel, ChannelType } from "seyfert";
 const client = new Client();
 
 client.cache.channels!.filter = (
@@ -91,31 +91,38 @@ A `custom resource` is just a new cache entity, so integrating it is relatively 
 It's important to note that Seyfert provides a base for three types of resources:
 
 - **BaseResource**: a basic entity, which should be completely independent
-- **GuildBaseResource**: an entity linked to a guild (like bans)
+- **GuildBasedResource**: an entity linked to a guild (like bans)
 - **GuildRelatedResource**: an entity that may or may not be linked to a guild (like messages)
 
 ```ts title="resource.ts"
-import { BaseResource } from 'seyfert/lib/cache';
+import { BaseResource, CacheFrom } from 'seyfert';
 
-export class CooldownResource extends BaseResource<CooldownData> {
+interface CooldownData {
+    id: string;
+    lastDrip: number;
+}
+
+type CooldownInput = Omit<CooldownData, 'lastDrip'> & Partial<Pick<CooldownData, 'lastDrip'>>;
+
+export class CooldownResource extends BaseResource<CooldownData, CooldownInput> {
     // The namespace is the base that separates each resource
     namespace = 'cooldowns';
 
     // We override set to apply the typing and format we want
-    override set(id: string, data: MakePartial<CooldownData, 'lastDrip'>) {
-        return super.set(id, { ...data, lastDrip: data.lastDrip ?? Date.now() });
+    override set(from: CacheFrom, id: string, data: CooldownInput) {
+        return super.set(from, id, { ...data, lastDrip: data.lastDrip ?? Date.now() });
     }
 }
 ```
 Note that a custom resource is for developer use; Seyfert will not interact with it unless specified in the application's code.
 
 ```ts
-import { Client } from 'seyfert';
+import { Client, type ParseClient } from 'seyfert';
 import { CooldownResource } from './resource'
 
 const client = new Client();
 
-client.cache.cooldown = new CooldownResource(client.cache);
+client.cache.cooldown = new CooldownResource(client.cache, client);
 
 declare module "seyfert" {
     interface Cache {
@@ -223,7 +230,7 @@ To store relationships, you use the `bulkAddToRelationShip` and `addToRelationsh
 
 ```ts twoslash
 interface SeyfertDotDev {
-    setAdd(key: string, key: string): Promise<void>;
+    setAdd(to: string, key: string): Promise<void>;
 }
 // @noErrors
 // ---cut---
@@ -462,15 +469,18 @@ class MyAdapter implements Adapter {
     // ---cut-start---
     storage: SeyfertDotDev;
     // ---cut-end---
-    async removeToRelationship(to: string) {
-        // Remove the "Set" completely
-        await this.storage.setRemove(to);
-    }
-
-    async removeRelationship(to: string, key: string | string[]) {
+    async removeToRelationship(to: string, key: string | string[]) {
         // Remove the ID(s) from the "Set"
         const keys = Array.isArray(key) ? key : [key];
         await this.storage.setPull(to, keys);
+    }
+
+    async removeRelationship(to: string | string[]) {
+        // Remove the "Set" completely
+        const targets = Array.isArray(to) ? to : [to];
+        for (const target of targets) {
+            await this.storage.setRemove(target);
+        }
     }
 }
 ```

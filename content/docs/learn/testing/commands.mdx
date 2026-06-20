@@ -22,7 +22,7 @@ const options = {
 @Options(options)
 export class BanCommand extends Command {
 	async run(ctx: CommandContext<typeof options>) {
-		await ctx.client.guilds.bans.create(ctx.guildId!, ctx.options.user.id, {}, ctx.options.reason);
+		await ctx.client.bans.create(ctx.guildId!, ctx.options.user.id, { reason: ctx.options.reason });
 		await ctx.write({ content: `Banned ${ctx.options.user.username}.` });
 	}
 }

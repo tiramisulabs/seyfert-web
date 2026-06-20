@@ -17,7 +17,7 @@ You must set `compilerOptions.module` to `ESNext` in your `tsconfig.json` since 
 
 </Callout>
 
-First of all you will need to install an adapter for seyfert, you can do it by running:
+First of all you will need to install the generic adapter for seyfert, you can do it by running:
 
 ```bash copy
 npm add @slipher/generic-adapter
@@ -35,16 +35,16 @@ import Ping from './commands/ping.js';
 const client = new HttpClient();
 const adapter = new GenericAdapter(client);
 
-client.start()
+const ready = client.start()
   .then(async () => {
     // we need to load commands manually
-    await client.commands!.set('', client, [Ping]);
-  });
-
-adapter.start();
+    client.commands.set([Ping]);
+  })
+  .then(() => adapter.start());
 
 export default {
-  fetch(req: Request) {
+  async fetch(req: Request) {
+    await ready;
     return adapter.fetch(req);
   }
 }
@@ -55,6 +55,7 @@ and the same when we load both `components` and `langs`
 ```ts copy
 import '../seyfert.config.mjs'; // ye, importing our seyfert.config.mjs
 import { HttpClient } from 'seyfert';
+import { GenericAdapter } from '@slipher/generic-adapter';
 
 // commands
 import Ping from './commands/ping.js';
@@ -66,23 +67,24 @@ import EnLang from './languages/en.js';
 import ButtonC from './components/buttonHandle.js';
 
 const client = new HttpClient();
+const adapter = new GenericAdapter(client);
 
-client.start()
+const ready = client.start()
   .then(async () => {
     // we need to load commands manually
-    await client.commands!.set('', client, [Ping]);
+    client.commands.set([Ping]);
 
     // load languages
-    await client.langs!.set('', [{ name: 'en', file: EnLang}]);
+    client.langs.set([{ name: 'en', file: EnLang }]);
 
     // load components
-    await client.components!.set('', client, [ButtonC]);
-  });
-
-adapter.start();
+    client.components.set([ButtonC]);
+  })
+  .then(() => adapter.start());
 
 export default {
-  fetch(req: Request) {
+  async fetch(req: Request) {
+    await ready;
     return adapter.fetch(req);
   }
 }
