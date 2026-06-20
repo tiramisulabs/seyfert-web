@@ -93,10 +93,10 @@ const client = new Client();
 client.start();
 
 declare module 'seyfert' {
-  interface UsingClient extends ParseClient<Client<true>> { }
-  // interface UsingClient extends ParseClient<HttpClient> { } // If you are using the rest api
+  interface SeyfertRegistry { client: ParseClient<Client<true>> }
+  // interface SeyfertRegistry { client: ParseClient<HttpClient> } // If you are using the rest api
 
-  interface DefaultLocale extends ParseLocales<typeof English> { }
+  interface SeyfertRegistry { langs: ParseLocales<typeof English> }
 }
 ```
 
@@ -112,7 +112,7 @@ client.setServices({ langs: { default: 'en-US' } });
 ```
 
 <Callout>
-You can pass any of the language files to the `DefaultLocale` interface since they should be the same object structure.
+You can use any of the language files for the `langs` entry in `SeyfertRegistry` since they should be the same object structure.
 </Callout>
 
 
@@ -133,9 +133,9 @@ const English = {
   }
 };
 declare module 'seyfert' {
-  interface UsingClient extends ParseClient<Client<true>> {}
+  interface SeyfertRegistry { client: ParseClient<Client<true>> }
 
-  interface DefaultLocale extends ParseLocales<typeof English> {}
+  interface SeyfertRegistry { langs: ParseLocales<typeof English> }
 }
 // ---cut---
 import {

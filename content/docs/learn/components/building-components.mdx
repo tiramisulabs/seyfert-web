@@ -120,7 +120,7 @@ After creating the components you have to send the ActionRow into the components
 ```ts twoslash {13-16,20} showLineNumbers copy
 import type { ParseClient, Client } from 'seyfert';
 declare module 'seyfert' {
-  interface UsingClient extends ParseClient<Client<true>> {}
+  interface SeyfertRegistry { client: ParseClient<Client<true>> }
 }
 // ---cut---
 import { Declare, Command, type CommandContext, ActionRow, Button } from 'seyfert';

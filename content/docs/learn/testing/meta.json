@@ -1,0 +1,13 @@
+{
+    "title": "Testing",
+    "icon": "ListChecks",
+    "defaultOpen": true,
+    "pages": [
+        "setup",
+        "commands",
+        "events",
+        "components",
+        "modals",
+        "unit-tests"
+    ]
+}

@@ -21,14 +21,11 @@ Seyfert provides several [client types](./setup-project) to instantiate your bot
 import type { ParseClient, Client, HttpClient, WorkerClient } from 'seyfert';
 
 declare module 'seyfert' {
-
-    interface UsingClient extends ParseClient<Client<true>> { } // Gateway [!code highlight]
-  
-  
-    interface UsingClient extends ParseClient<HttpClient> { } // HTTP [!code highlight]
-  
-  
-    interface UsingClient extends ParseClient<WorkerClient<true>> { } // Worker [!code highlight]
+    interface SeyfertRegistry {
+        client: ParseClient<Client<true>>; // Gateway [!code highlight]
+        // client: ParseClient<HttpClient>;         // HTTP
+        // client: ParseClient<WorkerClient<true>>; // Worker
+    }
 }
 ```
 
@@ -41,7 +38,7 @@ To use your middlewares throughout the project, you need to inform TypeScript ab
 import type * as allMiddlewares from './middlewares';
 
 declare module 'seyfert' {
-    interface RegisteredMiddlewares extends ParseMiddlewares<typeof allMiddlewares> {} // [!code highlight]
+    interface SeyfertRegistry { middlewares: typeof allMiddlewares } // [!code highlight]
 }
 ```
 
@@ -52,7 +49,7 @@ This applies similarly to global middlewares, which are automatically executed o
 import type * as globalMiddlewares from './globalMiddlewares';
 
 declare module 'seyfert' {
-    interface GlobalMetadata extends ParseMiddlewares<typeof globalMiddlewares> {} // [!code highlight]
+    interface GlobalMetadata extends ParseGlobalMiddlewares<typeof globalMiddlewares> {} // [!code highlight]
 }
 ```
 
@@ -73,7 +70,7 @@ Although you can use `.json` files to store languages, it's highly recommended t
 import type * as defaultLang from './langs/en';
 
 declare module 'seyfert' {
-    interface DefaultLocale extends ParseLocales<typeof defaultLang> {} // [!code highlight]    
+    interface SeyfertRegistry { langs: ParseLocales<typeof defaultLang> } // [!code highlight]    
 }
 ```
 
@@ -108,7 +105,6 @@ We often need to categorize some commands or simply assign an identifier for som
 To achieve this, we can use `ExtraProps`:
 
 ```ts twoslash copy
-// @errors: 2741 2322
 import { Client, Declare, Command } from 'seyfert';
 // ---cut---
 const client = new Client({
@@ -124,13 +120,15 @@ const client = new Client({
 @Declare({
     name: 'test',
     description: 'test command',
-    props: {}
+    props: {
+        onlyForAdmins: true
+    }
 })
 class Test extends Command {}
 
 declare module 'seyfert' {
     interface ExtraProps {
-        onlyForAdmins: boolean;
+        onlyForAdmins?: boolean;
         disabled?: true;
         category?: string
     }

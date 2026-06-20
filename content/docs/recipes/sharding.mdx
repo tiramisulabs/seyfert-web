@@ -43,7 +43,7 @@ const client = new WorkerClient();
 client.start();
 
 declare module 'seyfert' {
-	interface UsingClient extends ParseClient<WorkerClient> {}
+	interface SeyfertRegistry { client: ParseClient<WorkerClient> }
 }
 ```
 	</Tab>

@@ -7,8 +7,9 @@ import {
 } from 'fumadocs-ui/layouts/notebook/page';
 import { notFound } from 'next/navigation';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
-import { Popup, PopupContent, PopupTrigger } from 'fumadocs-twoslash/ui';
 import { AutoTypeTable } from 'fumadocs-typescript/ui';
+import { Callout } from '@/components/docs/callout';
+import { MdxLink } from '@/components/docs/mdx-link';
 import { TocRail } from '@/components/docs/toc-rail';
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -42,9 +43,8 @@ export default async function Page(props: {
         <MDX components={{
           ...defaultMdxComponents,
           AutoTypeTable,
-          Popup,
-          PopupContent,
-          PopupTrigger,
+          Callout,
+          a: MdxLink,
         }} />
       </DocsBody>
     </DocsPage>

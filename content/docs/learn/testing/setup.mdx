@@ -1,0 +1,99 @@
+---
+title: Setup
+description: Install @slipher/testing, boot a mock bot from your real commands, and get a first slash-command test passing.
+---
+
+This is the foundation of the Writing Tests guide. By the end you will have a mock bot running your real command pipeline in-process and a first passing Vitest test — no token, no gateway, no network.
+
+## Install
+
+Add the package as a dev dependency. It targets Seyfert v5, so make sure your project is already on v5.
+
+```sh
+pnpm add -D @slipher/testing
+```
+
+<Callout type="info">
+`@slipher/testing` is test-only. It never ships in your bot's runtime bundle, so keep it under `devDependencies`.
+</Callout>
+
+## The command under test
+
+The examples throughout this guide assume one simple slash command. Nothing special — your real commands work exactly the same:
+
+```ts
+// src/commands/greet.ts
+import { Command, Declare, Options, createStringOption, type CommandContext } from 'seyfert';
+
+const options = {
+	name: createStringOption({ description: 'Who to greet', required: true }),
+};
+
+@Declare({ name: 'greet', description: 'Greet someone' })
+@Options(options)
+export class GreetCommand extends Command {
+	async run(ctx: CommandContext<typeof options>) {
+		await ctx.write({ content: `Hello, ${ctx.options.name}!` });
+	}
+}
+```
+
+## Create the mock bot
+
+`createMockBot()` boots a real Seyfert client and registers the same command, component, and event classes you ship to production. You drive that real pipeline; every REST call is recorded instead of sent.
+
+### Register your real classes
+
+Import the classes you ship and pass them in. This is the same registration production does, just programmatic:
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import { GreetCommand } from '../src/commands/greet';
+
+await using bot = await createMockBot({ commands: [GreetCommand] });
+```
+
+`components` and `events` work the same way — pass the real classes alongside `commands`.
+
+### Or load from your config
+
+Prefer your production set? Pass `loadFromConfig: true` to boot through the same loaders `client.start()` uses, reading from `seyfert.config`:
+
+```ts
+await using bot = await createMockBot({ loadFromConfig: true });
+```
+
+<Callout type="info">
+Bot configs usually point at compiled output, so build before running config-loaded specs. The config must resolve from the test runner's working directory.
+</Callout>
+
+## Your first test
+
+Dispatch a slash command with `bot.slash(...)` and assert on the reply. Here is a complete, runnable Vitest test:
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import { GreetCommand } from '../src/commands/greet';
+
+test('greet replies through the real pipeline', async () => {
+	await using bot = await createMockBot({ commands: [GreetCommand] });
+
+	const result = await bot.slash({ name: 'greet', options: { name: 'slipher' } });
+
+	expect(result.content).toBe('Hello, slipher!');
+});
+```
+
+Run it with `vitest`. The `await using` declaration disposes the bot automatically when the test ends, so there is no teardown to write.
+
+## What just happened
+
+There was no network call, yet your command ran for real. The mock bot turned your payload into a raw `APIInteraction`, fed it through Seyfert's command handler, parsed options with the real resolver, and ran your middlewares.
+
+When your command replied, the outgoing REST call was captured instead of sent. `result.content` reads that recorded reply — the same response a real Discord client would have received.
+
+## Next steps
+
+- Next: [Commands](/docs/learn/testing/commands)
+- Reference: [The Toolkit › Mock bot](/docs/testing/mock-bot) for every `createMockBot` option.

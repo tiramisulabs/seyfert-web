@@ -103,14 +103,10 @@ A select menu with predefined string options.
 ```ts
 const stringSelectMenu = new StringSelectMenu()
     .setCustomId('strings')
-    .setOptions([
-        new StringSelectOption()
-            .setLabel('Option 1')
-            .setValue('option1'),
-        new StringSelectOption()
-            .setLabel('Option 2')
-            .setValue('option2')
-    ]);
+    .setOptions(
+        new StringSelectOption({ label: 'Option 1', value: 'option1' }),
+        new StringSelectOption({ label: 'Option 2', value: 'option2' }),
+    );
 
 const label = new Label()
     .setLabel('Choose an option')
@@ -239,9 +235,7 @@ export default class MyModal extends ModalCommand {
     }
 
     async run(context: ModalContext) {
-        const interaction = context.interaction;
-
-        const text = interaction.getInputValue('text', true);
+        const text = context.getInputValue('text', true);
 
         return context.write({
             content: `Your input was: ${text}`

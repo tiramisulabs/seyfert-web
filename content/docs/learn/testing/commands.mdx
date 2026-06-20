@@ -1,0 +1,157 @@
+---
+title: Commands
+description: A step-by-step walkthrough for testing a command end-to-end — dispatch a slash command, assert its reply and REST effects, run as a specific user, and check options, prefix commands, i18n, and permission denials.
+---
+
+With Setup done, you have a `createMockBot()` that runs your real command classes end-to-end. This page walks through testing a command: dispatch it, assert the reply, then layer in users, options, prefixes, i18n, and permissions.
+
+Every example imports from `@slipher/testing`, `seyfert`, and `vitest`, and uses `await using` so the bot disposes automatically at the end of the test.
+
+These examples reuse the `greet` command from [Setup](/docs/learn/testing/setup). The REST-effect and permission sections add a small `ban` command:
+
+```ts
+// src/commands/ban.ts
+import { Command, Declare, Options, createUserOption, createStringOption, type CommandContext } from 'seyfert';
+
+const options = {
+	user: createUserOption({ description: 'Member to ban', required: true }),
+	reason: createStringOption({ description: 'Why' }),
+};
+
+@Declare({ name: 'ban', description: 'Ban a member' })
+@Options(options)
+export class BanCommand extends Command {
+	async run(ctx: CommandContext<typeof options>) {
+		await ctx.client.guilds.bans.create(ctx.guildId!, ctx.options.user.id, {}, ctx.options.reason);
+		await ctx.write({ content: `Banned ${ctx.options.user.username}.` });
+	}
+}
+```
+
+### Dispatch a slash command
+
+Start with the smallest test: call `bot.slash({ name, options })` and assert on the reply. The dispatcher builds a raw interaction and pushes it through Seyfert's real pipeline — `HandleCommand`, option parsing, middlewares.
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import { GreetCommand } from '../src/commands/greet';
+
+test('greet replies through the real pipeline', async () => {
+	await using bot = await createMockBot({ commands: [GreetCommand] });
+	const result = await bot.slash({ name: 'greet', options: { name: 'slipher' } });
+
+	expect(result.content).toBe('Hello, slipher!');
+});
+```
+
+`result.content` is the parsed reply text; `result.messages` holds message-create calls. Prefer the typed views (`result.content`, `result.embedView?.title`, `result.button('Approve')?.customId`) over raw shapes.
+
+The raw interaction response stays available as `result.reply?.body` (`{ type, data }`) for the rare assertion where the exact Discord wire payload is the contract.
+
+<Callout type="info">
+Use `bot.slash(GreetCommand, { options })` when you want option inference from the command class; use `bot.slash({ name, ... })` for concise by-name dispatch.
+</Callout>
+
+### Assert REST effects
+
+Behavior that goes through REST — a ban hitting its route, an edit, a followup — is recorded as actions. Each carries `{ seq, method, route, body, query, response }`, so you can assert the call happened and inspect its body:
+
+```ts
+import { Routes } from '@slipher/testing';
+
+const ban = await bot.waitForAction(Routes.ban);
+expect(ban.body).toMatchObject({ delete_message_seconds: 0 });
+```
+
+For common cases, the toolkit ships matchers like `expectReply`, `expectDenied`, and `expectError` so you assert intent instead of digging through the action list. See [Assertions](/docs/testing/assertions) for the full set.
+
+### Running as a specific user
+
+Every dispatch defaults to the bot's single test user (`bot.defaultUser`, backed by `TEST_USER_ID`). That keeps cross-dispatch state — cooldowns, collectors, modals — correlating, but every call is the *same* person unless told otherwise.
+
+Override the user for a single dispatch by passing `user`:
+
+```ts
+import { apiUser } from '@slipher/testing';
+
+await bot.slash({ name: 'profile', user: apiUser({ id: '99', username: 'mara' }) });
+```
+
+When a sequence of dispatches should come from one identity, bind it once with `bot.actor({ member, guildId, channel })` and call dispatchers on the returned actor. Each call drives the same in-process bot, so later steps see earlier state:
+
+```ts
+const alice = bot.actor({ member: aliceMember, guildId: guild.id, channel });
+
+await alice.slash({ name: 'poll' });
+await alice.clickButton('poll/yes');
+const result = await alice.slash({ name: 'results' });
+
+expect(result.content).toContain('1 vote');
+```
+
+This is the natural shape for multi-step journeys: open a flow, interact with its components, then assert the final reply — all as one user. See [The Toolkit › Dispatching](/docs/testing/dispatching) for the full identity surface.
+
+### Options and autocomplete
+
+Primitive option values are encoded for you. For entity options, use the explicit helpers so `resolved` data is populated and `ctx.options.user` resolves to a real entity instead of a bare id:
+
+```ts
+import { apiUser, userOption } from '@slipher/testing';
+
+await bot.slash({ name: 'ban',
+	options: { user: userOption(apiUser({ id: '42' })), reason: 'spam' },
+});
+```
+
+To test an autocomplete callback, dispatch with `bot.autocomplete(...)`, naming the `focused` option and its current `value`. The real option callback runs and `result.choices` holds what it responded with:
+
+```ts
+const result = await bot.autocomplete({ name: 'search', focused: 'query', value: 'sey' });
+
+expect(result.choices).toEqual([{ name: 'result:sey', value: 'sey' }]);
+```
+
+### Prefix commands and i18n
+
+Prefix (message) commands run Seyfert's real message-command pipeline. Configure `prefixes` on the mock bot, then call `bot.say()` with a raw message string. Options use flag-style syntax (`-text hello`) via the default args parser:
+
+```ts
+await using bot = await createMockBot({ commands: [EchoCommand], prefixes: ['!'] });
+const result = await bot.say('!echo -text hello');
+
+expect(result.content).toBe('echo: hello');
+```
+
+Message commands don't use interaction responses, so they populate `result.messages` (and `result.actions`) rather than `result.reply`.
+
+For localized commands, provide translations with `langs` and a fallback with `defaultLang`. The dispatchers accept `locale`, so assertions stay on the real `ctx.t` path:
+
+```ts
+await using bot = await createMockBot({
+	commands: [HelloCommand],
+	langs: { 'en-US': { greeting: 'Hello!' }, 'es-ES': { greeting: '¡Hola!' } },
+	defaultLang: 'en-US',
+});
+
+expect((await bot.slash({ name: 'hello' })).content).toBe('Hello!');
+expect((await bot.slash({ name: 'hello', locale: 'es-ES' })).content).toBe('¡Hola!');
+```
+
+### Permissions and denials
+
+Bare dispatches are permissive: the invoking member defaults to a realistic non-admin set with no moderation bits. To test a denial, restrict the invoker explicitly so the command's permission guard trips:
+
+```ts
+await bot.slash({ name: 'ban', memberPermissions: [] });
+```
+
+This drives `onPermissionsFail`; restricting the bot's own `permissions` drives `onBotPermissionsFail`. For a Discord-faithful test, seed a world and dispatch as a registered member — permissions are *computed* from roles and overwrites:
+
+```ts
+await bot.slash({ name: 'ban', guildId: guild.id, channel: denied, user: member.user });
+```
+
+Once a bot member is seeded with `registerBotMember(...)`, the moderation REST routes enforce the bot's computed permissions and role hierarchy, returning Discord's `403 50013`. Assert the user-facing denial with `expectDenied`.
+
+See [World & State](/docs/testing/world) for seeding guilds, roles, and overwrites, and [Assertions](/docs/testing/assertions) for `expectDenied` and friends.

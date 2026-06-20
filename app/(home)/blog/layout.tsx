@@ -28,7 +28,7 @@ export default function BlogLayout({
             tree={blogSource.pageTree}
             {...baseOptions}
             sidebar={{
-                className: 'hidden'
+                enabled: false,
             }}
         >
             {children}

@@ -6,6 +6,7 @@ import {
   useFolderDepth,
 } from 'fumadocs-ui/components/sidebar/base';
 import { SidebarSearch } from '@/components/docs/sidebar-search';
+import { SidebarActiveRail } from '@/components/docs/sidebar-active-rail';
 
 const sidebarSearchId = 'seyfert-sidebar-search-';
 
@@ -24,6 +25,7 @@ export function SidebarSearchSeparator({
     return (
       <div data-sidebar-search className="mb-1">
         <SidebarSearch />
+        <SidebarActiveRail />
       </div>
     );
   }

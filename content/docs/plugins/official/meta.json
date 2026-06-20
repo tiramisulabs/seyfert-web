@@ -1,0 +1,12 @@
+{
+    "title": "Official Plugins",
+    "icon": "Boxes",
+    "pages": [
+        "index",
+        "cooldown",
+        "scheduler",
+        "logger",
+        "queues",
+        "chartjs"
+    ]
+}

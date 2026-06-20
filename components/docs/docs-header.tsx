@@ -4,8 +4,10 @@ import { useNotebookLayout } from 'fumadocs-ui/layouts/notebook';
 import { isLayoutTabActive } from 'fumadocs-ui/layouts/shared';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'fumadocs-ui/provider/base';
+import { motion } from 'motion/react';
 import Link from 'next/link';
 import { Sidebar, Sun, Moon } from 'lucide-react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 function ThemeToggle() {
   const { setTheme, resolvedTheme } = useTheme();
@@ -26,6 +28,71 @@ function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(' ');
 }
 
+function tabCorner(pos: 'tl' | 'tr' | 'bl' | 'br'): React.CSSProperties {
+  const line = '1.5px solid rgba(255,255,255,0.6)';
+  const base: React.CSSProperties = { position: 'absolute', width: '7px', height: '7px' };
+  if (pos === 'tl') return { ...base, top: 0, left: 0, borderTop: line, borderLeft: line, borderTopLeftRadius: '3px' };
+  if (pos === 'tr') return { ...base, top: 0, right: 0, borderTop: line, borderRight: line, borderTopRightRadius: '3px' };
+  if (pos === 'bl') return { ...base, bottom: 0, left: 0, borderBottom: line, borderLeft: line, borderBottomLeftRadius: '3px' };
+  return { ...base, bottom: 0, right: 0, borderBottom: line, borderRight: line, borderBottomRightRadius: '3px' };
+}
+
+// The active-tab frame is positioned relative to the nav (not the document), so
+// the window scroll resetting on navigation can't drag it vertically — it only
+// ever slides horizontally between tabs.
+function TabFrame({ navRef, selectedIdx }: { navRef: React.RefObject<HTMLElement | null>; selectedIdx: number }) {
+  const pathname = usePathname();
+  const [rect, setRect] = useState<{ left: number; width: number; height: number } | null>(null);
+  const ready = useRef(false);
+
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    const active = nav?.querySelector<HTMLElement>('a[aria-current="page"]');
+    if (!nav || !active) {
+      setRect(null);
+      return;
+    }
+    setRect({ left: active.offsetLeft, width: active.offsetWidth, height: active.offsetHeight });
+  }, [navRef, selectedIdx, pathname]);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const measure = () => {
+      const active = nav.querySelector<HTMLElement>('a[aria-current="page"]');
+      if (active) setRect({ left: active.offsetLeft, width: active.offsetWidth, height: active.offsetHeight });
+    };
+    const ro = new ResizeObserver(measure);
+    ro.observe(nav);
+    return () => ro.disconnect();
+  }, [navRef]);
+
+  if (!rect) return null;
+
+  // Skip the very first placement animation; only slide on subsequent changes.
+  const animateImmediately = !ready.current;
+  ready.current = true;
+
+  return (
+    <motion.span
+      aria-hidden
+      initial={false}
+      animate={{ x: rect.left, width: rect.width, height: rect.height }}
+      transition={
+        animateImmediately
+          ? { duration: 0 }
+          : { type: 'spring', stiffness: 480, damping: 38, mass: 0.7 }
+      }
+      style={{ position: 'absolute', top: '50%', left: 0, y: '-50%', pointerEvents: 'none' }}
+    >
+      <span style={tabCorner('tl')} />
+      <span style={tabCorner('tr')} />
+      <span style={tabCorner('bl')} />
+      <span style={tabCorner('br')} />
+    </motion.span>
+  );
+}
+
 export function DocsHeader(props: React.ComponentProps<'header'>) {
   const {
     slots,
@@ -38,6 +105,7 @@ export function DocsHeader(props: React.ComponentProps<'header'>) {
   const { open } = slots.sidebar?.useSidebar?.() ?? {};
   const sidebarCollapsible = sidebar.collapsible ?? true;
   const showLayoutTabs = tabMode === 'navbar' && tabs.length > 0;
+  const navRef = useRef<HTMLElement>(null);
 
   if (nav?.component) return nav.component;
 
@@ -46,6 +114,7 @@ export function DocsHeader(props: React.ComponentProps<'header'>) {
   );
 
   const iconItems = navItems.filter((item) => item.type === 'icon');
+  const SearchTrigger = slots.searchTrigger ? slots.searchTrigger.sm : null;
 
   return (
     <header
@@ -65,7 +134,8 @@ export function DocsHeader(props: React.ComponentProps<'header'>) {
         )}
 
         {showLayoutTabs && (
-          <nav className="hidden items-center gap-1 md:flex" aria-label="Sections">
+          <nav ref={navRef} className="relative hidden items-center gap-1 md:flex" aria-label="Sections">
+            <TabFrame navRef={navRef} selectedIdx={selectedIdx} />
             {tabs.map((tab, i) => {
               const { title, url, unlisted, props: tabProps } = tab;
               const { className: tabClassName, ...rest } = tabProps ?? {};
@@ -76,17 +146,19 @@ export function DocsHeader(props: React.ComponentProps<'header'>) {
                   href={url}
                   aria-current={isSelected ? 'page' : undefined}
                   className={cn(
-                    'relative flex h-9 items-center gap-2 rounded-md border px-3 text-[13.5px] transition-colors [&_svg]:shrink-0',
+                    'group relative flex h-9 items-center gap-2 px-3.5 text-[13.5px] transition-colors [&_svg]:size-4 [&_svg]:shrink-0 [&_svg]:transition-opacity',
                     isSelected
-                      ? 'border-fd-primary/25 bg-fd-primary/10 font-semibold text-fd-foreground'
-                      : 'border-transparent text-fd-muted-foreground hover:bg-fd-accent/60 hover:text-fd-accent-foreground',
+                      ? 'font-semibold text-fd-foreground [&_svg]:opacity-100'
+                      : 'text-fd-muted-foreground [&_svg]:opacity-65 hover:text-fd-foreground hover:[&_svg]:opacity-100',
                     unlisted && !isSelected && 'hidden',
                     tabClassName,
                   )}
                   {...rest}
                 >
-                  {tab.icon}
-                  {title}
+                  <span className="relative inline-flex items-center gap-2">
+                    {tab.icon}
+                    {title}
+                  </span>
                 </Link>
               );
             })}
@@ -94,6 +166,10 @@ export function DocsHeader(props: React.ComponentProps<'header'>) {
         )}
 
         <div className="ms-auto flex items-center gap-2">
+          {SearchTrigger && (
+            <SearchTrigger className="inline-flex size-8 items-center justify-center rounded-md text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground [&_svg]:size-4.5" />
+          )}
+
           {iconItems.map((item, i) =>
             item.type === 'icon' ? (
               <a

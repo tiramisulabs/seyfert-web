@@ -11,7 +11,7 @@ All commands must use the `@Declare` decorator for their information and a class
 ```ts twoslash title="src/commands/ping.ts" showLineNumbers wrap
 import type { ParseClient, Client } from 'seyfert';
 declare module 'seyfert' {
-  interface UsingClient extends ParseClient<Client<true>> {}
+  interface SeyfertRegistry { client: ParseClient<Client<true>> }
 }
 // ---cut---
 import { Declare, Command, type CommandContext } from 'seyfert';
@@ -60,7 +60,7 @@ To achieve this, we'll use the `@Options` decorator and create a `hide` option o
 // @exactOptionalPropertyTypes: false
 import type { ParseClient, Client } from 'seyfert';
 declare module 'seyfert' {
-  interface UsingClient extends ParseClient<Client<true>> {}
+  interface SeyfertRegistry { client: ParseClient<Client<true>> }
 }
 // ---cut---
 import {

@@ -5,8 +5,10 @@ title: Lifecycle and Diagnostics
 Plugin lifecycle has three different jobs:
 
 - `register(api)` declares contributions synchronously.
-- `setup(client)` starts async resources during `client.start()`.
-- `teardown(client)` cleans those resources through `client.close()`.
+- `setup(client, api?)` starts async resources during `client.start()`.
+- `teardown(client, api?)` cleans those resources through `client.close()`.
+
+Both `setup` and `teardown` receive an optional second `api` argument. During teardown it is a read-only view (`has`, `diagnostics`, `shared.has`) — teardown inspects and reports, it does not mutate contributions.
 
 ```ts
 export function schedulerPlugin(options: SchedulerOptions) {
@@ -15,15 +17,19 @@ export function schedulerPlugin(options: SchedulerOptions) {
     return createPlugin({
         name: 'scheduler',
         client: {
+            // app-wide helper: client.scheduler
             scheduler: () => registry,
         },
         ctx: {
+            // per-interaction helper: ctx.scheduler
             scheduler: () => registry,
         },
         setup(client) {
+            // start async resources during client.start()
             return client.scheduler.setup(client);
         },
         teardown(client) {
+            // release them during client.close()
             return client.scheduler.close();
         },
     });
@@ -32,7 +38,7 @@ export function schedulerPlugin(options: SchedulerOptions) {
 
 ## Startup Order
 
-During client construction, Seyfert resolves plugins, validates static keys and requirements, runs `register(api)`, merges plugin option fragments, and binds client/context/service registries.
+During client construction, Seyfert resolves plugins, validates static keys and requirements, runs `register(api)`, merges plugin option fragments, and binds the client, context, and shared registries.
 
 During the plugin-loading part of `client.start()`:
 
@@ -63,6 +69,7 @@ If setup fails after some plugins already completed, Seyfert tears down the comp
 `client.plugins` is the resolved plugin list. It also exposes diagnostics:
 
 ```ts
+// walk the resolved plugins' diagnostics
 for (const diagnostic of client.plugins.diagnostics) {
     client.logger.info(diagnostic.name, diagnostic.status);
 }
@@ -76,7 +83,7 @@ Each plugin diagnostic includes:
 - `imports`
 - `clientKeys`
 - `ctxKeys`
-- contribution counts for commands, components, modals, wrappers, and services
+- contribution counts for commands, components, modals, wrappers, and shared values
 - event and middleware names
 - requirement results
 - warnings
@@ -91,6 +98,7 @@ Plugin failures are wrapped as `SeyfertPluginError`.
 try {
     await client.start();
 } catch (error) {
+    // plugin failures surface as SeyfertPluginError
     if (error instanceof Error && error.name === 'SeyfertPluginError') {
         client.logger.error(error);
     }
@@ -104,7 +112,7 @@ The wrapped error records:
 - resolved plugin index
 - original error as `cause`
 
-Common phases include `register`, `options`, `client.<key>`, `ctx.<key>`, `services.<name>`, `commands.add`, `components.add`, `setup`, `teardown`, `autocomplete.wrap`, `gateway.wrapPayload`, and `event:<name>`.
+Common phases include `register`, `options`, `client`, `ctx`, `shared`, `commands.add`, `components.add`, `setup`, `teardown`, `gateway.wrapSendPayload`, and `event:<name>`.
 
 ## What Is Not A Plugin API
 
@@ -113,4 +121,4 @@ There is no shipped `dependsOn`, numeric priority, or `PluginEnforce` API in thi
 - `imports` for plugins your plugin brings with it
 - `requires` for dependency validation
 - `api.has(...)` for feature checks
-- services for shared runtime objects
+- shared state for shared runtime objects

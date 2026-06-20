@@ -1,0 +1,76 @@
+---
+title: Chart.js
+description: Render Chart.js charts to image buffers you can attach to Discord messages.
+---
+
+`@slipher/chartjs` renders [Chart.js](https://www.chartjs.org/) charts to PNG image buffers using [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas), so you can attach them to Discord messages without a browser.
+
+## Installation
+
+```bash
+pnpm add @slipher/chartjs
+```
+
+Chart.js and `@napi-rs/canvas` ship as direct dependencies, so no extra peer installs are required.
+
+## Usage
+
+Create a `NapiChartjsCanvas` with a fixed `width` and `height`, then call `renderToBuffer` with a standard Chart.js configuration. The returned `Buffer` can be sent straight through Seyfert's `files` array:
+
+```ts
+import { NapiChartjsCanvas } from '@slipher/chartjs';
+import { Command, Declare, AttachmentBuilder, type CommandContext } from 'seyfert';
+
+// create a reusable canvas with a fixed size and background
+const canvas = new NapiChartjsCanvas({
+    width: 800,
+    height: 400,
+    backgroundColour: 'white',
+});
+
+@Declare({ name: 'chart', description: 'Send a sample bar chart' })
+export default class ChartCommand extends Command {
+    async run(ctx: CommandContext) {
+        // render a standard Chart.js config to a PNG buffer
+        const buffer = canvas.renderToBuffer({
+            type: 'bar',
+            data: {
+                labels: ['January', 'February', 'March', 'April'],
+                datasets: [
+                    {
+                        label: 'Messages',
+                        data: [120, 90, 200, 150],
+                    },
+                ],
+            },
+        });
+
+        // wrap the buffer as a Discord attachment
+        const file = new AttachmentBuilder()
+            .setName('chart.png')
+            .setFile('buffer', buffer);
+
+        // send the chart in the files array
+        await ctx.write({ files: [file] });
+    }
+}
+```
+
+## Options
+
+`NapiChartjsCanvas` takes a single options object:
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `width` | `number` | Width of the rendered chart, in pixels. |
+| `height` | `number` | Height of the rendered chart, in pixels. |
+| `backgroundColour` | `string` | Fill behind the chart. Transparent if omitted. Accepts any canvas `fillStyle` value. |
+| `chartCallback` | `(ChartJS) => void \| Promise<void>` | Called once with the Chart.js global, for applying global defaults. |
+| `plugins` | `object` | Register Chart.js plugins (`modern`, `requireLegacy`, `requireChartJSLegacy`, `globalVariableLegacy`). |
+
+## Rendering Methods
+
+- `renderToBuffer(configuration)` — renders the chart and returns a PNG `Buffer`, ready for `files`.
+- `renderChart(configuration)` — returns the underlying Chart.js instance (with its `canvas`) if you need lower-level access before producing a buffer.
+
+Both methods force `responsive: false` and `animation: false` on the configuration so charts render deterministically off-screen.

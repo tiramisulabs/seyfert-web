@@ -1,0 +1,166 @@
+---
+title: Fixtures
+description: Plain mock objects — mock contexts, factories, and recording stubs — for fast unit tests of a command's run() body in isolation.
+---
+
+Fixtures are plain mock objects for fast unit tests of a `run()` body in isolation. They bundle no assertions, spies, or fake timers, so they are runner-agnostic and work with whichever test runner you bring (Vitest, Jest, `node:test`, …). The examples here use Vitest.
+
+The core is `mockCommandContext()`: a stand-in for a Seyfert command context with the fields most commands touch, plus working Slipher stubs (`logger`, `queues`, `scheduler`) that **record what your command does** so you can assert on it afterward. Factories (`mockUser`, `mockGuild`, …) build the entities, with deterministic ids you can override.
+
+<Callout type="info">
+Rule of thumb: pure `run()` logic → **fixtures**; anything touching option parsing, middlewares, permissions, components, REST, or events → the [mock bot](/docs/testing/mock-bot). Both come from the same import and can coexist in one suite.
+</Callout>
+
+## Mock command contexts
+
+`mockCommandContext()` builds a stand-in context you hand straight to a command's `run()`. Declare the command in its own file, exactly as you ship it:
+
+```ts
+// commands/ban.ts
+import { Command, Declare, Options, createUserOption, type CommandContext } from 'seyfert';
+
+const options = {
+	user: createUserOption({ description: 'User to ban', required: true }),
+};
+
+@Declare({ name: 'ban', description: 'Ban a user' })
+@Options(options)
+export default class BanCommand extends Command {
+	async run(ctx: CommandContext<typeof options>) {
+		await ctx.write({ content: `Banned ${ctx.options.user.id}` });
+	}
+}
+```
+
+Then, in the test, build a mock context and run the real command against it:
+
+```ts
+// ban.test.ts
+import { mockCommandContext, mockUser } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import BanCommand from './commands/ban';
+
+test('replies after banning', async () => {
+	// a stand-in context carrying just the fields the command touches
+	const ctx = mockCommandContext<{ user: ReturnType<typeof mockUser> }>({
+		commandName: 'ban',
+		options: { user: mockUser({ id: '123' }) },
+	});
+
+	// call the real command's run() directly — the cast is needed because the mock
+	// is not a full CommandContext (the trade-off for skipping the whole pipeline)
+	await new BanCommand().run(ctx as unknown as CommandContext<typeof options>);
+
+	// every reply lands in ctx.responses, so you assert without spies
+	expect(ctx.responses.at(-1)).toMatchObject({
+		content: expect.stringContaining('Banned'),
+	});
+});
+```
+
+<Callout type="info">
+Calling `run()` directly skips option parsing, middlewares, and permissions on purpose — that's what fixtures are for. To exercise the *whole* pipeline (and drop the cast), reach for the [mock bot](/docs/testing/mock-bot).
+</Callout>
+
+`mockCommandContext()` includes:
+
+- `author`, `user`, `guild()`, `channel()`, `me()`, and `member`
+- `options` and `metadata`
+- `write`, `editOrReply`, `followup`, and `deferReply`
+- `logger`, `queues`, and `scheduler` stubs, plus `client` with the same stub instances
+- `responses`, `lastResponse()`, and `clearResponses()`
+
+Every reply method (`write`, `editOrReply`, `followup`) pushes onto the same `responses` array, so you assert on what was sent without spies. The stubs on the context and on `client` are the **same instances**: `ctx.client.logger === ctx.logger`, `ctx.client.queues === ctx.queues`, and `ctx.client.scheduler === ctx.scheduler`.
+
+<Callout type="info">
+`MockCommandContext` models the Seyfert fields most command tests touch, but it is intentionally not a full `CommandContext` implementation. Use `mockClient({ extra })` when a command touches client surfaces that this package does not model.
+</Callout>
+
+## Factories
+
+Factories build entities with sensible defaults; every field is overridable, including the generated ids.
+
+```ts
+import { mockChannel, mockGuild, mockMember, mockUser } from '@slipher/testing';
+
+const user = mockUser({ username: 'socram' });
+const guild = mockGuild({ name: 'Slipher Lab' });
+const channel = mockChannel({ guildId: guild.id });
+const member = mockMember({ user });
+```
+
+Factory outputs carry both ergonomic camelCase accessors and their snake_case wire counterparts (for example `globalName`/`global_name`, `preferredLocale`/`preferred_locale`). The camelCase field is the convenient accessor for assertions, while the snake_case field lets the same object drop straight into wire-shaped payloads. Both are part of the contract.
+
+## Slipher stubs
+
+The `logger`, `queues`, and `scheduler` stubs are functional recorders: calling them mutates in-memory state you can read back, rather than performing real work.
+
+```ts
+const ctx = mockCommandContext();
+
+ctx.logger.info('queued');
+ctx.client.logger.info('also queued');
+ctx.logger.add({ command: 'welcome' });
+await ctx.queues.get('welcome').add('send', { userId: ctx.author.id });
+ctx.scheduler.add('reminder', '30m', () => undefined);
+
+expect(ctx.logger.entries).toHaveLength(3);
+expect(ctx.logger.currentContext.command).toBe('welcome');
+expect(ctx.queues.get('welcome').jobs).toHaveLength(1);
+expect(ctx.scheduler.tasks).toHaveLength(1);
+```
+
+`logger.add()` mutates `currentContext` and records a synthetic `{ level: 'add' }` entry, so tests can assert context changes in order alongside regular log calls. Each log level (`trace`, `debug`, `info`, `warn`, `error`, `fatal`) appends an entry to `logger.entries` with its `level` and `args`.
+
+`queues.get(name)` returns a per-name queue whose `add` records jobs onto `queue.jobs`, and `scheduler.add` / `interval` / `cron` record tasks onto `scheduler.tasks`.
+
+<Callout type="warn">
+`queue.add(name, payload, options)` uses the third argument to disambiguate named jobs. A call like `queue.add('send', { delay: '5s' })` is ambiguous — it could mean a string payload plus job options, or a named job whose payload happens to look like job options. The mock throws a descriptive `TypeError` instead of guessing. Pass the options explicitly to force a named job: `queue.add('send', { payload: true }, { delay: '5s' })`.
+</Callout>
+
+## Behavior recipes
+
+The fixtures bundle no behavior beyond recording. Attach runner-specific behavior by replacing the method or nested surface you need:
+
+```ts
+import { vi } from 'vitest';
+import { mockCommandContext, mockGuild, mockMember } from '@slipher/testing';
+
+const ctx = mockCommandContext();
+ctx.guild = vi.fn(async () => ({
+	...mockGuild(),
+	members: { fetch: vi.fn(async () => mockMember()) },
+}));
+```
+
+The same pattern works on any runner — for example, with Jest:
+
+```ts
+import { mockCommandContext, mockGuild, mockMember } from '@slipher/testing';
+
+const ctx = mockCommandContext();
+ctx.guild = jest.fn(async () => ({
+	...mockGuild(),
+	members: { fetch: jest.fn(async () => mockMember()) },
+}));
+```
+
+For commands with large entity graphs, reach for `vitest-mock-extended` or `jest-mock-extended` in the app test suite:
+
+```ts
+import { mockDeep } from 'vitest-mock-extended';
+import type { CommandContext } from 'seyfert';
+
+const ctx = mockDeep<CommandContext>();
+```
+
+## Deterministic ids
+
+Generated ids are deterministic and overridable on every factory. When a test asserts on a generated id, reset the counter first so the sequence is reproducible:
+
+```ts
+import { beforeEach } from 'vitest';
+import { resetMockIds } from '@slipher/testing';
+
+beforeEach(() => resetMockIds());
+```

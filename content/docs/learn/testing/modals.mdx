@@ -1,0 +1,92 @@
+---
+title: Modals
+description: Open a modal from a command or component, submit it with field values using fillModal, and assert the reply through the real pipeline.
+---
+
+This builds on [Setup](/docs/learn/testing/setup) and [Components](/docs/learn/testing/components). A modal is a two-step flow: something opens it, then the user submits it. The mock bot drives both halves in a single call.
+
+## The flow
+
+A dispatch opens a modal when its handler calls `interaction.modal(..., { waitFor })`. In production that opens the modal, waits, and resolves once the user submits — or takes the timeout branch.
+
+The mock handles that whole open → resolve → settle handshake for you. You dispatch the trigger, then chain `.fillModal(...)` with the field values the user would type. The submitted modal runs through the real pipeline.
+
+A command opens the modal much like a component does. It calls `ctx.modal(...)` (or `interaction.modal(...)`), and your test fills it with `.fillModal(...)` exactly the same way.
+
+## The command under test
+
+This page's examples assume a `feedback` command whose `run()` opens a modal, waits for the submit, then replies:
+
+```ts
+// src/commands/feedback.ts
+import { Command, Declare, Modal, TextInput, ActionRow, type CommandContext } from 'seyfert';
+import { TextInputStyle } from 'seyfert/lib/types';
+
+@Declare({ name: 'feedback', description: 'Send feedback' })
+export class FeedbackCommand extends Command {
+	async run(ctx: CommandContext) {
+		const modal = new Modal()
+			.setCustomId('feedback-modal')
+			.setTitle('Feedback')
+			.addComponents(
+				new ActionRow<TextInput>().addComponents(
+					new TextInput().setCustomId('rating').setStyle(TextInputStyle.Short).setLabel('Rating'),
+				),
+			);
+
+		const submit = await ctx.modal(modal, { waitFor: 60_000 });
+		if (!submit) return ctx.write({ content: 'timed out' });
+		await submit.write({ content: 'thanks' });
+	}
+}
+```
+
+## A complete example
+
+Dispatch the trigger that opens the modal, submit it with `.fillModal(...)`, then assert on the reply. Field values are keyed by `customId`:
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import { FeedbackCommand } from '../src/commands/feedback';
+
+test('feedback modal replies with thanks', async () => {
+	await using bot = await createMockBot({ commands: [FeedbackCommand] });
+
+	const modal = await bot
+		.clickButton('open-feedback', { user })
+		.fillModal('feedback-modal', { rating: '5' });
+
+	expect(modal.content).toBe('thanks');
+});
+```
+
+The button opens the modal, `.fillModal('feedback-modal', { rating: '5' })` submits it as the same user, and `modal.content` reads the recorded reply — just as a real submission would produce.
+
+## Timeout branch
+
+To exercise the path where the user never submits, chain `.timeoutModal()` instead. It expires the `waitFor` so the handler takes its timeout branch:
+
+```ts
+const timedOut = await bot
+	.clickButton('open-feedback', { user })
+	.timeoutModal();
+
+expect(timedOut.content).toBe('timed out');
+```
+
+<Callout>
+`.timeoutModal()` needs no fake-timer setup. It resolves the modal's `waitFor` with `null` directly, exactly as the real timer would on expiry, so the handler takes its timeout branch instantly.
+</Callout>
+
+## Fail-loud behavior
+
+Always chain `.fillModal(...)` or `.timeoutModal()` onto a modal-opener. Awaiting the opener directly fails loud — in real Seyfert it would stall on the `waitFor` timer and silently take the timeout branch.
+
+<Callout type="warn">
+If a modal flow hangs, the usual cause is a different user between the opener dispatch and `fillModal()`. Keep the same `user` across both so the submission correlates with the open.
+</Callout>
+
+## Next steps
+
+- Reference: [The Toolkit › Dispatching](/docs/testing/dispatching) for every dispatch and modal helper.

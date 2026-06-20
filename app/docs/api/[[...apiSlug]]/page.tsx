@@ -13,6 +13,7 @@ import {
   DocsTitle,
 } from 'fumadocs-ui/layouts/notebook/page';
 import { config } from '@/app.config';
+import { ApiEntryFilter } from '@/components/docs/api-entry-filter';
 import { TocRail } from '@/components/docs/toc-rail';
 import dacezuTheme from '@/dacezu.json';
 import {
@@ -125,7 +126,7 @@ function displaySourcePath(source: string) {
 }
 
 function summaryFor(entry: ApiEntry) {
-  return entry.summary || `Public ${apiKindSingleLabel[entry.kind].toLowerCase()} exported by ${apiPackage.name}.`;
+  return entry.summary || `${apiKindSingleLabel[entry.kind]} · ${apiPackage.name} ${apiPackage.version}`;
 }
 
 function toc(items: Array<{ title: string; url: string; depth?: number }>) {
@@ -172,9 +173,11 @@ function EntryRow({ entry }: { entry: ApiEntry }) {
         </code>
         <KindBadge kind={entry.kind} />
       </span>
-      <span className="line-clamp-2 text-xs leading-5 text-fd-muted-foreground">
-        {summaryFor(entry)}
-      </span>
+      {entry.summary && (
+        <span className="line-clamp-2 text-xs leading-5 text-fd-muted-foreground">
+          {entry.summary}
+        </span>
+      )}
     </Link>
   );
 }
@@ -195,7 +198,7 @@ function ApiKindCard({ kind }: { kind: ApiKind }) {
         <div className="flex shrink-0 items-center gap-1.5">
           <KindBadge kind={kind} />
           <span
-            className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-fd-border bg-fd-secondary px-1.5 text-[11px] font-semibold text-fd-muted-foreground"
+            className="inline-flex h-6 min-w-6 items-center justify-center rounded-md border border-fd-border bg-fd-secondary px-1.5 text-[11px] font-semibold tabular-nums text-fd-foreground"
             aria-label={`${entries.length} ${apiKindLabel[kind].toLowerCase()}`}
           >
             {entries.length}
@@ -207,7 +210,7 @@ function ApiKindCard({ kind }: { kind: ApiKind }) {
           {preview.map((entry) => (
             <code
               key={entry.slug}
-              className="rounded-md bg-fd-secondary px-1.5 py-0.5 text-[11px] text-fd-muted-foreground"
+              className="rounded-md bg-fd-secondary px-1.5 py-0.5 text-[11px] text-fd-foreground/75"
             >
               {entry.name}
             </code>
@@ -222,10 +225,7 @@ function ApiIndex() {
   return (
     <div className="not-prose space-y-8">
       <section id="types" className="space-y-3">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 className="text-base font-semibold text-fd-foreground">Browse by type</h2>
-          <span className="text-xs text-fd-muted-foreground">{apiKindOrder.length}</span>
-        </div>
+        <h2 className="text-base font-semibold text-fd-foreground">Browse by type</h2>
         <div className="grid gap-2 sm:grid-cols-2">
           {apiKindOrder.map((kind) => (
             <ApiKindCard key={kind} kind={kind} />
@@ -268,17 +268,18 @@ function ApiKindPage({ kind }: { kind: ApiKind }) {
       </section>
 
       <section id="exports" className="space-y-3">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 className="text-base font-semibold text-fd-foreground">
-            {apiKindLabel[kind]}
-          </h2>
-          <span className="text-xs text-fd-muted-foreground">{entries.length}</span>
-        </div>
-        <div className="grid gap-1 rounded-lg border border-fd-border bg-fd-background p-1">
-          {entries.map((entry) => (
-            <EntryRow key={entry.slug} entry={entry} />
-          ))}
-        </div>
+        <h2 className="text-base font-semibold text-fd-foreground">
+          {apiKindLabel[kind]}
+        </h2>
+        <ApiEntryFilter
+          label={apiKindLabel[kind]}
+          entries={entries.map((entry) => ({
+            name: entry.name,
+            slug: entry.slug,
+            kind: entry.kind,
+            summary: entry.summary,
+          }))}
+        />
       </section>
     </div>
   );
@@ -290,7 +291,6 @@ function SourceLine({ entry }: { entry: ApiEntryDetail }) {
 
   return (
     <div className="not-prose flex min-w-0 flex-wrap items-center gap-2 text-xs text-fd-muted-foreground">
-      <KindBadge kind={entry.kind} />
       <a
         href={`https://github.com/${config.repository}`}
         target="_blank"
@@ -486,7 +486,7 @@ function DocTags({
               const parts = tagTextParts(tag.text);
 
               return (
-                <div key={tag.key} className="grid gap-1 text-sm sm:grid-cols-[10rem_1fr]">
+                <div key={tag.key} className="grid gap-1 text-sm sm:grid-cols-[minmax(7rem,12rem)_1fr]">
                   <dt>
                     {parts.name ? (
                       <code className="rounded-md bg-fd-secondary px-1.5 py-0.5 text-xs text-fd-foreground">
@@ -707,10 +707,10 @@ async function CodePanel({
 
   return (
     <pre
-      className="shiki not-prose overflow-x-auto rounded-lg border border-fd-border bg-(--shiki-light-bg) py-4 text-[13px] leading-6 shadow-sm dark:bg-(--shiki-dark-bg)"
+      className="shiki not-prose overflow-x-auto rounded-lg border border-fd-border bg-(--shiki-light-bg) py-4 text-[13px] leading-6 shadow-sm whitespace-pre-wrap [overflow-wrap:anywhere] dark:bg-(--shiki-dark-bg)"
       style={style}
     >
-      <code className="block min-w-max">
+      <code className="block">
         <HighlightedCode highlightName={highlightName} lines={highlighted.tokens} />
       </code>
     </pre>
@@ -833,7 +833,29 @@ function MemberOverview({ entry }: { entry: ApiEntryDetail }) {
   );
 }
 
-function MemberDetailList({ members }: { members: IndexedMember[] }) {
+type MemberTone = 'property' | 'method' | 'other';
+
+const memberToneStyles: Record<MemberTone, string> = {
+  property: 'border-amber-400/30 bg-amber-400/10 text-amber-700 dark:text-amber-200',
+  method: 'border-indigo-400/30 bg-indigo-400/10 text-indigo-700 dark:text-indigo-200',
+  other: 'border-fd-border bg-fd-secondary text-fd-muted-foreground',
+};
+
+// The section heading already says Properties/Methods, so only badge a member
+// when its kind adds a distinction (Constructor, Getter, Setter, signatures…).
+const memberDefaultKind: Record<MemberTone, string> = {
+  property: 'Property',
+  method: 'Method',
+  other: '',
+};
+
+function MemberDetailList({
+  members,
+  tone = 'other',
+}: {
+  members: IndexedMember[];
+  tone?: MemberTone;
+}) {
   if (members.length === 0) return null;
 
   return (
@@ -841,20 +863,33 @@ function MemberDetailList({ members }: { members: IndexedMember[] }) {
       {members.map((member) => (
         <article id={memberId(member)} key={memberId(member)} className="scroll-mt-24 space-y-2 p-4">
           <div className="flex flex-wrap items-center gap-2">
-            <code className="text-sm font-semibold text-fd-foreground">
-              {member.name}
-            </code>
-            <span className="rounded-md bg-fd-secondary px-1.5 py-0.5 text-[11px] font-medium text-fd-muted-foreground">
-              {member.kind}
-            </span>
+            <a
+              href={`#${memberId(member)}`}
+              className="group/anchor inline-flex items-center gap-1.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring"
+            >
+              <code className="text-sm font-semibold text-fd-foreground">
+                {member.name}
+              </code>
+              <span
+                aria-hidden
+                className="text-fd-muted-foreground opacity-0 transition-opacity group-hover/anchor:opacity-100"
+              >
+                #
+              </span>
+            </a>
+            {member.kind !== memberDefaultKind[tone] && (
+              <span className={`rounded-md border px-1.5 py-0.5 text-[11px] font-medium ${memberToneStyles[tone]}`}>
+                {member.kind}
+              </span>
+            )}
           </div>
+          <CodePanel highlightName={member.name}>
+            {member.signature}
+          </CodePanel>
           {member.summary && (
             <p className="text-sm leading-6 text-fd-muted-foreground">{member.summary}</p>
           )}
           <DocTags compact tags={member.tags} />
-          <CodePanel highlightName={member.name}>
-            {member.signature}
-          </CodePanel>
         </article>
       ))}
     </div>
@@ -873,29 +908,57 @@ function MemberSections({ entry }: { entry: ApiEntryDetail }) {
       {groups.properties.length > 0 && (
         <section id="properties" className="space-y-3">
           <h2 className="text-base font-semibold text-fd-foreground">Properties</h2>
-          <MemberDetailList members={groups.properties} />
+          <MemberDetailList members={groups.properties} tone="property" />
         </section>
       )}
       {groups.methods.length > 0 && (
         <section id="methods" className="space-y-3">
           <h2 className="text-base font-semibold text-fd-foreground">Methods</h2>
-          <MemberDetailList members={groups.methods} />
+          <MemberDetailList members={groups.methods} tone="method" />
         </section>
       )}
       {groups.other.length > 0 && (
         <section id="other-members" className="space-y-3">
           <h2 className="text-base font-semibold text-fd-foreground">Other Members</h2>
-          <MemberDetailList members={groups.other} />
+          <MemberDetailList members={groups.other} tone="other" />
         </section>
       )}
     </div>
   );
 }
 
+function ApiBreadcrumb({ entry }: { entry: ApiEntryDetail }) {
+  return (
+    <nav
+      aria-label="Breadcrumb"
+      className="flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-fd-muted-foreground"
+    >
+      <Link
+        href="/docs/api"
+        className="rounded-sm transition-colors hover:text-fd-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring"
+      >
+        API
+      </Link>
+      <span aria-hidden className="text-fd-border">/</span>
+      <Link
+        href={kindHref(entry.kind)}
+        className="rounded-sm transition-colors hover:text-fd-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring"
+      >
+        {apiKindLabel[entry.kind]}
+      </Link>
+      <span aria-hidden className="text-fd-border">/</span>
+      <span className="truncate text-fd-foreground">{entry.name}</span>
+    </nav>
+  );
+}
+
 function ApiDetail({ entry }: { entry: ApiEntryDetail }) {
   return (
     <div className="not-prose space-y-8">
-      <SourceLine entry={entry} />
+      <div className="space-y-3">
+        <ApiBreadcrumb entry={entry} />
+        <SourceLine entry={entry} />
+      </div>
 
       <section id="signature" className="space-y-3">
         <h2 className="text-base font-semibold text-fd-foreground">Signature</h2>
@@ -992,7 +1055,7 @@ export default async function ApiPage({
     if (!entry) notFound();
 
     title = entry.name;
-    description = summaryFor(entry);
+    description = entry.summary ?? '';
     tocItems = entryTocItems(entry);
     body = <ApiDetail entry={entry} />;
   } else if (target.type === 'kind') {
@@ -1017,6 +1080,7 @@ export default async function ApiPage({
     <DocsPage
       toc={toc(tocItems)}
       full
+      breadcrumb={target.type === 'entry' ? { enabled: false } : undefined}
       tableOfContent={{ component: <ApiToc title={title} items={tocItems} /> }}
     >
       <DocsTitle
@@ -1025,9 +1089,11 @@ export default async function ApiPage({
       >
         {title}
       </DocsTitle>
-      <DocsDescription className="mt-3 text-[1.0625rem] leading-relaxed text-fd-foreground/70">
-        {description}
-      </DocsDescription>
+      {description && (
+        <DocsDescription className="mt-3 text-[1.0625rem] leading-relaxed text-fd-foreground/70">
+          {description}
+        </DocsDescription>
+      )}
       <DocsBody>{body}</DocsBody>
     </DocsPage>
   );

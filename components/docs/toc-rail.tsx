@@ -150,7 +150,7 @@ function TocRailInner({ items }: { items: TOCItemType[] }) {
   return (
     <nav aria-label="On this page" className="w-full text-sm">
       <div className="mb-3 flex items-baseline gap-1.5">
-        <span className={`${GeistMono.className} text-[11px] leading-none text-[#6366f1]/70 dark:text-[#818cf8]/70`}>
+        <span className={`${GeistMono.className} text-[11px] leading-none text-neutral-500`}>
           //
         </span>
         <span className="text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
@@ -200,7 +200,7 @@ function TocRailInner({ items }: { items: TOCItemType[] }) {
                   aria-current={isActive ? 'location' : undefined}
                   className={[
                     'group relative flex min-h-[32px] items-center rounded-md pr-2 outline-none transition-colors duration-200 motion-reduce:transition-none',
-                    'focus-visible:ring-2 focus-visible:ring-[#6366f1] focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-[#818cf8] dark:focus-visible:ring-offset-neutral-950',
+                    'focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950',
                     indent[item.depth] ?? 'pl-0',
                     isActive
                       ? 'font-bold text-neutral-900 dark:text-white'

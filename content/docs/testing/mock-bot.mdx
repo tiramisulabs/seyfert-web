@@ -1,0 +1,101 @@
+---
+title: Mock Bot
+description: Boot a real Seyfert client in-process — no token, no gateway, no network — and drive your real commands, components, events, and plugins through the actual pipeline.
+---
+
+The mock bot runs your real command classes end-to-end. Where `mockCommandContext()` hands your `run()` a fake context, the mock bot builds a real `CommandContext` the same way production does: a raw `APIInteraction` goes through `HandleCommand`, options are parsed by Seyfert's resolver, middlewares run, and every REST call is recorded instead of sent.
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import { GreetCommand } from '../src/commands/greet';
+
+test('greet replies through the real pipeline', async () => {
+	await using bot = await createMockBot({ commands: [GreetCommand] });
+	const result = await bot.slash({ name: 'greet', options: { name: 'slipher' } });
+
+	expect(result.content).toBe('Hello, slipher!');
+});
+```
+
+Use `bot.slash(GreetCommand, { options })` when you want option inference from the command class. Use `bot.slash({ name, ... })` for concise raw by-name payload dispatch.
+
+The raw interaction response stays available as `result.reply?.body` (`{ type, data }`) for the rare assertion where the Discord wire shape itself is the contract. Prefer `result.content`, `result.deferred`, and `result.edits` for normal behavior checks.
+
+Embeds and components come back parsed and typed, so you assert without casting: `result.embedView?.title`, `result.embedViews`, `result.buttons`, `result.button('Approve')?.customId`, and `result.textDisplays` (components-v2). The raw `result.embeds`/`result.embed` expose the flattened Discord payloads for wire-shape assertions.
+
+## Creating a mock bot
+
+`createMockBot()` accepts:
+
+- `commands`, `components`, `events` — your real classes, registered programmatically
+- `middlewares` — same record you would pass to `client.setServices`
+- `globalMiddlewares` — forwarded to Seyfert's global middleware hooks
+- `world` — entities to seed into the client cache
+- `simulateGateway` — emit matching member update/remove events for stateful writes; defaults to `true`
+- `onUnhandledRest` — throw by default, or warn/stay silent for explicitly allowed fallback reads
+- `plugins` — Seyfert plugins loaded through the mock client lifecycle
+- `clientOptions` — forwarded to the Seyfert `Client` constructor, excluding plugin loading
+- `loadFromConfig`, `commandsDir`, `componentsDir`, `eventsDir`, `langsDir` — load the real bot through Seyfert's loaders
+- `shards`, `shardLatency` — shape the in-process `MockGateway`
+- `botId`, `applicationId`
+- `prefixes`, `mentionAsPrefix` — enable prefix/message-command dispatch with `say()`
+
+## Test your real bot
+
+Import the classes you ship. Commands, events, and components are registered the same way as production:
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import { BanCommand } from '../src/commands/moderation/ban';
+import { ConfirmButton } from '../src/components/confirm';
+import guildMemberAdd from '../src/events/guildMemberAdd';
+
+await using bot = await createMockBot({
+	commands: [BanCommand],
+	components: [ConfirmButton],
+	events: [guildMemberAdd],
+});
+```
+
+Or boot the production set from `seyfert.config`, using the same loaders `client.start()` would use:
+
+```ts
+await using bot = await createMockBot({ loadFromConfig: true });
+await bot.slash({ name: 'ping' });
+```
+
+<Callout type="info">
+The config must be resolvable from the test runner's working directory. Bot configs usually point at compiled output, so build before running broad integration specs.
+</Callout>
+
+Explicit directories override the config:
+
+```ts
+import { join } from 'node:path';
+
+await using bot = await createMockBot({
+	loadFromConfig: true,
+	commandsDir: join(process.cwd(), 'dist/commands'),
+});
+```
+
+## Execution model
+
+Every dispatcher returns a lazy `Dispatch`. Await it directly for one-shot runs, or call `dispatch.until(Routes.ban)` first to step through the same dispatch. For a dispatch that opens a modal, drive it in one call with `.fillModal(...)` / `.timeoutModal()`. Awaiting always releases any active checkpoint, so it cannot deadlock.
+
+- Immediate replies, deferrals, and modal opens are captured in `result.replies`.
+- REST work awaited by the command is classified into `result.edits`, `result.followups`, and dispatch-scoped `result.actions`.
+- `waitForAction()` is for work your command did not await: timers, fire-and-forget promises, queue/scheduler side effects.
+- Dispatches do not reject for command errors; Seyfert routes them through error hooks, and you assert the user-facing error reply.
+
+| After you awaited | Guaranteed |
+|---|---|
+| `await dispatch` | everything `run()` awaited: replies, edits, followups, and dispatch actions |
+| `dispatch.until(...)` resolved | the matched call started; `response` is still `undefined` while suspended |
+| `await emit(...)` | REST work the handler awaited |
+| nothing | only `waitForAction(...)` observes fire-and-forget work |
+
+<Callout type="info">
+An unhandled error inside a command/component/modal/event handler **rejects the `Dispatch` by default** (`onCommandError: 'throw'`). Pass `onCommandError: 'capture'` to surface it on `result.error` instead.
+</Callout>

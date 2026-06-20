@@ -246,7 +246,7 @@ export default class HelloWorldCommand extends Command {
       .setTitle('Hello')
       .run(this.handleModal);
 
-    await ctx.interaction.modal(modal);
+    await ctx.modal(modal);
   }
 
   async handleModal(i: ModalSubmitInteraction) {

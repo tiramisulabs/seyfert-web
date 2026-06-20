@@ -30,7 +30,7 @@ const lang = {
     },
 };
 declare module 'seyfert' {
-    interface DefaultLocale extends ParseLocales<typeof lang> {}
+    interface SeyfertRegistry { langs: ParseLocales<typeof lang> }
 }
 // ---cut---
 import { Command, LocalesT } from 'seyfert';

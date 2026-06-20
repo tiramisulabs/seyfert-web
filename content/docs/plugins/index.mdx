@@ -1,0 +1,54 @@
+---
+title: Introduction
+description: A first-class, typed plugin runtime for Seyfert — install official packages or build your own.
+---
+
+For years, "extending Seyfert" meant reaching into the `Client`, assigning some properties, and hoping nothing else touched them first. Seyfert v5 replaces that with a real, typed plugin runtime.
+
+A **plugin** is an installable integration composed by the client — a single object you pass to `new Client({ plugins })`. Instead of patching the client by hand, a plugin *declares* what it contributes, and Seyfert wires it up with types, ordering, lifecycle, and diagnostics.
+
+```ts
+import { Client, definePlugins } from 'seyfert';
+import { cooldownPlugin } from './plugins/cooldown';
+
+const client = new Client({
+    // install one or more plugins; definePlugins keeps them typed
+    plugins: definePlugins(cooldownPlugin),
+});
+```
+
+Plugins are also the unit of **sharing**. The same API that extends your own bot is how reusable functionality ships: package an integration once, publish it, and anyone can install it with a single line — no copy-pasting setup code or patching the client by hand. Making shareable packages (and shared code in general) easy is a core goal of the plugin system.
+
+## What a plugin can do
+
+A single plugin can contribute any combination of:
+
+- **Client & context helpers** — app-wide values on `client.*` and per-interaction helpers on `ctx.*`.
+- **Handlers** — commands, components, modals, events, and middlewares.
+- **Shared state** — typed runtime values other plugins can read, without another `client.*` property.
+- **Cache & languages** — extra cache resources and translation overlays.
+- **Gateway & REST** — wrap outbound gateway sends, intercept inbound dispatch, and observe every REST request.
+- **Lifecycle** — async `setup` on `start()` and `teardown` on `close()`, with rollback on failure and attributed diagnostics.
+
+Everything you used to do by mutating the client — now typed, ordered, and reversible.
+
+## Two paths
+
+<Callout type="info">
+Most apps start by installing an official plugin, then write their own once they need something specific.
+</Callout>
+
+- **[Use an official plugin](/docs/plugins/official)** — cooldowns, logging, scheduling, queues and more, maintained by the Seyfert team.
+- **[Create your own](/docs/plugins/building/creating-plugins)** — the full authoring API: `createPlugin`, `register`, shared state, runtime hooks, and lifecycle.
+
+## Missing a capability?
+
+We believe the current plugin API is expressive enough to fit virtually any integration you have in mind. If you hit a wall, we're open to extending it.
+
+Before opening an issue, make the case:
+
+- Describe the **use case** and why the current API can't express it.
+- Show it's **broadly useful** — something other bots would reach for, not a one-off only your project needs.
+- Include enough detail (code, context, what you tried) for us to evaluate it.
+
+Good proposals that aren't one-time, project-specific needs are exactly what helps the plugin API grow.

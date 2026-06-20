@@ -1,72 +1,92 @@
 ---
-title: Services and Requirements
+title: Shared State and Requirements
 ---
 
-Use services when plugins need to share runtime objects without adding another `client.*` property.
+Use shared state when plugins need to expose runtime objects to each other without adding another `client.*` property.
 
 ```ts
-import { createPlugin, createServiceKey } from 'seyfert';
+import { createPlugin, createSharedKey } from 'seyfert';
 
 class LedgerService {
     readBalance(userId: string) {
         return 100;
     }
+    close() {}
 }
 
-export const ledgerKey = createServiceKey<LedgerService>('ledger');
+// curried call carries the value type on the key
+export const ledgerKey = createSharedKey<LedgerService>()('ledger');
 
 export const ledgerPlugin = createPlugin({
     name: 'ledger',
     register(api) {
-        api.services.set(ledgerKey, () => new LedgerService());
+        // share a lazily-built service under the key
+        api.shared.set(ledgerKey, () => new LedgerService(), {
+            // dispose runs when this plugin tears down
+            dispose: (ledger) => ledger.close(),
+        });
     },
 });
 ```
 
-Services resolve lazily:
+The curried `createSharedKey<LedgerService>()('ledger')` carries the value type on the key. Shared values resolve lazily on first access:
 
 ```ts
-const ledger = client.services.get(ledgerKey);
-const requiredLedger = client.services.require(ledgerKey);
+// get returns undefined when missing
+const ledger = client.shared.get(ledgerKey);
+// unwrap throws when missing
+const requiredLedger = client.shared.unwrap(ledgerKey);
 ```
 
-`get(...)` returns `undefined` when a service is missing. `require(...)` throws when it is missing.
+`get(...)` returns `undefined` when a value is missing. `unwrap(...)` throws when it is missing. `client.shared.has(key)` checks without building it. The optional `{ dispose }` runs when the owning plugin tears down.
 
-## Typed Service Names
+## Typed Shared Names
 
-For app-wide service names, augment `RegisteredPluginServices`.
+For app-wide shared names, augment `RegisteredPluginShared`.
 
 ```ts
-import type { RegisteredPluginServices } from 'seyfert';
+import type { RegisteredPluginShared } from 'seyfert';
 
 declare module 'seyfert' {
-    interface RegisteredPluginServices {
+    // map an app-wide shared name to its value type
+    interface RegisteredPluginShared {
         ledger: LedgerService;
     }
 }
 ```
 
-Now string-based service access is typed too:
+Now `createSharedKey('ledger')` is typed, and string-based access works too:
 
 ```ts
-client.services.get('ledger');
-client.services.require('ledger');
+client.shared.get('ledger'); // LedgerService | undefined
+client.shared.unwrap('ledger'); // LedgerService
 ```
 
-Service names are claimed once. If two plugins register the same service name, Seyfert throws an attributed conflict.
+Shared names are claimed once. If two plugins register the same name, Seyfert throws an attributed conflict — unless the later one passes `{ override: true }`.
 
 ## Requirements
 
-Use `imports` when your plugin brings another plugin with it. Use `requires` when your plugin expects another plugin to be present.
+Use `imports` when your plugin brings another plugin with it. Use `requires` when your plugin expects another plugin — or a shared capability — to already be present.
 
 ```ts
 const storage = storagePlugin();
 
 export const economy = createPlugin({
     name: 'economy',
+    // bring storage along and order economy after it
     imports: [storage],
-    requires: ['plugin:storage', { req: 'plugin:redis', optional: true }],
+    requires: [
+        // must be present
+        'plugin:storage',
+        // tolerated if absent
+        { req: 'plugin:redis', optional: true },
+        // present within a semver range
+        { req: 'plugin:storage', range: '^2.0.0' },
+        // a shared capability must exist
+        { capability: ledgerKey },
+    ],
     register(api) {
+        // feature-check an optional dependency at runtime
         if (api.has('plugin:redis')) {
             api.diagnostics.warn('Redis support enabled.', { code: 'redis-enabled' });
         }
@@ -78,9 +98,9 @@ Rules:
 
 - `imports` affects ordering and dedupes the same plugin instance.
 - `requires` validates that a requirement is present.
-- required missing requirements throw during plugin resolution.
-- optional missing requirements create diagnostics warnings.
-- the supported requirement shape is currently `plugin:<name>`.
+- a missing required requirement throws during plugin resolution.
+- a missing optional requirement creates a diagnostics warning.
+- requirement shapes: `plugin:<name>`, `{ req, range }` for a semver range, or `{ capability: sharedKey }` for a shared value.
 
 `requires` is not a priority system. If your plugin must run after another plugin and you own that relationship, put the dependency in `imports`.
 
@@ -90,6 +110,7 @@ Use `api.diagnostics.warn(...)` for degraded but usable states.
 
 ```ts
 register(api) {
+    // record a warning for a degraded-but-usable state
     api.diagnostics.warn('Optional package "redis" was not found.', {
         code: 'missing-optional-peer',
     });

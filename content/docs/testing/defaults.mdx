@@ -1,0 +1,100 @@
+---
+title: Defaults & Scope
+description: Organize a real mock-bot test suite, work through common pitfalls, and learn the package's current defaults and scope.
+---
+
+How to organize a real mock-bot test suite, work through common pitfalls, and what the package's current defaults and scope are.
+
+### Structuring a real suite
+
+A mock-bot suite stays fast and isolated because booting a bot is in-process and cheap. A few conventions keep it that way:
+
+- Use one fresh bot per test by default. Boot is in-process and cheap, and state isolation comes free.
+- Hand-pick classes for focused specs (`commands: [BanCommand]`). Reserve `loadFromConfig: true` for broad smoke specs such as "every command registers".
+- Share fixtures as functions. `createMockBot` deep-clones the world, but module-level state in your command files still persists within a worker.
+- Prefer `await using bot = ...`; use `afterEach(() => bot.close())` only when your runner or transpiler cannot handle explicit resource management.
+- Parallel test files are safe because each worker owns fully in-process bots.
+
+A focused spec hand-picks the classes under test and leans on `await using` for cleanup:
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import { BanCommand } from '../src/commands/moderation/ban';
+
+test('/ban confirms', async () => {
+	await using bot = await createMockBot({ commands: [BanCommand] });
+	const result = await bot.slash({ name: 'ban' });
+
+	expect(result.content).toContain('Banned');
+});
+```
+
+A broad smoke spec instead boots the production set from `seyfert.config` so it exercises the same loaders `client.start()` would use:
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import { test } from 'vitest';
+
+test('every command registers', async () => {
+	await using bot = await createMockBot({ loadFromConfig: true });
+	await bot.slash({ name: 'ping' });
+});
+```
+
+When you cannot use `await using`, fall back to closing the bot explicitly:
+
+```ts
+import { afterEach, beforeEach } from 'vitest';
+import { createMockBot } from '@slipher/testing';
+
+let bot: Awaited<ReturnType<typeof createMockBot>>;
+
+beforeEach(async () => {
+	bot = await createMockBot({ commands: [BanCommand] });
+});
+afterEach(() => bot.close());
+```
+
+### Troubleshooting
+
+Most failures map to one of these causes:
+
+- **"command X is not registered"** — check `@Declare({ name })`, the dispatch name, and whether the class reached `commands` or compiled `loadFromConfig` output.
+- **My collector never fires** — send a real message first, click as the same user, and avoid passing a stale `source`.
+- **My modal flow hangs** — `waitFor` uses real timers; the usual cause is a different user between the opener dispatch and `fillModal()`.
+- **`no interceptor or world entity matched GET ...`** — seed the world, `intercept()` the route, or set `onUnhandledRest: 'silent'` for that test.
+- **Decorator/transform errors on `@Declare`** — enable `experimentalDecorators` in the test transform config.
+- **Cache looks stale after `emit`** — emit full Discord event shapes, not partial patches.
+- **Passes alone, fails in CI** — reset module-level state in your command files with `beforeEach`.
+
+### Current defaults
+
+The package is pre-1.0. Current defaults are:
+
+- The single default user (`TEST_USER_ID`).
+- Strict `onUnhandledRest: 'error'`, with opt-in REST fallback shapes under `onUnhandledRest: 'warn' | 'silent'`.
+- Newest-first message lists.
+- An unhandled error inside a command/component/modal/event handler **rejects the `Dispatch` by default** (`onCommandError: 'throw'`); pass `onCommandError: 'capture'` to surface it on `result.error` instead.
+
+The default ids are real, numeric-string snowflakes, so they survive the BigInt-based seyfert helpers (`avatarURL`, `createdAt`, timestamp decoding) the way a real id does:
+
+```ts
+import {
+	TEST_BOT_ID, // '900000000000000001'
+	TEST_APPLICATION_ID, // '900000000000000002'
+	TEST_GUILD_ID, // '900000000000000003'
+	TEST_CHANNEL_ID, // '900000000000000004'
+	TEST_USER_ID, // '900000000000000005'
+} from '@slipher/testing';
+```
+
+The read-only `bot.world` (`WorldStateReader`) is the supported way to assert on the ~20 entity types the views don't surface (pins, reactions, bans, webhooks, emojis, invites, automod rules, scheduled events, poll voters, …).
+
+During 0.x, prefer direct supported entry points over subclassing exported classes: build bot tests through `createMockBot()`, seed worlds through `mockWorld()`, and use named dispatchers such as `slash()`, `clickButton()`, and `emit()`. Unspecified and subject to change during 0.x: `mockId()` format, warning text, `RecordedAction.seq`, and `MockGateway`.
+
+### Scope
+
+<Callout type="info">
+The mock bot is in-process and runner-agnostic: no WebSocket server, no fake timers, no assertions. Discord-side behavior the world does not model is simulated with `rest.intercept()`. Files ride along raw as `result.reply?.files` and `action.files`, so attachment presence is asserted through the captured reply or recorded action.
+</Callout>

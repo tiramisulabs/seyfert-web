@@ -1,0 +1,198 @@
+---
+title: World & State
+description: Seed the in-memory Discord state the mock bot serves — guilds, channels, members, roles, permissions — and query what the bot built.
+---
+
+The **world** is the in-memory Discord state the mock bot serves. Instead of talking to Discord, the mock client reads guilds, channels, members, roles, and messages from a world you seed before the bot boots, and writes every change the bot makes — created channels, messages, replies, edits, bans, role changes, timeouts — back into that same state. Recorded REST actions prove that calls *happened*; world state proves *what the bot built*.
+
+You build a world with `mockWorld()`, register entities onto it, and pass it to `createMockBot({ world })`. During the test you assert on it through the views on `bot` (`bot.worldGuild`, `bot.worldChannel`, `bot.worldDm`, …) and, for the long tail of entity types, the read-only `bot.world` reader.
+
+<Callout type="info">
+Entities are written into the **real** client cache (`CacheFrom.Test`), so `ctx.guild()`, `ctx.channel()`, `member.voice()`, and related cache reads resolve exactly like production cache hits — no interceptors required.
+</Callout>
+
+### Seeding a world
+
+`mockWorld()` returns a `WorldBuilder`. Each `register*` method mints an entity with sensible defaults, stores it on the world, and returns it so you can reference its id in later registrations and in dispatches.
+
+```ts
+import { createMockBot, mockWorld } from '@slipher/testing';
+
+const world = mockWorld();
+const guild = world.registerGuild({ name: 'Slipher Lab' });
+world.registerChannel(guild.id);
+world.registerMember(guild.id, { nick: 'soc' });
+
+await using bot = await createMockBot({ commands: [WhereCommand], world });
+await bot.slash({ name: 'where', guildId: guild.id });
+```
+
+The registrars are scoped: a channel, role, member, or emoji is always registered *under* a guild, and a thread, invite, webhook, or stage instance under a channel. Registering against an id that was never seeded throws a descriptive `TypeError` listing what *is* seeded, so a typo in a guild id fails loud instead of silently producing an empty cache.
+
+`registerGuild()` also auto-creates the guild's `@everyone` role (a role whose id equals the guild id, at position `0`). Use `everyonePermissions` to grant base permissions to everyone, and `ownerId` to pin the owner — otherwise `apiGuild` mints a random owner id.
+
+The common registrars:
+
+- `registerGuild(options?)` — seeds a guild and its `@everyone` role.
+- `registerChannel(guildId, options?)` — a channel under a guild; pass `overwrites` for permission overwrites.
+- `registerThread(parentChannelId, options?)` — a thread under an existing channel (defaults to a public thread, carries the parent's guild and `parent_id`).
+- `registerRole(guildId, options?)` — a role; set `permissions` and `position` for hierarchy.
+- `registerMember(guildId, options?)` — a member; its `user` is added to the world's users automatically if new.
+- `registerBotMember(guildId, options?)` — the bot's own member (used for bot-side permission checks).
+- `registerVoiceState(guildId, options?)` — a member's voice state.
+- `registerMessage(channelId, options?)` — seeded message history.
+
+Beyond these, the builder also registers emojis, stickers, invites, webhooks, automod rules, scheduled events, guild templates, soundboard sounds, stage instances, and audit-log entries (`registerEmoji`, `registerSticker`, `registerInvite`, `registerWebhook`, `registerAutoModRule`, `registerScheduledEvent`, `registerGuildTemplate`, `registerSoundboardSound`, `registerStageInstance`, `registerAuditLogEntry`).
+
+For domain state the mock should never interpret, `setData(key, value)` stashes an app-specific value in the world's passthrough store (chainable; read it back with `bot.worldData`).
+
+<Callout type="info">
+`createMockBot` deep-clones the world, so a world built in a shared helper is safe to reuse across tests. Build worlds in a factory function rather than at module scope when you want full isolation.
+</Callout>
+
+### Voice states
+
+Seed **voice states** for commands and middlewares that read `member.voice()` — music, moderation, and temp-voice bots:
+
+```ts
+const world = mockWorld();
+const guild = world.registerGuild();
+const channel = world.registerChannel(guild.id, { name: 'General' });
+const member = world.registerMember(guild.id);
+world.registerVoiceState(guild.id, { userId: member.user.id, channelId: channel.id });
+```
+
+`member.voice()` then resolves from the cache like a production hit.
+
+<Callout type="warn">
+The mock models voice **state** only. Actual voice connections and audio are out of scope.
+</Callout>
+
+### Permissions
+
+Bare dispatches stay permissive. The **bot's** `app_permissions` default to every bit (`DEFAULT_PERMISSIONS`), so `botPermissions` guards pass. The **invoking member** defaults to a realistic non-admin set (`DEFAULT_MEMBER_PERMISSIONS`) — enough to view a channel and reply, but no moderation bits. Pass `memberPermissions: 'all'` for an admin invoker, or restrict a test explicitly to trigger `onPermissionsFail` (member) or `onBotPermissionsFail` (bot):
+
+```ts
+await bot.slash({ name: 'ban', memberPermissions: [] });
+await bot.slash({ name: 'ban', permissions: [] });
+```
+
+Use `permissionBits` for readable bitfields. It accepts an array of permission flag names, a bigint, or a raw string, and returns the wire string:
+
+```ts
+import { apiRole, permissionBits } from '@slipher/testing';
+
+const mod = apiRole({ id: 'mod', permissions: permissionBits(['BanMembers']) });
+await bot.slash({ name: 'ban', memberRoles: [mod] });
+```
+
+For Discord-like permission tests, seed the world and dispatch as a registered member. The mock then **computes** `member.permissions` and `app_permissions` from `@everyone`, the member's roles, the bot member, and channel overwrites — the real Discord permission algorithm, including owner short-circuit, `Administrator`, and overwrite layering:
+
+```ts
+const world = mockWorld();
+const guild = world.registerGuild({
+	id: 'guild',
+	ownerId: 'owner-user', // apiGuild otherwise mints a random owner id
+	everyonePermissions: ['SendMessages'],
+});
+const mod = world.registerRole(guild.id, { permissions: ['BanMembers'], position: 5 });
+const member = world.registerMember(guild.id, { roles: [mod.id] });
+const denied = world.registerChannel(guild.id, {
+	overwrites: [{ id: mod.id, type: 'role', deny: ['BanMembers'] }],
+});
+world.registerBotMember(guild.id, { roles: [mod.id] });
+
+await using bot = await createMockBot({ commands: [BanCommand], world });
+await bot.slash({ name: 'ban', guildId: guild.id, channel: denied, user: member.user });
+```
+
+Role `position`s are written into Seyfert's role cache, so hierarchy checks can read `client.cache.roles.values(guildId)` just like production.
+
+<Callout type="info">
+If a dispatch targets a seeded guild with an *unregistered* user, the mock warns once. Register that user with `world.registerMember(...)`, or pass explicit `memberPermissions` to bypass the computation.
+</Callout>
+
+Once a bot member is seeded with `registerBotMember(...)`, the moderation REST routes (ban, kick, bulk-ban, edit-member, add-role, remove-role) enforce the bot's *computed* guild permissions and role hierarchy, returning Discord's `403 50013` just like production. Without a seeded bot member those routes stay permissive — useful for unit-style tests that are not asserting bot authorization. Seed the bot member whenever the permission contract matters.
+
+To drive a REST error branch directly, intercept the route with `apiError()`:
+
+```ts
+bot.rest.intercept(Routes.ban, () => apiError(403, 50013, 'Missing Permissions'));
+```
+
+<Callout type="warn">
+`MockApiError` is intentionally small. Commands that branch on Seyfert's real error classes should test that real parse path separately.
+</Callout>
+
+### Querying world state
+
+World state includes both the entities you seeded and the writes the bot made during the test: created channels and threads, messages, interaction replies, edits, followups, DMs, bans, role changes, timeouts, and channel overwrites.
+
+The guild/channel/role/DM views are the primary assertion surface:
+
+```ts
+const channel = bot.worldGuild(guild.id)?.channel('acme-s1');
+
+expect(channel?.lastMessage?.content).toContain('Welcome');
+expect(channel?.lastMessage?.button('Approve')).toMatchObject({ customId: 'approve' });
+expect(channel?.lastMessage?.embeds[0]).toMatchObject({
+	title: 'Acme S1',
+	fields: [{ name: 'Budget', value: '$5,000' }],
+});
+```
+
+DMs are queryable by user:
+
+```ts
+expect(bot.worldDm(user.id)?.lastMessage?.content).toBe('Check your inbox');
+```
+
+Channels and roles also resolve by id alone — no guild id needed — mirroring how Discord keys them globally. The role view carries `permissions` and `color`, not just identity:
+
+```ts
+expect(bot.worldChannel(channel.id)?.name).toBe('general');
+expect(bot.worldRole(role.id)?.permissions).toBe('4'); // BanMembers
+```
+
+Seed message history with `registerMessage`; `bot.client.channels.fetchMessages()` then returns it newest-first without an interceptor:
+
+```ts
+world.registerMessage(channel.id, { content: 'old' });
+world.registerMessage(channel.id, { content: 'new' });
+
+expect(await bot.client.channels.fetchMessages(channel.id)).toMatchObject([
+	{ content: 'new' },
+	{ content: 'old' },
+]);
+```
+
+Use `ChannelView.overwrites` for permission-matrix assertions. The direct interaction reply also remains available as `result.reply?.body.data` when the channel view is not the clearest assertion surface.
+
+<Callout type="info">
+The read-only `bot.world` (a `WorldStateReader`) is the supported way to assert on the ~20 entity types the views don't surface directly: pins, reactions, bans, webhooks, emojis, invites, automod rules, scheduled events, poll voters, and more. It also exposes `snapshot()` / `diff()` to capture state at a point in time and read mutations declaratively instead of with field-by-field point queries.
+</Callout>
+
+### Recorded actions
+
+Everything else the bot does goes through REST and is recorded. Each action carries `{ seq, method, route, body, query, response }`, in order:
+
+```ts
+import { Routes } from '@slipher/testing';
+
+const edit = await bot.waitForAction(Routes.editOriginalResponse);
+expect(edit.body).toMatchObject({ content: 'done' });
+
+bot.actions; // every call, in order
+```
+
+When a command *reads* from the API, stub the endpoint so the read resolves without hitting the unhandled-REST trap:
+
+```ts
+bot.rest.intercept('GET', '/guilds/:guildId', (_action, params) => ({ id: params.guildId, name: 'Stubbed' }));
+```
+
+<Callout type="warn">
+By default, unmatched REST requests throw. Set `createMockBot({ onUnhandledRest: 'warn' | 'silent' })` when a test intentionally leans on the synthetic fallback shapes for unmodeled routes.
+</Callout>
+
+When `simulateGateway` is on (the default), stateful writes such as a member edit also emit the matching gateway event (`GUILD_MEMBER_UPDATE`, `GUILD_MEMBER_REMOVE`, `CHANNEL_CREATE`, `MESSAGE_CREATE`, …) so the world stays consistent with what a real bot would observe after the REST call.

@@ -59,7 +59,7 @@ const config = {
       },
       {
         source: "/docs/tips/ecosystem",
-        destination: "/docs/plugins/using/ecosystem",
+        destination: "/docs/plugins/official",
         permanent: true,
       },
       {
@@ -68,13 +68,8 @@ const config = {
         permanent: true,
       },
       {
-        source: "/docs/plugins",
-        destination: "/docs/plugins/using",
-        permanent: true,
-      },
-      {
         source: "/docs/plugins/ecosystem",
-        destination: "/docs/plugins/using/ecosystem",
+        destination: "/docs/plugins/official",
         permanent: true,
       },
       ...building.map((s) => ({

@@ -52,7 +52,7 @@ perms.missings(['SendMessages', 'EmbedLinks']);     // return missings permision
 import { type GuildMember } from 'seyfert';
 const member = {} as GuildMember;
 // ---cut---
-await member.ban({ delete_message_seconds: 0 }, 'Reason');
+await member.ban({ deleteMessageSeconds: 0, reason: 'Reason' });
 await member.kick('Reason');
 await member.edit({ nick: 'New Nickname' });
 await member.write({ content: 'DM message' });    // Send DM

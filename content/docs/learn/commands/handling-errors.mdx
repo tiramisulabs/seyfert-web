@@ -89,10 +89,10 @@ export default createMiddleware<void>(({ context, next, stop, pass }) => {
 ```
 
 ```ts twoslash
-import { createMiddleware, type ParseMiddlewares } from 'seyfert';
+import { createMiddleware } from 'seyfert';
 const middleware = { OnlyDev: createMiddleware(() => {}) };
 declare module 'seyfert' {
-    interface RegisteredMiddlewares extends ParseMiddlewares<typeof middleware> {}
+    interface SeyfertRegistry { middlewares: typeof middleware }
 }
 // ---cut---
 import { Command, Middlewares, type CommandContext } from "seyfert";

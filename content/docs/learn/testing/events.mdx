@@ -1,0 +1,85 @@
+---
+title: Events
+description: Feed gateway dispatch events into your real bot with bot.emit, then assert what your event handler did — no WebSocket, no network.
+---
+
+This builds on [Setup](/docs/learn/testing/setup). By the end you will register a real event handler, feed it a gateway dispatch event, and assert on what it did — all in-process.
+
+## The idea
+
+Your bot's event handlers react to gateway dispatch events: `GUILD_MEMBER_ADD`, `MESSAGE_CREATE`, `GUILD_CREATE`, and so on. In production those arrive over a WebSocket.
+
+In tests there is no socket. Instead you feed an event straight into the real bot with `bot.emit(name, payload)`, using the uppercase Discord event name and a full Discord event shape.
+
+`emit` runs your handler through the production pipeline and resolves the REST work it awaited. So when the call returns, you can assert on the effect right away — a sent message, a recorded REST call, or a change to world state.
+
+## The event under test
+
+This page's examples assume one event handler — a greeter that DMs each new member. Your real events work exactly the same:
+
+```ts
+// src/events/guildMemberAdd.ts
+import { createEvent } from 'seyfert';
+
+export default createEvent({
+	data: { name: 'guildMemberAdd' },
+	async run(member, client) {
+		await client.users.write(member.id, { content: `Welcome, ${member.user.username}!` });
+	},
+});
+```
+
+## Register the event
+
+Like commands, event handlers are real classes you pass to `createMockBot`. Import the one you ship and hand it to `events`:
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import guildMemberAdd from '../src/events/guildMemberAdd';
+
+await using bot = await createMockBot({ events: [guildMemberAdd] });
+```
+
+Prefer your production set? `loadFromConfig: true` boots through the same loaders `client.start()` uses, registering every event from `seyfert.config`.
+
+## A complete example
+
+Register the handler, `emit` a full `GUILD_MEMBER_ADD` payload, then assert the handler's effect. Here a greeter DMs the new member, so we read that DM back from world state:
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import guildMemberAdd from '../src/events/guildMemberAdd';
+
+test('greets new members', async () => {
+	await using bot = await createMockBot({ events: [guildMemberAdd] });
+
+	await bot.emit('GUILD_MEMBER_ADD', rawMemberPayload);
+
+	expect(bot.worldDm(rawMemberPayload.user.id)?.lastMessage?.content).toContain('Welcome');
+});
+```
+
+Because `emit` resolves the REST work first, the DM is already recorded by the time the assertion runs. The same pattern works for any effect: read a recorded send or REST call, or read world state your handler updated.
+
+## Notes
+
+`emit` fails loud when no registered handler ran. This catches the silent trap where a mis-cased name or a forgotten `events: [...]` registration makes an assertion pass green over a handler that never fired.
+
+<Callout type="warn">
+A common cause is casing: gateway names are uppercase, so emit `'GUILD_MEMBER_ADD'`, never `'guildMemberAdd'`. Call `registeredEvents()` to list what is actually wired.
+</Callout>
+
+When you emit only to seed world state — with no handler expected to run — opt out of the loud check explicitly:
+
+```ts
+await bot.emit('CHANNEL_CREATE', rawChannelPayload, { allowNoHandler: true });
+```
+
+<Callout type="info">
+Emit full Discord event shapes, not partial patches. The mock applies a canonical set of events (member, channel, message, reaction, voice, and thread) to world state, so a partial payload can leave the cache looking stale.
+</Callout>
+
+## Next steps
+
+- Reference: [The Toolkit › MockGateway](/docs/testing/gateway) for the full emit and gateway surface.

@@ -1,0 +1,122 @@
+---
+title: Assertions
+description: Runner-agnostic assertion helpers that fail loud when nothing happened, plus worked recipes for bans, plugins, custom clients, and REST failures.
+---
+
+Naive checks pass green when nothing happened — `expect(result.content).toContain('ok')` is satisfied by `content` being `undefined`. The package ships a small set of runner-agnostic assertion helpers that throw a `MockAssertionError` instead, so a handler that silently returned fails loud rather than going unnoticed.
+
+## Assertion helpers
+
+Import the helpers from the package root and pass them a dispatch `result`:
+
+```ts
+import { expectReply, expectDenied, expectError } from '@slipher/testing';
+
+expectReply(result); // throws if no reply/edit/followup was sent
+expectDenied(result, { kind: 'permissions', missing: 'BanMembers' }); // assert a structured denial
+const error = expectError(result, /timeout/); // needs onCommandError: 'capture'
+```
+
+Each helper carries no test-runner coupling, so it surfaces the same way under Vitest, Jest, `node:test`, or a bare script. On failure it throws a `MockAssertionError` with a message that summarizes what the dispatch actually did — whether it was denied, errored, or produced no user-visible output.
+
+### `expectReply`
+
+Asserts that the dispatch produced at least one user-visible reply, edit, or followup. It throws when the handler returned without replying — the exact case a naive `expect(result.content).toContain(...)` lets pass green because `content` is `undefined`. It returns the `result` for chaining.
+
+```ts
+expectReply(result);
+```
+
+### `expectDenied`
+
+Asserts that the dispatch was denied before `run` — a middleware stop / no-next, or a permission guard. Pass an expected-denial object to also assert on the denial's shape; every field is optional and checked only when present:
+
+- `kind` — the denial kind (for example `'permissions'`).
+- `middleware` — the name of the middleware that stopped the dispatch.
+- `missing` — a permission name or array of names that must all appear in the denial's `missing` list.
+
+```ts
+expectDenied(result, { kind: 'permissions', missing: 'BanMembers' });
+```
+
+It returns the `result` for chaining.
+
+### `expectError`
+
+Asserts that the handler threw an unhandled error captured on the result, and returns the captured error.
+
+<Callout type="warn">
+`expectError` requires `onCommandError: 'capture'`. Under the default `onCommandError: 'throw'`, the dispatch rejects instead of capturing the error on `result.error`, so you catch the rejection rather than calling this helper.
+</Callout>
+
+You can pass an optional matcher — a substring, a `RegExp`, or a predicate over the captured error — to also assert the error message contains the substring, matches the `RegExp`, or passes the predicate:
+
+```ts
+const error = expectError(result, /timeout/);
+```
+
+## Real-world recipes
+
+### Assert a command's REST effect
+
+The mock records every REST call the bot makes. A typical command test asserts both the user-facing reply and the underlying REST call it triggered — here, that `/ban` confirms to the user and issues a ban with the right reason:
+
+```ts
+import { Routes, apiUser, createMockBot, userOption } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import { BanCommand } from '../../src/commands/ban';
+
+test('/ban bans the target and confirms', async () => {
+	await using bot = await createMockBot({ commands: [BanCommand] });
+	const target = apiUser({ id: '42', username: 'spammer' });
+
+	const result = await bot.slash({ name: 'ban',
+		options: { user: userOption(target), reason: 'raid' },
+	});
+
+	expect(result.content).toBe('Banned spammer');
+	const ban = await bot.waitForAction(Routes.ban);
+	expect(ban.reason).toBe('raid');
+});
+```
+
+### Plugins
+
+Plugins go through the `plugins` option; their real `setup()` runs inside `createMockBot()` and teardown runs on `bot.close()`:
+
+```ts
+const bot = await createMockBot({
+	commands: [PingCommand],
+	plugins: [myPlugin()],
+});
+
+await bot.close();
+```
+
+### Bots with a custom `Client`
+
+Bots with a custom `Client` — extra services like a Lavalink manager or a database — attach fakes for anything the package doesn't model:
+
+```ts
+const bot = await createMockBot({ commands: [PlayCommand] });
+Object.assign(bot.client, {
+	manager: { getPlayer: () => ({ get: () => true, set: () => {} }), useable: true },
+	database: { getPrefix: async () => '!' },
+});
+```
+
+Commands read these via `ctx.client` by duck typing; the fakes only need the methods the path under test touches. Audio/Lavalink playback itself is out of scope — stub the manager, don't emulate it.
+
+### Simulate Discord REST failures
+
+Simulate Discord REST failures to exercise your error handling. `fail` throws a faithful `SeyfertError` — the same `code`/`metadata` a production `catch` sees — not a bespoke mock error:
+
+```ts
+import { DiscordErrors, Routes } from '@slipher/testing';
+
+bot.rest.fail(Routes.ban, DiscordErrors.MissingPermissions); // 403 / 50013
+bot.rest.fail(Routes.createMessage, { status: 429, retryAfter: 5 }); // raw shape
+bot.rest.fail(Routes.ban, DiscordErrors.MissingAccess, { times: 1 }); // fail once, then normal
+```
+
+For sequential or request-conditional failures, use `bot.rest.intercept(...)` with a closure.

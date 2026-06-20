@@ -15,12 +15,15 @@ import { metrics } from './metrics';
 export const metricsPlugin = createPlugin({
     name: 'autocomplete-metrics',
     register(api) {
+        // wrap autocomplete execution to time it
         api.autocomplete.wrap(async ({ command, interaction, optionsResolver }, next) => {
             const startedAt = Date.now();
 
             try {
+                // run the original autocomplete handler
                 await next();
             } finally {
+                // record metrics whether or not it threw
                 metrics.recordAutocomplete({
                     command: command?.name,
                     fullCommandName: optionsResolver.fullCommandName,
@@ -41,21 +44,25 @@ Plugins can contribute gateway intents.
 
 ```ts
 register(api) {
+    // contribute gateway intents
     api.gateway.addIntents('Guilds');
 }
 ```
 
 Intent names are resolved from `GatewayIntentBits`. Numeric values are also accepted.
 
-## Gateway Payload Wrappers
+## Gateway Send Payload Wrappers
 
-`api.gateway.wrapPayload(...)` runs before gateway send payloads leave the client.
+`api.gateway.wrapSendPayload(...)` runs before gateway send payloads leave the client.
 
 ```ts
 register(api) {
-    api.gateway.wrapPayload(({ payload, shardId }) => {
+    // intercept payloads before they leave the client
+    api.gateway.wrapSendPayload(({ payload, shardId }) => {
+        // return null to consume the payload and stop sending it
         if (shouldDropHeartbeat(payload, shardId)) return null;
 
+        // return a payload to replace the current one
         return {
             ...payload,
             d: patchPayload(payload.d),
@@ -68,9 +75,62 @@ Return behavior:
 
 - return a payload to replace the current payload
 - return `undefined` to keep the current payload
-- return `null` to consume the payload and stop sending it
+- return `null` to consume the payload and stop sending it (a `gateway-send-payload-veto` diagnostic is recorded)
 
-This is a low-level hook. Prefer normal events or services unless your package specifically needs to modify gateway send behavior.
+This is a low-level hook. Prefer normal events or shared state unless your package specifically needs to modify gateway send behavior.
+
+## Inbound Dispatch Interceptors
+
+`api.gateway.onDispatch(...)` sees inbound gateway packets **before** cache and events process them. Call `next(packet)` to continue the chain, or return `null` to veto the packet. It returns a disposer.
+
+```ts
+register(api) {
+    // see inbound packets before cache and events; returns a disposer
+    const dispose = api.gateway.onDispatch((packet, next, meta) => {
+        metrics.increment('gateway.dispatch', {
+            event: packet.t ?? 'unknown',
+            shardId: meta.shardId,
+        });
+        // continue the chain (return null instead to veto the packet)
+        return next(packet);
+    });
+}
+```
+
+Return `null` and the packet is dropped before cache and events ever run, with a `gateway-dispatch-veto` diagnostic recorded — so a dropped packet is a decision, not a mystery.
+
+## REST Observers
+
+`api.rest.observe(...)` watches every REST request with read-only payloads. Observers stack, so multiple plugins can instrument REST without clobbering each other. It returns a disposer.
+
+```ts
+register(api) {
+    // watch every REST request with read-only payloads
+    api.rest.observe({
+        onRequest({ method, url }) { /* about to fire */ },
+        onSuccess({ method, url, response }) {
+            metrics.increment('rest.success', { method, url, status: response.status });
+        },
+        onFail({ method, url, error }) { /* it didn't go well */ },
+        onRatelimit({ route }) { /* Discord said slow down */ },
+    });
+}
+```
+
+A throwing observer is isolated — it doesn't take down the others. Ordering is passed through the options object: `api.rest.observe(observer, { order: PluginOrder.Before })`.
+
+## Language Overlays
+
+`api.langs.contribute(...)` merges translations under a namespace `prefix`, so an i18n package can ship its own keys without colliding with the app's.
+
+```ts
+register(api) {
+    // merge translations under a namespace prefix to avoid collisions
+    api.langs.contribute('en-US', { balance: 'Balance' }, { prefix: 'plugins.economy' });
+}
+```
+
+App code then reads `ctx.t.plugins.economy.balance`.
 
 ## Upload Commands Metadata
 
@@ -78,6 +138,7 @@ Plugins can observe command uploads through the custom `uploadCommands` event.
 
 ```ts
 register(api) {
+    // observe command uploads via the custom uploadCommands event
     api.events.on('uploadCommands', (metadata) => {
         metadata.applicationId;
         metadata.commands;

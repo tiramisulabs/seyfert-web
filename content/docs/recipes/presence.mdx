@@ -72,7 +72,7 @@ Once the bot is running, you can dynamically update its presence by creating a c
 ```ts twoslash title="src/commands/presence.ts" showLineNumbers wrap
 import type { ParseClient, Client } from 'seyfert';
 declare module 'seyfert' {
-  interface UsingClient extends ParseClient<Client<true>> {}
+  interface SeyfertRegistry { client: ParseClient<Client<true>> }
 }
 // ---cut---
 import { Command, Declare, GuildCommandContext } from "seyfert";

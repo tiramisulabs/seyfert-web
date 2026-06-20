@@ -1,9 +1,0 @@
-{
-    "title": "Using Plugins",
-    "icon": "Package",
-    "defaultOpen": true,
-    "pages": [
-        "index",
-        "ecosystem"
-    ]
-}

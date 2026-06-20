@@ -3,7 +3,8 @@
     "title": "Plugins",
     "icon": "Plug",
     "pages": [
-        "using",
+        "index",
+        "official",
         "building"
     ]
 }

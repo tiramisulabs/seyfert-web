@@ -1,0 +1,150 @@
+---
+title: Dispatching
+description: Drive raw payloads and interactions through the real bot pipeline — slash commands, components, modals, and events — with lazy, step-able dispatches and fully typed results.
+---
+
+The mock bot runs your real command classes end-to-end. Where `mockCommandContext()` hands your `run()` a fake context, the mock bot builds a real `CommandContext` the same way production does: a raw `APIInteraction` goes through `HandleCommand`, options are parsed by Seyfert's resolver, middlewares run, and every REST call is recorded instead of sent.
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import { GreetCommand } from '../src/commands/greet';
+
+test('greet replies through the real pipeline', async () => {
+	await using bot = await createMockBot({ commands: [GreetCommand] });
+	const result = await bot.slash({ name: 'greet', options: { name: 'slipher' } });
+
+	expect(result.content).toBe('Hello, slipher!');
+});
+```
+
+Use `bot.slash(GreetCommand, { options })` when you want option inference from the command class. Use `bot.slash({ name, ... })` for concise raw by-name payload dispatch.
+
+## The dispatch helpers
+
+Every user action has a named dispatcher. Each one builds the matching raw interaction (or message) and pushes it through Seyfert's real pipeline:
+
+```ts
+await bot.slash({ name: 'admin', group: 'users', subcommand: 'kick', options: { reason: 'spam' } });
+await bot.autocomplete({ name: 'search', focused: 'query', value: 'sey' });
+await bot.userMenu({ name: 'Report User', target: apiUser({ id: '42' }) });
+await bot.clickButton('confirm');
+await bot.selectMenu('pick-color', ['red']);
+await bot.fillModal('feedback', { rating: '5' });
+await bot.say('!echo -text hello');
+await bot.emit('GUILD_MEMBER_ADD', rawMemberPayload);
+```
+
+`emit` fails loud when no registered handler ran — the silent trap where a mis-cased gateway name (`'guildMemberAdd'` instead of `'GUILD_MEMBER_ADD'`) or a forgotten `events:[...]` registration makes the assertion pass green over a handler that never fired. `registeredEvents()` lists what's wired. When you emit only to seed world state (no handler expected), opt out explicitly:
+
+```ts
+await bot.emit('CHANNEL_CREATE', rawChannelPayload, { allowNoHandler: true });
+```
+
+Every dispatch defaults to the bot's single test user (`bot.defaultUser`), so cross-dispatch state such as cooldowns, waiting modals, and per-user collectors correlates automatically. Pin `guildId` for state that must persist per guild.
+
+### Entity options
+
+Primitive option values are encoded automatically. For entity options use the explicit helpers, which also populate `resolved` data:
+
+```ts
+import { apiUser, userOption } from '@slipher/testing';
+
+await bot.slash({ name: 'ban',
+	options: { user: userOption(apiUser({ id: '42' })), reason: 'spam' },
+});
+```
+
+`userOption`, `channelOption`, `roleOption`, `mentionableOption`, and `attachmentOption` each build the encoded option *and* the `resolved` block Seyfert's resolver reads back, so `ctx.options.user` resolves to a real entity instead of a bare id.
+
+## Execution model
+
+Every dispatcher returns a lazy `Dispatch`. Await it directly for one-shot runs, or call `dispatch.until(Routes.ban)` first to step through the same dispatch. For a dispatch that opens a modal, drive it in one call with `.fillModal(...)` / `.timeoutModal()` (see below). Awaiting always releases any active checkpoint, so it cannot deadlock.
+
+- Immediate replies, deferrals, and modal opens are captured in `result.replies`.
+- REST work awaited by the command is classified into `result.edits`, `result.followups`, and dispatch-scoped `result.actions`.
+- `waitForAction()` is for work your command did not await: timers, fire-and-forget promises, queue/scheduler side effects.
+- Dispatches do not reject for command errors; Seyfert routes them through error hooks, and you assert the user-facing error reply.
+
+| After you awaited | Guaranteed |
+|---|---|
+| `await dispatch` | everything `run()` awaited: replies, edits, followups, and dispatch actions |
+| `dispatch.until(...)` resolved | the matched call started; `response` is still `undefined` while suspended |
+| `await emit(...)` | REST work the handler awaited |
+| nothing | only `waitForAction(...)` observes fire-and-forget work |
+
+<Callout type="info">
+The `Dispatch` is lazy: nothing runs until you `await` it or call `.until(...)`. Because it implements `PromiseLike`, `await dispatch` settles it and resolves to the `result`. Awaiting is the safe default — it releases any pending checkpoint, so a half-stepped dispatch can never deadlock the suite.
+</Callout>
+
+## Step-by-step flows
+
+The mock bot is long-lived: cache, collectors, plugin state, cooldowns, and world mutations persist across dispatches. Bind an identity once with `bot.actor()` instead of repeating `user`, `guildId`, and `channel` on every call:
+
+```ts
+await using bot = await createMockBot({ commands: [PurgeCommand], world });
+const alice = bot.actor({ member: aliceMember, guildId: guild.id, channel });
+
+await alice.slash({ name: 'poll' });
+await alice.clickButton('poll/yes');
+await bot.emit('GUILD_MEMBER_ADD', newMember, { allowNoHandler: true });
+const result = await alice.slash({ name: 'results' });
+
+expect(result.content).toContain('1 vote');
+```
+
+Each call drives the *same* in-process bot, so the second `slash` sees the state the first one and the button click left behind. This is the natural shape for testing multi-step user journeys: open a flow, interact with its components, emit a gateway event, then assert on the final reply.
+
+To pause inside a single command, step the same dispatch instead of awaiting it immediately:
+
+```ts
+const dispatch = bot.slash({ name: 'ban', options: { user: userOption(target) } });
+
+const ban = await dispatch.until(Routes.ban);
+expect(ban.body).toMatchObject({ delete_message_seconds: 0 });
+
+const result = await dispatch;
+expect(result.content).toBe('Banned');
+```
+
+`dispatch.until(matcher)` resumes the command only up to the moment the matched REST call *starts*, then suspends so you can assert on the outgoing request body before the rest of `run()` continues. Awaiting the same `dispatch` afterward releases the checkpoint and runs the command to completion. The matcher is a route (`Routes.ban`) or a predicate over the recorded action.
+
+<Callout type="warn">
+A `Dispatch` runs to completion the first time you `await` it. Call `.until(...)` *before* awaiting; calling `.until(...)` on an already-settled dispatch throws, since there is nothing left to step.
+</Callout>
+
+## Fully typed tests
+
+The mock boots a real Seyfert client, so app augmentations such as `RegisteredMiddlewares`, `UsingClient`, and `DefaultLocale` apply in tests too:
+
+```ts
+import type { ParseMiddlewares } from 'seyfert';
+import { InteractionResponseType } from 'seyfert/lib/types';
+import { TEST_BOT_ID, createMockBot } from '@slipher/testing';
+import { GuardedCommand } from '../src/commands/guarded';
+import { middlewares } from '../src/middlewares';
+
+declare module 'seyfert' {
+	interface RegisteredMiddlewares extends ParseMiddlewares<typeof middlewares> {}
+}
+
+await using bot = await createMockBot({
+	botId: TEST_BOT_ID,
+	commands: [GuardedCommand],
+	middlewares,
+});
+const result = await bot.slash({ name: 'guarded' });
+
+expect(result.reply?.body).toMatchObject({
+	type: InteractionResponseType.ChannelMessageWithSource,
+	data: { content: 'passed' },
+});
+```
+
+Because the client is real, the same module augmentations your bot declares in production are in effect during the test — middleware names are checked, the locale type narrows, and `ctx.client` carries your augmented surface. No separate type-only stub to keep in sync.
+
+Results come back parsed and typed, so you assert without casting. The raw interaction response stays available as `result.reply?.body` (`{ type, data }`) for the rare assertion where the Discord wire shape itself is the contract — but prefer `result.content`, `result.deferred`, and `result.edits` for normal behavior checks. Embeds and components are typed too: `result.embedView?.title`, `result.embedViews`, `result.buttons`, `result.button('Approve')?.customId`, and `result.textDisplays` (components-v2). The raw `result.embeds` / `result.embed` expose the flattened Discord payloads for wire-shape assertions.
+
+<Callout type="info">
+Two surfaces, two jobs: the **typed views** (`result.content`, `result.embedView`, `result.button(...)`) are for everyday behavior assertions; the **raw shapes** (`result.reply?.body`, `result.embeds`) are for the rare test where the exact Discord wire payload is the contract.
+</Callout>

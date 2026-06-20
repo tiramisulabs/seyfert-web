@@ -166,18 +166,15 @@ If you're using Cloudflare Workers, we recommend following the guide on their [o
 
 In addition to the above, you need to configure the appropriate types based on the client you are using:
 
-```ts twoslash {"Gateway":4-5} {"HTTP":7-8} {"Worker":10-11} copy
+```ts twoslash copy
 import type { ParseClient, Client, HttpClient, WorkerClient } from 'seyfert';
 
 declare module 'seyfert' {
-
-    interface UsingClient extends ParseClient<Client<true>> { }
-  
-  
-    interface UsingClient extends ParseClient<HttpClient> { }
-  
-  
-    interface UsingClient extends ParseClient<WorkerClient<true>> { }
+    interface SeyfertRegistry {
+        client: ParseClient<Client<true>>; // Gateway
+        // client: ParseClient<HttpClient>;         // HTTP
+        // client: ParseClient<WorkerClient<true>>; // Worker
+    }
 }
 ```
 

@@ -9,7 +9,7 @@ Seyfert is database-agnostic — you can attach any database client (Prisma, Dri
 The simplest approach. Attach the database client to the Seyfert client instance and declare its type:
 
 ```ts twoslash
-import { Client, type ParseClient } from 'seyfert';
+import { Client } from 'seyfert';
 
 // Replace with your actual database client (Prisma, Drizzle, etc.)
 declare class DatabaseClient {
@@ -17,7 +17,9 @@ declare class DatabaseClient {
     findUser(id: string): Promise<{ id: string; balance: number } | null>;
 }
 
-const client = new Client() as Client & { db: DatabaseClient };
+type ClientWithDB = Client & { db: DatabaseClient };
+
+const client = new Client() as ClientWithDB;
 
 client.db = new DatabaseClient();
 await client.db.connect();
@@ -26,11 +28,7 @@ await client.start();
 await client.uploadCommands();
 
 declare module 'seyfert' {
-    interface UsingClient extends ParseClient<Client<true>> {}
-
-    interface Client {
-        db: DatabaseClient;
-    }
+    interface SeyfertRegistry { client: ClientWithDB }
 }
 ```
 
@@ -46,7 +44,7 @@ declare class DatabaseClient {
 }
 
 // ---cut---
-class MyBot extends Client<true> {
+class MyBot extends Client {
     db = new DatabaseClient();
 
     async run() {
@@ -65,7 +63,7 @@ const bot = new MyBot();
 await bot.run();
 
 declare module 'seyfert' {
-    interface UsingClient extends ParseClient<MyBot> {}
+    interface SeyfertRegistry { client: ParseClient<MyBot> }
 }
 ```
 

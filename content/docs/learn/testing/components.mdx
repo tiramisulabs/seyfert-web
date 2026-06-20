@@ -1,0 +1,127 @@
+---
+title: Components
+description: Dispatch button clicks and select-menu choices through the real component pipeline, then assert the reply — entity selects and collectors included.
+---
+
+This builds on [Setup](/docs/learn/testing/setup). You already have a mock bot running your real pipeline. Now you will click buttons and pick select-menu values, and watch your component handlers reply for real.
+
+Components are dispatched by `customId`. The mock feeds each one through Seyfert's pipeline, so collectors and component handlers run exactly as they do in production. Replies come back parsed, just like slash replies.
+
+## The command under test
+
+This page's examples assume a `poll` command whose `run()` sends a button, then handles the click with a collector:
+
+```ts
+// src/commands/poll.ts
+import { Command, Declare, ActionRow, Button, type CommandContext } from 'seyfert';
+import { ButtonStyle } from 'seyfert/lib/types';
+
+@Declare({ name: 'poll', description: 'Open a poll' })
+export class PollCommand extends Command {
+	async run(ctx: CommandContext) {
+		const row = new ActionRow<Button>().addComponents(
+			new Button().setCustomId('poll/yes').setStyle(ButtonStyle.Success).setLabel('Yes'),
+		);
+		await ctx.write({ content: 'Vote now', components: [row] });
+		const message = await ctx.fetchResponse();
+		message.createComponentCollector().run('poll/yes', async interaction => {
+			await interaction.write({ content: 'Voted!' });
+		});
+	}
+}
+```
+
+## Click a button
+
+Say a command writes a message with a button, then handles the click. Dispatch the click with `bot.clickButton(customId)` and assert on what your handler replied:
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import { PollCommand } from '../src/commands/poll';
+
+test('clicking yes replies', async () => {
+	await using bot = await createMockBot({ commands: [PollCommand] });
+
+	await bot.slash({ name: 'poll' });
+	const result = await bot.clickButton('poll/yes');
+
+	expect(result.content).toBe('Voted!');
+});
+```
+
+`clickButton()` defaults to the latest message-shaped REST response — `lastSentMessage()` — so you rarely thread message ids by hand. The button you reference just has to exist on that message.
+
+### Target a specific message
+
+When a flow sends several messages, the default last-message lookup may not point where you want. Pass `source` with the captured message or its id to aim the click:
+
+```ts
+const sent = bot.lastSentMessage();
+await bot.clickButton('approve', { source: sent?.id });
+```
+
+<Callout>
+Every dispatch defaults to the bot's single test user, so per-user state correlates automatically across dispatches. If a click never lands, the usual cause is a stale `source` — send a real message first, then click it.
+</Callout>
+
+## Select menus
+
+Pick values with `bot.selectMenu(customId, values)`. Like `clickButton()`, it defaults to `lastSentMessage()`. Pass the chosen values as an array — string selects need nothing more:
+
+```ts
+await bot.slash({ name: 'settings' });
+const result = await bot.selectMenu('settings/theme', ['dark']);
+
+expect(result.content).toBe('Theme set to dark');
+```
+
+To target a different message, pass `source` just as with buttons. The same single-test-user default applies, so a select dispatched after a message correlates to that user.
+
+### Entity selects
+
+Entity selects (`user`, `role`, `mentionable`, `channel`) need a `componentType` so the mock knows how to resolve the ids. Selected ids auto-resolve against your seeded world entities:
+
+```ts
+await bot.selectMenu('settings/mod', [role.id], { source: sent, componentType: 'role' });
+```
+
+Here the selected role id resolves to the seeded role, so your handler reads a fully-resolved role — no manual payload building. Pass explicit `resolved` only when you want to assert against a raw Discord payload directly.
+
+<Callout>
+For a `ComponentCommand` select-menu path that has no collector, build the raw payload with `selectMenuInteraction()` and feed it to `dispatchInteraction()`. See [The Toolkit › Dispatching](/docs/testing/dispatching).
+</Callout>
+
+## Collectors
+
+Component collectors are the common case: the command writes a message, fetches it, registers a collector, and replies when the component fires. The mock runs that whole flow in-process:
+
+```ts
+class PollCommand extends Command {
+	async run(ctx: CommandContext) {
+		await ctx.write({ content: 'Vote now', components: [row] });
+		const message = await ctx.fetchResponse();
+		message.createComponentCollector().run('poll/yes', async interaction => {
+			await interaction.write({ content: 'Voted!' });
+		});
+	}
+}
+```
+
+Testing it needs no special setup — dispatch the command, then dispatch the component. The collector registered on the fetched message picks it up and your handler runs:
+
+```ts
+await bot.slash({ name: 'poll' });
+const result = await bot.clickButton('poll/yes');
+
+expect(result.content).toBe('Voted!');
+```
+
+<Callout>
+If a collector never fires, the usual cause is a different user between the message and the dispatch, or a stale `source`. Both default to the single test user, so send a real message first and dispatch as that same user.
+</Callout>
+
+## Next steps
+
+- Next: [Modals](/docs/learn/testing/modals) for the button → modal → submit flow.
+- Reference: [The Toolkit › Dispatching](/docs/testing/dispatching) for every dispatch helper.

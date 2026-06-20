@@ -1,0 +1,595 @@
+---
+title: "Seyfert v5.0.0: Cygnus X-1"
+description: "A first-class plugin runtime, plus the great papercut purge — command filters, context helpers, builder guards, tighter types, and the breaking changes to go with them."
+date: 2026-06-19
+---
+
+import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
+
+## The "We Stopped Mutating the Client Behind Your Back" Release
+
+For years, "extending Seyfert" meant reaching into the `Client`, assigning some properties, and praying nothing else touched them first. It worked. It also aged like milk.
+
+**Seyfert v5.0.0** ships a real, typed plugin runtime — lifecycle, ordering, requirements, teardown, the works — and then, because we were already in there, fixes roughly a hundred papercuts you'd quietly learned to live with.
+
+You're welcome.
+
+---
+
+## First-Class Plugins
+
+This is the headline. Seyfert now has an actual plugin API instead of "set some fields on the client and hope."
+
+A plugin can add or remove commands, components and modals, register middlewares, extend the client and context, add cache resources and lang overlays, observe REST and command execution, wrap gateway traffic, expose shared services, and emit diagnostics. Basically everything you used to do by hand — now with types and a lifecycle.
+
+Say you want to ship a reusable `economy` feature — a service on the client, a middleware that guards balances, and a connection that opens on start and closes on shutdown.
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+
+```ts
+const balanceGuard = createMiddleware(({ next }) => next());
+
+// Packaging it meant a setup function that performs surgery on the client.
+function useEconomy(client: Client) {
+  // Bolt a service on — untyped, so every `client.economy` read is `any`.
+  (client as any).economy = new EconomyService();
+
+  // Merge a middleware in and hope nothing else clobbered the object.
+  client.middlewares = {
+    ...client.middlewares,
+    balanceGuard,
+  };
+
+  // Connect before use? Wire it yourself. Close it on shutdown?
+  // ...also yourself. There was no teardown — you just had to remember.
+}
+
+const client = new Client();
+useEconomy(client); // and call this, in the right order, in every bot
+```
+
+  </Tab>
+  <Tab value="After">
+
+```ts
+const balanceGuard = createMiddleware(({ next }) => next());
+
+const economyPlugin = createPlugin({
+  name: 'economy',
+  // Typed client extension — `client.economy` is real and inferred now.
+  client: { economy: () => new EconomyService() },
+  register(api) {
+    api.middlewares.add('balanceGuard', balanceGuard, { global: true });
+  },
+  setup: client => client.economy.connect(),
+  teardown: client => client.economy.close(), // cleanup that actually runs
+});
+
+const client = new Client({ plugins: definePlugins(economyPlugin) });
+```
+
+  </Tab>
+</Tabs>
+
+That before/after is the whole pitch: package a feature once, get types and a real lifecycle, and stop performing surgery on the `Client` in every bot.
+
+Plugins have their own tab in the [docs](/docs/plugins), so instead of reprinting the whole API here — lifecycle, ordering, shared services, extensions, gateway and REST interceptors, diagnostics — go get the full picture there.
+
+---
+
+## The Quality-of-Life Pass
+
+With the plugin work open on the table, we went through the papercuts. Here are the ones worth showing.
+
+### Command filters
+
+Commands can define a `filter(context)` guard. Return `false` and Seyfert skips the command **before** middlewares, permission hooks, plugin observers, and `run` ever fire.
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+
+```ts
+const blockedUsers = new Set(['123456789012345678']);
+
+@Declare({ name: 'sync', description: 'Sync data' })
+export default class SyncCommand extends Command {
+  async run(ctx: CommandContext) {
+    // Before: the guard lived inside run, after Seyfert had
+    // already spun up middlewares and dragged you to the handler.
+    if (blockedUsers.has(ctx.author.id)) return;
+    await ctx.write({ content: 'Synced' });
+  }
+}
+```
+
+  </Tab>
+  <Tab value="After">
+
+```ts
+const blockedUsers = new Set(['123456789012345678']);
+
+@Declare({ name: 'sync', description: 'Sync data' })
+export default class SyncCommand extends Command {
+  filter(ctx: CommandContext) {
+    return !blockedUsers.has(ctx.author.id);
+  }
+
+  async run(ctx: CommandContext) {
+    await ctx.write({ content: 'Synced' });
+  }
+}
+```
+
+  </Tab>
+</Tabs>
+
+Subcommands inherit the parent filter unless they define their own (with correct `this` binding). Prefix filters run after options are parsed, and thrown filter errors go through `onInternalError`.
+
+### Lowercase option keys
+
+Discord rejects non-lowercase option names. Seyfert now rejects them at compile time instead of letting you find out from a 400.
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+
+```ts
+const options = {
+  // Looks fine. Fails only once the command upload hits Discord.
+  User: createStringOption({ description: 'User id', required: true }),
+};
+```
+
+  </Tab>
+  <Tab value="After">
+
+```ts
+const options = {
+  // v5 yells at you here, in your editor, before Discord ever sees it.
+  user: createStringOption({ description: 'User id', required: true }),
+};
+```
+
+  </Tab>
+</Tabs>
+
+### Autocomplete choice types
+
+Autocomplete choices are now tied to the option type. Numeric options reject string values; string options reject numeric ones.
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+
+```ts
+createIntegerOption({
+  description: 'Roll a die',
+  autocomplete(interaction) {
+    // 'four' on an integer option. Discord disagreed. Quietly.
+    interaction.respond([{ name: 'D4', value: 'four' }]);
+  },
+});
+```
+
+  </Tab>
+  <Tab value="After">
+
+```ts
+createIntegerOption({
+  description: 'Roll a die',
+  autocomplete(interaction) {
+    interaction.respond([{ name: 'D4', value: 4 }]);
+  },
+});
+```
+
+  </Tab>
+</Tabs>
+
+### Context helpers that stop making you type `ctx.interaction`
+
+Half of working with a context used to be reaching through `ctx.interaction` for things the context could've just handed you. Now it does.
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+
+```ts
+// Modals, member/channel fetches, modal fields, updates, message id —
+// all routed through ctx.interaction (or the raw client), every time.
+await ctx.interaction.modal(profileModal, { waitFor: 1_000 });
+
+const member = ctx.guildId
+  ? await ctx.client.members.fetch(ctx.guildId, ctx.author.id)
+  : undefined;
+const channel = await ctx.client.channels.fetch(ctx.channelId);
+
+const username = ctx.interaction.getInputValue('username', true);
+await ctx.interaction.update({ content: 'Saved' }, true);
+const messageId = ctx.interaction.message.id;
+```
+
+  </Tab>
+  <Tab value="After">
+
+```ts
+const submitted = await ctx.modal(profileModal, { waitFor: 1_000 });
+
+// Both take 'cache' | 'rest' | 'flow' with mode-aware return types
+// ('cache' is sync, the rest return a Promise).
+const member = await ctx.fetchMember('flow');
+const channel = await ctx.channel('flow');
+
+const username = ctx.getInputValue('username', true);
+await ctx.update({ content: 'Saved' });
+const messageId = ctx.message.id;
+```
+
+  </Tab>
+</Tabs>
+
+Prefix contexts throw a clear `Cannot use modal without an interaction.` instead of failing in a confusing way, modal contexts expose every field accessor (channels, roles, users, files, radios, checkboxes…), and component contexts keep `interaction.values` typed and guards like `isStringSelectMenu()` useful.
+
+### Builders that fail before Discord does
+
+Builders used to happily serialize half-built junk and let the API reject it. Now `toJSON()` checks its own work.
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+
+```ts
+// No question, one answer. Discord will reject this — eventually.
+new PollBuilder()
+  .setAnswers({ text: 'Yes' })
+  .toJSON();
+```
+
+  </Tab>
+  <Tab value="After">
+
+```ts
+// Missing question or empty answers now throw on toJSON().
+new PollBuilder()
+  .setQuestion({ text: 'Deploy?' })
+  .setAnswers({ text: 'Yes' }, { text: 'No' })
+  .toJSON();
+```
+
+  </Tab>
+</Tabs>
+
+`Modal`, `MediaGalleryItem`, and `StringSelectOption` validate the same way, invalid hex colors fail early, and `RadioGroupOption` now requires its data up front instead of being an empty shell you fill in later:
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+
+```ts
+const option = new RadioGroupOption(); // an empty option, validated by vibes
+const group = new RadioGroup().setCustomId('topics').setOptions(option);
+```
+
+  </Tab>
+  <Tab value="After">
+
+```ts
+const group = new RadioGroup()
+  .setCustomId('topics')
+  .setOptions(
+    new RadioGroupOption({ label: 'General', value: 'general' }),
+    new RadioGroupOption({ label: 'Other', value: 'other' }),
+  );
+```
+
+  </Tab>
+</Tabs>
+
+`StringSelectMenu` also accepts raw API option objects now, and a typed `StringSelectMenu<'value'>` rejects raw values outside its union.
+
+### Moderation and messages, with the IDs removed
+
+Moderation helpers stopped speaking raw Discord (`delete_message_seconds`) and started speaking Seyfert. Poll and member-search helpers stopped making you pass the same IDs you already had.
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+
+```ts
+// Raw snake_case, positional reason, and IDs you already have on hand.
+await member.ban({ delete_message_seconds: 60 }, 'cleanup');
+await member.timeout(10); // 10 = ten *seconds*, if you remembered the unit
+
+await client.messages.endPoll(channelId, messageId);
+await client.messages.getAnswerVoters(channelId, messageId, 1);
+await client.members.search(guildId); // no query? sure, here's everyone-ish
+```
+
+  </Tab>
+  <Tab value="After">
+
+```ts
+await member.ban({ deleteMessageSeconds: 60, reason: 'cleanup' });
+await member.timeout(10_000, 'spam'); // 10_000 ms = ten seconds, plus a reason
+
+await message.endPoll();
+const voters = await message.getAnswerVoters(1, true); // validates the id locally
+await client.members.search(guildId, { query: 'alice', limit: 5 });
+```
+
+  </Tab>
+</Tabs>
+
+Voice state also grew booleans — `isMuted`, `isDeafened`, `isCameraOn`, `isStreaming`, `isSuppressed` — so you stop writing `voiceState.mute || voiceState.selfMute` for the hundredth time.
+
+### Collections that keep their keys
+
+`Collection.filter(...)` and `find(...)` preserve type guards, and `filterCollection(...)` returns a real `Collection` with keys intact — no more rebuilding one from `entries()`.
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+
+```ts
+const active = new Collection(
+  [...members.entries()].filter(([, member]) => member.active),
+);
+```
+
+  </Tab>
+  <Tab value="After">
+
+```ts
+const active = members.filterCollection(member => member.active);
+```
+
+  </Tab>
+</Tabs>
+
+`LimitedCollection.values()` and `entries()` now hand you plain values; use `rawValues()` / `rawEntries()` when you actually want the expiration metadata. It also rejects `NaN` limits while keeping `0`, negative, and `Infinity` behavior.
+
+### REST observers and inline intents
+
+Instrumenting REST used to mean overwriting `onSuccessRequest` and hoping nothing else wanted it too. Now you register isolated observers — and they stack.
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+
+```ts
+// Last assignment wins. Two libraries instrumenting REST? Good luck.
+client.rest.onSuccessRequest = (method, url) => {
+  metrics.increment('rest.success', { method, url });
+};
+```
+
+  </Tab>
+  <Tab value="After">
+
+```ts
+const dispose = client.rest.observe({
+  onRequest({ method, url }) { /* about to fire */ },
+  onSuccess({ method, url, response }) {
+    metrics.increment('rest.success', { method, url, status: response.status });
+  },
+  onFail({ method, url, error }) { /* it didn't go well */ },
+  onRatelimit({ route }) { /* Discord said slow down */ },
+});
+
+dispose(); // unsubscribe whenever you're done
+```
+
+  </Tab>
+</Tabs>
+
+Four hooks — `onRequest`, `onSuccess`, `onFail`, `onRatelimit` — all with readonly, lazily-built payloads, and isolated failures (one throwing observer doesn't take down the rest). Plugin observers run first, then direct observers, then legacy callbacks.
+
+And because typing `GatewayIntentBits.Guilds` got old, intents accept strings inline now:
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+
+```ts
+await client.start({ connection: { intents: GatewayIntentBits.Guilds } });
+```
+
+  </Tab>
+  <Tab value="After">
+
+```ts
+await client.start({ connection: { intents: ['Guilds'] } });
+```
+
+  </Tab>
+</Tabs>
+
+### Formatter helpers that know what they return
+
+`Formatter` grew genuinely typed template-literal helpers, and `timestamp(...)` finally defaults to relative time instead of a style nobody picked on purpose.
+
+<Tabs items={['Before', 'After']}>
+  <Tab value="Before">
+
+```ts
+// Hand-rolled strings, no type safety, and a timestamp default of "whatever".
+const block = `>>> ${notes}`;
+const emoji = `<:${name}:${id}>`;
+Formatter.timestamp(date); // defaults to a fixed style, not relative
+```
+
+  </Tab>
+  <Tab value="After">
+
+```ts
+Formatter.blockQuote(notes);       // typed `>>> ${string}`
+Formatter.emojiMention(id, name);  // typed `<:name:id>`
+Formatter.channelLink(channelId);  // typed ChannelLink
+Formatter.timestamp(date);         // now defaults to 'R' (relative time)
+```
+
+  </Tab>
+</Tabs>
+
+`quote`, `blockQuote`, `emojiMention`, and `channelLink` return narrow template-literal types now, and `timestamp(...)` also accepts millisecond numbers. Small thing, but your editor finally autocompletes the shape.
+
+### Typed groups, middlewares, and locales
+
+A few new typed building blocks: `defineGroups(...)` declares subcommand groups in a reusable, inferred object; `middlewares('auth', 'rateLimit')` captures middleware names with inference instead of a loose `string[]`; and `preferGuildLocale` flips `ctx.t` to resolve the guild locale before the user's.
+
+```ts
+const mws = middlewares('auth', 'rateLimit'); // names are inferred, not stringly-typed
+
+const client = new Client({
+  // Reach for the guild's language first, fall back to the user's.
+  langs: { preferGuildLocale: true },
+});
+```
+
+### Everything else, by subsystem
+
+The rest of the hundred. Not big enough for a code sample each, too real to bury in a "various fixes" line. Grouped so you can scan to your subsystem.
+
+**Commands, middleware & decorators**
+
+- A middleware that throws or rejects is now caught, logged (`Middleware "x" rejected: …`), and treated as a denial — no more silent unhandled rejections.
+- A denial's `metadata.middleware` now names the middleware that actually called `stop()` or rejected, not whichever one sat at the current index.
+- `command.middlewares` is a `readonly` tuple now — mutating it in place (`.push(...)`) is a type error.
+- `Group(groupsDef, key)` gained an overload that type-checks the key against a groups-definition object.
+- `Options(...)` gained a `(new () => SubCommand)[]` overload alongside the lowercase-record one.
+- `InferMiddlewares<T>` extracts the middleware-name union from a `middlewares(...)` tuple.
+- New exported group types: `GroupDefinition`, `GroupDefinitions`, `LocalizedGroupDefinition`, `TranslatedGroupDefinition`.
+- Command-locale resolution warns (`Locale key "x" resolved to nothing …`) on missing keys instead of shipping blanks, and stopped mutating the shared aliases array.
+
+**Contexts**
+
+- `GuildCommandContext` narrows `channel(...)` to guild channels and `fetchMember(...)` to a non-undefined member; new `GuildCommandChannel` type backs it.
+- `write(...)` / `editOrReply(...)` return `void` unless `fetchReply` is `true` — the false branch is no longer a fuzzy `void | Message | …` union.
+- Component contexts gained a `StringSelectValues` generic and a `ctx.message` getter, and `isButton()` now reads `interaction.componentType` (was `interaction.data.componentType`).
+- Modal contexts gained the full accessor set: `getChannels`, `getRoles`, `getUsers`, `getMentionables`, `getRadioValues`, `getCheckbox`, `getCheckboxValues`, `getInputValue`, `getFiles`, plus `update(...)` and `deferUpdate()`.
+- `ComponentCommand.onInternalError` / `ModalCommand.onInternalError` now receive the offending `component` / `modal` instance before `error`.
+
+**Builders & structures**
+
+- `ComponentCollectorStopReason` is exported now.
+- `GuildMember.roles.keys` is `readonly`, `roles.highest()` resolves to `undefined` when there are no roles, and `manageable()` parallel-fetches and returns `false` on incomplete role data.
+- `GuildRole.edit(body, reason?)` takes an audit-log reason.
+- `MessagesMethods.list(fetchOptions?)` made its query optional, and embed serialization accepts any `toJSON()`-bearing object, not just `Embed` instances.
+- `BitField.keys()` returns typed `(keyof T)[]` instead of `string[]`, and `has(...)` / `Permissions.has` / `strictHas` accept a single bit or an array.
+- `PermissionsBitField.resolve(...)` throws `TypeError` on an unknown permission string instead of silently resolving to nothing.
+- `BaseInteraction.reply()` tracks an in-flight `_repliedPromise` and throws `INTERACTION_ALREADY_REPLIED` on a double-reply race; edits await the pending reply first.
+
+**Cache**
+
+- `keys()` / `values()` / `count()` accept `'*'` to query across every guild or channel scope at once, and `bulkGet(...)` infers its result shape from the key tuples you pass.
+- `GuildBasedResource.flush(guild)` lost its default — pass `'*'` to flush everything — while `GuildRelatedResource.flush(guild = '*')` gained one.
+
+**Shorters & utilities**
+
+- `ChannelShorter.pins(...)` returns `pinnedAt` as an epoch-ms number, not an ISO string.
+- `resolveColor(...)` throws on a malformed `#hex` string instead of quietly producing `NaN`.
+- `OAuth2URLOptions.permissions` is optional now.
+- New exported utility types `MakePresent`, `PickPresent`, `NonNullish`, `PropWhen`; `ResolverProps.embeds` also accepts `InMessageEmbed`.
+- `SeyfertError.is(error, code)` narrows a caught error by code (`'CANNOT_USE_MODAL'`, `'SEYFERT_CONFIG_LOAD_ERROR'`, …).
+
+**Events**
+
+- `createEvent(...)` and `ClientEvent.run` return `Awaitable<void>` instead of `any`.
+- Custom (non-gateway) event handlers no longer receive a trailing `shardId`.
+- Throwing inside a `once` event resets it so it can fire again, and `VOICE_CHANNEL_STATUS_UPDATE` hands you a resolved `VoiceChannel | undefined` instead of a raw cache promise.
+
+**Langs**
+
+- Lang files warn instead of failing silently on a missing `default` export, accept a single named-object export as a fallback, and skip ambiguous or invalid files with explicit warnings.
+
+**Client & runtime**
+
+- A bad token throws `INVALID_TOKEN` (at client start and per request) instead of a generic assertion failure.
+- HTTP interactions answer `PING` with `PONG` directly, before the command handler runs.
+- A failed `seyfert.config` load throws `SEYFERT_CONFIG_LOAD_ERROR` with the original error preserved as `cause`.
+- The client logger is configurable via `new Client({ logger: { … } })`, and the setting is now honored on worker clients too.
+- `UserAvatarDefault` narrowed from `number` to `0 | 1 | 2 | 3 | 4 | 5`.
+
+**REST**
+
+- App code (not just plugins) can register observers via `client.rest.observe(...)`, and `RestArgumentsRequiredQuery` is exported.
+- Rate-limit retries preserve the full request — `query`, `files`, `token`, `appendToFormData` — instead of dropping fields on the way back into the queue.
+
+**New root exports**
+
+Importable by name now: `BanOptions`, `ChannelLink`, `MessageLink`, `Timestamp`, `TimestampStyle`, `EmbedColors`, `HeadingLevel`, `OAuth2URLOptions`, `SeyfertError`, `SeyfertErrorCode`, `SeyfertErrorMessages`, `createValidationMetadata`, `PropWhen`, `StructPropState`, `StructStates`, `LimitedCollectionData`, `GuildRole`, `BotConfig`, `HttpConfig`, `ClientMiddlewares`, `AllClientEvents`, `CollectorRunParameters`, `Collectors`, `ParseClientEventName`, `ShardData`, `ShardManagerOptions`, `WorkerData`, `WorkerManagerOptions`, `WorkerInfo`, `WorkerShardInfo`.
+
+---
+
+## Breaking Changes
+
+The price of progress. Grouped so you can grep your codebase — the call-site moves are shown as diffs, the type-only ones as notes.
+
+**Moderation**
+
+Bans, timeouts, and search stopped speaking raw Discord and started requiring the query you already had:
+
+```diff
+- await member.ban({ delete_message_seconds: 60 }, 'cleanup');
++ await member.ban({ deleteMessageSeconds: 60, reason: 'cleanup' });
+- await member.timeout(10);                 // 10 = ten seconds
++ await member.timeout(10_000, 'spam');      // 10_000 ms = ten seconds, + reason
+- await client.members.search(guildId);  // query was optional
++ await client.members.search(guildId, { query: 'alice' });
+```
+
+- The same `{ deleteMessageSeconds, reason }` shape applies to `GuildBan.create(...)`, `MemberShorter.ban(...)`, and `BanShorter.create(...)`.
+
+**Interactions & builders**
+
+```diff
+- await ctx.interaction.deferUpdate(true); // withResponse is gone
++ await ctx.interaction.deferUpdate();
+- new RadioGroup().setOptions([optionA, optionB]); // positional array
++ new RadioGroup().setOptions(optionA, optionB);   // rest params
+- const opt = new RadioGroupOption();              // empty shell
++ const opt = new RadioGroupOption({ label: 'A', value: 'a' });
+```
+
+- `StringSelectMenu.setOptions(...)` went rest-params the same way as `RadioGroup`.
+- `BaseInteraction.replied` is a plain `boolean` now, not a pending-operation promise.
+- `BitField.keys()` returns `(keyof T)[]`, not `string[]`, and `PermissionsBitField.resolve(...)` throws on unknown permission strings (was a silent no-op).
+- `toJSON()` on `Poll`, `Modal`, `MediaGalleryItem`, `StringSelectOption`, and `RadioGroupOption` throws when required fields are missing.
+- Command option keys must be lowercase, and typed `StringSelectMenu<'value'>` rejects out-of-union raw values.
+
+**Collections, cache & utilities**
+
+```diff
+- const ts: bigint = snowflakeToTimestamp(id); // returned a bigint
++ const ts: number = snowflakeToTimestamp(id); // returns unix ms now
+- cache.roles.flush();      // defaulted to everything
++ cache.roles.flush('*');   // GuildBasedResource.flush has no default
+- for (const meta of limited.values()) {}    // yielded { value, expire }
++ for (const value of limited.values()) {}    // plain values now
++ for (const meta of limited.rawValues()) {}  // metadata lives here
+```
+
+- `LimitedCollection` throws on a `NaN` limit; `entries()` / `rawEntries()` split the same way as `values()`.
+- `Cache.bulkGet(...)` infers its result shape from the keys you pass (was the full union); `BulkGetKey` is the new key type.
+- `ChannelShorter.pins(...)` returns `pinnedAt` as a number, not an ISO string, and `resolveColor(...)` throws on a malformed `#hex` string.
+
+**Events, collectors & runtime**
+
+```diff
+- client.collectors.run('MESSAGE_CREATE', filter); // raw gateway name
++ client.collectors.run('messageCreate', filter);  // camelCase client name
+- import type { CollectorRunPameters } from 'seyfert'; // typo is fixed
++ import type { CollectorRunParameters } from 'seyfert';
+```
+
+- Custom (non-gateway) event handlers no longer receive a trailing `shardId`, and `createEvent(...)` / `ClientEvent.run` are typed `Awaitable<void>`.
+- `VOICE_CHANNEL_STATUS_UPDATE` hands you a resolved `VoiceChannel | undefined`, not a raw cache value.
+- `ComponentCommand.onInternalError` / `ModalCommand.onInternalError` gained a `component` / `modal` parameter before `error`.
+- `ServicesOptions.handleCommand` takes the `HandleCommand` constructor, not an instance.
+- `WorkerManagerOptions` is a discriminated union over `mode` — `custom` needs an `adapter`, `threads` / `clusters` need a `path`.
+- `WorkerClientOptions.onShardDisconnect` / `onShardReconnect` (and the `Client` equivalents) are **deprecated** in favor of shard disconnect/reconnect events.
+- `UserAvatarDefault` narrowed to `0 | 1 | 2 | 3 | 4 | 5`.
+
+---
+
+## Upgrade
+
+```bash
+pnpm install seyfert@5.0.0
+```
+
+Five major versions in, and Seyfert finally lets you extend it without performing surgery on the `Client`. The plugins are the future; the hundred papercuts are the part you'll feel tomorrow morning.
+
+Seyfert v5.0.0 — plugins in the front, papercuts in the back.

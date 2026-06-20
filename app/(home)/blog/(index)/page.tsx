@@ -1,6 +1,7 @@
-import { CalendarIcon } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import { blogSource } from "@/lib/source";
+import { parseBlogTitle, versionWatermark, formatBlogDate } from "@/lib/blog";
 
 export const metadata: Metadata = {
     title: "Blog",
@@ -14,71 +15,57 @@ export default function BlogIndexPage() {
     );
 
     return (
-        <div className="py-20 max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-16">
-                <h1 className="text-5xl font-bold tracking-tight bg-linear-to-b from-gray-100 to-gray-400 bg-clip-text text-transparent sm:text-6xl mb-6">
+        <div
+            className="blog-index mx-auto max-w-6xl px-4 py-20 sm:px-6"
+            style={{ gridColumn: "1 / -1" }}
+        >
+            <div className="mb-14 text-center">
+                <h1 className="mb-5 bg-linear-to-b from-gray-100 to-gray-400 bg-clip-text text-5xl font-bold tracking-tight text-transparent sm:text-6xl">
                     Blog
                 </h1>
-                <p className="text-lg text-neutral-400 max-w-2xl mx-auto">
+                <p className="mx-auto max-w-2xl text-lg text-neutral-400">
                     Updates, release notes, and news about Seyfert
                 </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {sortedPages.map((page) => (
-                    <a
-                        href={page.url}
-                        key={page.url}
-                        className="group flex flex-col overflow-hidden rounded-sm border border-neutral-800 
-                            bg-neutral-900 hover:border-gray-600 hover:ring-2 hover:ring-gray-700/50 
-                            transition-all duration-200"
-                    >
-                        <div className="p-6 flex flex-col flex-1">
-                            <h2 className="text-2xl font-semibold text-neutral-200 group-hover:text-gray-100 transition-colors">
-                                {page.data.title || "Untitled"}
-                            </h2>
+            <div className="eyebrow">
+                <span>Releases</span>
+                <div className="rule" />
+                <span>{sortedPages.length}</span>
+            </div>
 
-                            {page.data.date && (
-                                <div className="flex items-center gap-2 text-sm text-neutral-500 mt-2 mb-3">
-                                    <CalendarIcon className="h-4 w-4" />
-                                    <span>
-                                        {new Date(page.data.date).toLocaleDateString("en-US", {
-                                            year: "numeric",
-                                            month: "long",
-                                            day: "numeric",
-                                            timeZone: "UTC",
-                                        })}
-                                    </span>
+            <div className="blog-bento">
+                {sortedPages.map((page, index) => {
+                    const { version, clean } = parseBlogTitle(page.data.title);
+                    const wm = versionWatermark(version);
+                    const isHero = index === 0;
+                    const isMajor = version ? /\.0\.0$/.test(version) : false;
+                    const size = isHero ? "hero" : isMajor ? "wide" : "sm";
+
+                    return (
+                        <a key={page.url} href={page.url} className={`bcard ${size}`}>
+                            {wm && <span className="wm">{wm}</span>}
+                            <span className="scrim" />
+                            <div className="bcontent">
+                                <div className="meta">
+                                    {version && <span className="badge">{version}</span>}
+                                    {isHero && <span className="latest">latest</span>}
+                                    <span className="date">{formatBlogDate(page.data.date)}</span>
                                 </div>
-                            )}
-
-                            {page.data.description && (
-                                <p className="mt-2 line-clamp-3 text-neutral-400 flex-1">
-                                    {page.data.description}
-                                </p>
-                            )}
-
-                            <div className="mt-4 flex items-center text-gray-400 font-medium group-hover:text-gray-300 transition-colors">
-                                Read more
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    className="ml-1 group-hover:translate-x-1 transition-transform duration-200"
-                                >
-                                    <path d="M5 12h14" />
-                                    <path d="m12 5 7 7-7 7" />
-                                </svg>
+                                <h2 className="ctitle">{clean}</h2>
+                                {page.data.description && (
+                                    <p className="cdesc">{page.data.description}</p>
+                                )}
+                                {isHero && (
+                                    <span className="more">
+                                        Read more
+                                        <ArrowRight />
+                                    </span>
+                                )}
                             </div>
-                        </div>
-                    </a>
-                ))}
+                        </a>
+                    );
+                })}
             </div>
         </div>
     );

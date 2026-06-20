@@ -46,7 +46,7 @@ import { Options, createStringOption, Command } from 'seyfert';
     }),
 
     /// Character limits
-    limitLength: createStringOption({
+    limitlength: createStringOption({
         description: '',
         max_length: 500,
         min_length: 200,
@@ -121,7 +121,7 @@ import { Options, createIntegerOption, Command } from 'seyfert';
     }),
 
     /// Value limits
-    limitValue: createIntegerOption({
+    limitvalue: createIntegerOption({
         description: '',
         max_value: 500,
         min_value: 200
@@ -159,7 +159,7 @@ import { ChannelType } from 'seyfert/lib/types';
     }),
 
     /// Specific channel type
-    channelTypes: createChannelOption({
+    channeltypes: createChannelOption({
         description: 'This is a limited channel option',
         channel_types: [ChannelType.GuildVoice]
     })

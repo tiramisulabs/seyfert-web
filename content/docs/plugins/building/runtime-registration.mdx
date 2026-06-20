@@ -15,18 +15,23 @@ import { auditMiddleware } from './middlewares/audit';
 export const auditPlugin = createPlugin({
     name: 'audit-plugin',
     client: {
+        // expose the service as client.audit
         audit: () => auditService,
     },
     register(api) {
+        // contribute a command, component, and modal
         api.commands.add(HealthCommand);
         api.components.add(RefreshButton);
         api.modals.add(ProfileModal);
+        // register a named middleware and make it global
         api.middlewares.add('audit', auditMiddleware, { global: true });
 
+        // listen for an event the framework emits
         api.events.on('commandsLoaded', (metadata) => {
             auditService.recordCommandsLoaded(metadata);
         });
 
+        // contribute a partial client options fragment
         api.options.set({
             allowedMentions: { parse: [] },
         });
@@ -42,6 +47,7 @@ Plugin commands load after disk commands. Plugin components and modals load afte
 
 ```ts
 register(api) {
+    // add a command, a component, and a modal
     api.commands.add(HealthCommand);
     api.components.add(RefreshButton);
     api.modals.add(ProfileModal);
@@ -60,14 +66,17 @@ Plugins can listen to client, gateway, and custom events.
 
 ```ts
 register(api) {
+    // listen every time the event fires
     api.events.on('botReady', (user, client) => {
         client.logger.info(`${user.username} is online`);
     });
 
+    // listen only the first time it fires
     api.events.once('commandsLoaded', (metadata) => {
         auditService.recordCommandSources(metadata.plugin.sources);
     });
 
+    // observe every event by name
     api.events.onAny((name) => {
         auditService.recordEvent(name);
     });
@@ -76,7 +85,7 @@ register(api) {
 
 Plugin listeners are additive. Multiple plugins can observe the same event, and a listener failure is wrapped with the plugin name and phase without skipping the other listeners.
 
-Plugins can emit custom events with `api.events.emit(...)` after the client event runner exists, such as from a plugin listener or runtime callback. Do not call `emit(...)` immediately during `register(api)`, because registration runs before events are bound. Gateway event names cannot be emitted from plugins.
+To emit a custom event, use the client (`client.events.emit(...)`) once the event runner exists — from `setup`, a plugin listener, or a runtime callback. The registration `api` does not expose `emit`, because `register(api)` runs before events are bound. Gateway event names cannot be emitted from plugins.
 
 ## Loaded Metadata
 
@@ -100,6 +109,7 @@ The same shape is used for components with `kind: "components"`.
 
 ```ts
 register(api) {
+    // global: true also adds it to globalMiddlewares
     api.middlewares.add('audit', auditMiddleware, { global: true });
 }
 ```
@@ -117,6 +127,7 @@ type AuthMiddleware = MiddlewareContext<{ userId: string }, CommandContext>;
 
 const auth: AuthMiddleware = ({ next }) => next({ userId: '1' });
 
+// type the middleware contribution so app code stays cast-free
 export const authPlugin: SeyfertPlugin<{}, {}, readonly [], { auth: AuthMiddleware }> = createPlugin({
     name: 'auth',
     register(api) {
@@ -125,7 +136,7 @@ export const authPlugin: SeyfertPlugin<{}, {}, readonly [], { auth: AuthMiddlewa
 });
 ```
 
-When the app includes that plugin in the tuple used by `RegisterPlugins`, `Middlewares(['auth'])` and `ctx.metadata.auth` are typed.
+When the app includes that plugin in the tuple registered via `SeyfertRegistry`, `Middlewares(['auth'])` and `ctx.metadata.auth` are typed.
 
 ## Option Fragments
 
@@ -133,6 +144,7 @@ When the app includes that plugin in the tuple used by `RegisterPlugins`, `Middl
 
 ```ts
 register(api) {
+    // contribute default command hooks; they compose with the app's
     api.options.set({
         commands: {
             defaults: {
@@ -152,8 +164,10 @@ Use `options(current)` when the fragment depends on options already composed bef
 ```ts
 export const plugin = createPlugin({
     name: 'mentions',
+    // read options already composed before this plugin
     options(current) {
         return {
+            // only set a default when the app didn't provide one
             allowedMentions: current.allowedMentions ?? { parse: [] },
         };
     },

@@ -42,7 +42,7 @@ client.setServices({
 await client.start();
 
 declare module 'seyfert' {
-    interface UsingClient extends ParseClient<Client<true>> {}
+    interface SeyfertRegistry { client: ParseClient<Client<true>> }
 
     interface InternalOptions {
         withPrefix: true;

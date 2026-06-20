@@ -13,14 +13,14 @@ pnpm add @slipher/cooldown
 Install it like any other plugin:
 
 ```ts
-import { Client, definePlugins, type RegisterPlugins } from 'seyfert';
+import { Client, definePlugins } from 'seyfert';
 import { cooldown } from '@slipher/cooldown';
 
 const cooldownPlugin = cooldown();
 const plugins = definePlugins(cooldownPlugin);
 
 declare module 'seyfert' {
-    interface Register extends RegisterPlugins<typeof plugins> {}
+    interface SeyfertRegistry { plugins: typeof plugins }
 }
 
 const client = new Client({
@@ -104,13 +104,13 @@ const cooldownPlugin = cooldown({
 });
 ```
 
-If you use a custom middleware name, augment `RegisteredMiddlewares` with `CooldownMiddlewares`:
+If you use a custom middleware name, add a `middlewares` entry to `SeyfertRegistry` with `CooldownMiddlewares`:
 
 ```ts
 import type { CooldownMiddlewares } from '@slipher/cooldown';
 
 declare module 'seyfert' {
-    interface RegisteredMiddlewares extends CooldownMiddlewares<'commandCooldown'> {}
+    interface SeyfertRegistry { middlewares: CooldownMiddlewares<'commandCooldown'> }
 }
 
 const cooldownPlugin = cooldown({

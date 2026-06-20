@@ -121,7 +121,7 @@ declare module "seyfert" {
     interface Cache {
         cooldown: CooldownResource;
     }
-    interface UsingClient extends ParseClient<Client> {}
+    interface SeyfertRegistry { client: ParseClient<Client> }
 }
 ```
 

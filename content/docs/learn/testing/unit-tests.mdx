@@ -1,0 +1,91 @@
+---
+title: Unit Tests
+description: Test a single command's run() body fast with fixtures only — build a mock context, call run() directly, and assert on the recorded replies.
+---
+
+This is the fast path: you test one command's `run()` body in isolation, with plain fixtures and no mock bot. By the end you will have a passing Vitest test that never boots a client.
+
+## When to use this
+
+Reach for fixtures when you only care about the logic inside `run()` — the branching, the reply you build, the stub calls. No option parsing, no middlewares, no permissions, no REST.
+
+It is much faster than the [mock bot](/docs/learn/testing/setup), because nothing boots. You build a stand-in context and call the method directly, so each test is a single function call.
+
+<Callout type="info">
+Rule of thumb: pure `run()` logic → fixtures. Anything touching option parsing, middlewares, permissions, components, or events → the mock bot.
+</Callout>
+
+## Declare the command in its own file
+
+Keep the command exactly as you ship it — in its own file, with its real decorators and options. The test imports that real class; nothing is rewritten for testing.
+
+```ts
+// commands/ban.ts
+import { Command, Declare, Options, createUserOption, type CommandContext } from 'seyfert';
+
+const options = {
+	user: createUserOption({ description: 'User to ban', required: true }),
+};
+
+@Declare({ name: 'ban', description: 'Ban a user' })
+@Options(options)
+export default class BanCommand extends Command {
+	async run(ctx: CommandContext<typeof options>) {
+		await ctx.write({ content: `Banned ${ctx.options.user.id}` });
+	}
+}
+```
+
+## Build a mock context and run the command
+
+`mockCommandContext()` builds a stand-in context carrying just the fields a command touches. You hand it straight to `new BanCommand().run(...)` and let the real `run()` body execute.
+
+```ts
+// ban.test.ts
+import { mockCommandContext, mockUser } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import type { CommandContext } from 'seyfert';
+import BanCommand from './commands/ban';
+
+test('replies after banning', async () => {
+	// a stand-in context carrying just the fields the command touches
+	const ctx = mockCommandContext<{ user: ReturnType<typeof mockUser> }>({
+		commandName: 'ban',
+		options: { user: mockUser({ id: '123' }) },
+	});
+
+	// call the real command's run() directly — the cast is needed because the mock
+	// is not a full CommandContext (the trade-off for skipping the whole pipeline)
+	await new BanCommand().run(ctx as unknown as CommandContext<typeof options>);
+
+	// every reply lands in ctx.responses, so you assert without spies
+	expect(ctx.responses.at(-1)).toMatchObject({
+		content: expect.stringContaining('Banned'),
+	});
+});
+```
+
+The cast is deliberate: the mock is not a full `CommandContext`. That cast is the trade-off you accept in exchange for skipping the whole pipeline and running the body directly.
+
+## Assert on the recorded replies
+
+Every reply method (`write`, `editOrReply`, `followup`) pushes onto the same `ctx.responses` array. So you assert on what the command sent by reading that array — no spies, no mocks to wire up.
+
+```ts
+expect(ctx.responses.at(-1)).toMatchObject({
+	content: expect.stringContaining('Banned'),
+});
+```
+
+Use `ctx.responses.at(-1)` for the last reply, or index into the array to check an earlier one. `ctx.lastResponse()` reads the latest, and `ctx.clearResponses()` resets between phases of a longer test.
+
+## When you need the full pipeline
+
+Calling `run()` directly skips option parsing, middlewares, and permissions on purpose — that is exactly what fixtures are for. The moment you need any of those, fixtures are the wrong tool.
+
+To exercise the whole pipeline — real option parsing, middlewares, permissions, components, or events — switch to the [mock bot](/docs/learn/testing/setup). It boots your real client and drops the cast, at the cost of speed.
+
+## References
+
+- [The Toolkit › Fixtures](/docs/testing/fixtures) — the full fixtures API: factories, stubs, and deterministic ids.
+- [Setup](/docs/learn/testing/setup) — boot the mock bot when you need the full pipeline.

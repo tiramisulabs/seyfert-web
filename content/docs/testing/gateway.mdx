@@ -1,0 +1,86 @@
+---
+title: MockGateway
+description: Emit raw gateway dispatch events into the real bot and inspect recorded presence updates, sends, and shards — without ever opening a WebSocket.
+---
+
+`createMockBot()` installs an in-process `MockGateway` where Seyfert expects its gateway manager. It records presence updates and raw sends, exposes controllable shards, and lets infra handlers exercise disconnect/reconnect hooks — all without a WebSocket. This is how you drive the parts of a bot that react to gateway traffic rather than to interactions: event handlers, presence logic, and shard-lifecycle code.
+
+The examples here use Vitest.
+
+## Emitting dispatch events
+
+The most common use is feeding raw gateway dispatch payloads (`GUILD_CREATE`, `MESSAGE_CREATE`, `GUILD_MEMBER_ADD`, …) into the real bot so your event handlers run through the production pipeline. Use `bot.emit(name, payload)` with the uppercase Discord event name and a full Discord event shape:
+
+```ts
+import { createMockBot } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import guildMemberAdd from '../src/events/guildMemberAdd';
+
+test('greets new members', async () => {
+	await using bot = await createMockBot({ events: [guildMemberAdd] });
+
+	await bot.emit('GUILD_MEMBER_ADD', rawMemberPayload);
+
+	expect(bot.worldDm(rawMemberPayload.user.id)?.lastMessage?.content).toContain('Welcome');
+});
+```
+
+`emit` resolves the REST work the handler awaited, so you can assert on recorded actions or world state right after it returns.
+
+<Callout type="warn">
+`emit` fails loud when no registered handler ran. This catches the silent trap where a mis-cased gateway name (`'guildMemberAdd'` instead of `'GUILD_MEMBER_ADD'`) or a forgotten `events: [...]` registration makes an assertion pass green over a handler that never fired. Call `registeredEvents()` to list what's wired.
+</Callout>
+
+When you emit only to seed world state — with no handler expected to run — opt out of the loud check explicitly:
+
+```ts
+await bot.emit('CHANNEL_CREATE', rawChannelPayload, { allowNoHandler: true });
+```
+
+<Callout type="info">
+Emit full Discord event shapes, not partial patches. The mock applies a canonical set of events (member, channel, message, reaction, voice, and thread events) to its world state, so a partial payload can leave the cache looking stale.
+</Callout>
+
+## The gateway surface
+
+Beyond dispatching events, `MockGateway` stands in for Seyfert's `ShardManager`: it records outbound traffic and exposes the shards the bot reads in tests. Shape it through `createMockBot()` with `shards` and `shardLatency`, then reach it as `bot.gateway` (or `bot.client.gateway`):
+
+```ts
+import { ActivityType, GatewayOpcodes, PresenceUpdateStatus } from 'seyfert/lib/types';
+import { createMockBot } from '@slipher/testing';
+import { expect, test } from 'vitest';
+
+test('records presence, sends, and shards', async () => {
+	await using bot = await createMockBot({ shards: 3, shardLatency: 12 });
+
+	bot.client.gateway.setPresence({
+		activities: [{ name: 'testing', type: ActivityType.Playing }],
+		afk: false,
+		since: null,
+		status: PresenceUpdateStatus.Online,
+	});
+	await bot.client.gateway.send(0, { op: GatewayOpcodes.Heartbeat, d: null });
+	await bot.gateway.simulateDisconnect(0);
+
+	expect(bot.gateway.presences.at(-1)).toMatchObject({ status: PresenceUpdateStatus.Online });
+	expect([...bot.gateway.values()]).toHaveLength(3);
+	expect(bot.gateway.sent.at(-1)).toMatchObject({ shardId: 0 });
+});
+```
+
+The recording surfaces are:
+
+- `presences` — every `setPresence` payload in order; `presences.at(-1)` is the bot's current presence.
+- `sent` — raw payloads passed to `gateway.send`, in order, each as `{ shardId, payload }`.
+- `values()` — the controllable shards, each `{ id, latency }`; `latency` exposes the average across them.
+
+To exercise infra handlers that respond to a shard dropping or coming back, call the simulate hooks. They invoke the wrapped client's disconnect/reconnect callbacks without opening a socket:
+
+```ts
+await bot.gateway.simulateDisconnect(0, 1006, 'connection reset');
+await bot.gateway.simulateReconnect(0);
+```
+
+<Callout type="info">
+`MockGateway` is not a transport emulator. It only models the surface bots touch in tests — presence, sends, shards, and the disconnect/reconnect hooks — not the WebSocket protocol. Its exact shape is unspecified and subject to change during 0.x.
+</Callout>
