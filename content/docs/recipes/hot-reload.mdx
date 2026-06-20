@@ -92,26 +92,45 @@ await client.uploadCommands({ cachePath: './commands.json' });
 
 ## Automatic Reload with @slipher/watcher
 
-For automatic reloading on file changes during development, use [`@slipher/watcher`](https://www.npmjs.com/package/@slipher/watcher):
+Manually restarting after every change gets old fast. [`@slipher/watcher`](https://www.npmjs.com/package/@slipher/watcher) handles it — keeps the gateway alive, watches your source files, rebuilds on change, and restarts the worker. No `Ctrl+C` discipline required.
 
 ```bash copy title="Installing..."
-npm add -D @slipher/watcher
+pnpm add -D @slipher/watcher
 ```
 
-Create a `watch.config.ts` at the root of your project:
+Create a watcher entry point. This example assumes your TypeScript build emits `dist/index.js` from `src/index.ts`:
 
-```ts title="watch.config.ts"
-import { defineWatcherConfig } from '@slipher/watcher';
+```ts title="src/watcher.ts"
+import { join } from 'node:path';
+import { Watcher } from '@slipher/watcher';
 
-export default defineWatcherConfig({
-    src: './src',
+const watcher = new Watcher({
+    filePath: join(process.cwd(), 'dist', 'index.js'),
+    srcPath: join(process.cwd(), 'src'),
+    transpileCommand: 'tsc --project tsconfig.json',
 });
+
+(async () => {
+    await watcher.spawnShards();
+})();
+```
+
+Point `filePath` at your compiled bot entry point. Using SWC or Bun instead of `tsc`? Change `transpileCommand` accordingly — the watcher doesn't care what builds the output, only that the output exists.
+
+Add a script to your `package.json`:
+
+```json title="package.json"
+{
+    "scripts": {
+        "watch": "pnpm build && node dist/watcher.js"
+    }
+}
 ```
 
 Then run the watcher instead of your normal entry point:
 
 ```bash copy
-npx watcher
+pnpm watch
 ```
 
-The watcher will monitor your source files and automatically reload commands, events, and components when they change — no manual restart or reload command needed.
+Gateway stays up. Files change. Bot reloads. That's the whole loop.
