@@ -1,6 +1,6 @@
 ---
 title: "Seyfert v5.0.0: Cygnus X-1"
-description: "A first-class plugin runtime, plus the great papercut purge — command filters, context helpers, builder guards, tighter types, and the breaking changes to go with them."
+description: "A first-class plugin runtime, plus the great papercut purge — context helpers, builder guards, tighter types, and the breaking changes to go with them."
 date: 2026-06-19
 ---
 
@@ -8,9 +8,9 @@ import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
 
 ## The "We Stopped Mutating the Client Behind Your Back" Release
 
-For years, "extending Seyfert" meant reaching into the `Client`, assigning some properties, and praying nothing else touched them first. It worked. It also aged like milk.
+Here's the dirty secret nobody talked about: "extending Seyfert" meant cracking open the `Client`, welding on some properties, and hoping the next library in line wouldn't rip them off. It worked. It also aged like milk left on a Caracas rooftop.
 
-**Seyfert v5.0.0** ships a real, typed plugin runtime — lifecycle, ordering, requirements, teardown, the works — and then, because we were already in there, fixes roughly a hundred papercuts you'd quietly learned to live with.
+**Seyfert v5.0.0** ships a real, typed plugin runtime — lifecycle, ordering, requirements, teardown, the whole ceremony — and then, because we were already elbow-deep in the codebase, we went on a crusade against roughly a hundred papercuts you'd quietly learned to live with.
 
 You're welcome.
 
@@ -18,9 +18,9 @@ You're welcome.
 
 ## First-Class Plugins
 
-This is the headline. Seyfert now has an actual plugin API instead of "set some fields on the client and hope."
+This is the headline. Read it twice if you need to.
 
-A plugin can add or remove commands, components and modals, register middlewares, extend the client and context, add cache resources and lang overlays, observe REST and command execution, wrap gateway traffic, expose shared services, and emit diagnostics. Basically everything you used to do by hand — now with types and a lifecycle.
+Seyfert now has an actual plugin API instead of "set some fields on the client and hope." A plugin can add or remove commands, components and modals, register middlewares, extend the client and context, add cache resources and lang overlays, observe REST and command execution, wrap gateway traffic, expose shared services, and emit diagnostics. Basically everything you used to do by hand — except now there are types, a lifecycle, and the confidence that two plugins won't knife each other in the dark.
 
 Say you want to ship a reusable `economy` feature — a service on the client, a middleware that guards balances, and a connection that opens on start and closes on shutdown.
 
@@ -72,63 +72,21 @@ const client = new Client({ plugins: definePlugins(economyPlugin) });
   </Tab>
 </Tabs>
 
-That before/after is the whole pitch: package a feature once, get types and a real lifecycle, and stop performing surgery on the `Client` in every bot.
+That before/after is the whole pitch. Package a feature once, get types and a real lifecycle, and never perform open-heart surgery on the `Client` again.
 
-Plugins have their own tab in the [docs](/docs/plugins), so instead of reprinting the whole API here — lifecycle, ordering, shared services, extensions, gateway and REST interceptors, diagnostics — go get the full picture there.
+Plugins have their own tab in the [docs](/docs/plugins) — lifecycle, ordering, shared services, extensions, gateway and REST interceptors, diagnostics — the full picture lives there. We're not reprinting the manual here. Go read it. It's good.
 
 ---
 
-## The Quality-of-Life Pass
+## The Great Papercut Purge
 
-With the plugin work open on the table, we went through the papercuts. Here are the ones worth showing.
+With the plugin work already tearing the hood open, we looked around and thought: *while we're in here…*
 
-### Command filters
-
-Commands can define a `filter(context)` guard. Return `false` and Seyfert skips the command **before** middlewares, permission hooks, plugin observers, and `run` ever fire.
-
-<Tabs items={['Before', 'After']}>
-  <Tab value="Before">
-
-```ts
-const blockedUsers = new Set(['123456789012345678']);
-
-@Declare({ name: 'sync', description: 'Sync data' })
-export default class SyncCommand extends Command {
-  async run(ctx: CommandContext) {
-    // Before: the guard lived inside run, after Seyfert had
-    // already spun up middlewares and dragged you to the handler.
-    if (blockedUsers.has(ctx.author.id)) return;
-    await ctx.write({ content: 'Synced' });
-  }
-}
-```
-
-  </Tab>
-  <Tab value="After">
-
-```ts
-const blockedUsers = new Set(['123456789012345678']);
-
-@Declare({ name: 'sync', description: 'Sync data' })
-export default class SyncCommand extends Command {
-  filter(ctx: CommandContext) {
-    return !blockedUsers.has(ctx.author.id);
-  }
-
-  async run(ctx: CommandContext) {
-    await ctx.write({ content: 'Synced' });
-  }
-}
-```
-
-  </Tab>
-</Tabs>
-
-Subcommands inherit the parent filter unless they define their own (with correct `this` binding). Prefix filters run after options are parsed, and thrown filter errors go through `onInternalError`.
+What followed was a reckoning with every rough edge we'd been stepping on since v2. Here are the ones worth showing.
 
 ### Lowercase option keys
 
-Discord rejects non-lowercase option names. Seyfert now rejects them at compile time instead of letting you find out from a 400.
+Discord rejects non-lowercase option names. That's a fact you used to discover at deploy time, staring at a 400 response. Seyfert now rejects them at compile time — in your editor, before Discord ever sees it.
 
 <Tabs items={['Before', 'After']}>
   <Tab value="Before">
@@ -153,9 +111,11 @@ const options = {
   </Tab>
 </Tabs>
 
+Red squiggly > 400 response. Every time.
+
 ### Autocomplete choice types
 
-Autocomplete choices are now tied to the option type. Numeric options reject string values; string options reject numeric ones.
+Autocomplete choices are now tied to the option type. Numeric options reject string values; string options reject numeric ones. The days of `'four'` on an integer option — and Discord silently disagreeing — are over.
 
 <Tabs items={['Before', 'After']}>
   <Tab value="Before">
@@ -185,9 +145,9 @@ createIntegerOption({
   </Tab>
 </Tabs>
 
-### Context helpers that stop making you type `ctx.interaction`
+### Context helpers that respect your time
 
-Half of working with a context used to be reaching through `ctx.interaction` for things the context could've just handed you. Now it does.
+Half of working with a context used to be tunneling through `ctx.interaction` for things the context should've just handed you. We looked at the repetition and felt embarrassed. Now it does.
 
 <Tabs items={['Before', 'After']}>
   <Tab value="Before">
@@ -230,7 +190,9 @@ Prefix contexts throw a clear `Cannot use modal without an interaction.` instead
 
 ### Builders that fail before Discord does
 
-Builders used to happily serialize half-built junk and let the API reject it. Now `toJSON()` checks its own work.
+Builders used to happily serialize half-built junk and let the API reject it. You'd ship a poll with no question, a modal with no title, and Discord would be the one to tell you. Embarrassing for everyone involved.
+
+Now `toJSON()` checks its own work.
 
 <Tabs items={['Before', 'After']}>
   <Tab value="Before">
@@ -281,11 +243,11 @@ const group = new RadioGroup()
   </Tab>
 </Tabs>
 
-`StringSelectMenu` also accepts raw API option objects now, and a typed `StringSelectMenu<'value'>` rejects raw values outside its union.
+`StringSelectMenu` also accepts raw API option objects now, and a typed `StringSelectMenu<'value'>` rejects raw values outside its union. Validated by the compiler, not by vibes.
 
 ### Moderation and messages, with the IDs removed
 
-Moderation helpers stopped speaking raw Discord (`delete_message_seconds`) and started speaking Seyfert. Poll and member-search helpers stopped making you pass the same IDs you already had.
+Moderation helpers stopped speaking raw Discord (`delete_message_seconds`) and started speaking Seyfert. Poll and member-search helpers stopped making you pass the same IDs you already had. Small changes. The kind you feel in your fingertips every day.
 
 <Tabs items={['Before', 'After']}>
   <Tab value="Before">
@@ -340,11 +302,13 @@ const active = members.filterCollection(member => member.active);
   </Tab>
 </Tabs>
 
-`LimitedCollection.values()` and `entries()` now hand you plain values; use `rawValues()` / `rawEntries()` when you actually want the expiration metadata. It also rejects `NaN` limits while keeping `0`, negative, and `Infinity` behavior.
+`LimitedCollection.values()` and `entries()` now hand you plain values; use `rawValues()` / `rawEntries()` when you actually want the expiration metadata. It also rejects `NaN` limits while keeping `0`, negative, and `Infinity` behavior. Because `NaN` as a collection limit was never a feature — it was a cry for help.
 
 ### REST observers and inline intents
 
-Instrumenting REST used to mean overwriting `onSuccessRequest` and hoping nothing else wanted it too. Now you register isolated observers — and they stack.
+Instrumenting REST used to mean overwriting `onSuccessRequest` and hoping nothing else wanted it too. Last assignment wins. Two libraries instrumenting REST? Good luck.
+
+Now you register isolated observers — and they stack.
 
 <Tabs items={['Before', 'After']}>
   <Tab value="Before">
@@ -377,7 +341,7 @@ dispose(); // unsubscribe whenever you're done
 
 Four hooks — `onRequest`, `onSuccess`, `onFail`, `onRatelimit` — all with readonly, lazily-built payloads, and isolated failures (one throwing observer doesn't take down the rest). Plugin observers run first, then direct observers, then legacy callbacks.
 
-And because typing `GatewayIntentBits.Guilds` got old, intents accept strings inline now:
+And because typing `GatewayIntentBits.Guilds` got old three major versions ago, intents accept strings inline now:
 
 <Tabs items={['Before', 'After']}>
   <Tab value="Before">
@@ -395,6 +359,8 @@ await client.start({ connection: { intents: ['Guilds'] } });
 
   </Tab>
 </Tabs>
+
+Pick your style. We don't judge.
 
 ### Formatter helpers that know what they return
 
@@ -423,11 +389,11 @@ Formatter.timestamp(date);         // now defaults to 'R' (relative time)
   </Tab>
 </Tabs>
 
-`quote`, `blockQuote`, `emojiMention`, and `channelLink` return narrow template-literal types now, and `timestamp(...)` also accepts millisecond numbers. Small thing, but your editor finally autocompletes the shape.
+`quote`, `blockQuote`, `emojiMention`, and `channelLink` return narrow template-literal types now, and `timestamp(...)` also accepts millisecond numbers. Small thing, but your editor finally autocompletes the shape. That's the whole point.
 
 ### Typed groups, middlewares, and locales
 
-A few new typed building blocks: `defineGroups(...)` declares subcommand groups in a reusable, inferred object; `middlewares('auth', 'rateLimit')` captures middleware names with inference instead of a loose `string[]`; and `preferGuildLocale` flips `ctx.t` to resolve the guild locale before the user's.
+A few new typed building blocks that make the daily grind less grindy: `defineGroups(...)` declares subcommand groups in a reusable, inferred object; `middlewares('auth', 'rateLimit')` captures middleware names with inference instead of a loose `string[]`; and `preferGuildLocale` flips `ctx.t` to resolve the guild locale before the user's.
 
 ```ts
 const mws = middlewares('auth', 'rateLimit'); // names are inferred, not stringly-typed
@@ -440,13 +406,13 @@ const client = new Client({
 
 ### Everything else, by subsystem
 
-The rest of the hundred. Not big enough for a code sample each, too real to bury in a "various fixes" line. Grouped so you can scan to your subsystem.
+The rest of the hundred. Not big enough for a code sample each, too real to bury in a "various fixes" line. Grouped so you can scan to your subsystem and move on.
 
 **Commands, middleware & decorators**
 
-- A middleware that throws or rejects is now caught, logged (`Middleware "x" rejected: …`), and treated as a denial — no more silent unhandled rejections.
+- A middleware that throws or rejects is now caught, logged (`Middleware "x" rejected: …`), and treated as a denial — no more silent unhandled rejections haunting your logs.
 - A denial's `metadata.middleware` now names the middleware that actually called `stop()` or rejected, not whichever one sat at the current index.
-- `command.middlewares` is a `readonly` tuple now — mutating it in place (`.push(...)`) is a type error.
+- `command.middlewares` is a `readonly` tuple now — mutating it in place (`.push(...)`) is a type error. As it should be.
 - `Group(groupsDef, key)` gained an overload that type-checks the key against a groups-definition object.
 - `Options(...)` gained a `(new () => SubCommand)[]` overload alongside the lowercase-record one.
 - `InferMiddlewares<T>` extracts the middleware-name union from a `middlewares(...)` tuple.
@@ -505,7 +471,7 @@ The rest of the hundred. Not big enough for a code sample each, too real to bury
 **REST**
 
 - App code (not just plugins) can register observers via `client.rest.observe(...)`, and `RestArgumentsRequiredQuery` is exported.
-- Rate-limit retries preserve the full request — `query`, `files`, `token`, `appendToFormData` — instead of dropping fields on the way back into the queue.
+- Rate-limit retries preserve the full request — `query`, `files`, `token`, `appendToFormData` — instead of dropping fields on the way back into the queue. Fun bug.
 
 **New root exports**
 
@@ -591,5 +557,7 @@ pnpm install seyfert@5.0.0
 ```
 
 Five major versions in, and Seyfert finally lets you extend it without performing surgery on the `Client`. The plugins are the future; the hundred papercuts are the part you'll feel tomorrow morning.
+
+Not every release reinvents the framework. This one just made it yours.
 
 Seyfert v5.0.0 — plugins in the front, papercuts in the back.
