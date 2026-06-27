@@ -15,6 +15,7 @@ const packageJson = JSON.parse(
 );
 const declarationRoot = path.join(packageRoot, 'lib');
 const maxSearchTokenCount = 320;
+const maxInlineInheritedMemberSignatureLength = 180;
 
 const apiKindOrder = [
   'Class',
@@ -138,9 +139,21 @@ function heritage(node) {
     .map((clause) => {
       const token =
         clause.token === ts.SyntaxKind.ExtendsKeyword ? 'extends' : 'implements';
-      return `${token} ${clause.types.map((type) => printable(type)).join(', ')}`;
+      return `${token} ${clause.types.map((type) => heritageType(type)).join(', ')}`;
     })
     .join(' ');
+}
+
+function heritageType(type) {
+  if (!ts.isIdentifier(type.expression)) return printable(type);
+
+  const name = type.expression.text;
+  if (!name.endsWith('_base')) return printable(type);
+
+  const symbol = checker.getSymbolAtLocation(type.expression);
+  const declaration = symbol?.declarations?.find(ts.isVariableDeclaration);
+
+  return declaration?.type ? printable(declaration.type) : printable(type);
 }
 
 function declarationSignature(name, kind, node, symbol) {
@@ -180,6 +193,163 @@ function memberKind(member) {
   return undefined;
 }
 
+function declarationOwner(node) {
+  let current = node.parent;
+
+  while (current) {
+    if (
+      ts.isClassDeclaration(current) ||
+      ts.isInterfaceDeclaration(current) ||
+      ts.isTypeAliasDeclaration(current)
+    ) {
+      return current;
+    }
+
+    current = current.parent;
+  }
+
+  return undefined;
+}
+
+function isExportedDeclaration(node) {
+  return (ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) !== 0;
+}
+
+function hasInlineObjectType(member) {
+  return (
+    (ts.isPropertyDeclaration(member) || ts.isPropertySignature(member)) &&
+    !!member.type &&
+    ts.isTypeLiteralNode(member.type)
+  );
+}
+
+function indexedAccessMemberSignature(member, owner, signature) {
+  if (!ts.isPropertyDeclaration(member) && !ts.isPropertySignature(member)) {
+    return undefined;
+  }
+
+  if (
+    !hasInlineObjectType(member) &&
+    signature.length <= maxInlineInheritedMemberSignatureLength
+  ) {
+    return undefined;
+  }
+
+  const ownerName = declarationName(owner);
+  const name = memberName(member);
+  if (!ownerName || !name || !isExportedDeclaration(owner)) return undefined;
+
+  const readonly = member.modifiers?.some(
+    (modifier) => modifier.kind === ts.SyntaxKind.ReadonlyKeyword,
+  )
+    ? 'readonly '
+    : '';
+  const optional = member.questionToken ? '?' : '';
+
+  return `${readonly}${memberSignatureName(name)}${optional}: ${ownerName}[${JSON.stringify(name)}];`;
+}
+
+function memberSignature(member, ownerNode) {
+  const signature = printable(member);
+  const owner = ownerNode ? declarationOwner(member) : undefined;
+  if (!owner || owner === ownerNode) return signature;
+
+  return indexedAccessMemberSignature(member, owner, signature) ?? signature;
+}
+
+function memberFromDeclaration(member, fallbackSymbol, ownerNode) {
+  const name = memberName(member);
+  const kind = memberKind(member);
+  if (!name || !kind) return undefined;
+
+  const symbol =
+    'name' in member && member.name
+      ? checker.getSymbolAtLocation(member.name)
+      : fallbackSymbol;
+
+  return {
+    name,
+    kind,
+    summary: symbol ? documentation(symbol) : '',
+    tags: symbol ? jsDocTags(symbol) : [],
+    signature: memberSignature(member, ownerNode),
+  };
+}
+
+function hasEffectiveMembers(node) {
+  if (!ts.isClassDeclaration(node) && !ts.isInterfaceDeclaration(node)) return false;
+
+  const symbol = declarationSymbol(node);
+  if (!symbol) return false;
+
+  const declarations = symbol.declarations ?? [];
+  const hasClass = declarations.some(ts.isClassDeclaration);
+  const hasInterface = declarations.some(ts.isInterfaceDeclaration);
+
+  return hasClass && hasInterface;
+}
+
+function memberSignatureName(name) {
+  return /^[$A-Z_a-z][$\w]*$/.test(name) ? name : JSON.stringify(name);
+}
+
+function apparentMemberFromSymbol(symbol, node) {
+  if (symbol.name.startsWith('__@')) return [];
+
+  const declarations = symbol.getDeclarations()?.filter((declaration) => {
+    return memberKind(declaration) !== undefined;
+  });
+
+  if (declarations?.length) {
+    return declarations
+      .map((declaration) => memberFromDeclaration(declaration, symbol, node))
+      .filter(Boolean);
+  }
+
+  const type = checker.getTypeOfSymbolAtLocation(symbol, node);
+  const optional = (symbol.flags & ts.SymbolFlags.Optional) !== 0 ? '?' : '';
+
+  return [
+    {
+      name: symbol.name,
+      kind: 'Property',
+      summary: documentation(symbol),
+      tags: jsDocTags(symbol),
+      signature: `${memberSignatureName(symbol.name)}${optional}: ${checker.typeToString(
+        type,
+        node,
+        ts.TypeFormatFlags.NoTruncation |
+          ts.TypeFormatFlags.UseSingleQuotesForStringLiteralType,
+      )};`,
+    },
+  ];
+}
+
+function mergeEffectiveMembers(node, members) {
+  if (!hasEffectiveMembers(node)) return members;
+
+  const symbol = declarationSymbol(node);
+  if (!symbol) return members;
+
+  const type = checker.getApparentType(checker.getDeclaredTypeOfSymbol(symbol));
+  const merged = [...members];
+  const seen = new Set(
+    merged.map((member) => `${member.name}\0${member.kind}\0${member.signature}`),
+  );
+
+  for (const property of type.getProperties()) {
+    for (const member of apparentMemberFromSymbol(property, node)) {
+      const key = `${member.name}\0${member.kind}\0${member.signature}`;
+      if (seen.has(key)) continue;
+
+      seen.add(key);
+      merged.push(member);
+    }
+  }
+
+  return merged;
+}
+
 function membersFor(node) {
   const members =
     'members' in node
@@ -190,23 +360,11 @@ function membersFor(node) {
 
   if (!members) return [];
 
-  return members
-    .map((member) => {
-      const name = memberName(member);
-      const kind = memberKind(member);
-      if (!name || !kind) return undefined;
-
-      const symbol = 'name' in member && member.name ? checker.getSymbolAtLocation(member.name) : undefined;
-
-      return {
-        name,
-        kind,
-        summary: symbol ? documentation(symbol) : '',
-        tags: symbol ? jsDocTags(symbol) : [],
-        signature: printable(member),
-      };
-    })
+  const declaredMembers = members
+    .map((member) => memberFromDeclaration(member))
     .filter(Boolean);
+
+  return mergeEffectiveMembers(node, declaredMembers);
 }
 
 function exportedDeclarations(source) {

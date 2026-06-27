@@ -604,28 +604,95 @@ function linkedEntryForToken(token: string) {
   );
 }
 
+type CodeLinkTarget = {
+  href: string;
+  memberName?: string;
+  title?: string;
+};
+
+function memberAnchorPart(value: string) {
+  return value.replace(/[^A-Za-z0-9_-]/g, '-');
+}
+
+function memberAnchorId(kind: string, name: string) {
+  return `member-${memberAnchorPart(kind)}-${memberAnchorPart(name)}`;
+}
+
+function indexedAccessMemberTargets(code: string) {
+  const targets = new Map<string, CodeLinkTarget>();
+  const indexedAccessPattern =
+    /\b([A-Za-z_$][\w$]*)\s*\[\s*["']([^"']+)["']\s*\]/g;
+
+  for (const match of code.matchAll(indexedAccessPattern)) {
+    const [, typeName, memberName] = match;
+    const entry = linkedEntryForToken(typeName);
+    if (!entry || targets.has(typeName)) continue;
+
+    targets.set(typeName, {
+      href: `${entryHref(entry)}#${memberAnchorId('Property', memberName)}`,
+      memberName,
+      title: `Open ${entry.name}.${memberName}`,
+    });
+  }
+
+  return targets;
+}
+
+function linkedTargetForToken(
+  token: string,
+  memberTargets: Map<string, CodeLinkTarget>,
+): CodeLinkTarget | undefined {
+  const memberTarget = memberTargets.get(token);
+  if (memberTarget) return memberTarget;
+
+  const linkedEntry = linkedEntryForToken(token);
+  if (!linkedEntry) return undefined;
+
+  return {
+    href: entryHref(linkedEntry),
+    title: linkedEntry.name === token ? undefined : `Open ${linkedEntry.name}`,
+  };
+}
+
 function CodeToken({
   children,
   highlightName,
+  memberTargets,
   style,
 }: {
   children: string;
   highlightName?: string;
+  memberTargets: Map<string, CodeLinkTarget>;
   style: ShikiStyle;
 }) {
   if (/^\s+$/.test(children)) return children;
 
-  const linkedEntry = linkedEntryForToken(children);
-  if (linkedEntry) {
+  const linkedTarget = linkedTargetForToken(children, memberTargets);
+  if (linkedTarget) {
+    const isMemberTarget = Boolean(linkedTarget.memberName);
+
     return (
       <Link
-        href={entryHref(linkedEntry)}
+        aria-label={linkedTarget.title}
+        href={linkedTarget.href}
         prefetch={false}
-        className="rounded-sm text-(--shiki-light) underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring dark:text-(--shiki-dark)"
+        className={
+          isMemberTarget
+            ? 'rounded-sm border-b border-dotted border-sky-500/70 bg-sky-500/10 px-0.5 text-(--shiki-light) underline-offset-4 hover:bg-sky-500/15 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring dark:border-sky-300/60 dark:bg-sky-300/10 dark:text-(--shiki-dark) dark:hover:bg-sky-300/15'
+            : 'rounded-sm text-(--shiki-light) underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring dark:text-(--shiki-dark)'
+        }
         style={style}
-        title={linkedEntry.name === children ? undefined : `Open ${linkedEntry.name}`}
+        title={linkedTarget.title}
       >
         {children}
+        {isMemberTarget && (
+          <span
+            aria-hidden
+            className="ml-0.5 align-super text-[9px] font-bold leading-none text-sky-600 dark:text-sky-300"
+          >
+            #
+          </span>
+        )}
       </Link>
     );
   }
@@ -640,9 +707,11 @@ function CodeToken({
 function HighlightedCode({
   highlightName,
   lines,
+  memberTargets,
 }: {
   highlightName?: string;
   lines: ApiCodeToken[][];
+  memberTargets: Map<string, CodeLinkTarget>;
 }) {
   return lines.map((line, lineIndex) => (
     <span key={lineIndex} className="line block">
@@ -656,6 +725,7 @@ function HighlightedCode({
             <CodeToken
               key={`${lineIndex}-${tokenIndex}-${partIndex}`}
               highlightName={highlightName}
+              memberTargets={memberTargets}
               style={style}
             >
               {part}
@@ -694,6 +764,7 @@ async function CodePanel({
   children: string;
   highlightName?: string;
 }) {
+  const memberTargets = indexedAccessMemberTargets(children);
   const highlighted = await codeToTokens(children, {
     lang: 'ts',
     themes: codeThemes,
@@ -711,13 +782,18 @@ async function CodePanel({
       style={style}
     >
       <code className="block">
-        <HighlightedCode highlightName={highlightName} lines={highlighted.tokens} />
+        <HighlightedCode
+          highlightName={highlightName}
+          lines={highlighted.tokens}
+          memberTargets={memberTargets}
+        />
       </code>
     </pre>
   );
 }
 
 type IndexedMember = ApiMember & {
+  anchorId?: string;
   index: number;
 };
 
@@ -730,10 +806,18 @@ const methodMemberKinds = new Set([
 ]);
 
 function memberId(member: IndexedMember) {
-  return `member-${member.kind}-${member.name}-${member.index}`.replace(
+  return member.anchorId ?? `member-${member.kind}-${member.name}-${member.index}`.replace(
     /[^A-Za-z0-9_-]/g,
     '-',
   );
+}
+
+function memberAnchorKey(member: Pick<ApiMember, 'kind' | 'name'>) {
+  return `${member.kind}:${member.name}`;
+}
+
+function memberHref(member: IndexedMember) {
+  return `#${memberId(member)}`;
 }
 
 function memberGroups(entry: ApiEntryDetail) {
@@ -742,9 +826,23 @@ function memberGroups(entry: ApiEntryDetail) {
     methods: [] as IndexedMember[],
     other: [] as IndexedMember[],
   };
+  const memberCounts = new Map<string, number>();
+
+  for (const member of entry.members) {
+    const key = memberAnchorKey(member);
+    memberCounts.set(key, (memberCounts.get(key) ?? 0) + 1);
+  }
 
   entry.members.forEach((member, index) => {
-    const item = { ...member, index };
+    const key = memberAnchorKey(member);
+    const item = {
+      ...member,
+      anchorId:
+        memberCounts.get(key) === 1
+          ? memberAnchorId(member.kind, member.name)
+          : undefined,
+      index,
+    };
 
     if (propertyMemberKinds.has(member.kind)) {
       groups.properties.push(item);
@@ -785,7 +883,7 @@ function MemberOverviewCard({
           {members.map((member) => (
             <Link
               key={memberId(member)}
-              href={`#${memberId(member)}`}
+              href={memberHref(member)}
               className="rounded-md px-2 py-1.5 font-mono text-sm text-fd-foreground transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring"
             >
               {member.name}
@@ -864,7 +962,7 @@ function MemberDetailList({
         <article id={memberId(member)} key={memberId(member)} className="scroll-mt-24 space-y-2 p-4">
           <div className="flex flex-wrap items-center gap-2">
             <a
-              href={`#${memberId(member)}`}
+              href={memberHref(member)}
               className="group/anchor inline-flex items-center gap-1.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring"
             >
               <code className="text-sm font-semibold text-fd-foreground">
