@@ -46,7 +46,20 @@ function declarationFiles(dir = declarationRoot) {
     .sort((a, b) => a.localeCompare(b));
 }
 
+function javascriptFiles(dir = declarationRoot) {
+  return fs
+    .readdirSync(dir, { withFileTypes: true })
+    .flatMap((entry) => {
+      const entryPath = path.join(dir, entry.name);
+
+      if (entry.isDirectory()) return javascriptFiles(entryPath);
+      return entry.name.endsWith('.js') ? [entryPath] : [];
+    })
+    .sort((a, b) => a.localeCompare(b));
+}
+
 const declarations = declarationFiles();
+const javascriptSources = javascriptFiles();
 
 const program = ts.createProgram(declarations, {
   declaration: true,
@@ -158,17 +171,17 @@ function heritageType(type) {
 
 function declarationSignature(name, kind, node, symbol) {
   if (kind === 'Class' || kind === 'Interface') {
-    return cleanText(
+    return formatSignature(cleanText(
       `export ${kind === 'Class' ? 'declare class' : 'interface'} ${name}${typeParameters(node)} ${heritage(node)}`,
-    );
+    ));
   }
 
   if (kind === 'Variable') {
     const type = checker.getTypeOfSymbolAtLocation(symbol, node);
-    return `export declare const ${name}: ${checker.typeToString(type)};`;
+    return formatSignature(`export declare const ${name}: ${checker.typeToString(type)};`);
   }
 
-  return printable(node);
+  return formatSignature(printable(node));
 }
 
 function classHeritageTypes(node) {
@@ -184,8 +197,63 @@ function isMixinHeritageType(type) {
   return !type.startsWith('ObjectToLower<');
 }
 
+function expressionName(node) {
+  if (ts.isIdentifier(node)) return node.text;
+  if (ts.isPropertyAccessExpression(node)) return node.name.text;
+  if (ts.isParenthesizedExpression(node)) return expressionName(node.expression);
+  if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.CommaToken) {
+    return expressionName(node.right);
+  }
+
+  return undefined;
+}
+
+function runtimeMixinNames(decorator, source) {
+  if (!ts.isCallExpression(decorator) || expressionName(decorator.expression) !== 'mix') {
+    return [];
+  }
+
+  return decorator.arguments
+    .map((argument) => ts.isIdentifier(argument) ? argument.text : argument.getText(source))
+    .filter(Boolean);
+}
+
+function collectRuntimeMixins() {
+  const mixins = new Map();
+
+  for (const file of javascriptSources) {
+    const source = ts.createSourceFile(
+      file,
+      fs.readFileSync(file, 'utf8'),
+      ts.ScriptTarget.ESNext,
+      true,
+      ts.ScriptKind.JS,
+    );
+
+    ts.forEachChild(source, function visit(node) {
+      if (ts.isCallExpression(node) && expressionName(node.expression) === '__decorate') {
+        const [decorators, target] = node.arguments;
+        if (ts.isArrayLiteralExpression(decorators) && ts.isIdentifier(target)) {
+          const names = decorators.elements.flatMap((decorator) => runtimeMixinNames(decorator, source));
+          if (names.length > 0) mixins.set(target.text, names);
+        }
+      }
+
+      ts.forEachChild(node, visit);
+    });
+  }
+
+  return mixins;
+}
+
+const runtimeMixins = collectRuntimeMixins();
+
 function mixinsFor(node) {
   if (!ts.isClassDeclaration(node)) return [];
+
+  const name = declarationName(node);
+  const runtime = name ? runtimeMixins.get(name) : undefined;
+  if (runtime) return runtime;
 
   const symbol = declarationSymbol(node);
   if (!symbol) return [];
@@ -292,9 +360,9 @@ function indexedAccessMemberSignature(member, owner, signature) {
 function memberSignature(member, ownerNode) {
   const signature = printable(member);
   const owner = ownerNode ? declarationOwner(member) : undefined;
-  if (!owner || owner === ownerNode) return signature;
+  if (!owner || owner === ownerNode) return formatSignature(signature);
 
-  return indexedAccessMemberSignature(member, owner, signature) ?? signature;
+  return formatSignature(indexedAccessMemberSignature(member, owner, signature) ?? signature);
 }
 
 function memberFromDeclaration(member, fallbackSymbol, ownerNode) {
@@ -355,14 +423,52 @@ function apparentMemberFromSymbol(symbol, node) {
       kind: 'Property',
       summary: documentation(symbol),
       tags: jsDocTags(symbol),
-      signature: `${memberSignatureName(symbol.name)}${optional}: ${checker.typeToString(
-        type,
-        node,
-        ts.TypeFormatFlags.NoTruncation |
-          ts.TypeFormatFlags.UseSingleQuotesForStringLiteralType,
-      )};`,
+      signature: formatSignature(
+        `${memberSignatureName(symbol.name)}${optional}: ${checker.typeToString(
+          type,
+          node,
+          ts.TypeFormatFlags.NoTruncation |
+            ts.TypeFormatFlags.UseSingleQuotesForStringLiteralType,
+        )};`,
+      ),
     },
   ];
+}
+
+function mergeMemberOverloads(members) {
+  const merged = [];
+  const grouped = new Map();
+
+  for (const member of members) {
+    const key = `${member.name}\0${member.kind}`;
+    const existing = grouped.get(key);
+
+    if (!existing) {
+      grouped.set(key, member);
+      merged.push(member);
+      continue;
+    }
+
+    const signatures = new Set(existing.signature.split('\n'));
+    if (!signatures.has(member.signature)) {
+      existing.signature = `${existing.signature}\n${member.signature}`;
+    }
+
+    if (!existing.summary && member.summary) {
+      existing.summary = member.summary;
+    }
+
+    const tagKeys = new Set(existing.tags.map((tag) => `${tag.name}\0${tag.text}`));
+    for (const tag of member.tags) {
+      const tagKey = `${tag.name}\0${tag.text}`;
+      if (tagKeys.has(tagKey)) continue;
+
+      tagKeys.add(tagKey);
+      existing.tags.push(tag);
+    }
+  }
+
+  return merged;
 }
 
 function mergeEffectiveMembers(node, members) {
@@ -404,7 +510,7 @@ function membersFor(node) {
     .map((member) => memberFromDeclaration(member))
     .filter(Boolean);
 
-  return mergeEffectiveMembers(node, declaredMembers);
+  return mergeMemberOverloads(mergeEffectiveMembers(node, declaredMembers));
 }
 
 function exportedDeclarations(source) {
@@ -442,6 +548,110 @@ function declarationName(node) {
   return undefined;
 }
 
+function collectPublicExportNames() {
+  const names = new Set();
+
+  for (const file of declarations) {
+    const source = program.getSourceFile(file);
+    if (!source) continue;
+
+    for (const declaration of exportedDeclarations(source)) {
+      const name = declarationName(declaration);
+      if (name && !name.startsWith('__')) names.add(name);
+    }
+  }
+
+  return names;
+}
+
+const publicExportNames = collectPublicExportNames();
+
+function simplifyImportTypes(signature) {
+  return signature.replace(
+    /\bimport\((["'][^"']+["'])\)\.([A-Za-z_$][\w$]*)/g,
+    (match, _specifier, typeName) => publicExportNames.has(typeName) ? typeName : match,
+  );
+}
+
+function formatSignature(signature) {
+  return simplifyImportTypes(signature);
+}
+
+function privateTypeKind(node) {
+  if (ts.isInterfaceDeclaration(node)) return 'Interface';
+  if (ts.isTypeAliasDeclaration(node)) return 'TypeAlias';
+  return undefined;
+}
+
+function collectPrivateTypeDeclarations() {
+  const privateTypes = new Map();
+
+  for (const source of program.getSourceFiles()) {
+    if (!source.fileName.startsWith(packageRoot)) continue;
+
+    ts.forEachChild(source, function visit(node) {
+      const kind = privateTypeKind(node);
+      const name = kind ? declarationName(node) : undefined;
+
+      if (kind && name && !isExportedDeclaration(node)) {
+        privateTypes.set(name, {
+          name,
+          kind,
+          source: sourcePath(node),
+          signature: formatSignature(printable(node)),
+        });
+      }
+
+      ts.forEachChild(node, visit);
+    });
+  }
+
+  return privateTypes;
+}
+
+const privateTypeDeclarations = collectPrivateTypeDeclarations();
+
+function referencedPrivateTypeNames(code) {
+  const names = [];
+  const seen = new Set();
+
+  for (const token of code.match(/[A-Za-z_$][\w$]*/g) ?? []) {
+    if (seen.has(token) || !privateTypeDeclarations.has(token)) continue;
+
+    seen.add(token);
+    names.push(token);
+  }
+
+  return names;
+}
+
+function privateTypesFor(entry) {
+  const privateTypes = [];
+  const seen = new Set();
+  const pending = referencedPrivateTypeNames([
+    entry.signature,
+    entry.mixins.join('\n'),
+    ...entry.members.map((member) => member.signature),
+  ].join('\n'));
+
+  for (let index = 0; index < pending.length; index += 1) {
+    const name = pending[index];
+    if (seen.has(name)) continue;
+
+    const privateType = privateTypeDeclarations.get(name);
+    if (!privateType) continue;
+
+    seen.add(name);
+    privateTypes.push(privateType);
+
+    for (const dependency of referencedPrivateTypeNames(privateType.signature)) {
+      if (!seen.has(dependency)) pending.push(dependency);
+    }
+  }
+
+  return privateTypes;
+}
+
 function declarationSymbol(node) {
   if (!('name' in node) || !node.name) return undefined;
   return checker.getSymbolAtLocation(node.name);
@@ -471,7 +681,7 @@ function publicExports() {
       if (!symbol) continue;
 
       const kind = kindMap.get(declaration.kind);
-      entries.push({
+      const entry = {
         name,
         kind,
         slug: slugFor(name, kind, used),
@@ -481,7 +691,10 @@ function publicExports() {
         signature: declarationSignature(name, kind, declaration, symbol),
         mixins: mixinsFor(declaration),
         members: membersFor(declaration),
-      });
+      };
+
+      entry.privateTypes = privateTypesFor(entry);
+      entries.push(entry);
     }
   }
 
@@ -551,6 +764,7 @@ function searchContentFor(entry) {
     entry.summary,
     signatureIdentifiers(entry.signature),
     entry.mixins.join(' '),
+    entry.privateTypes.map((type) => `${type.name} ${type.signature}`).join(' '),
     tagSearchText(entry.tags),
   ];
 
@@ -579,6 +793,12 @@ fs.writeFileSync(
     `  name: string;\n` +
     `  text: string;\n` +
     `};\n\n` +
+    `export type ApiPrivateType = {\n` +
+    `  name: string;\n` +
+    `  kind: 'Interface' | 'TypeAlias';\n` +
+    `  source: string;\n` +
+    `  signature: string;\n` +
+    `};\n\n` +
     `export type ApiMember = {\n` +
     `  name: string;\n` +
     `  kind: string;\n` +
@@ -597,6 +817,7 @@ fs.writeFileSync(
     `  signature: string;\n` +
     `  tags: ApiDocTag[];\n` +
     `  mixins: string[];\n` +
+    `  privateTypes: ApiPrivateType[];\n` +
     `  members: ApiMember[];\n` +
     `};\n\n` +
     `export type ApiSearchEntry = {\n` +

@@ -24,6 +24,7 @@ import {
   type ApiEntryDetail,
   type ApiMember,
   type ApiKind,
+  type ApiPrivateType,
 } from '@/lib/api-reference/generated';
 import {
   apiKindBySlug,
@@ -618,10 +619,21 @@ function memberAnchorId(kind: string, name: string) {
   return `member-${memberAnchorPart(kind)}-${memberAnchorPart(name)}`;
 }
 
-function indexedAccessMemberTargets(code: string) {
+function privateTypeId(type: Pick<ApiPrivateType, 'name'>) {
+  return `private-type-${memberAnchorPart(type.name)}`;
+}
+
+function codeLinkTargets(code: string, privateTypes: ApiPrivateType[] = []) {
   const targets = new Map<string, CodeLinkTarget>();
   const indexedAccessPattern =
     /\b([A-Za-z_$][\w$]*)\s*\[\s*["']([^"']+)["']\s*\]/g;
+
+  for (const privateType of privateTypes) {
+    targets.set(privateType.name, {
+      href: `#${privateTypeId(privateType)}`,
+      title: `Open ${privateType.name}`,
+    });
+  }
 
   for (const match of code.matchAll(indexedAccessPattern)) {
     const [, typeName, memberName] = match;
@@ -760,11 +772,13 @@ function tokenStyle(token: ApiCodeToken): ShikiStyle {
 async function CodePanel({
   children,
   highlightName,
+  privateTypes,
 }: {
   children: string;
   highlightName?: string;
+  privateTypes?: ApiPrivateType[];
 }) {
-  const memberTargets = indexedAccessMemberTargets(children);
+  const memberTargets = codeLinkTargets(children, privateTypes);
   const highlighted = await codeToTokens(children, {
     lang: 'ts',
     themes: codeThemes,
@@ -949,9 +963,11 @@ const memberDefaultKind: Record<MemberTone, string> = {
 
 function MemberDetailList({
   members,
+  privateTypes,
   tone = 'other',
 }: {
   members: IndexedMember[];
+  privateTypes: ApiPrivateType[];
   tone?: MemberTone;
 }) {
   if (members.length === 0) return null;
@@ -981,7 +997,7 @@ function MemberDetailList({
               </span>
             )}
           </div>
-          <CodePanel highlightName={member.name}>
+          <CodePanel highlightName={member.name} privateTypes={privateTypes}>
             {member.signature}
           </CodePanel>
           {member.summary && (
@@ -1006,19 +1022,31 @@ function MemberSections({ entry }: { entry: ApiEntryDetail }) {
       {groups.properties.length > 0 && (
         <section id="properties" className="space-y-3">
           <h2 className="text-base font-semibold text-fd-foreground">Properties</h2>
-          <MemberDetailList members={groups.properties} tone="property" />
+          <MemberDetailList
+            members={groups.properties}
+            privateTypes={entry.privateTypes}
+            tone="property"
+          />
         </section>
       )}
       {groups.methods.length > 0 && (
         <section id="methods" className="space-y-3">
           <h2 className="text-base font-semibold text-fd-foreground">Methods</h2>
-          <MemberDetailList members={groups.methods} tone="method" />
+          <MemberDetailList
+            members={groups.methods}
+            privateTypes={entry.privateTypes}
+            tone="method"
+          />
         </section>
       )}
       {groups.other.length > 0 && (
         <section id="other-members" className="space-y-3">
           <h2 className="text-base font-semibold text-fd-foreground">Other Members</h2>
-          <MemberDetailList members={groups.other} tone="other" />
+          <MemberDetailList
+            members={groups.other}
+            privateTypes={entry.privateTypes}
+            tone="other"
+          />
         </section>
       )}
     </div>
@@ -1050,9 +1078,67 @@ function ApiBreadcrumb({ entry }: { entry: ApiEntryDetail }) {
   );
 }
 
-function ApiDetail({ entry }: { entry: ApiEntryDetail }) {
-  const hasMixins = entry.mixins.length > 0;
+function PrivateTypes({ privateTypes }: { privateTypes: ApiPrivateType[] }) {
+  if (privateTypes.length === 0) return null;
 
+  return (
+    <section id="private-types" className="space-y-3">
+      <h2 className="text-base font-semibold text-fd-foreground">Private types</h2>
+      <div className="space-y-2">
+        {privateTypes.map((privateType) => (
+          <details
+            key={privateType.name}
+            id={privateTypeId(privateType)}
+            className="scroll-mt-24 rounded-lg border border-fd-border bg-fd-background"
+          >
+            <summary className="cursor-pointer px-4 py-3 text-sm font-semibold text-fd-foreground marker:text-fd-muted-foreground">
+              <span className="inline-flex items-center gap-2">
+                <code>{privateType.name}</code>
+                <span className="rounded-md border border-fd-border px-1.5 py-0.5 text-[11px] font-medium text-fd-muted-foreground">
+                  {privateType.kind}
+                </span>
+              </span>
+            </summary>
+            <div className="border-t border-fd-border p-4">
+              <CodePanel privateTypes={privateTypes}>
+                {privateType.signature}
+              </CodePanel>
+            </div>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MixinTooltip() {
+  return (
+    <span className="group relative inline-flex shrink-0">
+      <button
+        type="button"
+        aria-label="What are mixins?"
+        className="inline-flex size-5 items-center justify-center rounded-full border border-fd-border bg-fd-secondary text-[11px] font-semibold text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-fd-ring"
+      >
+        ?
+      </button>
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute top-full left-1/2 z-20 mt-2 hidden w-72 -translate-x-1/2 rounded-md border border-fd-border bg-fd-popover px-3 py-2 text-xs leading-5 text-fd-popover-foreground shadow-lg group-hover:block group-focus-within:block"
+      >
+        Mixins are helper types merged into this class by TypeScript declarations;
+        their members are included even when the class only shows an extends clause.
+      </span>
+    </span>
+  );
+}
+
+function signatureCode(entry: ApiEntryDetail) {
+  if (entry.mixins.length === 0) return entry.signature;
+
+  return `@Mixins(${entry.mixins.join(', ')})\n${entry.signature}`;
+}
+
+function ApiDetail({ entry }: { entry: ApiEntryDetail }) {
   return (
     <div className="not-prose space-y-8">
       <div className="space-y-3">
@@ -1061,20 +1147,16 @@ function ApiDetail({ entry }: { entry: ApiEntryDetail }) {
       </div>
 
       <section id="signature" className="space-y-3">
-        <h2 className="text-base font-semibold text-fd-foreground">Signature</h2>
-        <CodePanel highlightName={entry.name}>
-          {entry.signature}
+        <div className="flex items-center gap-2">
+          <h2 className="text-base font-semibold text-fd-foreground">Signature</h2>
+          {entry.mixins.length > 0 && <MixinTooltip />}
+        </div>
+        <CodePanel highlightName={entry.name} privateTypes={entry.privateTypes}>
+          {signatureCode(entry)}
         </CodePanel>
       </section>
 
-      {hasMixins && (
-        <section id="mixins" className="space-y-3">
-          <h2 className="text-base font-semibold text-fd-foreground">Mixins</h2>
-          <CodePanel>
-            {entry.mixins.join('\n')}
-          </CodePanel>
-        </section>
-      )}
+      <PrivateTypes privateTypes={entry.privateTypes} />
 
       <DocTags tags={entry.tags} />
 
@@ -1090,7 +1172,7 @@ function entryTocItems(entry: ApiEntryDetail) {
 
   return [
     { title: 'Signature', url: '#signature' },
-    ...(entry.mixins.length > 0 ? [{ title: 'Mixins', url: '#mixins' }] : []),
+    ...(entry.privateTypes.length > 0 ? [{ title: 'Private types', url: '#private-types' }] : []),
     ...(entry.tags.length > 0 ? [{ title: 'JSDoc', url: '#jsdoc' }] : []),
     { title: 'Members', url: '#members' },
     ...(groups.properties.length > 0 ? [{ title: 'Properties', url: '#properties' }] : []),
