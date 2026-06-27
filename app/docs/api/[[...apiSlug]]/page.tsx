@@ -1051,6 +1051,8 @@ function ApiBreadcrumb({ entry }: { entry: ApiEntryDetail }) {
 }
 
 function ApiDetail({ entry }: { entry: ApiEntryDetail }) {
+  const hasMixins = entry.mixins.length > 0;
+
   return (
     <div className="not-prose space-y-8">
       <div className="space-y-3">
@@ -1064,6 +1066,15 @@ function ApiDetail({ entry }: { entry: ApiEntryDetail }) {
           {entry.signature}
         </CodePanel>
       </section>
+
+      {hasMixins && (
+        <section id="mixins" className="space-y-3">
+          <h2 className="text-base font-semibold text-fd-foreground">Mixins</h2>
+          <CodePanel>
+            {entry.mixins.join('\n')}
+          </CodePanel>
+        </section>
+      )}
 
       <DocTags tags={entry.tags} />
 
@@ -1079,6 +1090,7 @@ function entryTocItems(entry: ApiEntryDetail) {
 
   return [
     { title: 'Signature', url: '#signature' },
+    ...(entry.mixins.length > 0 ? [{ title: 'Mixins', url: '#mixins' }] : []),
     ...(entry.tags.length > 0 ? [{ title: 'JSDoc', url: '#jsdoc' }] : []),
     { title: 'Members', url: '#members' },
     ...(groups.properties.length > 0 ? [{ title: 'Properties', url: '#properties' }] : []),

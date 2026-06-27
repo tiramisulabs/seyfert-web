@@ -171,6 +171,46 @@ function declarationSignature(name, kind, node, symbol) {
   return printable(node);
 }
 
+function classHeritageTypes(node) {
+  if (!ts.isClassDeclaration(node) || !node.heritageClauses?.length) return [];
+
+  return node.heritageClauses.flatMap((clause) => {
+    if (clause.token !== ts.SyntaxKind.ExtendsKeyword) return [];
+    return clause.types.map((type) => heritageType(type));
+  });
+}
+
+function isMixinHeritageType(type) {
+  return !type.startsWith('ObjectToLower<');
+}
+
+function mixinsFor(node) {
+  if (!ts.isClassDeclaration(node)) return [];
+
+  const symbol = declarationSymbol(node);
+  if (!symbol) return [];
+
+  const inheritedClasses = new Set(classHeritageTypes(node));
+  const mixins = new Set();
+
+  for (const declaration of symbol.declarations ?? []) {
+    if (!ts.isInterfaceDeclaration(declaration) || !declaration.heritageClauses?.length) {
+      continue;
+    }
+
+    for (const clause of declaration.heritageClauses) {
+      for (const type of clause.types) {
+        const mixin = printable(type);
+        if (!isMixinHeritageType(mixin) || inheritedClasses.has(mixin)) continue;
+
+        mixins.add(mixin);
+      }
+    }
+  }
+
+  return [...mixins];
+}
+
 function memberName(member) {
   if (ts.isConstructorDeclaration(member)) return 'constructor';
   const name = member.name;
@@ -439,6 +479,7 @@ function publicExports() {
         tags: jsDocTags(symbol),
         source: sourcePath(declaration),
         signature: declarationSignature(name, kind, declaration, symbol),
+        mixins: mixinsFor(declaration),
         members: membersFor(declaration),
       });
     }
@@ -509,6 +550,7 @@ function searchContentFor(entry) {
     entry.slug,
     entry.summary,
     signatureIdentifiers(entry.signature),
+    entry.mixins.join(' '),
     tagSearchText(entry.tags),
   ];
 
@@ -554,6 +596,7 @@ fs.writeFileSync(
     `  source: string;\n` +
     `  signature: string;\n` +
     `  tags: ApiDocTag[];\n` +
+    `  mixins: string[];\n` +
     `  members: ApiMember[];\n` +
     `};\n\n` +
     `export type ApiSearchEntry = {\n` +
