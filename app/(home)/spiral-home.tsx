@@ -26,19 +26,39 @@ export async function SpiralHome() {
                      black hole, centered. Mission-patch codename, lit-metal
                      wordmark, tight vignette so the disk still licks the type. */}
                 <div className="relative z-10 mx-auto flex w-full max-w-3xl translate-y-[4vh] flex-col items-center gap-[3.25rem] px-7 text-center">
-                    <div aria-hidden className="absolute left-1/2 top-[44%] -z-10 h-[90%] w-[150%] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(3,5,11,0.58)_14%,rgba(3,5,11,0.2)_42%,transparent_66%)]" />
+                    <div
+                        aria-hidden
+                        className="absolute left-1/2 top-[44%] -z-10 h-[90%] w-[150%] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(3,5,11,0.58)_14%,rgba(3,5,11,0.2)_42%,transparent_66%)]"
+                    />
 
                     {/* one tight lockup: codename → wordmark → descriptor */}
                     <div className="flex flex-col items-center gap-5">
-                        <span className={`${GeistMono.className} flex items-center gap-2.5 rounded-[3px] border border-[#cbb894]/65 bg-[rgba(5,8,14,0.62)] px-3.5 py-[7px] text-[12px] font-medium tracking-[0.32em] text-[#fbf2da] shadow-[0_0_18px_rgba(203,184,148,0.16)] [text-shadow:0_1px_10px_rgba(0,0,0,0.95)] backdrop-blur-[2px]`}>
-                            <svg viewBox="0 0 44 22" fill="none" aria-hidden className="h-[1em] w-auto [filter:drop-shadow(0_0_4px_rgba(240,207,140,0.45))]">
-                                <g stroke="#f0cf8c" strokeWidth="1.1" strokeLinecap="round" strokeLinejoin="round">
+                        <span
+                            className={`${GeistMono.className} flex items-center gap-2.5 rounded-[3px] border border-[#cbb894]/65 bg-[rgba(5,8,14,0.62)] px-3.5 py-[7px] text-[12px] font-medium tracking-[0.32em] text-[#fbf2da] shadow-[0_0_18px_rgba(203,184,148,0.16)] [text-shadow:0_1px_10px_rgba(0,0,0,0.95)] backdrop-blur-[2px]`}
+                        >
+                            <svg
+                                viewBox="0 0 44 22"
+                                fill="none"
+                                aria-hidden
+                                className="h-[1em] w-auto [filter:drop-shadow(0_0_4px_rgba(240,207,140,0.45))]"
+                            >
+                                <g
+                                    stroke="#f0cf8c"
+                                    strokeWidth="1.1"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
                                     <path d="M4 15 L22 11 L40 6 M22 11 L21 3 M22 11 L19 20" />
                                 </g>
                                 <circle cx="40" cy="6" r="2" fill="#f8eed2" />
-                                <circle cx="22" cy="11" r="1.3" fill="#f0cf8c" />
+                                <circle
+                                    cx="22"
+                                    cy="11"
+                                    r="1.3"
+                                    fill="#f0cf8c"
+                                />
                             </svg>
-                            CYGNUS · V5
+                            CYGNUS-X · V5
                         </span>
 
                         <div className="relative">
@@ -55,24 +75,69 @@ export async function SpiralHome() {
                                 className="pointer-events-none absolute -inset-x-10 -inset-y-7 -z-10 h-[calc(100%+3.5rem)] w-[calc(100%+5rem)] overflow-visible mix-blend-screen"
                             >
                                 <defs>
-                                    <linearGradient id="art-swoosh" x1="0" y1="1" x2="1" y2="0">
-                                        <stop offset="0" stopColor="#f0cf8c" stopOpacity="0" />
-                                        <stop offset="0.38" stopColor="#f6dca0" stopOpacity="0.85" />
-                                        <stop offset="0.7" stopColor="#fff1d4" stopOpacity="1" />
-                                        <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
+                                    <linearGradient
+                                        id="art-swoosh"
+                                        x1="0"
+                                        y1="1"
+                                        x2="1"
+                                        y2="0"
+                                    >
+                                        <stop
+                                            offset="0"
+                                            stopColor="#f0cf8c"
+                                            stopOpacity="0"
+                                        />
+                                        <stop
+                                            offset="0.38"
+                                            stopColor="#f6dca0"
+                                            stopOpacity="0.85"
+                                        />
+                                        <stop
+                                            offset="0.7"
+                                            stopColor="#fff1d4"
+                                            stopOpacity="1"
+                                        />
+                                        <stop
+                                            offset="1"
+                                            stopColor="#ffffff"
+                                            stopOpacity="0"
+                                        />
                                     </linearGradient>
-                                    <filter id="art-blur" x="-15%" y="-70%" width="130%" height="240%">
+                                    <filter
+                                        id="art-blur"
+                                        x="-15%"
+                                        y="-70%"
+                                        width="130%"
+                                        height="240%"
+                                    >
                                         <feGaussianBlur stdDeviation="5" />
                                     </filter>
                                 </defs>
-                                <path d="M2 158 C176 230 440 -34 600 48" stroke="url(#art-swoosh)" strokeWidth="13" strokeLinecap="round" opacity="0.5" filter="url(#art-blur)" />
-                                <path d="M2 158 C176 230 440 -34 600 48" stroke="url(#art-swoosh)" strokeWidth="2.6" strokeLinecap="round" />
+                                <path
+                                    d="M2 158 C176 230 440 -34 600 48"
+                                    stroke="url(#art-swoosh)"
+                                    strokeWidth="13"
+                                    strokeLinecap="round"
+                                    opacity="0.5"
+                                    filter="url(#art-blur)"
+                                />
+                                <path
+                                    d="M2 158 C176 230 440 -34 600 48"
+                                    stroke="url(#art-swoosh)"
+                                    strokeWidth="2.6"
+                                    strokeLinecap="round"
+                                />
                             </svg>
                         </div>
 
                         <span className="relative isolate">
-                            <span aria-hidden className="absolute left-1/2 top-1/2 -z-10 h-[320%] w-[120%] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(4,6,12,0.82)_28%,rgba(4,6,12,0.4)_52%,transparent_74%)]" />
-                            <span className={`${GeistMono.className} text-[12px] tracking-[0.3em] text-[#f6f9fc] [text-shadow:0_1px_16px_rgba(0,0,0,0.98)]`}>
+                            <span
+                                aria-hidden
+                                className="absolute left-1/2 top-1/2 -z-10 h-[320%] w-[120%] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(4,6,12,0.82)_28%,rgba(4,6,12,0.4)_52%,transparent_74%)]"
+                            />
+                            <span
+                                className={`${GeistMono.className} text-[12px] tracking-[0.3em] text-[#f6f9fc] [text-shadow:0_1px_16px_rgba(0,0,0,0.98)]`}
+                            >
                                 THE TYPESCRIPT FRAMEWORK FOR DISCORD
                             </span>
                         </span>
@@ -81,7 +146,10 @@ export async function SpiralHome() {
                     <div className="relative flex flex-col items-center gap-5">
                         {/* a quieting pedestal so the CTAs lock the eye instead of
                              competing with the starfield behind them */}
-                        <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[250%] w-[135%] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(7,9,15,0.7)_20%,rgba(7,9,15,0.3)_50%,transparent_72%)]" />
+                        <div
+                            aria-hidden
+                            className="pointer-events-none absolute left-1/2 top-1/2 -z-10 h-[250%] w-[135%] -translate-x-1/2 -translate-y-1/2 bg-[radial-gradient(ellipse_at_center,rgba(7,9,15,0.7)_20%,rgba(7,9,15,0.3)_50%,transparent_72%)]"
+                        />
                         <div className="flex items-center gap-3.5">
                             <Button
                                 asChild
@@ -89,7 +157,10 @@ export async function SpiralHome() {
                             >
                                 <Link href="/docs/learn/getting-started">
                                     Get started
-                                    <ArrowRight aria-hidden className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                                    <ArrowRight
+                                        aria-hidden
+                                        className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                                    />
                                 </Link>
                             </Button>
                             <Link
@@ -97,14 +168,22 @@ export async function SpiralHome() {
                                 target="_blank"
                                 className={`${GeistMono.className} group flex h-10 items-center gap-2 rounded-none border border-[#cfb67c] bg-[rgba(12,14,22,0.85)] px-10 text-xs font-medium tracking-[0.22em] text-[#f3eacf] shadow-[0_0_18px_rgba(207,182,124,0.12)] backdrop-blur-[3px] transition-colors hover:border-[#8b96f0] hover:bg-[rgba(88,101,242,0.24)] hover:text-white`}
                             >
-                                DISCORD <span aria-hidden className="inline-block translate-y-[1px] transition-transform group-hover:translate-x-0.5">↗</span>
+                                DISCORD{" "}
+                                <span
+                                    aria-hidden
+                                    className="inline-block translate-y-[1px] transition-transform group-hover:translate-x-0.5"
+                                >
+                                    ↗
+                                </span>
                             </Link>
                         </div>
                         <InstallPill />
                     </div>
                 </div>
 
-                <div className={`${GeistMono.className} absolute bottom-8 left-6 z-10 text-[10px] tracking-[0.3em] text-[var(--text-dim)]/70 lg:left-12`}>
+                <div
+                    className={`${GeistMono.className} absolute bottom-8 left-6 z-10 text-[10px] tracking-[0.3em] text-[var(--text-dim)]/70 lg:left-12`}
+                >
                     SCROLL INTO THE CORE · IT’S SAFE ↓
                 </div>
             </div>
