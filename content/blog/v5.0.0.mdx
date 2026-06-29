@@ -481,72 +481,289 @@ Importable by name now: `BanOptions`, `ChannelLink`, `MessageLink`, `Timestamp`,
 
 ## Breaking Changes
 
-The price of progress. Grouped so you can grep your codebase — the call-site moves are shown as diffs, the type-only ones as notes.
+The price of progress. Every change below is a before → after you can migrate against, with a one-line note on what moved and why.
+
+**Client augmentation**
+
+Extending the `Client` moved off two hand-maintained interfaces and onto one central `SeyfertRegistry`:
+
+```ts
+declare module 'seyfert' {
+  interface UsingClient extends ParseClient<Client<true>> {} // [!code --]
+  interface RegisteredMiddlewares extends ParseMiddlewares<typeof middlewares> {} // [!code --]
+  interface SeyfertRegistry { // [!code ++]
+    client: ParseClient<Client<true>>; // [!code ++]
+    middlewares: typeof middlewares; // [!code ++]
+  } // [!code ++]
+}
+```
+
+`UsingClient`, `RegisteredMiddlewares`, `DefaultLocale` and the plugin list are all derived from `SeyfertRegistry` now — augment its `client` / `middlewares` / `langs` / `plugins` keys instead of each type by hand.
+
+```ts
+import { type ParseMiddlewares } from 'seyfert'; // [!code --]
+interface RegisteredMiddlewares extends ParseMiddlewares<typeof middlewares> {} // [!code --]
+interface SeyfertRegistry { middlewares: typeof middlewares } // [!code ++]
+```
+
+`ParseMiddlewares` is gone — `createMiddleware(...)` already returns the right shape, so the bare `typeof middlewares` is enough.
+
+```ts
+import type { APIGuildCreateOverwrite } from 'seyfert/lib/types'; // [!code --]
+import type { RESTAPIGuildCreateOverwrite } from 'seyfert/lib/types'; // [!code ++]
+```
+
+Pure rename, to match the `REST*` naming of the rest of the type surface.
 
 **Moderation**
 
-Bans, timeouts, and search stopped speaking raw Discord and started requiring the query you already had:
+Bans, timeouts and search stopped speaking raw Discord and started requiring the query you already had.
 
-```diff
-- await member.ban({ delete_message_seconds: 60 }, 'cleanup');
-+ await member.ban({ deleteMessageSeconds: 60, reason: 'cleanup' });
-- await member.timeout(10);                 // 10 = ten seconds
-+ await member.timeout(10_000, 'spam');      // 10_000 ms = ten seconds, + reason
-- await client.members.search(guildId);  // query was optional
-+ await client.members.search(guildId, { query: 'alice' });
+```ts
+await member.ban({ delete_message_seconds: 60 }, 'cleanup'); // [!code --]
+await member.ban({ deleteMessageSeconds: 60, reason: 'cleanup' }); // [!code ++]
 ```
 
-- The same `{ deleteMessageSeconds, reason }` shape applies to `GuildBan.create(...)`, `MemberShorter.ban(...)`, and `BanShorter.create(...)`.
+`reason` moved inside the options object and the key is camelCase; the same `{ deleteMessageSeconds, reason }` shape applies to `GuildBan.create(...)`, `MemberShorter.ban(...)` and `BanShorter.create(...)`.
+
+```ts
+await member.timeout(10); // 10 = ten seconds [!code --]
+await member.timeout(10_000, 'spam'); // milliseconds now, + reason [!code ++]
+```
+
+`timeout(...)` takes milliseconds, not seconds, plus an optional reason.
+
+```ts
+await client.members.search(guildId); // [!code --]
+await client.members.search(guildId, { query: 'alice' }); // [!code ++]
+```
+
+The `query` is required now.
 
 **Interactions & builders**
 
-```diff
-- await ctx.interaction.deferUpdate(true); // withResponse is gone
-+ await ctx.interaction.deferUpdate();
-- new RadioGroup().setOptions([optionA, optionB]); // positional array
-+ new RadioGroup().setOptions(optionA, optionB);   // rest params
-- const opt = new RadioGroupOption();              // empty shell
-+ const opt = new RadioGroupOption({ label: 'A', value: 'a' });
+```ts
+await ctx.interaction.deferUpdate(true); // [!code --]
+await ctx.interaction.deferUpdate(); // [!code ++]
 ```
 
-- `StringSelectMenu.setOptions(...)` went rest-params the same way as `RadioGroup`.
-- `BaseInteraction.replied` is a plain `boolean` now, not a pending-operation promise.
-- `BitField.keys()` returns `(keyof T)[]`, not `string[]`, and `PermissionsBitField.resolve(...)` throws on unknown permission strings (was a silent no-op).
-- `toJSON()` on `Poll`, `Modal`, `MediaGalleryItem`, `StringSelectOption`, and `RadioGroupOption` throws when required fields are missing.
-- Command option keys must be lowercase, and typed `StringSelectMenu<'value'>` rejects out-of-union raw values.
+The `withResponse` argument is gone.
+
+```ts
+new RadioGroup().setOptions([optionA, optionB]); // positional array [!code --]
+new RadioGroup().setOptions(optionA, optionB); // rest params [!code ++]
+```
+
+`RadioGroup.setOptions(...)` and `StringSelectMenu.setOptions(...)` take rest params instead of an array.
+
+```ts
+const opt = new RadioGroupOption(); // [!code --]
+const opt = new RadioGroupOption({ label: 'A', value: 'a' }); // [!code ++]
+```
+
+The empty constructor is gone — pass the data up front.
+
+```ts
+const msg = await ctx.editResponse(body); // ComponentContext only [!code --]
+const msg = await ctx.editOrReply(body, true); // pass fetchReply for the Message [!code ++]
+```
+
+`ComponentContext.editResponse(...)` was removed; `editOrReply(...)` returns `void` unless you pass `fetchReply`. (`ModalContext.editResponse` still exists.)
+
+```ts
+if (await ctx.interaction.replied) {} // [!code --]
+if (ctx.interaction.replied) {} // [!code ++]
+```
+
+`BaseInteraction.replied` is a plain `boolean` now, not a pending-operation promise.
+
+```ts
+const keys: string[] = permissions.keys(); // [!code --]
+const keys = permissions.keys(); // (keyof typeof PermissionFlagsBits)[] [!code ++]
+```
+
+`BitField.keys()` returns typed keys, not `string[]`.
+
+```ts
+new PermissionsBitField().resolve(bits); // instance method [!code --]
+PermissionsBitField.resolve('NotAPerm'); // silent no-op [!code --]
+PermissionsBitField.resolve('Administrator'); // static only; throws on bad input [!code ++]
+```
+
+The instance `resolve(...)` was removed; the static one throws on unknown strings and on negative / unsafe-integer inputs.
+
+```ts
+const json = new Modal().toJSON();
+// returned a partial object [!code --]
+// throws now if required fields (custom_id, title) are missing [!code ++]
+```
+
+`toJSON()` on `Poll`, `Modal`, `MediaGalleryItem`, `StringSelectOption` and `RadioGroupOption` throws when required fields are missing.
+
+```ts
+options = { MyOption: createStringOption({ /* ... */ }) }; // [!code --]
+options = { myoption: createStringOption({ /* ... */ }) }; // [!code ++]
+```
+
+Command option keys must be lowercase, and a typed `StringSelectMenu<'value'>` rejects out-of-union raw values.
+
+```ts
+selectMenu.disabed; // [!code --]
+selectMenu.disabled; // [!code ++]
+await entryPoint.withReponse(); // [!code --]
+await entryPoint.withResponse(); // [!code ++]
+```
+
+Two public typos fixed (old spellings removed): `.disabled` on select-menu builders, and `EntryPointInteraction.withResponse(...)`.
 
 **Collections, cache & utilities**
 
-```diff
-- const ts: bigint = snowflakeToTimestamp(id); // returned a bigint
-+ const ts: number = snowflakeToTimestamp(id); // returns unix ms now
-- cache.roles.flush();      // defaulted to everything
-+ cache.roles.flush('*');   // GuildBasedResource.flush has no default
-- for (const meta of limited.values()) {}    // yielded { value, expire }
-+ for (const value of limited.values()) {}    // plain values now
-+ for (const meta of limited.rawValues()) {}  // metadata lives here
+```ts
+const ts: bigint = snowflakeToTimestamp(id); // [!code --]
+const ts: number = snowflakeToTimestamp(id); // unix ms [!code ++]
 ```
 
-- `LimitedCollection` throws on a `NaN` limit; `entries()` / `rawEntries()` split the same way as `values()`.
-- `Cache.bulkGet(...)` infers its result shape from the keys you pass (was the full union); `BulkGetKey` is the new key type.
-- `ChannelShorter.pins(...)` returns `pinnedAt` as a number, not an ISO string, and `resolveColor(...)` throws on a malformed `#hex` string.
+Returns a `number` (unix ms), not a `bigint`.
+
+```ts
+cache.roles.flush(); // [!code --]
+cache.roles.flush('*'); // [!code ++]
+```
+
+`GuildBasedResource.flush(...)` has no default — pass `'*'` to clear everything.
+
+```ts
+for (const meta of limited.values()) {} // yielded { value, expire } [!code --]
+for (const value of limited.values()) {} // plain values now [!code ++]
+for (const meta of limited.rawValues()) {} // metadata lives here [!code ++]
+```
+
+`values()` / `entries()` yield plain data; `rawValues()` / `rawEntries()` carry the metadata. `LimitedCollection` also throws on a `NaN` limit.
+
+```ts
+const res = cache.bulkGet(keys); // full union result [!code --]
+const res = cache.bulkGet([['users', id]]); // result inferred from the keys [!code ++]
+```
+
+`Cache.bulkGet(...)` infers its result shape from the keys you pass; `BulkGetKey` is the new key type.
+
+```ts
+cache.bulkGet([['bans', userId]]); // [!code --]
+cache.bulkGet([['bans', userId, guildId]]); // [!code ++]
+```
+
+`bans` is a guild-based resource now, so its key needs the `guildId`.
+
+```ts
+const at: string = pin.pinnedAt; // ISO string [!code --]
+const at: number = pin.pinnedAt; // unix ms [!code ++]
+```
+
+`ChannelShorter.pins(...)` returns `pinnedAt` as a number, and `resolveColor('#zzz')` throws on a malformed `#hex` now.
+
+```ts
+const m = (await channel.members()).get(id); // Collection [!code --]
+const m = (await channel.members()).find(x => x.id === id); // array [!code ++]
+```
+
+`VoiceChannel.members(...)` resolves to a `GuildMemberStructure[]`, not a `Collection`.
+
+```ts
+const img = await resolveImage('https://x/404.png'); // read the error body [!code --]
+const img = await resolveImage('https://x/ok.png'); // throws on non-OK now [!code ++]
+```
+
+`resolveImage(...)` / `resolveAttachmentData(...)` throw `INVALID_ATTACHMENT_TYPE` when a remote URL responds non-OK.
+
+```ts
+adapter.relationships.get(id)?.includes(x); // string[] [!code --]
+adapter.relationships.get(id)?.has(x); // Set<string> [!code ++]
+```
+
+`MemoryAdapter.relationships` is a `Set` now — only matters if you read it from a custom adapter.
+
+```ts
+cache.hasPrenseceUpdates; // [!code --]
+cache.hasPresenceUpdates; // [!code ++]
+```
+
+Getter typo fixed.
 
 **Events, collectors & runtime**
 
-```diff
-- client.collectors.run('MESSAGE_CREATE', filter); // raw gateway name
-+ client.collectors.run('messageCreate', filter);  // camelCase client name
-- import type { CollectorRunPameters } from 'seyfert'; // typo is fixed
-+ import type { CollectorRunParameters } from 'seyfert';
+```ts
+client.collectors.run('MESSAGE_CREATE', filter); // raw gateway name [!code --]
+client.collectors.run('messageCreate', filter); // camelCase client name [!code ++]
 ```
 
-- Custom (non-gateway) event handlers no longer receive a trailing `shardId`, and `createEvent(...)` / `ClientEvent.run` are typed `Awaitable<void>`.
-- `VOICE_CHANNEL_STATUS_UPDATE` hands you a resolved `VoiceChannel | undefined`, not a raw cache value.
-- `ComponentCommand.onInternalError` / `ModalCommand.onInternalError` gained a `component` / `modal` parameter before `error`.
-- `ServicesOptions.handleCommand` takes the `HandleCommand` constructor, not an instance.
-- `WorkerManagerOptions` is a discriminated union over `mode` — `custom` needs an `adapter`, `threads` / `clusters` need a `path`.
-- `WorkerClientOptions.onShardDisconnect` / `onShardReconnect` (and the `Client` equivalents) are **deprecated** in favor of shard disconnect/reconnect events.
-- `UserAvatarDefault` narrowed to `0 | 1 | 2 | 3 | 4 | 5`.
+Use the camelCase client event name, not the raw gateway name.
+
+```ts
+import type { CollectorRunPameters } from 'seyfert'; // [!code --]
+import type { CollectorRunParameters } from 'seyfert'; // [!code ++]
+```
+
+Typo fixed.
+
+```ts
+client.collectors.run('messageCreate', filter);
+// only the first matching collector ran [!code --]
+// every collector whose filter matches now runs [!code ++]
+```
+
+The early `break` is gone — tighten your filters if you relied on first-match-wins.
+
+```ts
+createEvent({ data: { name: 'myEvent' }, run(payload, client, shardId) {} }); // [!code --]
+createEvent({ data: { name: 'myEvent' }, run(payload, client) {} }); // [!code ++]
+```
+
+Custom (non-gateway) handlers no longer get a trailing `shardId`; `run` is typed `Awaitable<void>`.
+
+```ts
+createEvent({
+  data: { name: 'VOICE_CHANNEL_STATUS_UPDATE' },
+  run(payload) {}, // raw cache value [!code --]
+  run(channel) {}, // resolved VoiceChannel | undefined [!code ++]
+});
+```
+
+`VOICE_CHANNEL_STATUS_UPDATE` hands you a resolved `VoiceChannel | undefined` now.
+
+```ts
+onInternalError(client, error) {} // [!code --]
+onInternalError(client, component, error) {} // [!code ++]
+```
+
+`ComponentCommand.onInternalError` / `ModalCommand.onInternalError` gained a `component` / `modal` parameter before `error`.
+
+```ts
+client.setServices({ handleCommand: new HandleCommand(client) }); // [!code --]
+client.setServices({ handleCommand: HandleCommand }); // [!code ++]
+```
+
+`ServicesOptions.handleCommand` takes the `HandleCommand` constructor, not an instance.
+
+```ts
+new WorkerManager({ /* ... */ }); // [!code --]
+new WorkerManager({ mode: 'threads', path: './bot.js' }); // or mode: 'custom' + adapter [!code ++]
+```
+
+`WorkerManagerOptions` is a discriminated union over `mode` — `custom` needs an `adapter`, `threads` / `clusters` need a `path`.
+
+```ts
+new WorkerClient({ onShardDisconnect() {} }); // [!code --]
+// listen to the shard disconnect / reconnect events instead [!code ++]
+```
+
+`WorkerClientOptions.onShardDisconnect` / `onShardReconnect` (and the `Client` equivalents) are deprecated.
+
+```ts
+type UserAvatarDefault = number; // [!code --]
+type UserAvatarDefault = 0 | 1 | 2 | 3 | 4 | 5; // [!code ++]
+```
+
+`UserAvatarDefault` narrowed to `0 | 1 | 2 | 3 | 4 | 5`.
 
 ---
 
