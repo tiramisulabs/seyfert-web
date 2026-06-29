@@ -5,7 +5,7 @@ description: Seed the in-memory Discord state the mock bot serves — guilds, ch
 
 The **world** is the in-memory Discord state the mock bot serves. Instead of talking to Discord, the mock client reads guilds, channels, members, roles, and messages from a world you seed before the bot boots, and writes every change the bot makes — created channels, messages, replies, edits, bans, role changes, timeouts — back into that same state. Recorded REST actions prove that calls *happened*; world state proves *what the bot built*.
 
-You build a world with `mockWorld()`, register entities onto it, and pass it to `createMockBot({ world })`. During the test you assert on it through the views on `bot` (`bot.worldGuild`, `bot.worldChannel`, `bot.worldDm`, …) and, for the long tail of entity types, the read-only `bot.world` reader.
+You build a world with `mockWorld()`, register entities onto it, and pass it to `createMockBot({ world })`. During the test you assert on it through the read-only `bot.world` reader, which exposes `get`, `query`, and `all` readers over every entity type the bot created or you seeded.
 
 <Callout type="info">
 Entities are written into the **real** client cache (`CacheFrom.Test`), so `ctx.guild()`, `ctx.channel()`, `member.voice()`, and related cache reads resolve exactly like production cache hits — no interceptors required.
@@ -128,30 +128,44 @@ bot.rest.intercept(Routes.ban, () => apiError(403, 50013, 'Missing Permissions')
 
 World state includes both the entities you seeded and the writes the bot made during the test: created channels and threads, messages, interaction replies, edits, followups, DMs, bans, role changes, timeouts, and channel overwrites.
 
-The guild/channel/role/DM views are the primary assertion surface:
+You read all of it through `bot.world`, which carries three readers that share the same method names but differ in cardinality:
+
+- `bot.world.get.*` returns exactly one entity, throwing a `WorldStateError` (with a list of candidates) if the query matches zero or more than one. Use it when a test asserts a unique entity exists.
+- `bot.world.query.*` returns the single match or `undefined` — handy for optional chaining when the entity may not be there.
+- `bot.world.all.*` returns an array of every match (empty when none).
+
+Each reader exposes the same 24 entity methods — `guild`, `channel`, `thread`, `dm`, `member`, `role`, `message`, `rawMessage`, `voiceState`, `ban`, `reaction`, `pin`, `pollVote`, `threadMember`, `emoji`, `invite`, `autoModRule`, `sticker`, `scheduledEvent`, `webhook`, `guildTemplate`, `soundboardSound`, `stageInstance`, and `auditLogEntry`. Every method takes a query object whose keys narrow the match: `{ id }`, `{ guildId, name }`, `{ guildId, userId }`, and so on.
+
+Channels, guilds, and roles are the primary assertion surface:
 
 ```ts
-const channel = bot.worldGuild(guild.id)?.channel('acme-s1');
+const channel = bot.world.query.channel({ guildId: guild.id, name: 'acme-s1' });
 
 expect(channel?.lastMessage?.content).toContain('Welcome');
-expect(channel?.lastMessage?.button('Approve')).toMatchObject({ customId: 'approve' });
+expect(channel?.lastMessage?.component('Approve')).toMatchObject({ customId: 'approve' });
 expect(channel?.lastMessage?.embeds[0]).toMatchObject({
 	title: 'Acme S1',
 	fields: [{ name: 'Budget', value: '$5,000' }],
 });
 ```
 
-DMs are queryable by user:
+DMs are queryable by the recipient's user id:
 
 ```ts
-expect(bot.worldDm(user.id)?.lastMessage?.content).toBe('Check your inbox');
+expect(bot.world.query.dm({ userId: user.id })?.lastMessage?.content).toBe('Check your inbox');
 ```
 
 Channels and roles also resolve by id alone — no guild id needed — mirroring how Discord keys them globally. The role view carries `permissions` and `color`, not just identity:
 
 ```ts
-expect(bot.worldChannel(channel.id)?.name).toBe('general');
-expect(bot.worldRole(role.id)?.permissions).toBe('4'); // BanMembers
+expect(bot.world.query.channel({ id: channel.id })?.name).toBe('general');
+expect(bot.world.query.role({ id: role.id })?.permissions).toBe('4'); // BanMembers
+```
+
+When a test expects an entity to be unique, reach for `get` so a missing or ambiguous match fails loud instead of returning `undefined`:
+
+```ts
+expect(bot.world.get.guild({ id: guild.id }).name).toBe('Slipher Lab');
 ```
 
 Seed message history with `registerMessage`; `bot.client.channels.fetchMessages()` then returns it newest-first without an interceptor:
@@ -169,7 +183,7 @@ expect(await bot.client.channels.fetchMessages(channel.id)).toMatchObject([
 Use `ChannelView.overwrites` for permission-matrix assertions. The direct interaction reply also remains available as `result.reply?.body.data` when the channel view is not the clearest assertion surface.
 
 <Callout type="info">
-The read-only `bot.world` (a `WorldStateReader`) is the supported way to assert on the ~20 entity types the views don't surface directly: pins, reactions, bans, webhooks, emojis, invites, automod rules, scheduled events, poll voters, and more. It also exposes `snapshot()` / `diff()` to capture state at a point in time and read mutations declaratively instead of with field-by-field point queries.
+Beyond channels, guilds, and roles, `bot.world` (a `WorldStateReader`) reaches the rest of the entity types the same way — `bot.world.all.reaction({ messageId })`, `bot.world.query.ban({ guildId, userId })`, `bot.world.query.pin({ channelId })`, and so on for webhooks, emojis, invites, automod rules, scheduled events, poll voters, and more. It also exposes `snapshot()` / `diff()` to capture state at a point in time and read mutations declaratively instead of with field-by-field point queries.
 </Callout>
 
 ### Recorded actions

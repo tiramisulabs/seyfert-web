@@ -3,7 +3,7 @@ title: Components
 description: Dispatch button clicks and select-menu choices through the real component pipeline, then assert the reply — entity selects and collectors included.
 ---
 
-This builds on [Setup](/docs/learn/testing/setup). You already have a mock bot running your real pipeline. Now you will click buttons and pick select-menu values, and watch your component handlers reply for real.
+This builds on [Setup](/docs/testing/writing-tests/setup). You already have a mock bot running your real pipeline. Now you will click buttons and pick select-menu values, and watch your component handlers reply for real.
 
 Components are dispatched by `customId`. The mock feeds each one through Seyfert's pipeline, so collectors and component handlers run exactly as they do in production. Replies come back parsed, just like slash replies.
 
@@ -89,7 +89,7 @@ await bot.selectMenu('settings/mod', [role.id], { source: sent, componentType: '
 Here the selected role id resolves to the seeded role, so your handler reads a fully-resolved role — no manual payload building. Pass explicit `resolved` only when you want to assert against a raw Discord payload directly.
 
 <Callout>
-For a `ComponentCommand` select-menu path that has no collector, build the raw payload with `selectMenuInteraction()` and feed it to `dispatchInteraction()`. See [The Toolkit › Dispatching](/docs/testing/dispatching).
+For a `ComponentCommand` select-menu path that has no collector, build the raw payload with `selectMenuInteraction()` and feed it to `dispatchInteraction()`. See [The Toolkit › Dispatching](/docs/testing/toolkit/dispatching).
 </Callout>
 
 ## Collectors
@@ -123,5 +123,5 @@ If a collector never fires, the usual cause is a different user between the mess
 
 ## Next steps
 
-- Next: [Modals](/docs/learn/testing/modals) for the button → modal → submit flow.
-- Reference: [The Toolkit › Dispatching](/docs/testing/dispatching) for every dispatch helper.
+- Next: [Modals](/docs/testing/writing-tests/modals) for the button → modal → submit flow.
+- Reference: [The Toolkit › Dispatching](/docs/testing/toolkit/dispatching) for every dispatch helper.

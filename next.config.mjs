@@ -36,6 +36,15 @@ const config = {
       "runtime-hooks",
       "lifecycle-and-diagnostics",
     ];
+    const testingToolkit = [
+      "mock-bot",
+      "dispatching",
+      "world",
+      "assertions",
+      "gateway",
+      "fixtures",
+      "defaults",
+    ];
     return [
       {
         source: "/guide",
@@ -80,6 +89,16 @@ const config = {
       ...learn.map((s) => ({
         source: `/docs/${s}/:slug*`,
         destination: `/docs/learn/${s}/:slug*`,
+        permanent: true,
+      })),
+      {
+        source: "/docs/learn/testing/:slug*",
+        destination: "/docs/testing/writing-tests/:slug*",
+        permanent: true,
+      },
+      ...testingToolkit.map((s) => ({
+        source: `/docs/testing/${s}`,
+        destination: `/docs/testing/toolkit/${s}`,
         permanent: true,
       })),
     ];

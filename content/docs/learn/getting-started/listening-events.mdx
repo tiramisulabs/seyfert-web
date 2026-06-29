@@ -84,3 +84,55 @@ After completing these steps, your project structure should look like this:
   <File name="tsconfig.json" />
   <File name=".env" />
 </Files>
+
+## Custom Events
+
+Beyond Discord's gateway events, Seyfert lets you declare, load, and fire your own custom events that can be called anywhere in your code. For this example we create a simple event named `ourEvent`.
+
+<Callout title="Module augmentation">
+This section relies on [module augmentation](/docs/learn/getting-started/declare-module), we recommend reading it first.
+</Callout>
+
+<Callout title="Overwriting events">
+If two events have the same name, they will be overwritten.
+</Callout>
+
+First we need to let Seyfert's typing system know that we will have a custom event.
+
+```ts title="index.ts"
+declare module "seyfert" {
+	interface CustomEvents {
+		ourEvent: (text: string) => void;
+	}
+}
+```
+
+### Loading the event
+
+Place your events in the folder declared in `seyfert.config` and Seyfert loads them automatically.
+
+```ts
+import { createEvent } from 'seyfert';
+
+export default createEvent({
+	data: { name: "ourEvent", once: false },
+	run: (text) => {
+		console.log(text);
+	}
+});
+```
+
+### Executing the event
+
+```ts title="index.ts"
+import { Client } from "seyfert";
+
+const client = new Client();
+
+(async () => {
+	await client.start();
+	client.events?.runCustom('ourEvent', 'Hello, world!');
+})();
+```
+
+After running the code, you should see `Hello, world!` in the console.

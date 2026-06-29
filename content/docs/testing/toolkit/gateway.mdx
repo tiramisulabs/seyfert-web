@@ -21,7 +21,7 @@ test('greets new members', async () => {
 
 	await bot.emit('GUILD_MEMBER_ADD', rawMemberPayload);
 
-	expect(bot.worldDm(rawMemberPayload.user.id)?.lastMessage?.content).toContain('Welcome');
+	expect(bot.world.query.dm({ userId: rawMemberPayload.user.id })?.lastMessage?.content).toContain('Welcome');
 });
 ```
 

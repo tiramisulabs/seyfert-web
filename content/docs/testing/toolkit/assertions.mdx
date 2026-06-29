@@ -1,0 +1,208 @@
+---
+title: Assertions
+description: Runner-agnostic readers that fail loud when nothing happened, plus worked recipes for bans, plugins, custom clients, and REST failures.
+---
+
+Naive checks pass green when nothing happened — `expect(result.content).toContain('ok')` is satisfied by `content` being `undefined`. The package ships two runner-agnostic readers that throw instead, so a handler that silently returned fails loud rather than going unnoticed:
+
+- `outcome(result)` reads the dispatch **lifecycle** — did it reply, defer, open a modal, get denied, or throw?
+- `rendered(subject)` reads the **UI** the handler produced — messages, embeds, buttons, selects, inputs, modals, and Components V2 containers.
+
+Both expose the same three modes: `.get.*` throws when there isn't exactly one match, `.query.*` returns the value or `undefined`, and `.all.*` returns an array. Neither carries any test-runner coupling, so they surface the same way under Vitest, Jest, `node:test`, or a bare script.
+
+## `outcome` — lifecycle assertions
+
+Import `outcome` from the package root and pass it a dispatch `result`:
+
+```ts
+import { outcome } from '@slipher/testing';
+
+const response = outcome(result).get.response(); // throws if no reply/defer/edit/followup
+outcome(result).get.denial({ kind: 'permissions', missing: 'BanMembers' }); // assert a structured denial
+const captured = outcome(result).get.error(/timeout/); // needs onCommandError: 'capture'
+```
+
+`outcome(result).get.*` throws an `OutcomeError` whose message summarizes what the dispatch actually did — whether it was denied, errored, or produced no user-visible output. Use `.query.*` when absence is a valid result, and `.all.*` to collect every match.
+
+### `response`
+
+`response(query?)` matches the dispatch's reply lifecycle. With no argument it asserts the dispatch produced at least one reply, defer, modal, edit, or followup — the exact case a naive `expect(result.content).toContain(...)` lets pass green because `content` is `undefined`.
+
+```ts
+outcome(result).get.response();
+```
+
+For the simplest cases you don't even need a reader — read the result fields directly:
+
+```ts
+expect(result.content).toBe('Banned spammer');
+```
+
+`outcome()` earns its keep when you want to assert the *kind* of response, not just its text. Pass a `ResponseQuery` to narrow it:
+
+```ts
+outcome(result).get.response({ kind: 'reply' });
+outcome(result).get.response({ kind: 'deferReply' });
+outcome(result).get.response({ kind: 'modal' });
+outcome(result).get.response({ ephemeral: true });
+```
+
+`kind` accepts `'reply'`, `'defer'`, `'deferReply'`, `'deferUpdate'`, `'update'`, `'modal'`, `'autocomplete'`, `'edit'`, and `'followup'` (`'defer'` matches either defer variant). The returned `OutcomeResponse` exposes `events`, the `deferred`/`deferredReply`/`deferredUpdate`/`ephemeral` flags, an optional `modal`, and `raw.replies` / `raw.edits` / `raw.followups` for digging into the captured payloads.
+
+### `denial`
+
+`denial(query?)` asserts the dispatch was denied before `run` — a middleware stop / no-next, or a permission guard. Pass a `DenialQuery` to also assert on the denial's shape; every field is optional and checked only when present:
+
+- `kind` — the denial kind: `'stop'`, `'pass'`, `'no-next'`, `'permissions'`, or `'bot-permissions'`.
+- `middleware` — the name of the middleware that stopped the dispatch.
+- `missing` — a permission name or array of names that must all appear in the denial's `missing` list.
+
+```ts
+outcome(result).get.denial({ kind: 'permissions', missing: 'BanMembers' });
+outcome(result).get.denial({ kind: 'stop', middleware: 'blocker' });
+```
+
+The returned `OutcomeDenial` carries `denialKind`, `middleware`, `missing`, and the `raw` denial. Asserting the denial structurally beats matching the reply copy — security tests stay green even when you reword the user-facing message.
+
+### `error`
+
+`error(matcher?)` asserts the handler threw an unhandled error captured on the result, and returns the captured error.
+
+<Callout type="warn">
+`error` requires `onCommandError: 'capture'`. Under the default `onCommandError: 'throw'`, the dispatch rejects instead of capturing the error on `result.error`, so you catch the rejection rather than calling this reader.
+</Callout>
+
+Pass an optional matcher — a substring, a `RegExp`, or a predicate over the captured error — to also assert the error message contains the substring, matches the `RegExp`, or passes the predicate:
+
+```ts
+const captured = outcome(result).get.error(/timeout/);
+outcome(result).get.error('already replied');
+outcome(result).get.error(error => error instanceof RangeError);
+```
+
+The returned `OutcomeCapturedError` exposes the raw thrown value on `.error`.
+
+## `rendered` — UI assertions
+
+Import `rendered` and pass it a `result` (or a bot, a message array, or a builder) to query the UI the handler produced. Like `outcome`, it exposes `.get` / `.query` / `.all`, but its finders walk messages and components instead of the lifecycle:
+
+```ts
+import { rendered } from '@slipher/testing';
+
+rendered(result).get.message({ content: 'Banned spammer' });
+rendered(result).get.embed({ title: 'Profile' });
+rendered(result).get.component('button', { customId: 'confirm' });
+```
+
+`.get.*` throws a `RenderedOutputError` when there isn't exactly one match — its message lists what *was* rendered and any near misses. The finders are:
+
+- `message(query?)` — by `content`, `id`, `channelId`, `ephemeral`, or `transport`.
+- `embed(query?)` — by `title`, `description`, `contains`, `author`, `footer`, `color`, or `field`.
+- `component('button', query?)`, `select(query?)`, `input(query?)` — each accepts a query object or a string shorthand for the `customId`.
+- `modal(query?)` — by `customId` (string shorthand) or `title`.
+- `container(query?)` — Components V2 panels, by `id`, `accentColor`, `content`, or `has`.
+- `component(kind, query?)` — the generic escape hatch for any kind, including `content`, `section`, `media`, `separator`, `label`, and `fileUpload`.
+
+<Callout type="info">
+String matchers are **exact**: `button({ label: 'Edit' })` matches only the literal `Edit`. Use a `RegExp` for partial or case-insensitive matching: `button({ label: /edit/i })`.
+</Callout>
+
+A `RenderedMessage` is itself scoped, so you can drill from a message into the controls it owns — handy when two messages carry a control with the same `customId`:
+
+```ts
+const settings = rendered(result).get.message({ content: 'Settings' });
+settings.get.component('button', 'edit'); // resolves the Edit button on the Settings message only
+```
+
+Modals and containers scope the same way:
+
+```ts
+const modal = rendered(result).get.modal('reject-request');
+modal.get.select('reason');
+modal.get.input({ customId: 'notes', required: true });
+modal.get.component('fileUpload', 'evidence');
+
+const panel = rendered(result).get.container({ content: /Settings/, has: { kind: 'select', query: 'reason' } });
+panel.get.content({ text: 'Settings' });
+panel.get.section({ content: /Danger/ }).get.component('button', 'delete');
+```
+
+## Real-world recipes
+
+### Assert a command's REST effect
+
+The mock records every REST call the bot makes. A typical command test asserts both the user-facing reply and the underlying REST call it triggered — here, that `/ban` confirms to the user and issues a ban with the right reason:
+
+```ts
+import { Routes, apiUser, createMockBot, outcome, userOption } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import { BanCommand } from '../../src/commands/ban';
+
+test('/ban bans the target and confirms', async () => {
+	await using bot = await createMockBot({ commands: [BanCommand] });
+	const target = apiUser({ id: '42', username: 'spammer' });
+
+	const result = await bot.slash({ name: 'ban',
+		options: { user: userOption(target), reason: 'raid' },
+	});
+
+	outcome(result).get.response({ kind: 'reply' });
+	expect(result.content).toBe('Banned spammer');
+	const ban = await bot.waitForAction(Routes.ban);
+	expect(ban.reason).toBe('raid');
+});
+```
+
+### Assert a structured denial
+
+When a command guard rejects the dispatch, assert the denial's shape rather than the copy it shows the user:
+
+```ts
+import { createMockBot, outcome, rendered } from '@slipher/testing';
+
+const denied = await bot.slash({ name: 'ban', memberPermissions: [] });
+
+outcome(denied).get.denial({ kind: 'permissions', missing: 'BanMembers' });
+rendered(denied).get.message({ content: /missing/i });
+```
+
+### Plugins
+
+Plugins go through the `plugins` option; their real `setup()` runs inside `createMockBot()` and teardown runs on `bot.close()`:
+
+```ts
+const bot = await createMockBot({
+	commands: [PingCommand],
+	plugins: [myPlugin()],
+});
+
+await bot.close();
+```
+
+### Bots with a custom `Client`
+
+Bots with a custom `Client` — extra services like a Lavalink manager or a database — attach fakes for anything the package doesn't model:
+
+```ts
+const bot = await createMockBot({ commands: [PlayCommand] });
+Object.assign(bot.client, {
+	manager: { getPlayer: () => ({ get: () => true, set: () => {} }), useable: true },
+	database: { getPrefix: async () => '!' },
+});
+```
+
+Commands read these via `ctx.client` by duck typing; the fakes only need the methods the path under test touches. Audio/Lavalink playback itself is out of scope — stub the manager, don't emulate it.
+
+### Simulate Discord REST failures
+
+Simulate Discord REST failures to exercise your error handling. `fail` throws a faithful `SeyfertError` — the same `code`/`metadata` a production `catch` sees — not a bespoke mock error:
+
+```ts
+import { DiscordErrors, Routes } from '@slipher/testing';
+
+bot.rest.fail(Routes.ban, DiscordErrors.MissingPermissions); // 403 / 50013
+bot.rest.fail(Routes.createMessage, { status: 429, retryAfter: 5 }); // raw shape
+bot.rest.fail(Routes.ban, DiscordErrors.MissingAccess, { times: 1 }); // fail once, then normal
+```
+
+For sequential or request-conditional failures, use `bot.rest.intercept(...)` with a closure.

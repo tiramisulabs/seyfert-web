@@ -82,11 +82,30 @@ Seyfert allows you to provide your own adapter for the cache, which you can thin
 The `MemoryAdapter` stores all data in memory, while the `LimitedMemoryAdapter` limits the amount of data stored in memory by providing expiration times and limits of entries.
 </Callout>
 
+## LimitedCollection
+
+Seyfert also ships a `LimitedCollection`, a TTL-based key-value collection handy for temporary data outside the resource cache:
+
+```ts twoslash
+import { LimitedCollection } from 'seyfert';
+
+const cache = new LimitedCollection<string, { score: number }>();
+
+// Set with auto-expiry (3rd argument is TTL in ms)
+cache.set('user-123', { score: 42 }, 60_000); // Expires in 60s
+
+// Get (returns undefined if expired)
+const item = cache.get('user-123');
+
+// Check existence
+cache.has('user-123');
+```
+
 ## Building Your Own Cache
 
 ### Custom Resource
 
-A `custom resource` is just a new cache entity, so integrating it is relatively simple. Let's take the example of the [Cooldown](https://github.com/tiramisulabs/extra/blob/main/packages/cooldown/src/resource.ts) resource from the [cooldown](/docs/recipes/cooldown) package.
+A `custom resource` is just a new cache entity, so integrating it is relatively simple. Let's take the example of the [Cooldown](https://github.com/tiramisulabs/extra/blob/main/packages/cooldown/src/resource.ts) resource from the [cooldown](/docs/plugins/official/cooldown) package.
 
 It's important to note that Seyfert provides a base for three types of resources:
 
@@ -134,297 +153,32 @@ declare module "seyfert" {
 
 ## Custom Adapter
 
-Don't like storing the cache in memory or Redis? Or maybe you just want to do it your own way?
+Don't like storing the cache in memory or Redis? Implement the `Adapter` interface to back the cache with anything you like.
 
-Here, you'll learn how to create your own cache adapter.
+If your adapter is asynchronous, set `isAsync = true` and return promises from its methods (a synchronous adapter simply returns values directly). The `start` method runs once before the bot starts and may always be async.
 
-### Before You Start
+Seyfert's cache stores **values** keyed by a dotted path, plus **relationships** (sets of IDs) so it can tell who a resource belongs to. Keys look like this:
 
-Consider whether your adapter might be asynchronous; if it is, you'll need to specify it:
-
-```ts twoslash
-// @noErrors
-import { Adapter } from 'seyfert';
-
-class MyAdapter implements Adapter {
-    isAsync = true;
-
-    async start() {
-        // This function will run before starting the bot
-    }
-}
-```
-> This guide is for creating an asynchronous adapter. If you want a synchronous one, simply do not return a promise in any of the methods (the `start` method can be asynchronous).
-
-### Storing Data
-
-In Seyfert's cache, there are relationships, so you can know who a resource belongs to.
-
-There are four methods you must implement in your adapter to store values: `set`, `patch`, `bulkPatch`, and `bulkSet`.
-
-#### `set` and `bulkSet`
-
-Starting with the simplest:
-
-```ts twoslash
-interface SeyfertDotDev {
-    set(key: string, value: any): Promise<void>;
-}
-// @noErrors
-// ---cut---
-import { Adapter } from 'seyfert';
-
-class MyAdapter implements Adapter {
-    // ---cut-start---
-    storage: SeyfertDotDev;
-    // ---cut-end---
-    async set(key: string, value: any | any[]) {
-        await this.storage.set(key, { value });
-    }
-
-    async bulkSet(keys: [string, any][]) {
-        for (let [key, value] of keys) {
-            await this.set(key, value);
-        }
-    }
-}
-```
-
-#### `patch` and `bulkPatch`
-
-The `patch` method should not overwrite the entire properties of the old value, just the ones you pass.
-
-```ts twoslash
-interface SeyfertDotDev {
-    set(key: string, value: any): Promise<void>;
-    get(key: string): Promise<any>;
-}
-// @noErrors
-// ---cut---
-import { Adapter } from 'seyfert';
-
-class MyAdapter implements Adapter {
-    // ---cut-start---
-    storage: SeyfertDotDev;
-    // ---cut-end---
-    async patch(key: string, value: any | any[]) {
-        const oldData = await this.storage.get(key) ?? {};
-        const newValue = Array.isArray(value)
-            ? value
-            : ({ ...oldData, ...value });
-
-        await this.storage.set(key, { value: newValue });
-    }
-
-    async bulkPatch(keys: [string, any][]) {
-        for (let [key, value] of keys) {
-            await this.patch(key, value);
-        }
-    }
-}
-```
-
-#### Storing Relationships
-
-To store relationships, you use the `bulkAddToRelationShip` and `addToRelationship` methods.
-
-```ts twoslash
-interface SeyfertDotDev {
-    setAdd(to: string, key: string): Promise<void>;
-}
-// @noErrors
-// ---cut---
-import { Adapter } from 'seyfert';
-
-class MyAdapter implements Adapter {
-    // ---cut-start---
-    storage: SeyfertDotDev;
-    // ---cut-end---
-    async addToRelationship(id: string, keys: string | string[]) {
-        for (const key of Array.isArray(keys) ? keys : [keys]) {
-            // Add to a "Set", IDs must be unique
-            await this.storage.setAdd(id, key);
-        }
-    }
-
-    async bulkAddToRelationShip(data: Record<string, string[]>) {
-        for (const i in data) {
-            await this.addToRelationship(i, data[i]);
-        }
-    }
-}
-```
-
-### Retrieving Data
-
-You must implement three methods in your adapter to retrieve values: `get`, `bulkGet`, and `scan`.
-
-#### `get` and `bulkGet`
-
-Starting with the simplest:
-
-```ts twoslash
-interface SeyfertDotDev {
-    get(key: string): Promise<any>;
-}
-// @noErrors
-// ---cut---
-import { Adapter } from 'seyfert';
-
-class MyAdapter implements Adapter {
-    // ---cut-start---
-    storage: SeyfertDotDev;
-    // ---cut-end---
-    async get(key: string) {
-        return this.storage.get(key);
-    }
-
-    async bulkGet(keys: string[]) {
-        const values: Promise<any>[] = [];
-        for (let key of keys) {
-            values.push(this.get(key));
-        }
-
-        return (await Promise.all(values))
-            // Do not return null values
-            .filter(value => value)
-    }
-}
-```
-
-#### The `scan` method
-
-Currently, we are storing data in this format:
 ```ts
 <resource>.<id2>.<id1> // member.1003825077969764412.1095572785482444860
-<resource>.<id1> // user.863313703072170014
+<resource>.<id1>       // user.863313703072170014
 ```
 
-The `scan` method takes a string with this format:
-```ts
-<resource>.<*>.<*> // member.*.*
-<resource>.<*>.<id> // member.*.1095572785482444860
-<resource>.<id>.<*> // member.1003825077969764412.*
-<resource>.<*> // user.*
-```
-The `*` indicates that any ID may be present.
+### Implementing the Adapter interface
 
-You should return all matches.
+Below is a complete async skeleton backed by an imaginary `storage` driver. Methods are grouped by purpose; the `bulk*` variants just loop over their single-item counterparts, and `keys`/`values`/`count`/`contains` derive from a relationship.
 
 ```ts twoslash
 interface SeyfertDotDev {
-    entries(): Promise<[string, unknown][]>; 
-}
-// @noErrors
-// ---cut---
-import { Adapter } from 'seyfert';
-
-class MyAdapter implements Adapter {
-    // ---cut-start---
-    storage: SeyfertDotDev;
-    // ---cut-end---
-    async scan(query: string, keys?: false): any[]; 
-    async scan(query: string, keys: true): string[]; 
-    async scan(query: string, keys = false) {
-        const values: (string | unknown)[] = [];
-        const sq = query.split('.');
-        // Your client will likely have a more optimized way to do this.
-        // Like our Redis adapter.
-        for (const [key, value] of await this.storage.entries()) {
-            const match = key.split('.')
-                .every((value, i) => (sq[i] === '*' ? !!value : sq[i] === value));
-            if (match) {
-                values.push(keys ? key : value);
-            }
-        }
-
-        return values;
-    }
-}
-```
-> [Example of Redis Adapter](https://github.com/tiramisulabs/extra/blob/db36914ace5f4b948ee109a3c25987e162811b44/packages/redis-adapter/src/adapter.ts#L46)
-
-#### Retrieving Relationships
-
-To get the IDs of a relationship, we have the `getToRelationship` method.
-
-```ts twoslash
-interface SeyfertDotDev {
-    setGet(key: string): Promise<string[] | undefined>;
-}
-// @noErrors
-// ---cut---
-import { Adapter } from 'seyfert';
-
-class MyAdapter implements Adapter {
-    // ---cut-start---
-    storage: SeyfertDotDev;
-    // ---cut-end---
-    async getToRelationship(to: string) {
-        return await this.storage.setGet(to) ?? []
-    }
-}
-```
-
-#### `keys`, `values`, `count`, and `contains`
-
-```ts twoslash
-interface SeyfertDotDev {
-    setGet(key: string): Promise<string[] | undefined>;
-}
-// @noErrors
-// ---cut---
-import { Adapter } from 'seyfert';
-
-class MyAdapter implements Adapter {
-    // ---cut-start---
-    storage: SeyfertDotDev;
-    get(key: string): Promise<any>
-    // ---cut-end---
-    async getToRelationship(to: string) {
-        return await this.storage.setGet(to) ?? []
-    }
-
-    async keys(to: string) {
-        const keys = await this.storage.setGet(to) ?? [];
-        return keys.map(key => `${to}.${key}`);
-    }
-
-    async values(to: string) {
-        const array: any[] = [];
-        const keys = await this.keys(to);
-
-        for (const key of keys) {
-            const content = await this.get(key);
-
-            if (content) {
-                array.push(content);
-            }
-        }
-
-        return array;
-    }
-
-    async count(to: string) {
-        return (await this.getToRelationship(to)).length;
-    }
-
-    async contains(to: string, key: string) {
-        return (await this.getToRelationship(to)).includes(key);
-    }
-}
-```
-
-### Deleting Data
-
-#### `remove`, `bulkRemove` and `flush`
-
-There are three methods you must implement in your adapter to delete values: `remove`, `bulkRemove`, and `flush`.
-
-```ts twoslash
-interface SeyfertDotDev {
+    set(key: string, value: any): Promise<void>;
+    get(key: string): Promise<any>;
     remove(key: string): Promise<void>;
     flush(): Promise<void>;
+    entries(): Promise<[string, unknown][]>;
+    setAdd(to: string, key: string): Promise<void>;
+    setGet(key: string): Promise<string[] | undefined>;
+    setPull(to: string, key: string[]): Promise<void>;
+    setRemove(key: string): Promise<void>;
     setFlush(): Promise<void>;
 }
 // @noErrors
@@ -435,55 +189,129 @@ class MyAdapter implements Adapter {
     // ---cut-start---
     storage: SeyfertDotDev;
     // ---cut-end---
+    isAsync = true;
+
+    async start() {
+        // Runs before the bot starts
+    }
+
+    // --- Storing values ---
+    async set(key: string, value: any | any[]) {
+        await this.storage.set(key, { value });
+    }
+
+    async bulkSet(keys: [string, any][]) {
+        for (const [key, value] of keys) await this.set(key, value);
+    }
+
+    // patch only overwrites the properties you pass, not the whole value
+    async patch(key: string, value: any | any[]) {
+        const oldData = await this.storage.get(key) ?? {};
+        const newValue = Array.isArray(value) ? value : { ...oldData, ...value };
+        await this.storage.set(key, { value: newValue });
+    }
+
+    async bulkPatch(keys: [string, any][]) {
+        for (const [key, value] of keys) await this.patch(key, value);
+    }
+
+    // --- Retrieving values ---
+    async get(key: string) {
+        return this.storage.get(key);
+    }
+
+    async bulkGet(keys: string[]) {
+        const values = await Promise.all(keys.map(key => this.get(key)));
+        return values.filter(value => value); // drop nulls
+    }
+
+    // --- Storing/removing relationships (sets of unique IDs) ---
+    async addToRelationship(id: string, keys: string | string[]) {
+        for (const key of Array.isArray(keys) ? keys : [keys]) {
+            await this.storage.setAdd(id, key);
+        }
+    }
+
+    async bulkAddToRelationShip(data: Record<string, string[]>) {
+        for (const i in data) await this.addToRelationship(i, data[i]);
+    }
+
+    async getToRelationship(to: string) {
+        return await this.storage.setGet(to) ?? [];
+    }
+
+    async removeToRelationship(to: string, key: string | string[]) {
+        await this.storage.setPull(to, Array.isArray(key) ? key : [key]);
+    }
+
+    async removeRelationship(to: string | string[]) {
+        for (const target of Array.isArray(to) ? to : [to]) {
+            await this.storage.setRemove(target);
+        }
+    }
+
+    // Derived helpers built on get + getToRelationship
+    async keys(to: string) {
+        return (await this.getToRelationship(to)).map(key => `${to}.${key}`);
+    }
+
+    async values(to: string) {
+        const values = await Promise.all((await this.keys(to)).map(key => this.get(key)));
+        return values.filter(value => value);
+    }
+
+    async count(to: string) {
+        return (await this.getToRelationship(to)).length;
+    }
+
+    async contains(to: string, key: string) {
+        return (await this.getToRelationship(to)).includes(key);
+    }
+
+    // --- Deleting ---
     async remove(key: string) {
         await this.storage.remove(key);
     }
 
     async bulkRemove(keys: string[]) {
-        for (const key of keys) {
-            await this.remove(key);
-        }
+        for (const key of keys) await this.remove(key);
     }
 
     async flush() {
-        await this.storage.flush(); // Delete values
-        await this.storage.setFlush(); // Delete relationships
-    }
-}
-```
-
-#### Deleting Relationships
-
-To remove IDs from a relationship, we have the `removeToRelationship` and `removeRelationship` methods.
-
-```ts twoslash
-interface SeyfertDotDev {
-    setRemove(key: string): Promise<void>;
-    setPull(to: string, key: string[]): Promise<void>
-}
-// @noErrors
-// ---cut---
-import { Adapter } from 'seyfert';
-
-class MyAdapter implements Adapter {
-    // ---cut-start---
-    storage: SeyfertDotDev;
-    // ---cut-end---
-    async removeToRelationship(to: string, key: string | string[]) {
-        // Remove the ID(s) from the "Set"
-        const keys = Array.isArray(key) ? key : [key];
-        await this.storage.setPull(to, keys);
+        await this.storage.flush();    // values
+        await this.storage.setFlush(); // relationships
     }
 
-    async removeRelationship(to: string | string[]) {
-        // Remove the "Set" completely
-        const targets = Array.isArray(to) ? to : [to];
-        for (const target of targets) {
-            await this.storage.setRemove(target);
+    // --- scan: see below ---
+    async scan(query: string, keys?: false): any[];
+    async scan(query: string, keys: true): string[];
+    async scan(query: string, keys = false) {
+        const values: (string | unknown)[] = [];
+        const sq = query.split('.');
+        for (const [key, value] of await this.storage.entries()) {
+            const match = key.split('.')
+                .every((part, i) => (sq[i] === '*' ? !!part : sq[i] === part));
+            if (match) values.push(keys ? key : value);
         }
+        return values;
     }
 }
 ```
+
+#### The `scan` method
+
+`scan` is the one non-trivial method. It takes a query matching the dotted key format, where `*` means "any ID":
+
+```ts
+<resource>.<*>.<*> // member.*.*
+<resource>.<*>.<id> // member.*.1095572785482444860
+<resource>.<id>.<*> // member.1003825077969764412.*
+<resource>.<*> // user.*
+```
+
+It must return every match (values, or keys when the second argument is `true`). The skeleton above iterates over all entries, which works but is slow; a real backend should push the matching down into the store, like our Redis adapter does.
+
+> [Example of Redis Adapter](https://github.com/tiramisulabs/extra/blob/db36914ace5f4b948ee109a3c25987e162811b44/packages/redis-adapter/src/adapter.ts#L46)
 
 ### Testing
 To ensure your adapter works, run the `testAdapter` method from `Cache`.

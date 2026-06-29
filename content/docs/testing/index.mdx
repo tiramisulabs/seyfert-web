@@ -7,20 +7,15 @@ description: A complete, runner-agnostic testing suite for Seyfert bots — from
 
 Most Discord bots are hard to test at all — running one means opening a gateway connection to Discord, so commands, components, and events have nowhere to run in a plain unit test. Making a bot testable **entirely in-process**, without that requirement, is the primary idea behind this package. It's an active effort tackling that problem head-on, so expect the API to keep evolving across upcoming versions.
 
-What started as a handful of fixtures grew into a full suite for testing real bots. It scales from a single command up to the whole pipeline, all from one import:
-
-- **Mock bot** — boot your real Seyfert client in-process and test the *entire* pipeline: commands, components, modals, events, middlewares, and plugins. You dispatch payloads the way Discord would and assert on every REST call the bot makes — its actual end-to-end behavior, with nothing stubbed out.
-- **Fixtures** — plain mock objects (`mockCommandContext`, factories, recording stubs) for fast unit tests of a single `run()` body in isolation, when you don't need the whole pipeline.
-
-<Callout type="info">
-Rule of thumb: testing **real behavior** — option parsing, middlewares, permissions, components, REST, events — → **mock bot**; testing a single `run()` body in isolation → **fixtures**. Both come from the same import and coexist in one suite.
-</Callout>
-
 ## How it works
 
 The **mock bot** is the core. It drives a real Seyfert client pipeline in-process — your actual commands, middlewares, and plugins — dispatching raw payloads through the same `HandleCommand` → resolver → middleware flow production uses, while capturing every outgoing REST call for assertions instead of sending it. You're testing the bot you ship, not a reimplementation of it.
 
 The **fixture** layer is the lightweight counterpart: plain mock objects with no assertions, spies, or fake timers bundled, so they stay runner-agnostic. The core is `mockCommandContext()` — a stand-in for a Seyfert command context with the fields most commands touch, plus working Slipher stubs (`logger`, `queues`, `scheduler`) that **record what your command does** so you can assert on it afterward. Factories (`mockUser`, `mockGuild`, …) build the entities, with deterministic ids you can override.
+
+<Callout type="info">
+Rule of thumb: testing **real behavior** — option parsing, middlewares, permissions, components, REST, events — → **mock bot**; testing a single `run()` body in isolation → **fixtures**. Both come from the same import and coexist in one suite.
+</Callout>
 
 ## Install
 
@@ -32,7 +27,7 @@ Requires Seyfert v5 (peer dependency).
 
 ## Where to go next
 
-This section is the **reference** for how the testing system works — the mock bot, the dispatchers, the world, and the fixtures, piece by piece.
+The suite is split into two parts:
 
-- **New to it?** Follow the hands-on walkthrough in the Guide first: **[Testing your bot](/docs/learn/testing/setup)** sets up the mock bot, then tests commands, events, components, and modals step by step.
-- **Reference:** [Mock bot](/docs/testing/mock-bot) · [Dispatching](/docs/testing/dispatching) · [World & State](/docs/testing/world) · [Assertions](/docs/testing/assertions) · [MockGateway](/docs/testing/gateway) · [Fixtures](/docs/testing/fixtures) · [Defaults & Scope](/docs/testing/defaults)
+- **[Writing Tests](/docs/testing/writing-tests/setup)** — a hands-on walkthrough. Set up the mock bot, then test commands, events, components, and modals step by step. Start here if you're new.
+- **Toolkit** — the reference for every piece: [Mock bot](/docs/testing/toolkit/mock-bot) · [Dispatching](/docs/testing/toolkit/dispatching) · [World & State](/docs/testing/toolkit/world) · [Assertions](/docs/testing/toolkit/assertions) · [MockGateway](/docs/testing/toolkit/gateway) · [Fixtures](/docs/testing/toolkit/fixtures) · [Defaults & Scope](/docs/testing/toolkit/defaults)

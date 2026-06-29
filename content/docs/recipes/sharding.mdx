@@ -49,7 +49,7 @@ declare module 'seyfert' {
 	</Tab>
 </Tabs>
 
-Too simple? Seyfert takes care of all the logic so your project shouldn't change much just by switching to a `WorkerSharding`.
+Seyfert handles the sharding logic for you, so switching execution modes is just changing the `mode` property shown above.
 
 ## Cache
 Unlike traditional Discord libraries, Seyfert offers unified cache management across all shards. The cache can be centralized in the main process (the `WorkerManager` executor), ensuring consistent data access throughout your application. 
@@ -68,6 +68,24 @@ client.setServices({
 });
 
 await client.start();
+```
+
+## Accessing shards at runtime
+
+The gateway exposes a few helpers to inspect shards while your bot is running:
+
+```ts
+// Average gateway latency
+client.gateway.latency;
+
+// Per-shard ping
+await client.gateway.get(ctx.shardId)?.ping();
+
+// Total shard count
+client.gateway.totalShards;
+
+// Calculate shard for a guild
+client.gateway.calculateShardId('guildId');
 ```
 
 ## Talking to other workers

@@ -4,12 +4,7 @@
     "icon": "FlaskConical",
     "pages": [
         "index",
-        "mock-bot",
-        "dispatching",
-        "world",
-        "assertions",
-        "gateway",
-        "fixtures",
-        "defaults"
+        "writing-tests",
+        "toolkit"
     ]
 }

@@ -187,3 +187,14 @@ declare module 'seyfert' {
     }
 }
 ```
+
+## Reading the config
+
+Read your extended properties at runtime with `client.getRC()`:
+
+```ts
+const rc = await client.getRC();
+
+console.log(rc.developers); // ExtendedRC property
+console.log(rc.locations.models); // ExtendedRCLocations property
+```

@@ -121,8 +121,12 @@ function isApiRootFolder(node: PageTree.Folder) {
   );
 }
 
-function isRecipesRootFolder(node: PageTree.Folder) {
-  return node.root === true && firstUrl(node)?.startsWith("/docs/recipes");
+function isRecipesFolder(node: PageTree.Folder) {
+  return firstUrl(node)?.startsWith("/docs/recipes") ?? false;
+}
+
+function isGuideFolder(node: PageTree.Folder) {
+  return node.root === true && (firstUrl(node)?.startsWith("/docs/learn") ?? false);
 }
 
 function groupRecipeSections(children: PageTree.Node[]) {
@@ -178,30 +182,37 @@ function withApiReference(node: PageTree.Node): PageTree.Node {
   };
 }
 
-function withRecipeFolders(node: PageTree.Node): PageTree.Node {
-  if (node.type !== "folder") return node;
+function nestRecipesUnderGuide(tree: PageTree.Root): PageTree.Root {
+  const recipes = tree.children.find(
+    (node): node is PageTree.Folder => node.type === "folder" && isRecipesFolder(node),
+  );
 
-  const children = node.children.map(withRecipeFolders);
+  if (!recipes) return tree;
 
-  if (isRecipesRootFolder({ ...node, children })) {
-    return {
-      ...node,
-      children: groupRecipeSections(children),
-    };
-  }
-
-  return {
-    ...node,
-    children,
+  const grouped: PageTree.Folder = {
+    ...recipes,
+    children: groupRecipeSections(recipes.children),
   };
+
+  const children = tree.children
+    .filter((node) => node !== recipes)
+    .map((node) =>
+      node.type === "folder" && isGuideFolder(node)
+        ? { ...node, children: [...node.children, grouped] }
+        : node,
+    );
+
+  return { ...tree, children };
 }
 
 function createApiPageTree(tree: PageTree.Root): PageTree.Root {
-  return {
+  const withApi: PageTree.Root = {
     ...tree,
     $id: `${tree.$id ?? "guide-root"}-with-api`,
-    children: tree.children.map((node) => withRecipeFolders(withApiReference(node))),
+    children: tree.children.map(withApiReference),
   };
+
+  return nestRecipesUnderGuide(withApi);
 }
 
 function withSidebarSearch(node: PageTree.Node, path: string): PageTree.Node {

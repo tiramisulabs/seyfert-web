@@ -7,7 +7,7 @@ With Setup done, you have a `createMockBot()` that runs your real command classe
 
 Every example imports from `@slipher/testing`, `seyfert`, and `vitest`, and uses `await using` so the bot disposes automatically at the end of the test.
 
-These examples reuse the `greet` command from [Setup](/docs/learn/testing/setup). The REST-effect and permission sections add a small `ban` command:
+These examples reuse the `greet` command from [Setup](/docs/testing/writing-tests/setup). The REST-effect and permission sections add a small `ban` command:
 
 ```ts
 // src/commands/ban.ts
@@ -45,7 +45,7 @@ test('greet replies through the real pipeline', async () => {
 });
 ```
 
-`result.content` is the parsed reply text; `result.messages` holds message-create calls. Prefer the typed views (`result.content`, `result.embedView?.title`, `result.button('Approve')?.customId`) over raw shapes.
+`result.content` is the parsed reply text; `result.messages` holds message-create calls. Prefer the typed views (`result.content`, `result.embedView?.title`, `result.component('Approve')?.customId`) over raw shapes.
 
 The raw interaction response stays available as `result.reply?.body` (`{ type, data }`) for the rare assertion where the exact Discord wire payload is the contract.
 
@@ -64,7 +64,7 @@ const ban = await bot.waitForAction(Routes.ban);
 expect(ban.body).toMatchObject({ delete_message_seconds: 0 });
 ```
 
-For common cases, the toolkit ships matchers like `expectReply`, `expectDenied`, and `expectError` so you assert intent instead of digging through the action list. See [Assertions](/docs/testing/assertions) for the full set.
+For the happy path, asserting on `result.content` is usually enough. When the contract is a denial or an unhandled error rather than a reply, wrap the result in the `outcome(result)` reader so you assert intent instead of digging through the action list. See [Assertions](/docs/testing/toolkit/assertions) for the full set.
 
 ### Running as a specific user
 
@@ -90,7 +90,7 @@ const result = await alice.slash({ name: 'results' });
 expect(result.content).toContain('1 vote');
 ```
 
-This is the natural shape for multi-step journeys: open a flow, interact with its components, then assert the final reply — all as one user. See [The Toolkit › Dispatching](/docs/testing/dispatching) for the full identity surface.
+This is the natural shape for multi-step journeys: open a flow, interact with its components, then assert the final reply — all as one user. See [The Toolkit › Dispatching](/docs/testing/toolkit/dispatching) for the full identity surface.
 
 ### Options and autocomplete
 
@@ -152,6 +152,16 @@ This drives `onPermissionsFail`; restricting the bot's own `permissions` drives 
 await bot.slash({ name: 'ban', guildId: guild.id, channel: denied, user: member.user });
 ```
 
-Once a bot member is seeded with `registerBotMember(...)`, the moderation REST routes enforce the bot's computed permissions and role hierarchy, returning Discord's `403 50013`. Assert the user-facing denial with `expectDenied`.
+Once a bot member is seeded with `registerBotMember(...)`, the moderation REST routes enforce the bot's computed permissions and role hierarchy, returning Discord's `403 50013`. Assert the user-facing denial through the `outcome(result)` reader:
 
-See [World & State](/docs/testing/world) for seeding guilds, roles, and overwrites, and [Assertions](/docs/testing/assertions) for `expectDenied` and friends.
+```ts
+import { createMockBot, outcome } from '@slipher/testing';
+
+const result = await bot.slash({ name: 'ban', memberPermissions: [] });
+
+outcome(result).get.denial({ kind: 'permissions', missing: 'BanMembers' });
+```
+
+`get.denial(...)` throws if the result wasn't denied for exactly that reason, so the call doubles as the assertion. To capture an unhandled error instead, create the bot with `createMockBot({ onCommandError: 'capture' })` and read it with `outcome(result).get.error(...)`.
+
+See [World & State](/docs/testing/toolkit/world) for seeding guilds, roles, and overwrites, and [Assertions](/docs/testing/toolkit/assertions) for the full reader surface.

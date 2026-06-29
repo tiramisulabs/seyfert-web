@@ -3,18 +3,7 @@ title: Docker
 description: An introduction on how to deploy Seyfert in a Docker container
 ---
 
-This guide assumes you have knowledge of the following topics:
-
-- [TypeScript](https://www.typescriptlang.org/)
-- [Node.js](https://nodejs.org/en)
-- [Docker](https://www.docker.com/)
-- [Virtualization](https://en.wikipedia.org/wiki/OS-level_virtualization)
-
-## Why Docker?
-
-Docker provides a consistent environment that ensures the proper functioning of any bot in both development and production, as well as simplifying the integration with CI/CD tools.
-
-With Docker scaling a bot horizontally is simple, allowing workloads to be distributed across multiple instances as needed.
+This guide shows how to containerize a Seyfert bot with a multi-stage [Docker](https://www.docker.com/) build.
 
 ## What files does a Seyfert project require?
 
@@ -23,39 +12,9 @@ With Docker scaling a bot horizontally is simple, allowing workloads to be distr
 - `/node_modules`
 - `/src` or `/dist`
 
-## Deploying with Node.js
+## Container file with multi-stage builds
 
-### Container file for a TypeScript project
-
-A basic container file looks as follows:
-
-```docker title="Dockerfile" copy
-FROM node:<VERSION_TAG>
-
-WORKDIR /bot
-
-COPY package*.json ./
-
-RUN npm install --production
-
-RUN npm i -g typescript
-
-COPY tsconfig.json seyfert.config.mjs ./
-COPY /src ./src
-
-# Build typescript files
-RUN tsc --project tsconfig.json
-
-ENV NODE_ENV=production
-
-ENTRYPOINT ["node", "dist/index.js"]
-```
-
-You must replace `<VERSION_TAG>` with the Node.js version you want to use.
-
-### Container file with multi-stage builds
-
-Although the previous container image is simple and practical, it can still be improved by adding multi-stage builds and other best practices:
+The following multi-stage `Dockerfile` builds your TypeScript sources and ships a minimal production image. Replace `<VERSION_TAG>` with the Node.js version you want to use.
 
 ```docker title="Dockerfile" copy
 # [ base ] #
@@ -98,7 +57,7 @@ COPY --from=build $DIR/node_modules ./node_modules
 ## Builder
 COPY --from=build $DIR/dist ./dist
 COPY --from=build $DIR/package.json ./package.json
-COPY --from=build $DIR/seyfert.config.js ./seyfert.config.js
+COPY --from=build $DIR/seyfert.config.mjs ./seyfert.config.mjs
 
 # Environment permissions
 ENV NODE_ENV production

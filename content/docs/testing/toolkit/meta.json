@@ -1,0 +1,13 @@
+{
+    "title": "Toolkit",
+    "icon": "Library",
+    "pages": [
+        "mock-bot",
+        "dispatching",
+        "world",
+        "assertions",
+        "gateway",
+        "fixtures",
+        "defaults"
+    ]
+}

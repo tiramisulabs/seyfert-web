@@ -91,8 +91,6 @@ import {
 
 The read-only `bot.world` (`WorldStateReader`) is the supported way to assert on the ~20 entity types the views don't surface (pins, reactions, bans, webhooks, emojis, invites, automod rules, scheduled events, poll voters, …).
 
-During 0.x, prefer direct supported entry points over subclassing exported classes: build bot tests through `createMockBot()`, seed worlds through `mockWorld()`, and use named dispatchers such as `slash()`, `clickButton()`, and `emit()`. Unspecified and subject to change during 0.x: `mockId()` format, warning text, `RecordedAction.seq`, and `MockGateway`.
-
 ### Scope
 
 <Callout type="info">

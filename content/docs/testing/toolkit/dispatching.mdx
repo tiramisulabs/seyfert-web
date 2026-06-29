@@ -142,8 +142,8 @@ expect(result.reply?.body).toMatchObject({
 
 Because the client is real, the same module augmentations your bot declares in production are in effect during the test — middleware names are checked, the locale type narrows, and `ctx.client` carries your augmented surface. No separate type-only stub to keep in sync.
 
-Results come back parsed and typed, so you assert without casting. The raw interaction response stays available as `result.reply?.body` (`{ type, data }`) for the rare assertion where the Discord wire shape itself is the contract — but prefer `result.content`, `result.deferred`, and `result.edits` for normal behavior checks. Embeds and components are typed too: `result.embedView?.title`, `result.embedViews`, `result.buttons`, `result.button('Approve')?.customId`, and `result.textDisplays` (components-v2). The raw `result.embeds` / `result.embed` expose the flattened Discord payloads for wire-shape assertions.
+Results come back parsed and typed, so you assert without casting. The raw interaction response stays available as `result.reply?.body` (`{ type, data }`) for the rare assertion where the Discord wire shape itself is the contract — but prefer `result.content`, `result.deferred`, and `result.edits` for normal behavior checks. Embeds and components are typed too: `result.embedView?.title`, `result.embedViews`, `result.components`, `result.component('Approve')?.customId`, and `result.textDisplays` (components-v2). The raw `result.embeds` / `result.embed` expose the flattened Discord payloads for wire-shape assertions.
 
 <Callout type="info">
-Two surfaces, two jobs: the **typed views** (`result.content`, `result.embedView`, `result.button(...)`) are for everyday behavior assertions; the **raw shapes** (`result.reply?.body`, `result.embeds`) are for the rare test where the exact Discord wire payload is the contract.
+Two surfaces, two jobs: the **typed views** (`result.content`, `result.embedView`, `result.component(...)`) are for everyday behavior assertions; the **raw shapes** (`result.reply?.body`, `result.embeds`) are for the rare test where the exact Discord wire payload is the contract.
 </Callout>

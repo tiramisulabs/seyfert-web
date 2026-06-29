@@ -8,7 +8,7 @@ Fixtures are plain mock objects for fast unit tests of a `run()` body in isolati
 The core is `mockCommandContext()`: a stand-in for a Seyfert command context with the fields most commands touch, plus working Slipher stubs (`logger`, `queues`, `scheduler`) that **record what your command does** so you can assert on it afterward. Factories (`mockUser`, `mockGuild`, …) build the entities, with deterministic ids you can override.
 
 <Callout type="info">
-Rule of thumb: pure `run()` logic → **fixtures**; anything touching option parsing, middlewares, permissions, components, REST, or events → the [mock bot](/docs/testing/mock-bot). Both come from the same import and can coexist in one suite.
+Rule of thumb: pure `run()` logic → **fixtures**; anything touching option parsing, middlewares, permissions, components, REST, or events → the [mock bot](/docs/testing/toolkit/mock-bot). Both come from the same import and can coexist in one suite.
 </Callout>
 
 ## Mock command contexts
@@ -32,7 +32,7 @@ export default class BanCommand extends Command {
 }
 ```
 
-Then, in the test, build a mock context and run the real command against it:
+Then, in the test, pass the command **class** to `mockCommandContext`. It infers the option types from the command, derives the name from `@Declare`, and binds the command so `ctx.run()` takes no argument:
 
 ```ts
 // ban.test.ts
@@ -41,26 +41,33 @@ import { expect, test } from 'vitest';
 import BanCommand from './commands/ban';
 
 test('replies after banning', async () => {
-	// a stand-in context carrying just the fields the command touches
-	const ctx = mockCommandContext<{ user: ReturnType<typeof mockUser> }>({
-		commandName: 'ban',
+	// options are typed from BanCommand — no manual generic, no cast
+	const ctx = mockCommandContext(BanCommand, {
 		options: { user: mockUser({ id: '123' }) },
 	});
 
-	// call the real command's run() directly — the cast is needed because the mock
-	// is not a full CommandContext (the trade-off for skipping the whole pipeline)
-	await new BanCommand().run(ctx as unknown as CommandContext<typeof options>);
+	// the command is already bound, so run() needs no argument
+	await ctx.run();
 
 	// every reply lands in ctx.responses, so you assert without spies
-	expect(ctx.responses.at(-1)).toMatchObject({
+	expect(ctx.lastResponse()).toMatchObject({
 		content: expect.stringContaining('Banned'),
 	});
 });
 ```
 
 <Callout type="info">
-Calling `run()` directly skips option parsing, middlewares, and permissions on purpose — that's what fixtures are for. To exercise the *whole* pipeline (and drop the cast), reach for the [mock bot](/docs/testing/mock-bot).
+Calling `run()` skips option parsing, middlewares, and permissions on purpose — that's what fixtures are for. To exercise the *whole* pipeline, reach for the [mock bot](/docs/testing/toolkit/mock-bot).
 </Callout>
+
+When you don't have the command class to hand, the object form still works as a plain response sink — pass `commandName` and typed `options` yourself, and drive your handler however you like. `ctx.run()` is unavailable in this form (nothing is bound):
+
+```ts
+const ctx = mockCommandContext<{ user: ReturnType<typeof mockUser> }>({
+	commandName: 'ban',
+	options: { user: mockUser({ id: '123' }) },
+});
+```
 
 `mockCommandContext()` includes:
 
@@ -68,13 +75,54 @@ Calling `run()` directly skips option parsing, middlewares, and permissions on p
 - `options` and `metadata`
 - `write`, `editOrReply`, `followup`, and `deferReply`
 - `logger`, `queues`, and `scheduler` stubs, plus `client` with the same stub instances
-- `responses`, `lastResponse()`, and `clearResponses()`
+- `responses`, `lastResponse()`, and `clearResponses()`, plus the typed readers `lastEmbed()`, `lastEmbeds()`, `lastComponents()`, and `lastTexts()`
+- `run()` when built from a command class — runs the bound command against this mock
 
 Every reply method (`write`, `editOrReply`, `followup`) pushes onto the same `responses` array, so you assert on what was sent without spies. The stubs on the context and on `client` are the **same instances**: `ctx.client.logger === ctx.logger`, `ctx.client.queues === ctx.queues`, and `ctx.client.scheduler === ctx.scheduler`.
 
 <Callout type="info">
 `MockCommandContext` models the Seyfert fields most command tests touch, but it is intentionally not a full `CommandContext` implementation. Use `mockClient({ extra })` when a command touches client surfaces that this package does not model.
 </Callout>
+
+## Component and modal contexts
+
+Components and modals follow the same class-first shape. `mockComponentContext(MyButton)` returns a harness: `.run(input)` executes the component's `run()` and returns the context it used, while `.filter(input)` runs its `filter()` (matching `customId` first). The `input` is optional — defaults are derived from the class.
+
+```ts
+import { mockComponentContext } from '@slipher/testing';
+import { expect, test } from 'vitest';
+import ConfirmButton from './components/confirm';
+
+test('confirm button replies', async () => {
+	const button = mockComponentContext(ConfirmButton);
+	const ctx = await button.run({ customId: 'confirm' });
+
+	expect(ctx.lastResponse()).toMatchObject({ content: 'Confirmed' });
+});
+```
+
+`mockModalContext(MyModal)` works the same way via `.run()`. When you don't have the class, the object form builds a raw context — pass `customId` and `fields`, and read them back with `interaction.getInputValue(id, required?)`:
+
+```ts
+import { mockModalContext } from '@slipher/testing';
+
+const ctx = mockModalContext({ customId: 'feedback', fields: { reason: 'spam' } });
+const reason = ctx.interaction.getInputValue('reason', true);
+```
+
+## Scenes
+
+`mockScene()` wires a consistent set of entities and a command context in one call — the channel belongs to the guild, the member wraps the user, and `ctx` is built from all of them. It is also class-first, so `scene.ctx.run()` runs the bound command:
+
+```ts
+import { mockScene } from '@slipher/testing';
+import BanCommand from './commands/ban';
+
+const scene = mockScene(BanCommand, { options: { user: mockUser({ id: '123' }) } });
+await scene.ctx.run();
+
+// scene.user / scene.guild / scene.channel / scene.member are all consistently linked
+```
 
 ## Factories
 

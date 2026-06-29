@@ -199,3 +199,82 @@ await client.guilds.list();
 ```
 
 For more on Shorters and the Proxy API, see [Shorters and Proxy](/docs/recipes/api-access).
+
+## Transformers
+
+A transformer is a function that takes the raw data Discord sends and turns it into whatever value you need. Instead of working with the default structures, you can replace them with your own shape, keeping a reference to the raw object when you still need it.
+
+Define a transformer by assigning to `Transformers.<Structure>` and declare its type through the `CustomStructures` interface so the new shape is reflected across your whole project:
+
+```ts twoslash
+import type { APIUser } from 'seyfert';
+
+interface MyUser {
+    username: string;
+    isAdmin: boolean;
+    raw(): Promise<APIUser>;
+}
+//---cut---
+import { Transformers } from 'seyfert';
+
+Transformers.User = (client, data) => {
+    return {
+        username: data.username,
+        isAdmin: ['123456789012345678'].includes(data.id),
+        raw() {
+            return client.users.raw(data.id);
+        },
+    };
+};
+
+/*
+At this point, you should have a `declare module "seyfert"` in your project, 
+if not, add it.
+*/
+declare module "seyfert" {
+// Declaring the type this way will reflect in the typing throughout the entire project.
+    interface CustomStructures {
+        User: MyUser;
+    }
+// You can add as many transformers as you like with any type.
+}
+```
+
+Let the autocomplete of your editor guide you and discover all the possibilities you have.
+```ts twoslash
+import { Transformers } from 'seyfert';
+
+Transformers.GuildMember
+              // ^|
+```
+
+Once defined, the transformed shape is used everywhere that structure appears. For the user transformer above, `ctx.author` now exposes your custom properties and methods:
+```ts twoslash
+import type { APIUser } from 'seyfert';
+
+interface MyUser {
+    username: string;
+    isAdmin: boolean;
+    raw(): Promise<APIUser>;
+}
+
+declare module "seyfert" {
+    interface CustomStructures {
+        User: MyUser;
+    }
+}
+//---cut---
+import { type CommandContext, Command, Declare } from 'seyfert';
+
+@Declare({
+    name: 'ping',
+    description: 'Ping!',
+})
+class Ping extends Command {
+    async run(ctx: CommandContext) {
+        const result = await ctx.author.raw();
+                                     // ^|
+        console.log(result.id, result.username);
+    }
+}
+```

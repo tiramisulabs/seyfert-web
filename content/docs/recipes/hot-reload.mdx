@@ -82,23 +82,13 @@ export default class ReloadCommand extends Command {
 }
 ```
 
-## Command Upload Caching
-
-When registering slash commands, use `cachePath` to avoid redundant API calls. Seyfert will compare the current commands with the cached version and only upload if they changed:
-
-```ts
-await client.uploadCommands({ cachePath: './commands.json' });
-```
-
 ## Automatic Reload with @slipher/watcher
 
-Manually restarting after every change gets old fast. [`@slipher/watcher`](https://www.npmjs.com/package/@slipher/watcher) handles it — keeps the gateway alive, watches your source files, rebuilds on change, and restarts the worker. No `Ctrl+C` discipline required.
+[`@slipher/watcher`](https://www.npmjs.com/package/@slipher/watcher) keeps the gateway alive while it watches your source files, rebuilds on change, and restarts the worker.
 
-```bash copy title="Installing..."
+```bash copy
 pnpm add -D @slipher/watcher
 ```
-
-Create a watcher entry point. This example assumes your TypeScript build emits `dist/index.js` from `src/index.ts`:
 
 ```ts title="src/watcher.ts"
 import { join } from 'node:path';
@@ -115,10 +105,6 @@ const watcher = new Watcher({
 })();
 ```
 
-Point `filePath` at your compiled bot entry point. Using SWC or Bun instead of `tsc`? Change `transpileCommand` accordingly — the watcher doesn't care what builds the output, only that the output exists.
-
-Add a script to your `package.json`:
-
 ```json title="package.json"
 {
     "scripts": {
@@ -127,10 +113,6 @@ Add a script to your `package.json`:
 }
 ```
 
-Then run the watcher instead of your normal entry point:
-
 ```bash copy
 pnpm watch
 ```
-
-Gateway stays up. Files change. Bot reloads. That's the whole loop.

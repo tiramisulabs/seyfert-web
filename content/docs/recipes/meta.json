@@ -1,31 +1,21 @@
 {
-    "root": true,
     "title": "Recipes",
     "icon": "BookOpen",
+    "defaultOpen": false,
     "pages": [
-        "---[Workflow]Core Patterns---",
         "sending-messages",
         "embeds-and-formatting",
         "presence",
-        "cooldown",
-        "custom-events",
-        "---[Server]Data & Runtime---",
         "cache",
         "database",
         "logger",
         "sharding",
-        "transformers",
         "yuna",
         "hot-reload",
-        "extending-config",
-        "---[PlugZap]Integrations---",
         "api-access",
         "music",
         "monetization",
-        "---[CloudCog]Deployment---",
         "cloudflare-workers",
-        "using-docker",
-        "---[BookMarked]Reference---",
-        "quick-reference"
+        "using-docker"
     ]
 }

@@ -23,34 +23,7 @@ First of all you will need to install the generic adapter for seyfert, you can d
 npm add @slipher/generic-adapter
 ```
 
-and your `index.ts` shall follow the following example:
-
-```ts copy
-import '../seyfert.config.mjs'; // ye, importing our seyfert.config.mjs
-import { HttpClient } from 'seyfert';
-import { GenericAdapter } from '@slipher/generic-adapter';
-
-import Ping from './commands/ping.js';
-
-const client = new HttpClient();
-const adapter = new GenericAdapter(client);
-
-const ready = client.start()
-  .then(async () => {
-    // we need to load commands manually
-    client.commands.set([Ping]);
-  })
-  .then(() => adapter.start());
-
-export default {
-  async fetch(req: Request) {
-    await ready;
-    return adapter.fetch(req);
-  }
-}
-```
-
-and the same when we load both `components` and `langs`
+and your `index.ts` shall follow the following example, loading commands, `langs` and `components` manually:
 
 ```ts copy
 import '../seyfert.config.mjs'; // ye, importing our seyfert.config.mjs

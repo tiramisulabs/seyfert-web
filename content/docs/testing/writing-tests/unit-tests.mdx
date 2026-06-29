@@ -9,7 +9,7 @@ This is the fast path: you test one command's `run()` body in isolation, with pl
 
 Reach for fixtures when you only care about the logic inside `run()` — the branching, the reply you build, the stub calls. No option parsing, no middlewares, no permissions, no REST.
 
-It is much faster than the [mock bot](/docs/learn/testing/setup), because nothing boots. You build a stand-in context and call the method directly, so each test is a single function call.
+It is much faster than the [mock bot](/docs/testing/writing-tests/setup), because nothing boots. You build a stand-in context and call the method directly, so each test is a single function call.
 
 <Callout type="info">
 Rule of thumb: pure `run()` logic → fixtures. Anything touching option parsing, middlewares, permissions, components, or events → the mock bot.
@@ -38,34 +38,31 @@ export default class BanCommand extends Command {
 
 ## Build a mock context and run the command
 
-`mockCommandContext()` builds a stand-in context carrying just the fields a command touches. You hand it straight to `new BanCommand().run(...)` and let the real `run()` body execute.
+`mockCommandContext()` builds a stand-in context carrying just the fields a command touches. Pass it the command **class** and it infers the option types, derives the name from `@Declare`, and binds the command — so `ctx.run()` executes the real `run()` body with no argument and no cast.
 
 ```ts
 // ban.test.ts
 import { mockCommandContext, mockUser } from '@slipher/testing';
 import { expect, test } from 'vitest';
-import type { CommandContext } from 'seyfert';
 import BanCommand from './commands/ban';
 
 test('replies after banning', async () => {
-	// a stand-in context carrying just the fields the command touches
-	const ctx = mockCommandContext<{ user: ReturnType<typeof mockUser> }>({
-		commandName: 'ban',
+	// options are typed from BanCommand — no manual generic, no cast
+	const ctx = mockCommandContext(BanCommand, {
 		options: { user: mockUser({ id: '123' }) },
 	});
 
-	// call the real command's run() directly — the cast is needed because the mock
-	// is not a full CommandContext (the trade-off for skipping the whole pipeline)
-	await new BanCommand().run(ctx as unknown as CommandContext<typeof options>);
+	// the command is already bound, so run() needs no argument
+	await ctx.run();
 
 	// every reply lands in ctx.responses, so you assert without spies
-	expect(ctx.responses.at(-1)).toMatchObject({
+	expect(ctx.lastResponse()).toMatchObject({
 		content: expect.stringContaining('Banned'),
 	});
 });
 ```
 
-The cast is deliberate: the mock is not a full `CommandContext`. That cast is the trade-off you accept in exchange for skipping the whole pipeline and running the body directly.
+Passing the class is the preferred form: the options are inferred, the command is bound, and there is no manual `new` and no `as unknown as` cast to maintain. If you don't have the class to hand, the object form — `mockCommandContext({ commandName, options })` — still builds a plain response sink for driving a handler yourself.
 
 ## Assert on the recorded replies
 
@@ -81,11 +78,11 @@ Use `ctx.responses.at(-1)` for the last reply, or index into the array to check 
 
 ## When you need the full pipeline
 
-Calling `run()` directly skips option parsing, middlewares, and permissions on purpose — that is exactly what fixtures are for. The moment you need any of those, fixtures are the wrong tool.
+Calling `run()` skips option parsing, middlewares, and permissions on purpose — that is exactly what fixtures are for. The moment you need any of those, fixtures are the wrong tool.
 
-To exercise the whole pipeline — real option parsing, middlewares, permissions, components, or events — switch to the [mock bot](/docs/learn/testing/setup). It boots your real client and drops the cast, at the cost of speed.
+To exercise the whole pipeline — real option parsing, middlewares, permissions, components, or events — switch to the [mock bot](/docs/testing/writing-tests/setup). It boots your real client and drives commands end to end, at the cost of speed.
 
 ## References
 
-- [The Toolkit › Fixtures](/docs/testing/fixtures) — the full fixtures API: factories, stubs, and deterministic ids.
-- [Setup](/docs/learn/testing/setup) — boot the mock bot when you need the full pipeline.
+- [The Toolkit › Fixtures](/docs/testing/toolkit/fixtures) — the full fixtures API: factories, stubs, and deterministic ids.
+- [Setup](/docs/testing/writing-tests/setup) — boot the mock bot when you need the full pipeline.

@@ -22,7 +22,7 @@ Use `bot.slash(GreetCommand, { options })` when you want option inference from t
 
 The raw interaction response stays available as `result.reply?.body` (`{ type, data }`) for the rare assertion where the Discord wire shape itself is the contract. Prefer `result.content`, `result.deferred`, and `result.edits` for normal behavior checks.
 
-Embeds and components come back parsed and typed, so you assert without casting: `result.embedView?.title`, `result.embedViews`, `result.buttons`, `result.button('Approve')?.customId`, and `result.textDisplays` (components-v2). The raw `result.embeds`/`result.embed` expose the flattened Discord payloads for wire-shape assertions.
+Embeds and components come back parsed and typed, so you assert without casting: `result.embedView?.title`, `result.embedViews`, `result.components`, `result.component('Approve')?.customId`, and `result.textDisplays` (components-v2). The raw `result.embeds`/`result.embed` expose the flattened Discord payloads for wire-shape assertions.
 
 ## Creating a mock bot
 

@@ -3,7 +3,7 @@ title: Events
 description: Feed gateway dispatch events into your real bot with bot.emit, then assert what your event handler did — no WebSocket, no network.
 ---
 
-This builds on [Setup](/docs/learn/testing/setup). By the end you will register a real event handler, feed it a gateway dispatch event, and assert on what it did — all in-process.
+This builds on [Setup](/docs/testing/writing-tests/setup). By the end you will register a real event handler, feed it a gateway dispatch event, and assert on what it did — all in-process.
 
 ## The idea
 
@@ -56,7 +56,7 @@ test('greets new members', async () => {
 
 	await bot.emit('GUILD_MEMBER_ADD', rawMemberPayload);
 
-	expect(bot.worldDm(rawMemberPayload.user.id)?.lastMessage?.content).toContain('Welcome');
+	expect(bot.world.query.dm({ userId: rawMemberPayload.user.id })?.lastMessage?.content).toContain('Welcome');
 });
 ```
 
@@ -82,4 +82,4 @@ Emit full Discord event shapes, not partial patches. The mock applies a canonica
 
 ## Next steps
 
-- Reference: [The Toolkit › MockGateway](/docs/testing/gateway) for the full emit and gateway surface.
+- Reference: [The Toolkit › MockGateway](/docs/testing/toolkit/gateway) for the full emit and gateway surface.
