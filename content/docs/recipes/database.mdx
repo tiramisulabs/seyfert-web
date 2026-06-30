@@ -2,100 +2,91 @@
 title: Database Integration
 ---
 
-Seyfert is database-agnostic — you can attach any database client (Prisma, Drizzle, Mongoose, etc.) to your bot. Here are the two recommended patterns.
+Seyfert is database-agnostic — attach any client (Prisma, Drizzle, Mongoose, …). The idiomatic v5 way is a small **plugin** that owns the connection and exposes it as `client.db`, so every command, event, and middleware reaches the same instance with full typing — no manual `Client` augmentation. The same plugin can also hang a helper off the command context, so a command reads `await ctx.user()` to get the caller's record and its methods.
 
-## Pattern 1: Module Augmentation
+## The database plugin
 
-The simplest approach. Attach the database client to the Seyfert client instance and declare its type:
+A plugin's `client` map adds typed properties to the client; its `ctx` map adds per-interaction helpers to the command context. Open the connection in `setup` (not `register`, which is synchronous) and close it in `teardown`:
 
-```ts twoslash
-import { Client } from 'seyfert';
+```ts
+import { createPlugin } from 'seyfert';
 
-// Replace with your actual database client (Prisma, Drizzle, etc.)
+// Replace with your real client (Prisma, Drizzle, …)
 declare class DatabaseClient {
     connect(): Promise<void>;
+    disconnect(): Promise<void>;
     findUser(id: string): Promise<{ id: string; balance: number } | null>;
+    createUser(id: string): Promise<void>;
+    addBalance(id: string, amount: number): Promise<void>;
 }
 
-type ClientWithDB = Client & { db: DatabaseClient };
+const db = new DatabaseClient();
 
-const client = new Client() as ClientWithDB;
+export const databasePlugin = createPlugin({
+    name: 'database',
+    client: {
+        // expose the instance as client.db
+        db: () => db,
+    },
+    ctx: {
+        // ctx.user() resolves the caller's record plus bound methods
+        user: (interaction, client) => async () => {
+            const record =
+                (await client.db.findUser(interaction.user.id)) ??
+                { id: interaction.user.id, balance: 0 };
 
-client.db = new DatabaseClient();
-await client.db.connect();
-
-await client.start();
-await client.uploadCommands();
-
-declare module 'seyfert' {
-    interface SeyfertRegistry { client: ClientWithDB }
-}
+            return {
+                ...record, // id, balance
+                add: (amount: number) => client.db.addBalance(record.id, amount),
+            };
+        },
+    },
+    async setup(client) {
+        // open the connection once, before the bot starts handling anything
+        await client.db.connect();
+    },
+    async teardown(client) {
+        await client.db.disconnect();
+    },
+});
 ```
 
-## Pattern 2: Extended Client Class
+## Register the plugin
 
-A more structured approach using class inheritance:
+```ts
+import { Client, definePlugins } from 'seyfert';
+import { databasePlugin } from './plugins/database';
 
-```ts twoslash
-import { Client, type ParseClient } from 'seyfert';
-
-declare class DatabaseClient {
-    connect(): Promise<void>;
-}
-
-// ---cut---
-class MyBot extends Client {
-    db = new DatabaseClient();
-
-    async run() {
-        await this.db.connect();
-
-        this.setServices({
-            // middlewares, cache, etc.
-        });
-
-        await this.start();
-        await this.uploadCommands();
-    }
-}
-
-const bot = new MyBot();
-await bot.run();
+const plugins = definePlugins(databasePlugin);
 
 declare module 'seyfert' {
-    interface SeyfertRegistry { client: ParseClient<MyBot> }
+    interface SeyfertRegistry { plugins: typeof plugins }
 }
+
+const client = new Client({ plugins });
 ```
 
-## Usage in Commands
+Registering the plugin through `SeyfertRegistry` is what makes `client.db` and `ctx.user` typed everywhere.
 
-Once the database client is attached, access it from any command via `ctx.client.db`:
+## Using it in a command
+
+`ctx.user()` is already scoped to whoever ran the command — no need to pass `ctx.author.id` around. It hands back the record's data (`balance`) and its methods (`add`):
 
 ```ts
 import { Command, Declare, type CommandContext } from 'seyfert';
 
-@Declare({
-    name: 'balance',
-    description: 'Check your balance',
-})
+@Declare({ name: 'balance', description: 'Check your balance' })
 export default class BalanceCommand extends Command {
     async run(ctx: CommandContext) {
-        const user = await ctx.client.db.findUser(ctx.author.id);
+        const user = await ctx.user();
 
-        if (!user) {
-            return ctx.write({ content: 'You have no account yet.' });
-        }
-
-        await ctx.write({
-            content: `Your balance: **${user.balance}** coins`,
-        });
+        await user.add(50); // daily bonus
+        await ctx.write({ content: `Your balance: **${user.balance}** coins` });
     }
 }
 ```
 
-## Usage in Events
-
-The same pattern works in events, since the client is always available:
+In events or anywhere without a context, reach the connection directly through `client.db`:
 
 ```ts
 import { createEvent } from 'seyfert';
@@ -103,51 +94,11 @@ import { createEvent } from 'seyfert';
 export default createEvent({
     data: { name: 'guildMemberAdd' },
     async run(member, client) {
-        await client.db.createUser(member.id, {
-            guildId: member.guildId,
-            joinedAt: new Date(),
-        });
+        await client.db.createUser(member.id);
     },
 });
 ```
 
-## Usage in Middlewares
-
-```ts
-import { createMiddleware } from 'seyfert';
-
-interface UserData {
-    id: string;
-    isPremium: boolean;
-}
-
-export const withUser = createMiddleware<UserData>(async ({ context, next, stop }) => {
-    const user = await context.client.db.findUser(context.author.id);
-
-    if (!user) {
-        return stop('You need to create an account first. Use /register.');
-    }
-
-    next(user);
-});
-```
-
-Then access the data in your command with type safety:
-
-```ts
-import { Command, Declare, Middlewares, type CommandContext } from 'seyfert';
-
-@Declare({
-    name: 'premium',
-    description: 'Check premium status',
-})
-@Middlewares(['withUser'])
-export default class PremiumCommand extends Command {
-    async run(ctx: CommandContext<never, 'withUser'>) {
-        const user = ctx.metadata.withUser;
-        await ctx.write({
-            content: user.isPremium ? 'You are a premium user!' : 'You are not premium.',
-        });
-    }
-}
-```
+<Callout type="info">
+The `ctx` factory runs **synchronously** before `run()`, so `ctx.user` returns a *function* — the `await ctx.user()` call is what does the async lookup, fresh each time. `ctx.author` is still the Discord user; `ctx.user()` is your database helper.
+</Callout>
