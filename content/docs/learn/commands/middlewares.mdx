@@ -118,7 +118,7 @@ Now every time the `ping` command is executed in a DM, the logger middleware wil
 Notice you can access to the interaction data using `middle.context.interaction`
 </Callout>
 
-On the other hand we could skip the interaction (ignore the interaction and literally do nothing) by using `middle.pass()`
+On the other hand we could skip the interaction (ignore it and literally do nothing) by calling `middle.stop()` with **no arguments**. `stop("message")` stops *and* reports an error to the handler; `stop()` with no arguments stops silently.
 
 ```ts title="logger.middleware.ts" {12} copy
 import { createMiddleware } from "seyfert";
@@ -132,7 +132,7 @@ export const loggerMiddleware = createMiddleware<void>((middle) => {
 
   // Ignore the interaction if it's a DM
   if (middle.context.interaction.channel?.type === ChannelType.DM) {
-    return middle.pass();
+    return middle.stop();
   }
 
   // Pass to the next middleware if the command is being executed in a guild

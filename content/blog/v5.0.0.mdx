@@ -515,6 +515,22 @@ import type { RESTAPIGuildCreateOverwrite } from 'seyfert/lib/types'; // [!code 
 
 Pure rename, to match the `REST*` naming of the rest of the type surface.
 
+**Middlewares**
+
+`pass()` is gone — `stop()` with no arguments now skips the interaction silently.
+
+```ts
+const guard = createMiddleware(({ next, stop, pass }) => { // [!code --]
+const guard = createMiddleware(({ next, stop }) => { // [!code ++]
+  if (ignore) return pass(); // [!code --]
+  if (ignore) return stop(); // skip silently, no error [!code ++]
+  if (blocked) return stop('Not allowed'); // stop with an error — unchanged
+  return next();
+});
+```
+
+`stop()` with no arguments replaces `pass()` (skip and do nothing); `stop('reason')` still stops execution and reports the error to the handler.
+
 **Moderation**
 
 Bans, timeouts and search stopped speaking raw Discord and started requiring the query you already had.
