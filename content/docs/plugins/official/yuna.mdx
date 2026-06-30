@@ -1,33 +1,50 @@
 ---
-title: Yuna Parser
+title: Yuna
+description: Advanced prefix/text command parser for Seyfert — named options, dynamic prefixes, and watchers.
 ---
 
-[Yuna](https://www.npmjs.com/package/yunaforseyfert) is an advanced parser for prefix/text commands in Seyfert: custom syntax for named options, dynamic prefixes, and watchers. It ships as a Seyfert **plugin**.
+[`yunaforseyfert`](https://www.npmjs.com/package/yunaforseyfert) is an advanced parser for prefix/text commands in Seyfert. It adds custom syntax for named options, dynamic per-guild prefixes, and watchers for follow-up input. It installs as a Seyfert plugin and wires its parser and resolver for you.
+
+<Callout type="info">
+Requires Seyfert v5. The plugin keeps `seyfert` as a peer dependency.
+</Callout>
+
+## Installation
 
 ```bash copy title="Installing..."
 pnpm add yunaforseyfert
 ```
 
-## Setup
+## Usage
 
-Register `Yuna.plugin(...)` through `definePlugins`. The plugin wires Yuna's parser and resolver for you — no `setServices` or `HandleCommand` subclass needed:
+Build the plugin list with `definePlugins`, register it on `SeyfertRegistry`, and pass it to the client. The plugin replaces the old `setServices` + `HandleCommand` subclass — no manual wiring:
 
 ```ts
-import { Client, type ParseClient, definePlugins } from 'seyfert';
+import { Client, definePlugins } from 'seyfert';
 import { Yuna } from 'yunaforseyfert';
 
+const plugins = definePlugins(
+    Yuna.plugin({
+        parser: {
+            syntax: { namedOptions: ['-', '--'] },
+            logResult: true,
+        },
+        resolver: {
+            logResult: true,
+        },
+    }),
+);
+
+declare module 'seyfert' {
+    interface SeyfertRegistry { plugins: typeof plugins }
+
+    interface InternalOptions {
+        withPrefix: true;
+    }
+}
+
 const client = new Client({
-    plugins: definePlugins(
-        Yuna.plugin({
-            parser: {
-                syntax: { namedOptions: ['-', '--'] },
-                logResult: true,
-            },
-            resolver: {
-                logResult: true,
-            },
-        }),
-    ),
+    plugins,
     commands: {
         prefix: () => ['!', '?'],
         reply: () => true,
@@ -35,23 +52,15 @@ const client = new Client({
 });
 
 await client.start();
-
-declare module 'seyfert' {
-    interface SeyfertRegistry { client: ParseClient<Client<true>> }
-
-    interface InternalOptions {
-        withPrefix: true;
-    }
-}
 ```
 
 <Callout type="note">
-`InternalOptions { withPrefix: true }` is still required to enable prefix/text commands — the plugin does not set it for you. The prefix itself stays on the client (`commands.prefix`), not in the plugin options. Pass only resolver options; the plugin injects the `client` for you.
+`InternalOptions { withPrefix: true }` is still required to enable prefix/text commands — the plugin does not set it for you. The prefix itself stays on the client (`commands.prefix`), not in the plugin options, and you pass only resolver options (the plugin injects the `client`).
 </Callout>
 
-The plugin also exposes Yuna on the client and command context as `client.yuna` / `ctx.yuna`.
+Registering the plugin through `SeyfertRegistry` is what makes the plugin's `client.yuna` and `ctx.yuna` accessors typed everywhere.
 
-## Dynamic Prefix Per Guild
+## Dynamic prefix per guild
 
 Prefix configuration lives on the client. Return different prefixes per guild with an async function:
 
@@ -71,7 +80,7 @@ const client = new Client({
 
 ## Watchers
 
-Watchers let you monitor text command interactions over time — useful for commands that need follow-up input. The plugin sets up the watcher controller automatically:
+Watchers monitor text command interactions over time — useful for commands that need follow-up input. The plugin sets up the watcher controller automatically:
 
 ```ts
 import { Command, Declare, type CommandContext } from 'seyfert';

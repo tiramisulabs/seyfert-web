@@ -7,6 +7,7 @@
         "scheduler",
         "logger",
         "queues",
-        "chartjs"
+        "chartjs",
+        "yuna"
     ]
 }

@@ -10,7 +10,6 @@
         "database",
         "logger",
         "sharding",
-        "yuna",
         "hot-reload",
         "api-access",
         "music",
