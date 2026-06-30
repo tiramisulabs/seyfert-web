@@ -30,14 +30,15 @@ export const databasePlugin = createPlugin({
     },
     ctx: {
         // ctx.user() resolves the caller's record plus bound methods
-        user: (interaction, client) => async () => {
+        user: (interaction) => async () => {
+            const { db } = interaction.client;
             const record =
-                (await client.db.findUser(interaction.user.id)) ??
+                (await db.findUser(interaction.user.id)) ??
                 { id: interaction.user.id, balance: 0 };
 
             return {
                 ...record, // id, balance
-                add: (amount: number) => client.db.addBalance(record.id, amount),
+                add: (amount: number) => db.addBalance(record.id, amount),
             };
         },
     },

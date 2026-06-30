@@ -2,7 +2,7 @@
 title: Yuna Parser
 ---
 
-[Yuna](https://www.npmjs.com/package/yunaforseyfert) is an advanced parser for prefix/text commands in Seyfert. It provides custom syntax for named options, dynamic prefixes, and watchers.
+[Yuna](https://www.npmjs.com/package/yunaforseyfert) is an advanced parser for prefix/text commands in Seyfert: custom syntax for named options, dynamic prefixes, and watchers. It ships as a Seyfert **plugin**.
 
 ```bash copy title="Installing..."
 pnpm add yunaforseyfert
@@ -10,32 +10,27 @@ pnpm add yunaforseyfert
 
 ## Setup
 
-Override the default command handling with Yuna's parser and resolver:
+Register `Yuna.plugin(...)` through `definePlugins`. The plugin wires Yuna's parser and resolver for you — no `setServices` or `HandleCommand` subclass needed:
 
 ```ts
-import { Client, type ParseClient } from 'seyfert';
-import { HandleCommand } from 'seyfert/lib/commands/handle';
+import { Client, type ParseClient, definePlugins } from 'seyfert';
 import { Yuna } from 'yunaforseyfert';
 
 const client = new Client({
+    plugins: definePlugins(
+        Yuna.plugin({
+            parser: {
+                syntax: { namedOptions: ['-', '--'] },
+                logResult: true,
+            },
+            resolver: {
+                logResult: true,
+            },
+        }),
+    ),
     commands: {
         prefix: () => ['!', '?'],
         reply: () => true,
-    },
-});
-
-client.setServices({
-    handleCommand: class extends HandleCommand {
-        argsParser = Yuna.parser({
-            syntax: { namedOptions: ['-', '--'] },
-        });
-
-        resolveCommandFromContent = Yuna.resolver({
-            client: this.client,
-            afterPrepare: (metadata) => {
-                this.client.logger.info(`Loaded ${metadata.commands.length} commands`);
-            },
-        });
     },
 });
 
@@ -51,12 +46,14 @@ declare module 'seyfert' {
 ```
 
 <Callout type="note">
-Remember to enable prefix support via `InternalOptions` module augmentation as shown above.
+`InternalOptions { withPrefix: true }` is still required to enable prefix/text commands — the plugin does not set it for you. The prefix itself stays on the client (`commands.prefix`), not in the plugin options. Pass only resolver options; the plugin injects the `client` for you.
 </Callout>
+
+The plugin also exposes Yuna on the client and command context as `client.yuna` / `ctx.yuna`.
 
 ## Dynamic Prefix Per Guild
 
-Use an async prefix function to return different prefixes per guild:
+Prefix configuration lives on the client. Return different prefixes per guild with an async function:
 
 ```ts
 import { Client } from 'seyfert';
@@ -74,7 +71,7 @@ const client = new Client({
 
 ## Watchers
 
-Watchers let you monitor text command interactions over time — useful for commands that need follow-up input:
+Watchers let you monitor text command interactions over time — useful for commands that need follow-up input. The plugin sets up the watcher controller automatically:
 
 ```ts
 import { Command, Declare, type CommandContext } from 'seyfert';
