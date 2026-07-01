@@ -4,7 +4,7 @@ title: Context Menu Commands
 
 Context menu commands appear when a user right-clicks on a user or a message in Discord. Unlike slash commands, they don't have options or descriptions visible to the user — they simply appear as actions in the context menu.
 
-Seyfert provides the `ContextMenuCommand` class specifically for these commands, so you don't need to manually set the `type` in `@Declare`.
+Seyfert provides the `ContextMenuCommand` class specifically for these commands. In `@Declare` you must set the `type` explicitly — `ApplicationCommandType.User` or `ApplicationCommandType.Message` — and you omit the `description`, since context menu commands don't have one.
 
 ## User Commands
 

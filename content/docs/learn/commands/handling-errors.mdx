@@ -80,7 +80,7 @@ const Devs = [''];
 // ---cut---
 import { createMiddleware } from "seyfert";
 
-export default createMiddleware<void>(({ context, next, stop, pass }) => {
+export default createMiddleware<void>(({ context, next, stop }) => {
     if (!Devs.includes(context.author.id)) {
         return stop("User is not a developer");
     }

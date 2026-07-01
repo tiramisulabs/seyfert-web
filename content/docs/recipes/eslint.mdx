@@ -1,0 +1,92 @@
+---
+title: ESLint
+---
+
+[`@slipher/eslint-plugin`](https://www.npmjs.com/package/@slipher/eslint-plugin) is a **type-aware** ESLint plugin for Seyfert. Every rule resolves symbols through the TypeScript type checker, so it only fires on Seyfert's *own* `Command`, `Declare`, `Options`, … — never a same-named symbol from elsewhere — and catches mistakes that would otherwise surface as a runtime crash or a Discord `400`, as you write.
+
+### Installation
+
+The rules are type-aware, so they run on top of [`typescript-eslint`](https://typescript-eslint.io). TypeScript is already part of a Seyfert project, so you only need to add the plugin, ESLint, and the typescript-eslint tooling:
+
+```sh title="Dependencies..." copy showLineNumbers=false
+pnpm add -D @slipher/eslint-plugin eslint typescript-eslint
+```
+
+### Configuration
+
+Wire the typescript-eslint parser with type information, then spread the plugin's `recommended` config into your flat config:
+
+```ts twoslash title="eslint.config.mjs" copy
+import tseslint from 'typescript-eslint';
+import { configs as seyfert } from '@slipher/eslint-plugin';
+
+export default tseslint.config(
+  { languageOptions: { parserOptions: { projectService: true } } },
+  ...seyfert.recommended,
+);
+```
+
+`projectService: true` is what gives the rules their type information — without it, the type-aware rules can't run.
+
+<Callout type="warn" title="Import the named `configs` export">
+`@slipher/eslint-plugin` is a CommonJS package. Use the **named** `configs` export as shown above — a default import (`import seyfert from '@slipher/eslint-plugin'`) yields the module namespace under ESM interop, not the configs object.
+</Callout>
+
+### What it catches
+
+`configs.recommended` turns on these rules as errors:
+
+| Rule | Catches |
+| --- | --- |
+| `require-declare` | a command class without `@Declare` |
+| `no-deep-imports` | a `seyfert/lib/...` deep import when the symbol is root-exported *(auto-fixable)* |
+| `options-use-builders` | a raw object in `@Options({ ... })` instead of a `createXOption` builder |
+| `no-hanging-middleware` | a `createMiddleware` path that never calls `next()` / `stop()` |
+| `decorator-target` | `@Group` on a `SubCommand`, or `@Groups` / `@GroupsT` / `@AutoLoad` on a `Command` |
+| `required-options-order` | a required option declared after an optional one (Discord `400`) |
+| `declare-description` | an empty, or over-100-character, command description |
+| `context-menu-declare` | a `ContextMenuCommand` `@Declare` missing `type`, or carrying a `description` |
+| `autocomplete-respond` | `.reply()` on an autocomplete interaction — it throws; use `.respond()` |
+| `decorator-on-command` | `@Declare` / `@Options` / `@Middlewares` / `@Locales` / `@LocalesT` on a non-command class |
+| `config-default-export` | a `config.bot()` / `config.http()` that isn't the file's `export default` |
+| `i18n-resolve-with-get` | a `ctx.t` locale proxy used as a string without `.get()` |
+| `group-exists` | a subcommand's `@Group('x')` whose group isn't declared on the parent command |
+| `no-method-destructure` | a Seyfert method pulled off its object (`const { editOrReply } = ctx`) — detaching it drops `this` and throws at runtime |
+
+### Opt-in rules
+
+`prefer-typed-group` is a best-practice nudge rather than a correctness error, so it isn't in `recommended`. Turn it on to steer `@Group('x')` toward the type-validated `@Group(groups, 'x')` overload:
+
+```ts twoslash title="eslint.config.mjs" copy
+import tseslint from 'typescript-eslint';
+import { configs as seyfert } from '@slipher/eslint-plugin';
+// ---cut---
+export default tseslint.config(
+  { languageOptions: { parserOptions: { projectService: true } } },
+  ...seyfert.recommended,
+  {
+    rules: {
+      'seyfert/prefer-typed-group': 'warn',
+    },
+  },
+);
+```
+
+### Un-awaited responses
+
+By design the plugin has no Seyfert-specific rule for a forgotten `await`. Enable typescript-eslint's [`no-floating-promises`](https://typescript-eslint.io/rules/no-floating-promises) so an un-awaited `ctx.write(...)` or `ctx.editOrReply(...)` is flagged:
+
+```ts twoslash title="eslint.config.mjs"
+import tseslint from 'typescript-eslint';
+import { configs as seyfert } from '@slipher/eslint-plugin';
+// ---cut---
+export default tseslint.config(
+  { languageOptions: { parserOptions: { projectService: true } } },
+  ...seyfert.recommended,
+  {
+    rules: {
+      '@typescript-eslint/no-floating-promises': 'error',
+    },
+  },
+);
+```

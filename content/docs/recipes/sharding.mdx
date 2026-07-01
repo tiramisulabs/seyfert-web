@@ -17,7 +17,7 @@ JavaScript runtimes are single-threaded, which means that without sharding, all 
 
 ## Managing shards
 
-The base of the `Worker` is to allow to execute code in parallel in different parts of the CPU, either in threads or different processes. In terms of discord, this means the ability to connect several `shards` by spreading the load on each `Worker`, for seyfert this is just changing the `mode` property in the `WorkerManager` to decide the execution mode between `threads` to `spawn` clients on processor threads or `cluster` to `spawn` clients on different processes of the runtime.
+The base of the `Worker` is to allow to execute code in parallel in different parts of the CPU, either in threads or different processes. In terms of discord, this means the ability to connect several `shards` by spreading the load on each `Worker`, for seyfert this is just changing the `mode` property in the `WorkerManager` to decide the execution mode between `threads` to `spawn` clients on processor threads or `clusters` to `spawn` clients on different processes of the runtime.
 
 <Tabs items={['manager.ts', 'client.ts']}>
 	<Tab value='manager.ts'>
