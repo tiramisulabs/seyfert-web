@@ -33,9 +33,9 @@ FROM base AS build
 
 COPY package*.json ./
 
-## Ref: https://docs.npmjs.com/cli/v10/commands/npm-ci
+## Ref: https://docs.npmx.dev/cli/v10/commands/npm-ci
 RUN npm ci
-## Ref: https://docs.npmjs.com/cli/v10/commands/npm-prune
+## Ref: https://docs.npmx.dev/cli/v10/commands/npm-prune
 RUN npm prune --production
 
 RUN npm i -g typescript

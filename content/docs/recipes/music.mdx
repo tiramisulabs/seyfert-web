@@ -3,7 +3,7 @@ title: Music Library
 ---
 import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
 
-Seyfert doesn't have support for playing audio, but we can use an external library called [hoshimi](https://npmjs.com/package/hoshimi), an easy to use [Lavalink v4](https://lavalink.dev) client.
+Seyfert doesn't have support for playing audio, but we can use an external library called [hoshimi](https://npmx.dev/package/hoshimi), an easy to use [Lavalink v4](https://lavalink.dev) client.
 
 ### Installation
 
@@ -24,7 +24,7 @@ You also need a running [Lavalink v4](https://lavalink.dev) node for hoshimi to 
 To be able to move forward within this guide it is highly recommended to read the [Understanding declare module](/docs/learn/getting-started/declare-module) for a better understanding of what we are doing.
 </Callout>
 
-hoshimi needs two things from the client: the **raw** gateway packets, so it can track voice state, and the bot id once it's **ready**, so it can authenticate against the node. We attach the manager to a small `Client` subclass and wire each of those with its own event. For further information about the different options and events see the official [hoshimi documentation](https://www.npmjs.com/package/hoshimi).
+hoshimi needs two things from the client: the **raw** gateway packets, so it can track voice state, and the bot id once it's **ready**, so it can authenticate against the node. We attach the manager to a small `Client` subclass and wire each of those with its own event. For further information about the different options and events, see the official [hoshimi documentation](https://www.npmx.dev/package/hoshimi).
 
 <Tabs items={['index.ts', 'src/events/raw.ts', 'src/events/botReady.ts', 'play.ts']}>
 <Tab value="index.ts">
