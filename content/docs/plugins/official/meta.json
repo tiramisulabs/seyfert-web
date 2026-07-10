@@ -6,6 +6,7 @@
         "cooldown",
         "scheduler",
         "logger",
+        "opentelemetry",
         "queues",
         "chartjs",
         "yuna"
