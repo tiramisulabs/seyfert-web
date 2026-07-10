@@ -1,0 +1,213 @@
+---
+title: Distributed scaling
+description: Discover hosts, place gateway workers, and redistribute them live with @slipher/scaler.
+---
+
+`@slipher/scaler` spreads Seyfert gateway workers across several VPSs or hosts. One process acts as the master, while an agent on every host advertises its capacity and runs the workers assigned to it.
+
+The scaler moves **logical workers**, not individual shards. Each logical worker keeps the same contiguous shard range while its physical process can move to another host.
+
+<Callout type="info">
+Requires Seyfert v5. The scaler uses `WorkerManager` custom mode and its generation lifecycle; it is infrastructure you construct directly, not a `SeyfertPlugin` installed on `Client`.
+</Callout>
+
+## Installation
+
+Install the scaler beside Seyfert on the master and every agent host:
+
+```bash copy title="Installing..."
+pnpm add @slipher/scaler seyfert
+```
+
+Use Node.js 22.13 or newer everywhere, and keep every host on the same Node.js major. The built-in transport uses Node's v8 serialization format.
+
+## How it works
+
+The cluster has three parts:
+
+- **WorkerManager** owns the Discord gateway topology and worker generations.
+- **ScalerMaster** accepts host connections, plans placement, and routes custom worker operations.
+- **ScalerAgent** runs on each host, advertises capacity, and supervises its assigned worker processes.
+
+The master is authoritative. Agents do not decide which shards they own; they receive a logical worker allocation from the master and start the corresponding Seyfert worker process.
+
+## Starting the master
+
+In semi-automatic mode you choose `shardsPerWorker`, resources, and placement policy, while Discord supplies the recommended total shard count through Get Gateway Bot:
+
+```ts title="src/master.ts"
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { ScalerMaster, SeyfertScaler } from '@slipher/scaler';
+import { WorkerManager } from 'seyfert';
+
+const master = new ScalerMaster({
+    authToken: process.env.SCALER_TOKEN!,
+    host: '0.0.0.0',
+    port: 8765,
+    leaseDurationMs: 15_000,
+    tls: {
+        key: readFileSync(process.env.SCALER_TLS_KEY!),
+        cert: readFileSync(process.env.SCALER_TLS_CERT!),
+    },
+});
+
+const manager = new WorkerManager({
+    mode: 'custom',
+    adapter: master,
+    path: resolve('dist/worker.js'),
+    token: process.env.BOT_TOKEN!,
+    shardsPerWorker: 8,
+    // The scaler owns worker redistribution. Keep total-shard resharding disabled.
+    resharding: { interval: 0, percentage: 80 },
+    generationLifecycle: 'eager',
+    maxCutoverBufferEvents: 10_000,
+    maxShadowHydrationEvents: 50_000,
+    maxGenerationMessageQueueEvents: 10_000,
+});
+
+const scaler = new SeyfertScaler({
+    master,
+    manager,
+    workers: {
+        mode: 'recommended',
+        resources: { cpu: 1, memory: 512 },
+        requiredLabels: { role: 'gateway' },
+    },
+    minimumHosts: 2,
+    discoveryWindowMs: 2_000,
+    placement: {
+        strategy: 'balanced',
+        minImprovement: 0.05,
+    },
+    maxConcurrentMigrations: 1,
+    readinessTimeoutMs: 120_000,
+    drainTimeoutMs: 60_000,
+    reconcileCooldownMs: 30_000,
+});
+
+await scaler.start();
+```
+
+`SeyfertScaler.start()` resolves the topology before opening the master listener. When `WorkerManager` has no preloaded gateway `info`, it requests Discord's authenticated [Get Gateway Bot](https://docs.discord.com/developers/events/gateway#get-gateway-bot) endpoint, validates the recommendation, and records an immutable startup snapshot. Concurrent callers share that resolution, failed attempts can retry, and `WorkerManager.start()` reuses the successful result instead of requesting it again.
+
+<Callout type="warn">
+The recommendation is a startup snapshot, not live total-shard resharding. If Discord later recommends a different total, apply it through a separate coordinated reshard operation.
+</Callout>
+
+## Starting an agent
+
+Run one agent on every host that can receive gateway workers:
+
+```ts title="src/agent.ts"
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { ProcessWorkerRunner, ScalerAgent } from '@slipher/scaler';
+
+const agent = new ScalerAgent({
+    // Keep this stable across restarts of the same machine.
+    hostId: process.env.HOST_ID!,
+    capacity: {
+        maxWorkers: Number(process.env.MAX_WORKERS ?? 4),
+        cpu: 4,
+        memory: 8_192,
+    },
+    zone: process.env.ZONE,
+    labels: { role: 'gateway' },
+    master: {
+        host: process.env.SCALER_MASTER_HOST!,
+        port: 8765,
+        authToken: process.env.SCALER_TOKEN!,
+        tls: { ca: readFileSync(process.env.SCALER_TLS_CA!) },
+    },
+    runner: new ProcessWorkerRunner({
+        modulePath: resolve('dist/worker.js'),
+    }),
+});
+
+await agent.start();
+
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+    process.once(signal, () => void agent.stop());
+}
+```
+
+`hostId` identifies the machine and must remain stable. The agent creates a new `bootId` for each process start, so the master can reject traffic from an older boot. CPU and memory are scheduling units: use the same units in worker requirements and host capacity.
+
+The worker entry passed to `ProcessWorkerRunner` is still a regular Seyfert `WorkerClient` entry:
+
+```ts title="src/worker.ts"
+import { WorkerClient } from 'seyfert';
+
+const client = new WorkerClient();
+await client.start();
+```
+
+## Scaling the cluster
+
+The scaler supports three operational changes:
+
+- **Horizontal scaling** — start another agent. After discovery and cooldown, the master moves only the workers needed to improve placement.
+- **Vertical scaling** — restart an agent with larger `maxWorkers`, CPU, or memory capacity.
+- **Cordon** — register an agent with `cordoned: true` to prevent new placements. Existing workers remain unless `placement.evictCordoned` is enabled.
+
+Placement can use `balanced`, `spread`, or `binpack`. Labels, allowed zones, worker slots, CPU, and memory are hard constraints checked before ranking hosts.
+
+The target needs temporary capacity for both the active source and the shadow replacement. A cluster with no spare worker slot or resources may be unable to rebalance even when the final placement would fit.
+
+## Live redistribution
+
+For every move, the scaler and `WorkerManager` coordinate a new physical generation of the same logical worker:
+
+1. Start a shadow generation on the target host.
+2. Wait for its application and shards to become ready.
+3. Arm its cutover buffer.
+4. Drain or fence the source generation.
+5. Activate the target and replay buffered dispatches.
+6. Commit the new generation and terminate the old source.
+
+Only the active generation receives normal manager traffic. If the candidate fails before the drain boundary, the scaler restores the previous route. After that boundary it keeps the target route and retries recovery instead of assuming the old source is safe.
+
+<Callout type="warn">
+Live moves use new Discord `IDENTIFY` sessions and provide at-least-once dispatch delivery. Consumers should be idempotent because a short cutover window can produce duplicate events. Keep `maxConcurrentMigrations` conservative and account for Discord's session-start limits.
+</Callout>
+
+With `generationLifecycle: 'eager'`, the candidate loads the application while shadowed. This gives the strongest readiness check, but startup hooks must tolerate overlapping generations. Use `'deferred'` when duplicate startup side effects are more dangerous than discovering an application startup failure after the source drains.
+
+## Manual topology
+
+Use explicit topology when you need to control the total shard count yourself. Reuse the same `ScalerMaster`; only the worker topology changes:
+
+```ts
+import { resolve } from 'node:path';
+import { createLogicalWorkers, SeyfertScaler } from '@slipher/scaler';
+import { WorkerManager } from 'seyfert';
+
+const totalShards = 64;
+const shardsPerWorker = 8;
+const workers = createLogicalWorkers({ totalShards, shardsPerWorker });
+
+const manager = new WorkerManager({
+    mode: 'custom',
+    adapter: master,
+    path: resolve('dist/worker.js'),
+    totalShards,
+    shardsPerWorker,
+    workers: workers.length,
+    resharding: { interval: 0, percentage: 80 },
+});
+
+const scaler = new SeyfertScaler({ master, manager, workers });
+```
+
+`createLogicalWorkers()` accepts an exclusive `shardEnd`, matching `WorkerManager`. Each generated logical worker stores an inclusive `shardEnd` for placement.
+
+## Transport and failure safety
+
+The built-in master-agent transport requires TLS outside loopback unless you explicitly allow plaintext for a trusted encrypted overlay network. Prefer a different authentication token per host when possible.
+
+Agents renew allocation leases and supervise worker children locally. If an agent disconnects or its lease expires, the allocation is fenced before the logical worker is reassigned. Run one authoritative master per cluster; high availability for the master requires external consensus and persisted fencing terms.
+
+By default, a source that exceeds `drainTimeoutMs` is terminated and must acknowledge process exit before the candidate activates. Set `forceTerminateOnDrainTimeout: false` on `SeyfertScaler` when an external lease or supervisor must provide the fencing proof instead.
+
+Keep `drainTimeoutMs` above `leaseDurationMs`, and set `readinessTimeoutMs` high enough for the slowest shard connection wave plus application hydration.
