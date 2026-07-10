@@ -8,7 +8,7 @@ description: Discover hosts, place gateway workers, and redistribute them live w
 The scaler moves **logical workers**, not individual shards. Each logical worker keeps the same contiguous shard range while its physical process can move to another host.
 
 <Callout type="info">
-Requires Seyfert v5. The scaler uses `WorkerManager` custom mode and its generation lifecycle; it is infrastructure you construct directly, not a `SeyfertPlugin` installed on `Client`.
+Requires a generation-aware Seyfert v5 build. The scaler uses `WorkerManager` custom mode and its generation lifecycle; it is infrastructure you construct directly, not a `SeyfertPlugin` installed on `Client`.
 </Callout>
 
 ## Installation
@@ -60,17 +60,12 @@ const manager = new WorkerManager({
     shardsPerWorker: 8,
     // The scaler owns worker redistribution. Keep total-shard resharding disabled.
     resharding: { interval: 0, percentage: 80 },
-    generationLifecycle: 'eager',
-    maxCutoverBufferEvents: 10_000,
-    maxShadowHydrationEvents: 50_000,
-    maxGenerationMessageQueueEvents: 10_000,
 });
 
 const scaler = new SeyfertScaler({
     master,
     manager,
     workers: {
-        mode: 'recommended',
         resources: { cpu: 1, memory: 512 },
         requiredLabels: { role: 'gateway' },
     },
@@ -172,7 +167,7 @@ Only the active generation receives normal manager traffic. If the candidate fai
 Live moves use new Discord `IDENTIFY` sessions and provide at-least-once dispatch delivery. Consumers should be idempotent because a short cutover window can produce duplicate events. Keep `maxConcurrentMigrations` conservative and account for Discord's session-start limits.
 </Callout>
 
-With `generationLifecycle: 'eager'`, the candidate loads the application while shadowed. This gives the strongest readiness check, but startup hooks must tolerate overlapping generations. Use `'deferred'` when duplicate startup side effects are more dangerous than discovering an application startup failure after the source drains.
+Shadow workers load the application before drain, so startup hooks must tolerate overlapping generations. Hooks can inspect `workerData.shadow` when they need to distinguish a candidate from the active allocation.
 
 ## Manual topology
 
@@ -193,14 +188,13 @@ const manager = new WorkerManager({
     path: resolve('dist/worker.js'),
     totalShards,
     shardsPerWorker,
-    workers: workers.length,
     resharding: { interval: 0, percentage: 80 },
 });
 
 const scaler = new SeyfertScaler({ master, manager, workers });
 ```
 
-`createLogicalWorkers()` accepts an exclusive `shardEnd`, matching `WorkerManager`. Each generated logical worker stores an inclusive `shardEnd` for placement.
+`WorkerManager` derives its worker count from the effective shard range and `shardsPerWorker`. `createLogicalWorkers()` accepts an exclusive `shardEnd`, matching `WorkerManager`; each generated logical worker stores an inclusive `shardEnd` for placement.
 
 ## Transport and failure safety
 
