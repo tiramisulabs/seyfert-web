@@ -73,8 +73,9 @@ class AudioProcessor {
 
 	// fires on the queue-wide channel when a job completes
 	@OnQueueEvent('completed')
-	onCompleted({ job, result }: { job: QueueJobOf<'audio'>; result: string }) {
-		job.snapshot();
+	onCompleted({ job, jobId, result }: { job: QueueJobOf<'audio'> | undefined; jobId: string; result: string }) {
+		job?.snapshot();
+		void jobId;
 		void result;
 	}
 }
@@ -171,9 +172,9 @@ Avoid importing the exported `client` from processors or services that are loade
 
 ### Events
 
-`@OnWorkerEvent(event)` is local to the process that ran the job — use it for local cache updates or process-local instrumentation. `@OnQueueEvent(event)` is the queue/global channel. With `memory()` both decorators observe the same single-process queue; with `persistent()`, queue-level events are prepared for BullMQ `QueueEvents`.
+`@OnWorkerEvent(event)` is local to the process that ran the job — use it for local cache updates or process-local instrumentation. `@OnQueueEvent(event)` is the queue/global channel and accepts `added`, `completed`, and `failed`. With `memory()` both decorators observe the same single-process queue. With `persistent()`, queue-level events come from BullMQ `QueueEvents` and use one extra Redis connection per queue per replica.
 
-All listeners receive one object payload: `{ job }`, `{ job, result }`, `{ job, error }`, `{ job, error, delay }`, or `{}` for `idle`. Direct queue instances also support `on()` and `once()`.
+All listeners receive one object payload: `{ job }`, `{ job, result }`, `{ job, error }`, `{ job, error, delay }`, or `{}` for `idle`. Global payloads always include `jobId`. With `persistent()`, BullMQ `QueueEvents` payloads use `job: undefined`; use `jobId` as the stable identity and call `queue.getJob(jobId)` when you need a job that BullMQ still retains. Direct queue instances also support `on()` and `once()`.
 
 Listener errors are isolated — throwing inside a handler is reported through `reportListenerError` and never changes job state, retry counts, or whether later listeners run:
 
@@ -192,7 +193,7 @@ queues({
 
 The driver decides where jobs live — your queue and processor code stays the same, so you can swap drivers without touching anything else.
 
-`memory()` runs jobs in the current process and supports `delay`, `attempts`, `retryDelay`, `priority`, `concurrency`, and the lifecycle events `added`, `active`, `completed`, `failed`, `retrying`, and `idle`.
+`memory()` runs jobs in the current process and supports `delay`, `attempts`, `retryDelay`, `priority`, `concurrency`, and the lifecycle events `added`, `active`, `completed`, `failed`, `retrying`, and `idle`. Like BullMQ, lower numeric priorities run first. It retains at most 1,000 completed and 1,000 failed jobs per queue by default; set `retention` to another non-negative count, or `0` to retain none.
 
 `persistent()` runs jobs on BullMQ/Redis so they survive restarts and spread across workers:
 
@@ -205,9 +206,21 @@ const queuesPlugin = queues({
 		connection: { host: '127.0.0.1', port: 6379 },
 		prefix: 'slipher',
 		defaultJobOptions: { removeOnComplete: true, attempts: 3 },
+		queueEventsOptions: { blockingTimeout: 10_000 },
 	}),
 	processors: [AudioProcessor],
 });
+```
+
+Set `autostart: false` on either driver when a processor should be registered without consuming jobs until `await queue.start()`. Use `await queue.pause()` to pause consumption explicitly.
+
+Queues created after the Seyfert client starts initialize lazily on their first asynchronous operation. Await late processor registration so connection and worker-readiness errors remain observable:
+
+```ts
+const lateQueue = client.queues.get<{ fileId: string }, void>('late-media');
+await lateQueue.add({ fileId: 'file-1' });
+
+await client.queues.register({ processors: [LateMediaProcessor] });
 ```
 
 Per-job options are the final `add()` argument:

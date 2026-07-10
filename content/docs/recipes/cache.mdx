@@ -82,6 +82,65 @@ Seyfert allows you to provide your own adapter for the cache, which you can thin
 The `MemoryAdapter` stores all data in memory, while the `LimitedMemoryAdapter` limits the amount of data stored in memory by providing expiration times and limits of entries.
 </Callout>
 
+### Redis adapter
+
+Use `@slipher/redis-adapter` when multiple processes need to share Seyfert's cache:
+
+```sh
+pnpm add @slipher/redis-adapter
+```
+
+```ts
+import { RedisAdapter } from '@slipher/redis-adapter';
+import { Client } from 'seyfert';
+
+const adapter = new RedisAdapter({
+    redisOptions: { url: process.env.REDIS_URL },
+    namespace: 'my-bot',
+});
+
+const client = new Client();
+client.setServices({ cache: { adapter } });
+await client.start();
+```
+
+For Redis TTLs and an optional process-local read-through cache, use `ExpirableRedisAdapter`. Resource overrides inherit omitted values from `default`:
+
+```ts
+import { ExpirableRedisAdapter } from '@slipher/redis-adapter';
+import { Client } from 'seyfert';
+
+const adapter = new ExpirableRedisAdapter(
+    {
+        redisOptions: { url: process.env.REDIS_URL },
+        namespace: 'my-bot',
+    },
+    {
+        default: { expire: 5 * 60_000, ondemand: true, limit: 1_000 },
+        message: { expire: 30_000, limit: 100 },
+        presence: { ondemand: false },
+    },
+);
+
+const client = new Client();
+client.setServices({ cache: { adapter } });
+```
+
+| Option | Behavior |
+| --- | --- |
+| `expire` | Redis TTL in milliseconds. For hash/object writes, positive values refresh it, non-positive values persist the key, and `undefined` preserves the current TTL. Relationship members are separate string keys: positive values set their TTL; otherwise an add stores them without a TTL. |
+| `ondemand` | Enables an adapter-local LRU read-through and write-through cache. Disabled by default. |
+| `limit` | Maximum local entries for that resource. `0` disables local caching; `undefined` or `Infinity` is unlimited. |
+| `native` | Disables the adapter-local cache for a resource whose supplied node-redis client already uses RESP3 `clientSideCache`. It does not enable native caching itself. |
+
+The local cache respects Redis' remaining `PTTL`, but it is process-local and receives no cross-process invalidations. If several processes update the same data, keep `ondemand` disabled or provide a node-redis client configured for RESP3 client-side caching and set `native: true` in the applicable default or resource policy.
+
+Both adapters own clients they construct. Close that client during shutdown:
+
+```ts
+await adapter.client.close();
+```
+
 ## LimitedCollection
 
 Seyfert also ships a `LimitedCollection`, a TTL-based key-value collection handy for temporary data outside the resource cache:

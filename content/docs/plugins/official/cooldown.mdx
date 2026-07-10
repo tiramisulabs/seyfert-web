@@ -101,6 +101,8 @@ For `guild` and `channel` scopes, DMs fall back to `author.id` because Discord m
 
 For subcommands the manager uses `subcommand.cooldown ?? parent.cooldown`, so a parent cooldown applies to its subcommands unless one declares its own.
 
+Tiered limits such as premium users receiving more uses are intentionally outside the 1.0 surface. Keep that policy in application code rather than passing a resolver where `uses` expects a number.
+
 ## Middleware
 
 The middleware is the simplest path: with `cooldown({ middleware: true })` the plugin registers the default `cooldown` middleware at runtime and contributes its type through Seyfert's plugin registry. A decorated command is gated automatically. You can also assign the middleware explicitly by name:
@@ -204,11 +206,11 @@ Outside a command (admin commands, tests, background jobs) use the explicit form
 
 ```ts
 // preview the bucket without mutating it
-await client.cooldown?.check({ name: 'ping', target: userId, guildId });
+await client.cooldown.check({ name: 'ping', target: userId, guildId });
 // consume 2 uses at once via cost
-await client.cooldown?.consume({ name: 'ping', target: userId, guildId, cost: 2 });
+await client.cooldown.consume({ name: 'ping', target: userId, guildId, cost: 2 });
 // clear the bucket entirely
-await client.cooldown?.reset({ name: 'ping', target: userId, guildId });
+await client.cooldown.reset({ name: 'ping', target: userId, guildId });
 ```
 
 - `check` previews the result without mutating the bucket.
@@ -247,7 +249,7 @@ type CooldownResult =
 
 ## Shared buckets
 
-Commands that share a `group` share the same cache key, shaped as `${group ?? resolvedCommandName}:${typeLabel}:${target}`:
+Commands that share a `group` share the same cache key. Namespace and target segments are encoded, so spaces and separators in custom values cannot collide: `${encodeURIComponent(group ?? resolvedCommandName)}:${typeLabel}:${encodeURIComponent(target)}`.
 
 ```ts
 import { Command, Declare } from 'seyfert';
@@ -263,12 +265,18 @@ export class BanCommand extends Command {}
 export class KickCommand extends Command {}
 ```
 
-A user that runs `/ban` cannot immediately run `/kick`; both consume `moderation:user:<userId>`. `group` only changes the bucket namespace once a cooldown is resolved, it does not make subcommands inherit cooldowns.
+A user that runs `/ban` cannot immediately run `/kick`; both consume `moderation:user:<userId>`. `group` only changes the bucket namespace once a cooldown is resolved; it does not make subcommands inherit cooldowns.
+
+Commands in one group should use the same `type`, `interval`, and `uses`. The command being consumed supplies those settings, so mixing policies makes the effective limit depend on call order.
 
 ## Storage atomicity
 
-`consume` is atomic when the cache adapter opts in to `AtomicCooldownAdapter` with `supportsAtomicCooldowns: true` and a Redis-compatible `eval(script, keys, args)` method. Adapters that expose `eval` without that marker fall back to the regular read-decide-write path.
+`consume` is atomic across processes when the cache adapter explicitly opts in to `AtomicCooldownAdapter` with `supportsAtomicCooldowns: true` and a Redis-compatible `eval(script, keys, args)` method. Adapters that merely expose `eval` without that marker use the regular read-decide-write path.
+
+The Redis script uses Redis `TIME` as its clock source and the package's resource key constants. `ExpirableRedisAdapter` deliberately does not opt in because its TTL and relationship bookkeeping are adapter-specific.
+
+For non-atomic async adapters, one manager serializes `consume` and `reset` per bucket key. That prevents overspend inside one process without blocking unrelated buckets, but it cannot coordinate separate processes or replicas.
 
 <Callout type="info">
-Only `consume` uses the atomic path. `check` and `reset` remain regular cache operations, so make `consume` the admission authority in multi-worker bots.
+`check` is a read-only preview and can become stale immediately. Use `consume` as the admission authority, especially in multi-worker bots.
 </Callout>

@@ -3,7 +3,7 @@ title: Logger
 description: Structured, request-aware logging for Seyfert with pluggable console, Pino, and evlog backends.
 ---
 
-`@slipher/logger` gives every command, component, and modal a single request-scoped **wide event** as `ctx.logger`, emitted automatically when the interaction ends — so an interaction becomes one queryable entry with its outcome, duration, and every field you attached, instead of a scattered pile of log lines. Ordinary level methods (`info`, `warn`, …) still emit immediately, and output flows through a pluggable adapter: a pretty console by default, or Pino / evlog to feed an existing pipeline.
+`@slipher/logger` gives every command, component, and modal a single request-scoped **wide event** as `ctx.logger`, emitted automatically when the interaction ends — so an interaction becomes one queryable entry with its outcome, duration, and every field you attached, instead of a scattered pile of log lines. Ordinary level methods (`info`, `warn`, …) still emit immediately. The renderer is the primary output adapter, while optional transports can send the same structured entry elsewhere.
 
 <Callout type="info">
 A wide event is one rich, structured entry describing *what happened to this request* — you accumulate context as the work progresses and emit a single event at the end. The plugin manages that lifecycle for you, so on the happy path you never call `emit()` yourself.
@@ -49,7 +49,8 @@ declare module 'seyfert' {
 | `name` | `string` | A binding that labels every record. |
 | `level` | `LogLevel` | Minimum level to emit: `'trace' \| 'debug' \| 'info' \| 'warn' \| 'error' \| 'fatal' \| 'silent'`. Default `'info'`. |
 | `bindings` | `Record<string, unknown>` | Static fields attached to every record. |
-| `adapter` | `LoggerAdapter` | Where records go. Default: the pretty/JSON console adapter. |
+| `renderer` | `LoggerAdapter` | Primary output adapter. Defaults to `prettyRenderer()` and conventionally owns terminal output. |
+| `transports` | `readonly LoggerAdapter[]` | Additional adapters invoked for every entry. Choose non-printing sinks when the renderer already owns the terminal. |
 | `context` | `AutoContextConfig` | Toggle which Seyfert fields are auto-extracted (see [Auto-extracted context](#auto-extracted-context)). |
 
 ## Per-interaction wide events
@@ -57,7 +58,8 @@ declare module 'seyfert' {
 The plugin attaches a wide-event logger to every command, component, and modal context as `ctx.logger` and drives its lifecycle:
 
 - `onBeforeMiddlewares` / `onBeforeOptions` write immediate `debug` breadcrumbs.
-- A middleware, option, permission, or runtime failure emits **one** wide event with `outcome: 'error'` (or `'denied'`) at the point it happens.
+- A middleware that calls `stop()` or `stop(null)` emits **one** wide event with `outcome: 'skipped'`.
+- Middleware and permission denials emit **one** wide event with `outcome: 'denied'`; option and runtime failures use `outcome: 'error'`.
 - A successful run emits **one** wide event with `outcome: 'success'` and `durationMs` when the command returns.
 
 The result is one canonical entry per interaction.
@@ -83,9 +85,12 @@ export const auditMiddleware = createMiddleware<{ requestId: string; plan: 'free
     },
 );
 
+export const middlewares = { audit: auditMiddleware };
+client.setServices({ middlewares });
+
 declare module 'seyfert' {
     interface SeyfertRegistry {
-        middlewares: { audit: typeof auditMiddleware };
+        middlewares: typeof middlewares;
     }
 }
 
@@ -143,7 +148,7 @@ logger({ context: { shardId: true, channelId: false } });
 
 ## Accessing the logger outside a command
 
-In a command, component, or modal handler you already have `ctx.logger`. Everywhere else — helpers, services, event handlers, startup — use `useLogger()`. It always returns a usable logger; what it does depends on where you call it:
+In a command, component, or modal handler you already have `ctx.logger`. Everywhere else — helpers, services, event handlers, startup — use `useLogger()` after the plugin is set up and logger ownership is unambiguous. What it returns depends on where you call it:
 
 - `client.logger` remains Seyfert's own logger. This plugin does not replace it with a wide-event logger.
 - **Inside an interaction scope** it returns that interaction's wide event — `add()` enriches the same final event as `ctx.logger`, and level methods emit immediately.
@@ -164,10 +169,21 @@ await event.emit({ message: 'interactionCreate received' });
 ```
 
 <Callout type="info">
-`useLogger()` throws only if the plugin hasn't been set up yet. Outside a scope each call returns a *fresh* event, so capture it in a variable (as above) when you intend to `add()` then `emit()`.
+`useLogger()` throws if the plugin hasn't been set up. If multiple clients own different logger instances, bare `useLogger()` also throws outside an interaction scope; pass the owning client as `useLogger(client)` instead. Outside a scope each call returns a *fresh* event, so capture it in a variable (as above) when you intend to `add()` then `emit()`.
 </Callout>
 
-Because `useLogger()` reads the active scope instead of taking a parameter, a helper deep in the call stack can enrich the interaction's wide event without being handed the context:
+For a background job or another unit of work, `withLoggerScope()` creates the wide event, exposes it through `useLogger()`, and emits success or failure automatically:
+
+```ts
+import { useLogger, withLoggerScope } from '@slipher/logger';
+
+await withLoggerScope({ kind: 'job', jobId }, async () => {
+    const processed = await processJob(jobId);
+    useLogger().add({ processed });
+}, client); // optional when only one logger is active
+```
+
+Because `useLogger()` reads the active scope without requiring an owner argument there, a helper deep in the call stack can enrich the interaction's wide event without being handed the context:
 
 ```ts
 import { Command, Declare, type CommandContext } from 'seyfert';
@@ -191,17 +207,27 @@ export default class ProfileCommand extends Command {
 
 No `emit()` is called anywhere — when `run()` returns, the plugin emits one wide event that already carries the `plan` and `cached` fields added inside `loadProfile()`.
 
-## Adapters
+## Renderer & transports
 
-An adapter decides where records go. The default is the console adapter; swap it for Pino or evlog to feed an existing pipeline. On field collisions, data from `add()` and level methods wins over bindings.
+Output is split into two roles: one `renderer` owns terminal output, while any number of `transports` ship structured records elsewhere. Slipher makes transport configs it owns silent; adapters using externally managed global configuration retain that configuration's output behavior. On field collisions, data from `add()` and level methods wins over bindings.
+
+| Factory | Role |
+| --- | --- |
+| `prettyRenderer()` | Slipher's default human-readable console. |
+| `silentRenderer()` | Disables terminal output. |
+| `evlogRenderer(config?)` | Lets evlog print and drain records. |
+| `evlogTransport(config?)` | With config, sends records through evlog drains with `silent: true`. Without config, it reuses the existing global evlog setup unchanged. |
+| `pinoAdapter(instance)` | Wraps a Pino instance for either role, depending on its destination. |
+
+evlog is an optional peer dependency and is imported only by its factories. `pinoAdapter()` accepts a structural `PinoLoggerLike`, so this package does not depend on Pino; install `pino` only when you use it.
 
 <Callout type="warn">
-**Redaction belongs to the sink.** The console adapter does **not** redact. Configure redaction in your runtime/collector, in your Pino instance, or in evlog's `initLogger()`. evlog's built-in patterns (`creditCard`, `email`, `jwt`, …) do **not** cover Discord bot tokens — add a pattern for those.
+**Redaction belongs to the sink.** `prettyRenderer()` does **not** redact. Configure redaction in your runtime/collector, in your Pino instance, or in evlog's config. evlog's built-in patterns (`creditCard`, `email`, `jwt`, …) do **not** cover Discord bot tokens — add a pattern for those.
 </Callout>
 
 ### Console (default)
 
-Pretty, colored, multi-line output in development; one JSON object per line when `NODE_ENV=production`. The level is colored, fields are aligned, and an `Error` field is rendered as a real stack trace.
+`prettyRenderer()` produces colored, multi-line output in development and one JSON object per line when `NODE_ENV=production`. The level is colored, fields are aligned, and an `Error` field is rendered as a real stack trace. Use `silentRenderer()` when nothing should print.
 
 ```
 19:00:00.123  INFO   [slipher-bot]  command completed
@@ -216,7 +242,7 @@ Pretty, colored, multi-line output in development; one JSON object per line when
 
 ### Pino
 
-Install Pino and wrap your own instance with `createPinoAdapter`, so any Pino transport or extension works — e.g. `pino-pretty` for friendlier dev output.
+Install Pino and wrap your own instance with `pinoAdapter`, so any Pino transport or extension works — e.g. `pino-pretty` for friendlier dev output.
 
 ```sh
 pnpm add pino
@@ -224,21 +250,23 @@ pnpm add pino
 
 ```ts
 import { Client } from 'seyfert';
-import { createPinoAdapter, logger } from '@slipher/logger';
+import { logger, pinoAdapter } from '@slipher/logger';
 import pino from 'pino';
 
 // your own Pino instance owns transports and redaction
 const sink = pino({ redact: ['token', 'headers.authorization'] });
 
-// route records through Pino with createPinoAdapter
+// Pino owns terminal output here
 const client = new Client({
-    plugins: [logger({ name: 'slipher-bot', adapter: createPinoAdapter(sink) })],
+    plugins: [logger({ name: 'slipher-bot', renderer: pinoAdapter(sink) })],
 });
 ```
 
+For the default Slipher console plus a Pino file destination, put `pinoAdapter(filePino)` in `transports` instead.
+
 ### evlog
 
-evlog owns its global configuration — drains, redaction, sampling, the service envelope — set once with `initLogger()` in your entrypoint. `createEvlogAdapter()` takes no options; it only translates records into evlog calls. evlog is an optional peer dependency, so install it where you use it.
+evlog owns one global pipeline for drains, redaction, sampling, and the service envelope. Pass its config to `evlogTransport()` and Slipher initializes evlog with `silent: true`, derives `env.service` from the logger `name`, and forwards a drain's `flush()` through `client.close()`. Use `evlogRenderer()` instead when evlog should also print.
 
 ```sh
 pnpm add evlog
@@ -246,33 +274,33 @@ pnpm add evlog
 
 ```ts
 import { Client } from 'seyfert';
-import { initLogger } from 'evlog';
 import { createFsDrain } from 'evlog/fs';
 import { createDrainPipeline } from 'evlog/pipeline';
-import { createEvlogAdapter, logger } from '@slipher/logger';
+import { evlogTransport, logger } from '@slipher/logger';
 
 // batch records to a filesystem drain
 const drain = createDrainPipeline({ batch: { size: 50, intervalMs: 5_000 } })(createFsDrain());
 
-// configure evlog globally once in your entrypoint
-initLogger({
-    env: {
-        service: 'slipher-bot',
-        environment: process.env.NODE_ENV ?? 'development',
-        version: process.env.npm_package_version,
-    },
-    redact: {
-        paths: ['token', 'headers.authorization'],
-        patterns: [/Bot\s+[A-Za-z0-9._-]+/g], // built-ins don't cover Discord tokens
-    },
-    drain,
-    silent: true,
-});
-
-// the adapter just translates records into evlog calls
 const client = new Client({
-    plugins: [logger({ name: 'slipher-bot', adapter: createEvlogAdapter() })],
+    plugins: [
+        logger({
+            name: 'slipher-bot', // becomes evlog env.service
+            transports: [
+                evlogTransport({
+                    env: {
+                        environment: process.env.NODE_ENV ?? 'development',
+                        version: process.env.npm_package_version,
+                    },
+                    redact: {
+                        paths: ['token', 'headers.authorization'],
+                        patterns: [/Bot\s+[A-Za-z0-9._-]+/g],
+                    },
+                    drain,
+                }),
+            ],
+        }),
+    ],
 });
 ```
 
-Any evlog drain works — Axiom, OTLP, Sentry, fs, or your own pipeline.
+Any evlog drain works — Axiom, OTLP, Sentry, fs, or your own pipeline. If you initialize evlog yourself, call `evlogTransport()` or `evlogRenderer()` without config; Slipher then leaves the global setup and `silent` choice to you.
