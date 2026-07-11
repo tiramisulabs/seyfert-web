@@ -41,8 +41,7 @@
     "ogl": "^1.0.11",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "recharts": "^3.8.1",
-    "seyfert": "5.0.1-dev-28545549375.0",
+    "seyfert": "5.0.0",
     "shiki": "^4.2.0",
     "tailwind-merge": "^3.6.0",
     "tailwindcss-animate": "^1.0.7",
@@ -72,7 +71,7 @@
       "unrs-resolver"
     ],
     "overrides": {
-      "seyfert": "5.0.1-dev-28545549375.0"
+      "seyfert": "5.0.0"
     }
   },
   "packageManager": "pnpm@10.26.2+sha512.0e308ff2005fc7410366f154f625f6631ab2b16b1d2e70238444dd6ae9d630a8482d92a451144debc492416896ed16f7b114a86ec68b8404b2443869e68ffda6"
