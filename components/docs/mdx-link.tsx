@@ -1,6 +1,7 @@
 import type { ComponentProps } from 'react';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function MdxLink({ href = '', children, className, ...props }: ComponentProps<'a'>) {
   const isExternal = /^https?:\/\//.test(href);
@@ -15,7 +16,7 @@ export function MdxLink({ href = '', children, className, ...props }: ComponentP
 
   if (isExternal) {
     return (
-      <a href={href} target="_blank" rel="noreferrer" className={linkClass} {...props}>
+      <a href={href} target="_blank" rel="noreferrer" className={cn(linkClass, className)} {...props}>
         {children}
         {icon}
       </a>
@@ -23,7 +24,7 @@ export function MdxLink({ href = '', children, className, ...props }: ComponentP
   }
 
   return (
-    <Link href={href} className={linkClass} {...props}>
+    <Link href={href} className={cn(linkClass, className)} {...props}>
       {children}
       {icon}
     </Link>

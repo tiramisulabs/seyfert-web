@@ -4,7 +4,7 @@ description: Work-in-progress guide to discovering hosts, placing gateway worker
 ---
 
 <Callout type="warn" title="Work in progress">
-This guide documents an unreleased feature that is still under active development. Its API and configuration may change before Seyfert v5 ships on npm, so do not use it in production yet.
+This guide documents an unreleased feature that is still under active development. Its API and configuration may change before `@slipher/scaler` ships on npm, so do not use it in production yet.
 </Callout>
 
 `@slipher/scaler` spreads Seyfert gateway workers across several VPSs or hosts. One process acts as the master, while an agent on every host advertises its capacity and runs the workers assigned to it.
@@ -12,16 +12,12 @@ This guide documents an unreleased feature that is still under active developmen
 The scaler moves **logical workers**, not individual shards. Each logical worker keeps the same contiguous shard range while its physical process can move to another host.
 
 <Callout type="info">
-Requires a generation-aware Seyfert v5 build. The scaler uses `WorkerManager` custom mode and its generation lifecycle; it is infrastructure you construct directly, not a `SeyfertPlugin` installed on `Client`.
+Requires Seyfert v5. The scaler uses `WorkerManager` custom mode and its generation lifecycle; it is infrastructure you construct directly, not a `SeyfertPlugin` installed on `Client`.
 </Callout>
 
-## Installation
+## Availability
 
-Install the scaler beside Seyfert on the master and every agent host:
-
-```bash copy title="Installing..."
-pnpm add @slipher/scaler seyfert
-```
+`@slipher/scaler` is not published on npm yet. The installation instructions will be added when its API is ready for release.
 
 Use Node.js 22.13 or newer everywhere, and keep every host on the same Node.js major. The built-in transport uses Node's v8 serialization format.
 

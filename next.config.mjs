@@ -77,6 +77,16 @@ const config = {
         permanent: true,
       },
       {
+        source: "/docs/recipes/cooldown",
+        destination: "/docs/plugins/official/cooldown",
+        permanent: true,
+      },
+      {
+        source: "/docs/recipes/yuna",
+        destination: "/docs/plugins/official/yuna",
+        permanent: true,
+      },
+      {
         source: "/docs/plugins/ecosystem",
         destination: "/docs/plugins/official",
         permanent: true,

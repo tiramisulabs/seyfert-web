@@ -70,7 +70,7 @@ Although you can use `.json` files to store languages, it's highly recommended t
 import type * as defaultLang from './langs/en';
 
 declare module 'seyfert' {
-    interface SeyfertRegistry { langs: ParseLocales<typeof defaultLang> } // [!code highlight]    
+    interface SeyfertRegistry { langs: ParseLocales<typeof defaultLang> } // [!code highlight]
 }
 ```
 

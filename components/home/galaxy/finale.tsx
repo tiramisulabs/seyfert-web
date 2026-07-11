@@ -240,4 +240,3 @@ export default function Finale({
         </section>
     );
 }
-

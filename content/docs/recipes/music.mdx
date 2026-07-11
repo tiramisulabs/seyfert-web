@@ -30,12 +30,12 @@ hoshimi needs two things from the client: the **raw** gateway packets, so it can
 <Tab value="index.ts">
 ```ts twoslash title="index.ts" showLineNumbers
 import { Client, type ParseClient } from "seyfert";
-import { Hoshimi, SearchSources } from "hoshimi";
+import { Hoshimi, SearchEngines } from "hoshimi";
 
 //A custom client that holds the hoshimi manager
 class MusicClient extends Client {
 	hoshimi = new Hoshimi({
-		defaultSearchSource: SearchSources.Youtube,
+		defaultSearchEngine: SearchEngines.Youtube,
 		sendPayload: async (guildId, payload) => {
 			await this.gateway.send(this.gateway.calculateShardId(guildId), payload);
 		},

@@ -36,20 +36,20 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.16)(react@19.2.7)
       '@slipher/cooldown':
-        specifier: ^0.0.7
-        version: 0.0.7
+        specifier: ^1.0.0
+        version: 1.0.0(seyfert@5.0.0)
       '@slipher/eslint-plugin':
-        specifier: https://pkg.pr.new/tiramisulabs/extra/@slipher/eslint-plugin@25
-        version: https://pkg.pr.new/tiramisulabs/extra/@slipher/eslint-plugin@25(eslint@10.4.1(jiti@2.6.1))(typescript@6.0.3)
+        specifier: ^1.0.0
+        version: 1.0.0(eslint@10.4.1(jiti@2.6.1))(seyfert@5.0.0)(typescript@6.0.3)
       '@slipher/generic-adapter':
-        specifier: ^0.0.7
-        version: 0.0.7
+        specifier: ^0.0.8
+        version: 0.0.8
       '@slipher/redis-adapter':
-        specifier: ^0.0.6
-        version: 0.0.6
+        specifier: ^0.0.8
+        version: 0.0.8(seyfert@5.0.0)
       '@slipher/uws-adapter':
-        specifier: ^0.0.6
-        version: 0.0.6
+        specifier: ^0.0.8
+        version: 0.0.8(seyfert@5.0.0)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -75,8 +75,8 @@ importers:
         specifier: ^1.7.2
         version: 1.7.2(next@16.2.7(@babel/core@7.28.6)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
       hoshimi:
-        specifier: 0.3.10-dev-27999334051.0
-        version: 0.3.10-dev-27999334051.0
+        specifier: ^0.3.9
+        version: 0.3.9
       lucide-react:
         specifier: ^1.17.0
         version: 1.17.0(react@19.2.7)
@@ -1164,9 +1164,17 @@ packages:
   '@radix-ui/rect@1.1.1':
     resolution: {integrity: sha512-HPwpGIzkl28mWyZqG52jiqDJ12waP11Pa1lGoiyUkIEuMLBP0oeK/C89esbXrxsky5we7dfd8U58nm0SgAWpVw==}
 
-  '@redis/client@5.10.0':
-    resolution: {integrity: sha512-JXmM4XCoso6C75Mr3lhKA3eNxSzkYi3nCzxDIKY+YOszYsJjuKbFgVtguVPbLMOttN4iu2fXoc2BGhdnYhIOxA==}
-    engines: {node: '>= 18'}
+  '@redis/client@6.1.0':
+    resolution: {integrity: sha512-7u1LefkezJF0HESlhO7ZFLEPfyY+NejP3SGv+Z4pGaT3oM5GVVLa0u3f4rDLUrcw+SRo8IlX9Y8JAONeDdg1Ag==}
+    engines: {node: '>= 20.0.0'}
+    peerDependencies:
+      '@node-rs/xxhash': ^1.1.0
+      '@opentelemetry/api': '>=1 <2'
+    peerDependenciesMeta:
+      '@node-rs/xxhash':
+        optional: true
+      '@opentelemetry/api':
+        optional: true
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
@@ -1208,24 +1216,30 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@slipher/cooldown@0.0.7':
-    resolution: {integrity: sha512-6JVCs5cr8FuCRGZg4dIpNoHjDYZksfId7Kq39714qq72wuW/QwcZsB5WfZvym9wKpDXrRNGAycJvrRFV+9z72A==}
+  '@slipher/cooldown@1.0.0':
+    resolution: {integrity: sha512-+15jGoKQftszUw/WpEC8/PdIRPLLGNTbkGxm8H9ErqidH2xlCrqHJR1ZRxyIlcv8+ETdwLYSLQ4ie61MUu0erQ==}
+    peerDependencies:
+      seyfert: 5.0.0
 
-  '@slipher/eslint-plugin@https://pkg.pr.new/tiramisulabs/extra/@slipher/eslint-plugin@25':
-    resolution: {integrity: sha512-2BOqWh5cIP0H1icaxxBSowhu/7xqMwmpkkQfCA5vDrheuDgAz2gyHg0KA2ScqMFAKK/rRn5id7dHyMbB5M6Ryw==, tarball: https://pkg.pr.new/tiramisulabs/extra/@slipher/eslint-plugin@25}
-    version: 0.1.0
+  '@slipher/eslint-plugin@1.0.0':
+    resolution: {integrity: sha512-frHYY9skZ/QOA7QNBLz14v/zqU9Ji1nPmA8Dupy01tkG5h68/BhzLq2hYWzcIQofWi4YE0aIR8AujPdFSWIyOQ==}
     peerDependencies:
       eslint: '>=9.0.0'
+      seyfert: 5.0.0
       typescript: '>=5.0.0'
 
-  '@slipher/generic-adapter@0.0.7':
-    resolution: {integrity: sha512-sAViTyf6fWIPetHf8cb00X0la/4eooRM4EPHb6aJViB8aynGAnMsmqBddSGy67ZKQ130jAfIxvPrs/IfYnTfEQ==}
+  '@slipher/generic-adapter@0.0.8':
+    resolution: {integrity: sha512-i0a1q68LgHCnRquTp4+/+p+FTOOfCx0TfpBHaYJmkxWSqflfHmJ0XqKXyZC9t2K/F5K7F/ptdKJ/q598tocxzA==}
 
-  '@slipher/redis-adapter@0.0.6':
-    resolution: {integrity: sha512-ADjc10a6EP5JTgI63andnLbJkMkrcr8YmOV/pxadvcol50feEvahsGS2YENlgHiDkOFZ0c038qmlM6KFxDIp6w==}
+  '@slipher/redis-adapter@0.0.8':
+    resolution: {integrity: sha512-4udsquOAAFmt2qLFw7LX8yMzQGd6teeVKYZXs9dGR5c/2dQHcyfXjNnVbtU6ODfNmYs/XO/jnZoTyTdSm9oMQg==}
+    peerDependencies:
+      seyfert: 5.0.0
 
-  '@slipher/uws-adapter@0.0.6':
-    resolution: {integrity: sha512-yn59syAChHXvtwVK/GqR9uHObkzA8sc4tAHoVPjKvF290sk9DmvYyOTcqoVLoNrZB0+/8TZyTlPK62TMWvzp5Q==}
+  '@slipher/uws-adapter@0.0.8':
+    resolution: {integrity: sha512-GFDO5qW6L00jpOfbnQFH3RR+6oOv7RNwlDpUCrzhsyjLL7PpzHN1DqNq/O3J2gMeEn008KQoTd9xIpndWli9ag==}
+    peerDependencies:
+      seyfert: 5.0.0
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -2396,8 +2410,8 @@ packages:
   hermes-parser@0.25.1:
     resolution: {integrity: sha512-6pEjquH3rqaI6cYAXYPcz9MS4rY6R4ngRgrgfDshRptUZIc3lw0MCIJIGDj9++mfySOuPTHB4nrSW99BCvOPIA==}
 
-  hoshimi@0.3.10-dev-27999334051.0:
-    resolution: {integrity: sha512-dEhaa2RIF4p2sphxJ//iocWBtLzQYuzHSlvSn9WNMj5lwNqK3u1p7c/WDT5j0Sclt/Crp7Aa0tCwHZGuNvUbaQ==}
+  hoshimi@0.3.9:
+    resolution: {integrity: sha512-GVctW0wr7CFd4MgNf+3fEFQAnbhdmB2YbM957D8ECBCRFd1BSwBR/okV92ph6tdvaROHSXgaBqv52WIjxsz15A==}
 
   html-void-elements@3.0.0:
     resolution: {integrity: sha512-bEqo66MRXsUGxWHV5IP0PUiAWwoEjba4VCzg0LjFJBpchPaTfyfCKTG6bc5F8ucKec3q5y6qOdGyYTSBEvhCrg==}
@@ -4490,7 +4504,7 @@ snapshots:
 
   '@radix-ui/rect@1.1.1': {}
 
-  '@redis/client@5.10.0':
+  '@redis/client@6.1.0':
     dependencies:
       cluster-key-slot: 1.1.2
 
@@ -4545,29 +4559,33 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@slipher/cooldown@0.0.7':
+  '@slipher/cooldown@1.0.0(seyfert@5.0.0)':
     dependencies:
       seyfert: 5.0.0
 
-  '@slipher/eslint-plugin@https://pkg.pr.new/tiramisulabs/extra/@slipher/eslint-plugin@25(eslint@10.4.1(jiti@2.6.1))(typescript@6.0.3)':
+  '@slipher/eslint-plugin@1.0.0(eslint@10.4.1(jiti@2.6.1))(seyfert@5.0.0)(typescript@6.0.3)':
     dependencies:
       '@typescript-eslint/utils': 8.62.1(eslint@10.4.1(jiti@2.6.1))(typescript@6.0.3)
       eslint: 10.4.1(jiti@2.6.1)
+      seyfert: 5.0.0
       typescript: 6.0.3
     transitivePeerDependencies:
       - supports-color
 
-  '@slipher/generic-adapter@0.0.7':
+  '@slipher/generic-adapter@0.0.8':
     dependencies:
       seyfert: 5.0.0
       tweetnacl: 1.0.3
 
-  '@slipher/redis-adapter@0.0.6':
+  '@slipher/redis-adapter@0.0.8(seyfert@5.0.0)':
     dependencies:
-      '@redis/client': 5.10.0
+      '@redis/client': 6.1.0
       seyfert: 5.0.0
+    transitivePeerDependencies:
+      - '@node-rs/xxhash'
+      - '@opentelemetry/api'
 
-  '@slipher/uws-adapter@0.0.6':
+  '@slipher/uws-adapter@0.0.8(seyfert@5.0.0)':
     dependencies:
       seyfert: 5.0.0
       tweetnacl: 1.0.3
@@ -6002,7 +6020,7 @@ snapshots:
     dependencies:
       hermes-estree: 0.25.1
 
-  hoshimi@0.3.10-dev-27999334051.0:
+  hoshimi@0.3.9:
     dependencies:
       ws: 8.21.0
     transitivePeerDependencies:
