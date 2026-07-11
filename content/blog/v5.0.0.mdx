@@ -1,7 +1,7 @@
 ---
 title: "Seyfert v5.0.0: Cygnus X-1"
 description: "A first-class plugin runtime, plus the great papercut purge — context helpers, builder guards, tighter types, and the breaking changes to go with them."
-date: 2026-06-19
+date: 2026-07-11
 ---
 
 import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
@@ -178,9 +178,11 @@ const submitted = await ctx.modal(profileModal, { waitFor: 1_000 });
 const member = await ctx.fetchMember('flow');
 const channel = await ctx.channel('flow');
 
-const username = ctx.getInputValue('username', true);
-await ctx.update({ content: 'Saved' });
-const messageId = ctx.message.id;
+if (submitted) {
+  const username = submitted.getInputValue('username', true);
+  await submitted.update({ content: 'Saved' });
+  const messageId = submitted.message.id;
+}
 ```
 
   </Tab>
@@ -330,7 +332,7 @@ const dispose = client.rest.observe({
     metrics.increment('rest.success', { method, url, status: response.status });
   },
   onFail({ method, url, error }) { /* it didn't go well */ },
-  onRatelimit({ route }) { /* Discord said slow down */ },
+  onRatelimit({ method, url, response }) { /* Discord said slow down */ },
 });
 
 dispose(); // unsubscribe whenever you're done
@@ -410,8 +412,8 @@ The rest of the hundred. Not big enough for a code sample each, too real to bury
 
 **Commands, middleware & decorators**
 
-- A middleware that throws or rejects is now caught, logged (`Middleware "x" rejected: …`), and treated as a denial — no more silent unhandled rejections haunting your logs.
-- A denial's `metadata.middleware` now names the middleware that actually called `stop()` or rejected, not whichever one sat at the current index.
+- A middleware that throws or rejects now reaches `onInternalError` with the original error. Only `stop('reason')` is treated as a denial.
+- A denial's `metadata.middleware` now names the middleware that actually called `stop()`, not whichever one sat at the current index.
 - `command.middlewares` is a `readonly` tuple now — mutating it in place (`.push(...)`) is a type error. As it should be.
 - `Group(groupsDef, key)` gained an overload that type-checks the key against a groups-definition object.
 - `Options(...)` gained a `(new () => SubCommand)[]` overload alongside the lowercase-record one.
@@ -452,7 +454,7 @@ The rest of the hundred. Not big enough for a code sample each, too real to bury
 
 **Events**
 
-- `createEvent(...)` and `ClientEvent.run` return `Awaitable<void>` instead of `any`.
+- `createEvent(...)` and `ClientEvent.run` return `Awaitable<unknown>` instead of `any`, so handlers can return useful values without fighting the type system.
 - Custom (non-gateway) event handlers no longer receive a trailing `shardId`.
 - Throwing inside a `once` event resets it so it can fire again, and `VOICE_CHANNEL_STATUS_UPDATE` hands you a resolved `VoiceChannel | undefined` instead of a raw cache promise.
 
@@ -475,7 +477,7 @@ The rest of the hundred. Not big enough for a code sample each, too real to bury
 
 **New root exports**
 
-Importable by name now: `BanOptions`, `ChannelLink`, `MessageLink`, `Timestamp`, `TimestampStyle`, `EmbedColors`, `HeadingLevel`, `OAuth2URLOptions`, `SeyfertError`, `SeyfertErrorCode`, `SeyfertErrorMessages`, `createValidationMetadata`, `PropWhen`, `StructPropState`, `StructStates`, `LimitedCollectionData`, `GuildRole`, `BotConfig`, `HttpConfig`, `ClientMiddlewares`, `AllClientEvents`, `CollectorRunParameters`, `Collectors`, `ParseClientEventName`, `ShardData`, `ShardManagerOptions`, `WorkerData`, `WorkerManagerOptions`, `WorkerInfo`, `WorkerShardInfo`.
+Importable by name now: `BanOptions`, `ChannelLink`, `MessageLink`, `Timestamp`, `TimestampStyle`, `EmbedColors`, `HeadingLevel`, `OAuth2URLOptions`, `SeyfertError`, `SeyfertErrorCode`, `SeyfertErrorMessages`, `createValidationMetadata`, `PropWhen`, `StructPropState`, `StructStates`, `LimitedCollectionData`, `GuildRole`, `BotConfig`, `HttpConfig`, `ClientMiddlewares`, `AllClientEvents`, `CollectorRunParameters`, `Collectors`, `ParseClientEventName`, `ShardData`, `ShardManagerOptions`, `WorkerData`, `WorkerManagerOptions`, `WorkerInfo`, `WorkerShardInfo`, `Logger`, `LogLevels`, `LoggerOptions`, `CustomizeLoggerCallback`, and `AssignFilenameCallback`.
 
 ---
 
@@ -734,7 +736,7 @@ createEvent({ data: { name: 'myEvent' }, run(payload, client, shardId) {} }); //
 createEvent({ data: { name: 'myEvent' }, run(payload, client) {} }); // [!code ++]
 ```
 
-Custom (non-gateway) handlers no longer get a trailing `shardId`; `run` is typed `Awaitable<void>`.
+Custom (non-gateway) handlers no longer get a trailing `shardId`; `run` is typed `Awaitable<unknown>`.
 
 ```ts
 createEvent({

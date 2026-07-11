@@ -1,7 +1,11 @@
 ---
-title: Distributed scaling
-description: Discover hosts, place gateway workers, and redistribute them live with @slipher/scaler.
+title: Distributed scaling (WIP)
+description: Work-in-progress guide to discovering hosts, placing gateway workers, and redistributing them live with @slipher/scaler.
 ---
+
+<Callout type="warn" title="Work in progress">
+This guide documents an unreleased feature that is still under active development. Its API and configuration may change before Seyfert v5 ships on npm, so do not use it in production yet.
+</Callout>
 
 `@slipher/scaler` spreads Seyfert gateway workers across several VPSs or hosts. One process acts as the master, while an agent on every host advertises its capacity and runs the workers assigned to it.
 

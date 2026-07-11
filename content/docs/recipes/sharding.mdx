@@ -53,7 +53,7 @@ Seyfert handles the sharding logic for you, so switching execution modes is just
 
 ## Scaling workers across hosts
 
-`threads` and `clusters` distribute workers inside one machine. When the same gateway topology must run across several VPSs or hosts, [`@slipher/scaler`](/docs/plugins/official/scaler) connects agents to one master, places logical workers by capacity, and redistributes them live when hosts join or leave.
+`threads` and `clusters` distribute workers inside one machine. When the same gateway topology must run across several VPSs or hosts, [`@slipher/scaler (WIP)`](/docs/plugins/official/scaler) connects agents to one master, places logical workers by capacity, and redistributes them live when hosts join or leave.
 
 The scaler keeps each logical worker's shard range stable while moving its physical process. This is separate from changing the total number of Discord shards.
 
