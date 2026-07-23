@@ -9,7 +9,6 @@
         "cache",
         "database",
         "logger",
-        "sharding",
         "hot-reload",
         "eslint",
         "api-access",

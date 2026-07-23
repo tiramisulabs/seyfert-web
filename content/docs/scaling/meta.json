@@ -3,6 +3,9 @@
     "title": "Scaling",
     "icon": "Network",
     "pages": [
-        "index"
+        "index",
+        "sharding",
+        "distributed",
+        "operations"
     ]
 }

@@ -93,7 +93,12 @@ const config = {
       },
       {
         source: "/docs/plugins/official/scaler",
-        destination: "/docs/scaling",
+        destination: "/docs/scaling/distributed",
+        permanent: true,
+      },
+      {
+        source: "/docs/recipes/sharding",
+        destination: "/docs/scaling/sharding",
         permanent: true,
       },
       ...building.map((s) => ({
