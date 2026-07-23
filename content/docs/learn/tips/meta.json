@@ -3,7 +3,6 @@
     "icon": "Lightbulb",
     "defaultOpen": true,
     "pages": [
-        "structures",
-        "intents"
+        "structures"
     ]
 }
