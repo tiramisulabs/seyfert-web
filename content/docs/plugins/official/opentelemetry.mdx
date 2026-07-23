@@ -21,6 +21,29 @@ pnpm add @slipher/opentelemetry @opentelemetry/api \
   @opentelemetry/exporter-trace-otlp-proto
 ```
 
+## Architecture
+
+```text
+Seyfert runtime surfaces
+  ├── interactions ── context scope + lifecycle observers ──┐
+  ├── gateway events ───────── event wrapper ───────────────┤
+  ├── Discord REST ─────────── api.rest observer ───────────┤
+  └── cache adapter ────────── method wrappers ─────────────┤
+                                                            ▼
+                                            @slipher/opentelemetry
+                                            spans + duration metrics
+                                                            │
+                                      global OpenTelemetry API provider
+                                               ┌────────────┴────────────┐
+                                               ▼                         ▼
+                                      plugin-owned NodeSDK        host/preloaded SDK
+                                               └────────────┬────────────┘
+                                                            ▼
+                                                exporter / collector
+```
+
+`register` contributes interaction lifecycle instrumentation, while `setup` installs event, REST, and cache instrumentation and starts a `NodeSDK` only when the process does not already have a real provider. `teardown` removes every wrapper and shuts down the SDK only when the plugin owns it.
+
 ## Quick start
 
 Create the plugin once, register the plugin map for type inference, and pass it to the client:
@@ -77,12 +100,12 @@ See the [Jaeger quick start](https://www.jaegertracing.io/docs/2.19/getting-star
 
 Every surface is enabled by default and can be switched independently.
 
-| Surface | Spans | Duration metric |
-| --- | --- | --- |
-| Commands, components, and modals | Root span plus `Options`, `Middlewares`, and `Run` lifecycle children | `seyfert.interaction.duration` |
-| Gateway events | `event {name}` | `seyfert.event.duration` |
-| Discord REST | `HTTP {METHOD}` client span | `seyfert.rest.duration` |
-| Cache adapter | `cache {operation} {resource}` | `seyfert.cache.operation.duration` |
+| Surface | Span kind | Spans | Duration metric |
+| --- | --- | --- | --- |
+| Commands, components, and modals | `INTERNAL` | Root span plus `Options`, `Middlewares`, and `Run` lifecycle children | `seyfert.interaction.duration` |
+| Gateway events | `INTERNAL` | `event {name}` | `seyfert.event.duration` |
+| Discord REST | `CLIENT` | `HTTP {METHOD}` | `seyfert.rest.duration` |
+| Cache adapter | `INTERNAL` | `cache {op} {resource}` | `seyfert.cache.operation.duration` |
 
 Disable a noisy or unused surface without removing the plugin:
 
@@ -133,14 +156,18 @@ The handle exposes:
 | `recordException(error)` | Records an exception on the current span when one exists. |
 | `record(name, callback)` | Runs the callback inside an automatically ended child span. |
 
+`createTraceHandle` and its `TraceHandle` type are also exported for custom integrations.
+
 For services that do not have a Seyfert context, import the module helpers:
 
 ```ts
 import {
 	getCurrentSpan,
 	getMeter,
+	getTracer,
 	record,
 	setAttributes,
+	startActiveSpan,
 	startSpan,
 } from '@slipher/opentelemetry';
 
@@ -156,6 +183,7 @@ const manual = startSpan('detached-work');
 manual.end();
 
 const meter = getMeter();
+const tracer = getTracer();
 ```
 
 `record` and `startActiveSpan` end spans automatically. A span created with `startSpan` is manual and must be ended by your code.
@@ -204,7 +232,7 @@ type TraceSource =
 | `serviceName` | `'seyfert'` | Tracer and meter name; also the resource service name when the plugin owns the SDK. |
 | `instrument` | All surfaces enabled | Enables or disables interactions, events, REST, and cache independently. |
 | `checkIfShouldTrace` | Always `true` | Filters automatic root spans before recording begins. |
-| `contextManager` | OpenTelemetry default | Registered only when no global context manager is active. |
+| `contextManager` | OpenTelemetry default | A `ContextManager` registered only when no global context manager is active. |
 | `cache.skipResources` | `['presence', 'voice_state']` | Cache namespaces that should never produce spans or duration metrics. |
 | NodeSDK options | — | Used only when this plugin starts the SDK. |
 
@@ -214,16 +242,67 @@ Plugin identity remains `@slipher/opentelemetry`; changing `serviceName` does no
 
 Attributes are added only when the relevant value exists.
 
-| Surface | Attributes |
+### Interactions
+
+| Attribute | Description |
 | --- | --- |
-| Interaction | `seyfert.interaction.kind`, `seyfert.command`, `seyfert.custom_id`, guild/channel/user/interaction IDs, `seyfert.shard_id` |
-| Gateway event | `seyfert.event.name`, `seyfert.shard_id` |
-| Discord REST | `http.request.method`, sanitized `url.path`, low-cardinality `url.template`, status, resend count, error type |
-| Cache | `seyfert.cache.op`, `seyfert.cache.resource`, and `seyfert.cache.hit` for `get` |
+| `seyfert.interaction.kind` | `command`, `component`, or `modal`. |
+| `seyfert.command` | Full command name when known. |
+| `seyfert.custom_id` | Component or modal custom ID, truncated to 64 characters. |
+| `seyfert.guild_id` | Guild ID. |
+| `seyfert.channel_id` | Channel ID. |
+| `seyfert.user_id` | Invoking user ID. |
+| `seyfert.interaction_id` | Interaction ID. |
+| `seyfert.shard_id` | Shard ID when present. |
 
-Component and modal `custom_id` values are intentionally included and truncated to 64 characters. They are also available on interaction duration metrics. Guild, channel, user, and interaction IDs remain span-only so metric dimensions do not grow with every Discord entity.
+Root span names are `command {name}`, `component {customId}`, and `modal {customId}`. Lifecycle children are `Options` for commands, `Middlewares`, and `Run`.
 
-Every duration histogram uses seconds and adds `seyfert.error` when the operation fails. A metric reader is required to export them. For a quick local check you can use `ConsoleMetricExporter`; in production, configure an OTLP metric exporter or another reader supported by the OpenTelemetry SDK.
+### Gateway events
+
+| Attribute | Description |
+| --- | --- |
+| `seyfert.event.name` | Event name, such as `MESSAGE_CREATE`. |
+| `seyfert.shard_id` | Shard ID when present. |
+
+The span name is `event {name}`.
+
+### Discord REST
+
+| Attribute | Description |
+| --- | --- |
+| `http.request.method` | HTTP method. |
+| `url.path` | URI path with query strings omitted and Discord webhook or interaction tokens redacted. |
+| `url.template` | Low-cardinality Discord route template, such as `/channels/:id/messages`. |
+| `http.response.status_code` | Response status when known. |
+| `http.request.resend_count` | Seyfert `502`/`503` resend count. |
+| `error.type` | HTTP status or exception type for failed operations. |
+
+The span name is `HTTP {METHOD}`. HTTP `4xx`/`5xx` responses and thrown client failures set span status to `ERROR`.
+
+### Cache
+
+| Attribute | Description |
+| --- | --- |
+| `seyfert.cache.op` | Seyfert adapter method, including bulk and relationship operations. |
+| `seyfert.cache.resource` | Resource namespace derived from the key. |
+| `seyfert.cache.hit` | Whether a `get` result was non-nullish. |
+
+The span name is `cache {op} {resource}`. High-churn resources `presence` and `voice_state` are skipped by default.
+
+Component and modal `custom_id` values are intentionally included on interaction metrics. Guild, channel, user, and interaction IDs remain span-only so metric dimensions do not grow with every Discord entity.
+
+## Metrics
+
+Every duration histogram uses seconds and adds `seyfert.error` when the operation fails. Instruments are created only for enabled `instrument.*` surfaces.
+
+| Instrument | Typical attributes |
+| --- | --- |
+| `seyfert.interaction.duration` | Interaction kind, command or custom ID when known, shard, and `seyfert.error`. |
+| `seyfert.event.duration` | Event name and `seyfert.error`. |
+| `seyfert.rest.duration` | Method, URL template, status, and `seyfert.error`. |
+| `seyfert.cache.operation.duration` | Operation, resource, cache hit when applicable, and `seyfert.error`. |
+
+A metric reader is required to export them. For a quick local check use `ConsoleMetricExporter`; in production, configure an OTLP metric exporter or another reader supported by the OpenTelemetry SDK. Custom metrics created through `getMeter()` use the same global meter provider.
 
 ## Privacy and cardinality
 
@@ -239,4 +318,6 @@ The plugin's REST correlation uses a FIFO queue for concurrent requests with the
 
 If the host process already registered a real tracer provider, the plugin does not start another `NodeSDK`. Automatic instrumentation, `ctx.trace`, and module helpers use that global provider, while SDK-specific options passed to the plugin are ignored. Configure processors, exporters, resources, and metric readers on the host-owned SDK instead.
 
-When the plugin owns the SDK, teardown flushes and shuts it down. Teardown is terminal for that plugin instance: create a new `opentelemetry(...)` instance with fresh processors and exporters before starting a new client lifecycle.
+In that host-owned case the plugin never calls `NodeSDK.start()` or `sdk.shutdown()`. It still unwraps REST, cache, and event instrumentation during teardown.
+
+When the plugin owns the SDK, teardown flushes and shuts it down. Teardown is terminal for that plugin instance: create a new `opentelemetry(...)` instance with fresh processors and exporters before starting a new client lifecycle. The plugin works alongside `@slipher/logger`; logs and traces remain independent signals.
