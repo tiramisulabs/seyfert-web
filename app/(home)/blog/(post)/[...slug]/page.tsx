@@ -5,6 +5,7 @@ import defaultMdxComponents from 'fumadocs-ui/mdx';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
 import { Callout } from '@/components/docs/callout';
+import { Mermaid } from '@/components/docs/mermaid';
 import { MdxLink } from '@/components/docs/mdx-link';
 import { TocRail } from '@/components/docs/toc-rail';
 import { parseBlogTitle } from '@/lib/blog';
@@ -72,6 +73,7 @@ export default async function Page(props: {
                         <Mdx components={{
                             ...defaultMdxComponents,
                             Callout,
+                            Mermaid,
                             a: MdxLink,
                         }} />
                     </DocsBody>

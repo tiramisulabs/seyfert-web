@@ -19,25 +19,28 @@ Requires Seyfert v5.
 
 ## Architecture
 
-```text
-Seyfert interaction lifecycle
-  ├── command observers ───────────────┐
-  ├── component/modal transforms ─────┤
-  └── context scope (AsyncLocalStorage)┤
-                                      ▼
-                         ctx.logger / useLogger()
-                              WideEventLogger
-                                      │
-                     automatic outcome + duration
-                                      ▼
-                                 RootLogger
-                        ┌─────────────┴─────────────┐
-                        ▼                           ▼
-                 one renderer                 N transports
-          pretty / silent / Pino / evlog    Pino / evlog / custom
-                        └─────────────┬─────────────┘
-                                      ▼
-                           terminal / log backend
+```mermaid
+flowchart TD
+    accTitle: Logger plugin architecture
+    accDescr: Seyfert lifecycle observers and context scope feed a request-scoped wide event logger. It adds outcome and duration before the root logger sends records to one renderer and any number of transports.
+
+    commands["Command observers"]
+    handlers["Component / modal transforms"]
+    scope["Context scope<br/>(AsyncLocalStorage)"]
+    wide["ctx.logger / useLogger()<br/>WideEventLogger"]
+    root["RootLogger"]
+    renderer["One renderer<br/>pretty / silent / Pino / evlog"]
+    transports["N transports<br/>Pino / evlog / custom"]
+    output["Terminal / log backend"]
+
+    commands --> wide
+    handlers --> wide
+    scope --> wide
+    wide -->|"automatic outcome + duration"| root
+    root --> renderer
+    root --> transports
+    renderer --> output
+    transports --> output
 ```
 
 `register` contributes command observers, handler transforms, and lifecycle defaults. During `setup`, the plugin instruments already-loaded and future handlers and installs its bridge for Seyfert's internal logger. `teardown` flushes every renderer and transport, then restores the previous logger state.

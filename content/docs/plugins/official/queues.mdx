@@ -19,25 +19,24 @@ pnpm add bullmq
 
 ## Architecture
 
-```text
-producer (command / event / service)
-                 │
-                 ▼
- ctx.queues / client.queues / plugin.registry
-                 │
-                 ▼
-           QueuesRegistry
-        typed Queue<TData, TResult>
-                 │
-        ┌────────┴─────────┐
-        ▼                  ▼
- memory() driver     persistent() driver
- in-process queue    BullMQ Queue + Worker + QueueEvents
-        │                  │
-        └────────┬─────────┘
-                 ▼
- @Processor + @Process handler
- @OnWorkerEvent / @OnQueueEvent listeners
+```mermaid
+flowchart TD
+    accTitle: Queues plugin architecture
+    accDescr: A command, event, or service produces typed jobs through the shared queues registry. The selected memory or persistent BullMQ driver delivers those jobs to processor handlers and event listeners.
+
+    producer["Producer<br/>(command / event / service)"]
+    access["ctx.queues / client.queues / plugin.registry"]
+    registry["QueuesRegistry<br/>typed Queue&lt;TData, TResult&gt;"]
+    memory["memory() driver<br/>in-process queue"]
+    persistent["persistent() driver<br/>BullMQ Queue + Worker + QueueEvents"]
+    handlers["@Processor + @Process handler<br/>@OnWorkerEvent / @OnQueueEvent listeners"]
+
+    producer --> access
+    access --> registry
+    registry --> memory
+    registry --> persistent
+    memory --> handlers
+    persistent --> handlers
 ```
 
 The plugin creates one registry and exposes that same object through `ctx`, the client, and the plugin instance. During `setup`, the selected driver opens or activates its queues and workers; `teardown` closes the registry and every driver resource. The driver boundary keeps producer and processor code unchanged when moving from process-local memory to Redis-backed BullMQ.

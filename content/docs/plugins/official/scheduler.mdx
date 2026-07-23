@@ -19,26 +19,30 @@ pnpm add bullmq@^5.23.0
 
 ## Architecture
 
-```text
-@Cron / @Interval classes        registry.cron / interval / add
-             │                                  │
-             └──────────────┬───────────────────┘
-                            ▼
-                     SchedulerRegistry
-             ctx.scheduler = client.scheduler
-                            │
-                 ┌──────────┴──────────┐
-                 ▼                     ▼
-          memory() driver       persistent() driver
-             Croner          BullMQ Queue + Worker
-                 │             + QueueEvents + Redis
-                 └──────────┬──────────┘
-                            ▼
-                  task runner + lifecycle events
+```mermaid
+flowchart TD
+    accTitle: Scheduler plugin architecture
+    accDescr: Decorated task classes and registry calls enter one scheduler registry. A memory Croner driver or persistent BullMQ and Redis driver runs the tasks. Seyfert setup prepares resources, plugins ready activates tasks, and client close releases local resources.
 
-Seyfert setup ──> prepare resources
-plugins:ready ──> activate tasks
-client.close ──> close local driver resources
+    decorators["@Cron / @Interval classes"]
+    calls["registry.cron / interval / add"]
+    registry["SchedulerRegistry<br/>ctx.scheduler = client.scheduler"]
+    memory["memory() driver<br/>Croner"]
+    persistent["persistent() driver<br/>BullMQ Queue + Worker<br/>+ QueueEvents + Redis"]
+    runner["Task runner + lifecycle events"]
+    setup["Seyfert setup"]
+    ready["plugins:ready"]
+    close["client.close"]
+
+    decorators --> registry
+    calls --> registry
+    registry --> memory
+    registry --> persistent
+    memory --> runner
+    persistent --> runner
+    setup -.->|"prepare resources"| registry
+    ready -.->|"activate tasks"| runner
+    close -.->|"close local driver resources"| registry
 ```
 
 The plugin creates one registry and exposes it through `ctx`, the client, and the plugin instance. `setup` prepares driver resources so connection failures reject `client.start()`. Tasks activate only from Seyfert's `plugins:ready` hook, after every plugin completes setup, and `teardown` closes the driver.
