@@ -126,7 +126,76 @@ Choose the worker mode based on the isolation boundary you need:
 
 ## Cache across workers
 
-A worker does not use the manager's in-memory cache directly. `WorkerAdapter` forwards cache operations from `WorkerClient` to the backend registered on `WorkerManager`.
+<Callout type="warn" title="Prefer a shared external adapter">
+We do not recommend `WorkerAdapter` as the default cache for a worker deployment. Use a shared adapter such as [`@slipher/redis-adapter`](/docs/recipes/cache) unless you deliberately want one local `WorkerManager` process to own every cache operation.
+</Callout>
+
+`WorkerAdapter` is an RPC proxy, not a cache backend. Every `get`, `set`, relationship lookup, and bulk operation follows the same path:
+
+```mermaid
+sequenceDiagram
+    accTitle: WorkerAdapter cache request
+    accDescr: A WorkerClient sends every cache operation over process or thread IPC to WorkerManager. The manager executes the operation on its configured cache backend and returns the result over IPC. The worker keeps a pending promise until the response arrives or its 60-second timeout expires.
+
+    participant Worker as WorkerClient
+    participant Manager as WorkerManager
+    participant Backend as Manager cache backend
+
+    Worker->>Manager: CACHE_REQUEST(method, args, nonce)
+    Manager->>Backend: adapter[method](...args)
+    Backend-->>Manager: result
+    Manager-->>Worker: CACHE_RESULT(nonce, result)
+```
+
+This adds an IPC round trip to every cache operation and makes the manager a required intermediary and failure domain. The manager defaults to `MemoryAdapter`, so that cache is also process-local and is lost when the manager restarts.
+
+In the current protocol, the manager returns only successful `CACHE_RESULT` messages. If its backend throws before sending the result, the worker receives no error payload and the pending request rejects with `CACHE_TIMEOUT` after 60 seconds.
+
+### Recommended: connect each worker to Redis
+
+Give every worker a Redis adapter with the same namespace. Workers then share one external source of truth without routing cache traffic through `WorkerManager`:
+
+```ts twoslash showLineNumbers
+import { RedisAdapter } from '@slipher/redis-adapter';
+import { type ParseClient, WorkerClient } from 'seyfert';
+
+const client = new WorkerClient();
+
+client.setServices({
+    cache: {
+        adapter: new RedisAdapter({
+            redisOptions: { url: process.env.REDIS_URL! },
+            namespace: 'seyfert-bot',
+        }),
+    },
+});
+
+await client.start();
+
+declare module 'seyfert' {
+    interface InternalOptions {
+        asyncCache: true;
+    }
+
+    interface SeyfertRegistry {
+        client: ParseClient<WorkerClient<true>>;
+    }
+}
+```
+
+This works across threads, processes, and hosts, and the cache lifecycle is independent from any one worker or manager. If you use `ExpirableRedisAdapter`, keep its process-local `ondemand` cache disabled for data that multiple workers modify unless temporary staleness is acceptable.
+
+### When WorkerAdapter is appropriate
+
+`WorkerAdapter` is reasonable only for the narrower topology it implements:
+
+- every worker runs under one local `WorkerManager`;
+- the manager is intentionally the sole cache owner;
+- cache traffic is low enough that an IPC round trip per operation is acceptable;
+- losing the manager's in-memory state on restart is acceptable, or the manager owns another backend;
+- the application accepts the manager and its cache protocol as a shared failure boundary.
+
+In that case, install `WorkerAdapter` in every worker and configure the real backend with `manager.setCache(...)`. Without `setCache`, the manager uses `MemoryAdapter`.
 
 ```ts twoslash
 import { WorkerAdapter, WorkerClient } from 'seyfert';
@@ -142,10 +211,8 @@ client.setServices({
 await client.start();
 ```
 
-The manager uses its configured cache adapter as the source of truth; its default backend is `MemoryAdapter`. Register a shared adapter on the manager when state must also be visible outside that manager process. See [Caching](/docs/recipes/cache) for the available cache patterns.
-
 <Callout type="warn">
-`WorkerAdapter` is manager RPC, not a multi-host cache. The distributed scaler does not support Seyfert `WorkerAdapter` manager RPC; use a shared external adapter when workers run on different machines.
+The distributed scaler does not support Seyfert `WorkerAdapter` manager RPC. Workers running on different hosts require a shared external adapter.
 </Callout>
 
 ## Communicate between workers
