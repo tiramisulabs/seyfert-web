@@ -249,6 +249,6 @@ Do not use `client.gateway` in a `WorkerClient`; the worker exposes only its ass
 
 ## Scale beyond one host
 
-Threads and clusters stay inside one machine. When the same logical worker topology must run across several hosts, continue with [Distributed scaling](/docs/scaling/distributed).
+Threads and clusters stay inside one machine. When the same logical worker topology must run across several hosts, continue with [Distributed scaling](/docs/learn/scaling/distributed).
 
 The scaler moves complete logical workers with fixed shard ranges. It does not change Discord's total shard count or migrate individual shards independently. Changing the total shard count is a coordinated resharding operation, not an ordinary worker placement change.
