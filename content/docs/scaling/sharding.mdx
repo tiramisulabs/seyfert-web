@@ -153,7 +153,7 @@ In the current protocol, the manager returns only successful `CACHE_RESULT` mess
 
 ### Recommended: connect each worker to Redis
 
-Give every worker a Redis adapter with the same namespace. Workers then share one external source of truth without routing cache traffic through `WorkerManager`:
+Give every worker a Redis adapter connected to the same Redis database. Workers then share one external source of truth without routing cache traffic through `WorkerManager`:
 
 ```ts twoslash showLineNumbers
 import { RedisAdapter } from '@slipher/redis-adapter';
@@ -165,7 +165,6 @@ client.setServices({
     cache: {
         adapter: new RedisAdapter({
             redisOptions: { url: process.env.REDIS_URL! },
-            namespace: 'seyfert-bot',
         }),
     },
 });
@@ -182,6 +181,8 @@ declare module 'seyfert' {
     }
 }
 ```
+
+`RedisAdapter` uses the `seyfert` namespace by default, so there is no need to coordinate it between workers. Set a custom namespace only when you need to isolate multiple applications that share the same Redis database.
 
 This works across threads, processes, and hosts, and the cache lifecycle is independent from any one worker or manager. If you use `ExpirableRedisAdapter`, keep its process-local `ondemand` cache disabled for data that multiple workers modify unless temporary staleness is acceptable.
 
