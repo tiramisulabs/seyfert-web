@@ -125,7 +125,7 @@ import { createPlugin, type CommandContext, type MiddlewareContext, type Seyfert
 
 type AuthMiddleware = MiddlewareContext<{ userId: string }, CommandContext>;
 
-const auth: AuthMiddleware = ({ next }) => next({ userId: '1' });
+const auth: AuthMiddleware = ({ next }) => next({ userId: '366779196975874049' });
 
 // type the middleware contribution so app code stays cast-free
 export const authPlugin: SeyfertPlugin<{}, {}, readonly [], { auth: AuthMiddleware }> = createPlugin({

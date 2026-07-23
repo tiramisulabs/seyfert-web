@@ -27,7 +27,7 @@ Every user action has a named dispatcher. Each one builds the matching raw inter
 ```ts
 await bot.slash({ name: 'admin', group: 'users', subcommand: 'kick', options: { reason: 'spam' } });
 await bot.autocomplete({ name: 'search', focused: 'query', value: 'sey' });
-await bot.userMenu({ name: 'Report User', target: apiUser({ id: '42' }) });
+await bot.userMenu({ name: 'Report User', target: apiUser({ id: '406184197405802497' }) });
 await bot.clickButton('confirm');
 await bot.selectMenu('pick-color', ['red']);
 await bot.fillModal('feedback', { rating: '5' });
@@ -51,7 +51,7 @@ Primitive option values are encoded automatically. For entity options use the ex
 import { apiUser, userOption } from '@slipher/testing';
 
 await bot.slash({ name: 'ban',
-	options: { user: userOption(apiUser({ id: '42' })), reason: 'spam' },
+	options: { user: userOption(apiUser({ id: '406184197405802497' })), reason: 'spam' },
 });
 ```
 

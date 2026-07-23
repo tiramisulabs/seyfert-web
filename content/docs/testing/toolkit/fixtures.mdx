@@ -43,7 +43,7 @@ import BanCommand from './commands/ban';
 test('replies after banning', async () => {
 	// options are typed from BanCommand — no manual generic, no cast
 	const ctx = mockCommandContext(BanCommand, {
-		options: { user: mockUser({ id: '123' }) },
+		options: { user: mockUser({ id: '410623882152771587' }) },
 	});
 
 	// the command is already bound, so run() needs no argument
@@ -65,7 +65,7 @@ When you don't have the command class to hand, the object form still works as a 
 ```ts
 const ctx = mockCommandContext<{ user: ReturnType<typeof mockUser> }>({
 	commandName: 'ban',
-	options: { user: mockUser({ id: '123' }) },
+	options: { user: mockUser({ id: '410623882152771587' }) },
 });
 ```
 
@@ -118,7 +118,7 @@ const reason = ctx.interaction.getInputValue('reason', true);
 import { mockScene } from '@slipher/testing';
 import BanCommand from './commands/ban';
 
-const scene = mockScene(BanCommand, { options: { user: mockUser({ id: '123' }) } });
+const scene = mockScene(BanCommand, { options: { user: mockUser({ id: '410623882152771587' }) } });
 await scene.ctx.run();
 
 // scene.user / scene.guild / scene.channel / scene.member are all consistently linked
