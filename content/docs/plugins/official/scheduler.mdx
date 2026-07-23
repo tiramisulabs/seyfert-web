@@ -17,36 +17,6 @@ Requires Seyfert v5. The persistent driver uses BullMQ job schedulers, so instal
 pnpm add bullmq@^5.23.0
 ```
 
-## Architecture
-
-```mermaid
-flowchart TD
-    accTitle: Scheduler plugin architecture
-    accDescr: Decorated task classes and registry calls enter one scheduler registry. A memory Croner driver or persistent BullMQ and Redis driver runs the tasks. Seyfert setup prepares resources, plugins ready activates tasks, and client close releases local resources.
-
-    decorators["@Cron / @Interval classes"]
-    calls["registry.cron / interval / add"]
-    registry["SchedulerRegistry<br/>ctx.scheduler = client.scheduler"]
-    memory["memory() driver<br/>Croner"]
-    persistent["persistent() driver<br/>BullMQ Queue + Worker<br/>+ QueueEvents + Redis"]
-    runner["Task runner + lifecycle events"]
-    setup["Seyfert setup"]
-    ready["plugins:ready"]
-    close["client.close"]
-
-    decorators --> registry
-    calls --> registry
-    registry --> memory
-    registry --> persistent
-    memory --> runner
-    persistent --> runner
-    setup -.->|"prepare resources"| registry
-    ready -.->|"activate tasks"| runner
-    close -.->|"close local driver resources"| registry
-```
-
-The plugin creates one registry and exposes it through `ctx`, the client, and the plugin instance. `setup` prepares driver resources so connection failures reject `client.start()`. Tasks activate only from Seyfert's `plugins:ready` hook, after every plugin completes setup, and `teardown` closes the driver.
-
 ## Usage
 
 Tasks live on a single **registry**. A **driver** decides where they run: `memory()` runs them in the current process; `persistent()` runs them on BullMQ/Redis so they survive restarts and coordinate across replicas — the task code is the same either way.
@@ -186,6 +156,36 @@ Avoid importing the exported `client` from task modules loaded by `index.ts` —
 </Callout>
 
 The registry also offers `get(id)`, `list()`, `snapshot()`, `pause(id)`, `resume(id)`, and `remove(id)` for managing registered tasks at runtime. `removeOrphan(id)` removes a persistent scheduler that no longer has a registered task.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    accTitle: Scheduler plugin architecture
+    accDescr: Decorated task classes and registry calls enter one scheduler registry. A memory Croner driver or persistent BullMQ and Redis driver runs the tasks. Seyfert setup prepares resources, plugins ready activates tasks, and client close releases local resources.
+
+    decorators["@Cron / @Interval classes"]
+    calls["registry.cron / interval / add"]
+    registry["SchedulerRegistry<br/>ctx.scheduler = client.scheduler"]
+    memory["memory() driver<br/>Croner"]
+    persistent["persistent() driver<br/>BullMQ Queue + Worker<br/>+ QueueEvents + Redis"]
+    runner["Task runner + lifecycle events"]
+    setup["Seyfert setup"]
+    ready["plugins:ready"]
+    close["client.close"]
+
+    decorators --> registry
+    calls --> registry
+    registry --> memory
+    registry --> persistent
+    memory --> runner
+    persistent --> runner
+    setup -.->|"prepare resources"| registry
+    ready -.->|"activate tasks"| runner
+    close -.->|"close local driver resources"| registry
+```
+
+The plugin creates one registry and exposes it through `ctx`, the client, and the plugin instance. `setup` prepares driver resources so connection failures reject `client.start()`. Tasks activate only from Seyfert's `plugins:ready` hook, after every plugin completes setup, and `teardown` closes the driver.
 
 ## Drivers
 

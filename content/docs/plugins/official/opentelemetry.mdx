@@ -21,36 +21,6 @@ pnpm add @slipher/opentelemetry @opentelemetry/api \
   @opentelemetry/exporter-trace-otlp-proto
 ```
 
-## Architecture
-
-```mermaid
-flowchart TD
-    accTitle: OpenTelemetry plugin architecture
-    accDescr: Seyfert interactions, gateway events, Discord REST calls, and cache operations are instrumented by the plugin. Spans and duration metrics use the global OpenTelemetry provider, backed by either a plugin-owned NodeSDK or a host-provided SDK, before reaching an exporter or collector.
-
-    interactions["Interactions<br/>context scope + lifecycle observers"]
-    events["Gateway events<br/>event wrapper"]
-    rest["Discord REST<br/>api.rest observer"]
-    cache["Cache adapter<br/>method wrappers"]
-    plugin["@slipher/opentelemetry<br/>spans + duration metrics"]
-    provider["Global OpenTelemetry API provider"]
-    owned["Plugin-owned NodeSDK"]
-    host["Host / preloaded SDK"]
-    exporter["Exporter / collector"]
-
-    interactions --> plugin
-    events --> plugin
-    rest --> plugin
-    cache --> plugin
-    plugin --> provider
-    provider --> owned
-    provider --> host
-    owned --> exporter
-    host --> exporter
-```
-
-`register` contributes interaction lifecycle instrumentation, while `setup` installs event, REST, and cache instrumentation and starts a `NodeSDK` only when the process does not already have a real provider. `teardown` removes every wrapper and shuts down the SDK only when the plugin owns it.
-
 ## Quick start
 
 Create the plugin once, register the plugin map for type inference, and pass it to the client:
@@ -102,6 +72,36 @@ export OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318
 Run a command, then open [http://127.0.0.1:16686](http://127.0.0.1:16686), select `my-bot`, and open a trace such as `command ping`. The container uses in-memory storage and loses its traces when it stops; it is intended for local inspection, not production.
 
 See the [Jaeger quick start](https://www.jaegertracing.io/docs/2.19/getting-started/) and [OTLP endpoint configuration](https://opentelemetry.io/docs/languages/sdk-configuration/otlp-exporter/) for other deployment shapes.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    accTitle: OpenTelemetry plugin architecture
+    accDescr: Seyfert interactions, gateway events, Discord REST calls, and cache operations are instrumented by the plugin. Spans and duration metrics use the global OpenTelemetry provider, backed by either a plugin-owned NodeSDK or a host-provided SDK, before reaching an exporter or collector.
+
+    interactions["Interactions<br/>context scope + lifecycle observers"]
+    events["Gateway events<br/>event wrapper"]
+    rest["Discord REST<br/>api.rest observer"]
+    cache["Cache adapter<br/>method wrappers"]
+    plugin["@slipher/opentelemetry<br/>spans + duration metrics"]
+    provider["Global OpenTelemetry API provider"]
+    owned["Plugin-owned NodeSDK"]
+    host["Host / preloaded SDK"]
+    exporter["Exporter / collector"]
+
+    interactions --> plugin
+    events --> plugin
+    rest --> plugin
+    cache --> plugin
+    plugin --> provider
+    provider --> owned
+    provider --> host
+    owned --> exporter
+    host --> exporter
+```
+
+`register` contributes interaction lifecycle instrumentation, while `setup` installs event, REST, and cache instrumentation and starts a `NodeSDK` only when the process does not already have a real provider. `teardown` removes every wrapper and shuts down the SDK only when the plugin owns it.
 
 ## Automatic instrumentation
 

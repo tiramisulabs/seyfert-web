@@ -17,34 +17,6 @@ pnpm add @slipher/logger
 
 Requires Seyfert v5.
 
-## Architecture
-
-```mermaid
-flowchart TD
-    accTitle: Logger plugin architecture
-    accDescr: Seyfert lifecycle observers and context scope feed a request-scoped wide event logger. It adds outcome and duration before the root logger sends records to one renderer and any number of transports.
-
-    commands["Command observers"]
-    handlers["Component / modal transforms"]
-    scope["Context scope<br/>(AsyncLocalStorage)"]
-    wide["ctx.logger / useLogger()<br/>WideEventLogger"]
-    root["RootLogger"]
-    renderer["One renderer<br/>pretty / silent / Pino / evlog"]
-    transports["N transports<br/>Pino / evlog / custom"]
-    output["Terminal / log backend"]
-
-    commands --> wide
-    handlers --> wide
-    scope --> wide
-    wide -->|"automatic outcome + duration"| root
-    root --> renderer
-    root --> transports
-    renderer --> output
-    transports --> output
-```
-
-`register` contributes command observers, handler transforms, and lifecycle defaults. During `setup`, the plugin instruments already-loaded and future handlers and installs its bridge for Seyfert's internal logger. `teardown` flushes every renderer and transport, then restores the previous logger state.
-
 ## Usage
 
 Install the plugin once on the client. The `name` becomes a binding that labels every record (it does not rename the plugin, which is always `@slipher/logger`).
@@ -234,6 +206,34 @@ export default class ProfileCommand extends Command {
 ```
 
 No `emit()` is called anywhere — when `run()` returns, the plugin emits one wide event that already carries the `plan` and `cached` fields added inside `loadProfile()`.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    accTitle: Logger plugin architecture
+    accDescr: Seyfert lifecycle observers and context scope feed a request-scoped wide event logger. It adds outcome and duration before the root logger sends records to one renderer and any number of transports.
+
+    commands["Command observers"]
+    handlers["Component / modal transforms"]
+    scope["Context scope<br/>(AsyncLocalStorage)"]
+    wide["ctx.logger / useLogger()<br/>WideEventLogger"]
+    root["RootLogger"]
+    renderer["One renderer<br/>pretty / silent / Pino / evlog"]
+    transports["N transports<br/>Pino / evlog / custom"]
+    output["Terminal / log backend"]
+
+    commands --> wide
+    handlers --> wide
+    scope --> wide
+    wide -->|"automatic outcome + duration"| root
+    root --> renderer
+    root --> transports
+    renderer --> output
+    transports --> output
+```
+
+`register` contributes command observers, handler transforms, and lifecycle defaults. During `setup`, the plugin instruments already-loaded and future handlers and installs its bridge for Seyfert's internal logger. `teardown` flushes every renderer and transport, then restores the previous logger state.
 
 ## Renderer and transports
 

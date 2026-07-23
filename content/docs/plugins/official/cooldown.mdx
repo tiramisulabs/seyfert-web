@@ -15,32 +15,6 @@ Requires Seyfert v5. The plugin keeps `seyfert` as a peer dependency.
 pnpm add @slipher/cooldown
 ```
 
-## Architecture
-
-```mermaid
-flowchart TD
-    accTitle: Cooldown plugin architecture
-    accDescr: A Seyfert command reaches the cooldown manager through decorator metadata or plugin context. The manager stores buckets through the client cache using either a regular adapter or an atomic Redis adapter.
-
-    invocation["Seyfert command invocation"]
-    metadata["@Cooldown metadata"]
-    context["Plugin context scope<br/>+ optional middleware"]
-    manager["CooldownManager"]
-    resource["client.cache / CooldownResource"]
-    regular["Regular cache adapter<br/>(process serialization)"]
-    atomic["AtomicCooldownAdapter<br/>(Redis EVAL + Redis TIME)"]
-
-    invocation --> metadata
-    invocation --> context
-    metadata --> manager
-    context --> manager
-    manager -->|"check / consume / reset"| resource
-    resource --> regular
-    resource --> atomic
-```
-
-The plugin creates one manager, exposes it as `client.cooldown` and `ctx.cooldown`, and attaches the Seyfert client during `setup`. The optional middleware consumes the active command's bucket before the handler runs. Cache storage remains owned by Seyfert; the adapter decides whether several processes can consume a shared bucket atomically.
-
 ## Usage
 
 Install it like any other plugin. The plugin exposes one `CooldownManager` as `client.cooldown` and `ctx.cooldown`, and storage is backed by the client's cache adapter.
@@ -292,6 +266,32 @@ export class KickCommand extends Command {}
 A user that runs `/ban` cannot immediately run `/kick`; both consume `moderation:user:<userId>`. `group` only changes the bucket namespace once a cooldown is resolved; it does not make subcommands inherit cooldowns.
 
 Commands in one group should use the same `type`, `interval`, and `uses`. The command being consumed supplies those settings, so mixing policies inside one shared bucket makes the effective limit depend on call order.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    accTitle: Cooldown plugin architecture
+    accDescr: A Seyfert command reaches the cooldown manager through decorator metadata or plugin context. The manager stores buckets through the client cache using either a regular adapter or an atomic Redis adapter.
+
+    invocation["Seyfert command invocation"]
+    metadata["@Cooldown metadata"]
+    context["Plugin context scope<br/>+ optional middleware"]
+    manager["CooldownManager"]
+    resource["client.cache / CooldownResource"]
+    regular["Regular cache adapter<br/>(process serialization)"]
+    atomic["AtomicCooldownAdapter<br/>(Redis EVAL + Redis TIME)"]
+
+    invocation --> metadata
+    invocation --> context
+    metadata --> manager
+    context --> manager
+    manager -->|"check / consume / reset"| resource
+    resource --> regular
+    resource --> atomic
+```
+
+The plugin creates one manager, exposes it as `client.cooldown` and `ctx.cooldown`, and attaches the Seyfert client during `setup`. The optional middleware consumes the active command's bucket before the handler runs. Cache storage remains owned by Seyfert; the adapter decides whether several processes can consume a shared bucket atomically.
 
 ## Storage atomicity
 
