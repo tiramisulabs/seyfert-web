@@ -91,6 +91,11 @@ const config = {
         destination: "/docs/plugins/official",
         permanent: true,
       },
+      {
+        source: "/docs/plugins/official/scaler",
+        destination: "/docs/scaling",
+        permanent: true,
+      },
       ...building.map((s) => ({
         source: `/docs/plugins/${s}`,
         destination: `/docs/plugins/building/${s}`,

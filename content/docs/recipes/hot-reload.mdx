@@ -95,14 +95,13 @@ import { join } from 'node:path';
 import { Watcher } from '@slipher/watcher';
 
 const watcher = new Watcher({
+    // This is the compiled WorkerClient entry, not the watcher entry below.
     filePath: join(process.cwd(), 'dist', 'index.js'),
     srcPath: join(process.cwd(), 'src'),
     transpileCommand: 'tsc --project tsconfig.json',
 });
 
-(async () => {
-    await watcher.spawnShards();
-})();
+await watcher.spawnShards();
 ```
 
 ```json title="package.json"
@@ -116,3 +115,7 @@ const watcher = new Watcher({
 ```bash copy
 pnpm watch
 ```
+
+`Watcher` is a library entry point, not a CLI. It extends Seyfert's `ShardManager`: the watcher process owns the gateway connection, forwards payloads to the compiled worker entry, and replaces that worker after any event reported by Chokidar under `srcPath`.
+
+`transpileCommand` is optional and runs synchronously from the current working directory before each replacement. The package logs a build failure but still attempts to start `filePath`, so keep the initial `pnpm build` in the script and make sure failed builds cannot leave a partial output in that location.

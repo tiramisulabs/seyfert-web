@@ -2,6 +2,7 @@
     "pages": [
         "learn",
         "plugins",
+        "scaling",
         "recipes",
         "testing",
         "api"
