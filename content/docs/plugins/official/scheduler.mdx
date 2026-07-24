@@ -17,10 +17,6 @@ Requires Seyfert v5. The persistent driver uses BullMQ job schedulers, so instal
 pnpm add bullmq@^5.23.0
 ```
 
-<Callout type="info" title="Release status">
-The current npm release is `@slipher/scheduler@1.0.0`. The timezone and overlap policies documented below have landed in `extra` through [pull request #30](https://github.com/tiramisulabs/extra/pull/30) and will be available after the next package release.
-</Callout>
-
 ## Usage
 
 Tasks live on a single **registry**. A **driver** decides where they run: `memory()` runs them in the current process; `persistent()` runs them on BullMQ/Redis so they survive restarts and coordinate across replicas — the task code is the same either way.

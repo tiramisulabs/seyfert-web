@@ -5,10 +5,6 @@ description: Operate @slipher/scaler placements, deploys, failures, events, and 
 
 This guide continues from [Distributed scaling](/docs/learn/scaling/distributed) and covers the operational behavior of `@slipher/scaler`.
 
-<Callout type="warn" title="Release pending">
-The `@slipher/scaler` source has landed in `extra` through [pull request #27](https://github.com/tiramisulabs/extra/pull/27), but the package is not published on npm yet. This guide matches the merged implementation.
-</Callout>
-
 ## Placement
 
 The default `spread` strategy balances the ratio of used slots to `maxWorkers`. Use `placementStrategy: 'fill-first'` to fill earlier connected hosts before using later ones.
