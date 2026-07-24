@@ -3,8 +3,8 @@ title: Distributed scaling
 description: Run vanilla Seyfert WorkerClient processes across a small set of hosts with @slipher/scaler.
 ---
 
-<Callout type="warn" title="Work in progress">
-`@slipher/scaler` is not published on npm yet. This guide tracks [its current pull request](https://github.com/tiramisulabs/extra/pull/27), so its API can still change before release. Do not use it in production until a version is published.
+<Callout type="warn" title="Release pending">
+The `@slipher/scaler` source has landed in `extra` through [pull request #27](https://github.com/tiramisulabs/extra/pull/27), but the package is not published on npm yet. This guide matches the merged implementation. Do not use it in production until an initial version is published.
 </Callout>
 
 `@slipher/scaler` runs vanilla Seyfert `WorkerClient` processes across several machines. Use it when a bot no longer fits on one host and needs explicit placement, sequential rolling deploys, local process supervision, and control-plane restarts without taking every gateway worker down.
