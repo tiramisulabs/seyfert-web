@@ -1,0 +1,287 @@
+---
+title: Voice
+description: Connect a Seyfert bot to Discord voice and send or receive encoded Opus audio with DAVE protection.
+---
+
+`@slipher/voice` connects a Seyfert bot to Discord voice channels and sends or receives encoded Opus audio. It handles the Voice Gateway, UDP transport, reconnection, and Discord's DAVE end-to-end encryption without additional setup.
+
+<Callout type="info">
+Requires Seyfert v5. The package supports Node.js 22.13 or newer, Bun, and Deno.
+</Callout>
+
+## Installation
+
+```bash copy title="Installing..."
+pnpm add @slipher/voice seyfert
+```
+
+## Configure the plugin
+
+Create the voice plugin once, include it in the client's plugin tuple, and register that tuple with `SeyfertRegistry` so `client.voice` and `ctx.voice` are typed throughout the application:
+
+```ts title="src/index.ts"
+import { voice } from '@slipher/voice';
+import { Client, definePlugins } from 'seyfert';
+
+const plugins = definePlugins(voice());
+
+declare module 'seyfert' {
+    interface SeyfertRegistry {
+        plugins: typeof plugins;
+    }
+}
+
+export const client = new Client({ plugins });
+```
+
+The plugin adds the `GuildVoiceStates` intent and listens for the Discord events required to coordinate the voice connection. You do not need to add that intent separately.
+
+## Connect to a channel
+
+Call `connect()` after the client is ready. The promise resolves when the Discord voice transport and its required encryption are ready:
+
+```ts
+const connection = await client.voice.connect({
+    guildId,
+    channelId,
+});
+```
+
+By default the bot joins self-deafened and unmuted. Pass `selfDeaf` or `selfMute` when you need a different initial state:
+
+```ts
+const connection = await client.voice.connect({
+    guildId,
+    channelId,
+    selfDeaf: false,
+    selfMute: false,
+});
+```
+
+`client.voice.connections` is a live read-only map keyed by guild ID. Calling `connect()` again for the same guild returns the existing connection when the target is unchanged.
+
+## Play an Opus file
+
+`play()` accepts complete Opus packets rather than compressed file bytes. Use the built-in demuxer to read packet boundaries from an Ogg Opus or WebM Opus stream:
+
+```ts
+import { createReadStream } from 'node:fs';
+import { demuxOggOpus } from '@slipher/voice';
+
+const playback = connection.play(
+    demuxOggOpus(createReadStream('./audio.opus')),
+);
+
+await playback.done;
+```
+
+Use `demuxWebmOpus()` for a WebM file whose audio track is Opus:
+
+```ts
+import { createReadStream } from 'node:fs';
+import { demuxWebmOpus } from '@slipher/voice';
+
+const playback = connection.play(
+    demuxWebmOpus(createReadStream('./video.webm')),
+);
+
+await playback.done;
+```
+
+The demuxers also accept a `Uint8Array` when the complete file is already in memory. They do not open paths or run FFmpeg themselves.
+
+<Callout type="warn">
+MP3, WAV, AAC, FLAC, PCM, and non-Opus WebM files must be converted to Opus before playback. The package does not transcode or encode audio.
+</Callout>
+
+<Callout type="tip">
+Use [`@slipher/player`](/docs/plugins/official/player) when you want local files, URLs, radio streams, FFmpeg transcoding, and per-guild playback queues instead of managing encoded Opus packets directly.
+</Callout>
+
+Each connection plays one source at a time. Keep the returned handle when you need to stop early:
+
+```ts
+const playback = connection.play(opusPackets);
+
+// Later, when you want to end the playback:
+await playback.stop();
+```
+
+`playback.done` resolves after the source finishes or `stop()` completes Discord's clean silence termination. It rejects when the source or voice transport fails.
+
+## Receive participant audio
+
+Discord does not send participant audio to a self-deafened bot. Connect with `selfDeaf: false`, then call `receive()` with the participant's user ID:
+
+```ts
+const connection = await client.voice.connect({
+    guildId,
+    channelId,
+    selfDeaf: false,
+});
+
+const stream = connection.receive(userId);
+
+try {
+    for await (const packet of stream) {
+        await consumeOpus(packet.opus);
+    }
+} finally {
+    stream.close();
+}
+```
+
+Each value is one authenticated Opus packet. It also includes `sequence`, `timestamp`, `ssrc`, and `userId` for downstream loss detection and routing. The stream retains at most 32 unread packets and drops the oldest packet if the consumer falls behind live audio. You can choose another bound:
+
+```ts
+const stream = connection.receive(userId, {
+    maxBufferedPackets: 64,
+});
+```
+
+### Record a participant to WAV on Node.js
+
+The receive stream contains encoded Opus, so a WAV recorder must first decode each packet to PCM. This example uses [`@discordjs/opus`](https://github.com/discordjs/opus) and writes a standard 48 kHz, stereo, signed 16-bit PCM WAV with Node.js APIs:
+
+<Callout type="info">
+This particular recorder targets Node.js. The `receive()` stream itself remains available on every runtime supported by `@slipher/voice`; use a decoder and storage sink intended for your runtime on Bun or Deno.
+</Callout>
+
+<Callout type="tip">
+`@discordjs/opus` appears here only as a consumer dependency. It is a focused Node.js binding to libopus and provides the packet-to-PCM step this WAV example needs, so the guide does not reimplement an audio codec.
+
+There is currently no plan for Seyfert or `@slipher/voice` to bundle or maintain a built-in Opus encoder or decoder. Keeping encoded Opus as the public media boundary avoids platform-specific binaries and build tooling in the core, and preserves the same voice contract across Node.js, Bun, and Deno. PCM conversion, transcoding, recording, jitter buffering, volume, and mixing remain application or plugin policy, so consumers can choose the codec and media stack appropriate for their runtime.
+</Callout>
+
+```bash copy title="Installing the Opus decoder..."
+pnpm add @discordjs/opus
+```
+
+```ts title="src/record-participant.ts"
+import opus from '@discordjs/opus';
+import type { VoiceConnection } from '@slipher/voice';
+import { open, type FileHandle } from 'node:fs/promises';
+
+const { OpusEncoder } = opus;
+const sampleRate = 48_000;
+const channels = 2;
+const bitsPerSample = 16;
+
+function createWavHeader(pcmByteLength: number): Buffer {
+    const header = Buffer.alloc(44);
+    const bytesPerSample = bitsPerSample / 8;
+    const blockAlign = channels * bytesPerSample;
+
+    header.write('RIFF', 0);
+    header.writeUInt32LE(36 + pcmByteLength, 4);
+    header.write('WAVE', 8);
+    header.write('fmt ', 12);
+    header.writeUInt32LE(16, 16);
+    header.writeUInt16LE(1, 20);
+    header.writeUInt16LE(channels, 22);
+    header.writeUInt32LE(sampleRate, 24);
+    header.writeUInt32LE(sampleRate * blockAlign, 28);
+    header.writeUInt16LE(blockAlign, 32);
+    header.writeUInt16LE(bitsPerSample, 34);
+    header.write('data', 36);
+    header.writeUInt32LE(pcmByteLength, 40);
+
+    return header;
+}
+
+async function writeAll(file: FileHandle, bytes: Uint8Array, position: number): Promise<void> {
+    let written = 0;
+
+    while (written < bytes.byteLength) {
+        const result = await file.write(bytes, written, bytes.byteLength - written, position + written);
+        if (result.bytesWritten === 0) throw new Error('The recording file write made no progress.');
+        written += result.bytesWritten;
+    }
+}
+
+export async function recordParticipant(
+    connection: VoiceConnection,
+    userId: string,
+    outputPath = './recording.wav',
+    durationMs = 30_000,
+): Promise<void> {
+    const stream = connection.receive(userId, { maxBufferedPackets: 64 });
+
+    try {
+        const decoder = new OpusEncoder(sampleRate, channels);
+        const file = await open(outputPath, 'w');
+        let pcmByteLength = 0;
+        let filePosition = 44;
+        let timeout: ReturnType<typeof setTimeout> | undefined;
+
+        try {
+            await writeAll(file, Buffer.alloc(44), 0);
+            timeout = setTimeout(() => stream.close(), durationMs);
+
+            for await (const packet of stream) {
+                const pcm = decoder.decode(Buffer.from(packet.opus));
+                await writeAll(file, pcm, filePosition);
+                filePosition += pcm.byteLength;
+                pcmByteLength += pcm.byteLength;
+            }
+        } finally {
+            if (timeout) clearTimeout(timeout);
+
+            try {
+                await writeAll(file, createWavHeader(pcmByteLength), 0);
+            } finally {
+                await file.close();
+            }
+        }
+    } finally {
+        stream.close();
+    }
+}
+```
+
+Call it with the ready connection and the participant's Discord user ID:
+
+```ts
+await recordParticipant(connection, userId, './recording.wav', 30_000);
+```
+
+This is a minimal live recorder. The timeout controls how long it listens, not the exact output duration: participant silence and missing packets do not insert silence into the WAV. If packets are lost or dropped because the consumer falls behind, it writes the remaining decoded frames consecutively. A recorder that must preserve exact timing should use `sequence` and `timestamp` to implement its own loss and jitter policy.
+
+The subscription survives transport recovery and closes when the connection is destroyed. The package does not decode Opus to PCM or choose a recording, jitter-buffer, transcription, volume, or mixing policy.
+
+## Move or disconnect
+
+Moving to another channel must be explicit. Call `connect()` with the same guild and `move: true`:
+
+```ts
+await client.voice.connect({
+    guildId,
+    channelId: anotherChannelId,
+    move: true,
+});
+```
+
+Leave the channel through the manager:
+
+```ts
+await client.voice.disconnect(guildId);
+```
+
+The stable `VoiceConnection` exposes its current lifecycle through `connection.state.status`, which can be `connecting`, `ready`, `moving`, `disconnecting`, `recovering`, or `destroyed`.
+
+## DAVE verification
+
+DAVE protection is negotiated automatically. Once an encrypted MLS group is established, the connection exposes Discord's privacy code and can derive a pairwise verification code for another active participant:
+
+```ts
+const privacyCode = connection.voicePrivacyCode;
+const verificationCode = await connection.getVerificationCode(userId);
+```
+
+These values are for out-of-band comparison. The package exposes the canonical digits but does not decide whether an application should trust a participant.
+
+## Current limits
+
+The package exposes encoded Opus packets in both directions. Video, Go Live, soundshare, jitter buffering, recording containers, volume control, mixing, PCM conversion, and Opus encoding remain outside the core package. [`@slipher/player`](/docs/plugins/official/player) adds playback queues and optional FFmpeg transcoding without moving those policies into the voice transport.
+
+On a Stage channel, a suppressed bot cannot transmit audio. Use Seyfert's existing voice-state operations to request speaker status or remove suppression before calling `play()`.

@@ -3,6 +3,8 @@
     "icon": "Boxes",
     "pages": [
         "index",
+        "voice",
+        "player",
         "cooldown",
         "scheduler",
         "logger",
