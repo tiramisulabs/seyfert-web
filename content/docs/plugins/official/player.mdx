@@ -141,13 +141,14 @@ Enqueue one track or an array. The return value contains the generated queue ite
 ```ts
 await guildPlayer.enqueue(firstTrack);
 const added = await guildPlayer.enqueue([secondTrack, thirdTrack]);
+await guildPlayer.enqueue(playNextTrack, { position: 0 });
 
 await guildPlayer.move(added[1].id, 0);
 await guildPlayer.remove(added[0].id);
 await guildPlayer.shuffle();
 ```
 
-`remove()` and `move()` address items that are still waiting in the queue. Use `skip()` to end the current item.
+`remove()` and `move()` address items that are still waiting in the queue. The optional enqueue `position` is a zero-based index in that pending queue, so position `0` inserts a track next as one atomic operation.
 
 Control the current item through the player:
 
@@ -156,9 +157,11 @@ await guildPlayer.pause();
 await guildPlayer.resume();
 await guildPlayer.seek(30_000);
 await guildPlayer.setRepeat('queue');
-await guildPlayer.skip();
+await guildPlayer.skip(2);
 await guildPlayer.stop();
 ```
+
+A skip count includes the current item. Pending items bypassed by a multi-skip do not enter history because they never became current.
 
 Finite media pauses at its current packet boundary. A live stream closes when paused and reopens at its live edge when resumed. Seeking is available only for a finite track whose timeline is marked as seekable; it reopens the source at the requested offset through FFmpeg.
 
@@ -167,6 +170,8 @@ If the bot is muted, Stage-suppressed, moving, recovering, or disconnected, the 
 ## History and events
 
 `guildPlayer.history` is an immutable, oldest-to-newest list of completed `{ item, reason }` snapshots. Reasons include `finished`, `skipped`, `stopped`, `load-failed`, `connection-unavailable`, and `destroyed`.
+
+`guildPlayer.previous` returns the most recent history entry. For finite media, `guildPlayer.positionMs` combines the latest seek offset with the duration of Opus audio sent to Discord. It is `null` for live media or when no item is current.
 
 The default history limit is 100. Configure another bound on the plugin, disable history with `historyLimit: 0`, or clear it at runtime:
 
