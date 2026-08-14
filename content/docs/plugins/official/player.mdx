@@ -6,7 +6,7 @@ description: Resolve local and remote media, transcode it when needed, and manag
 `@slipher/player` adds media sources and one playback queue per guild on top of [`@slipher/voice`](/docs/plugins/official/voice). It opens local files, URLs, radio streams, and in-memory media; uses FFmpeg when conversion is necessary; and leaves Opus pacing, RTP, encryption, and Discord voice state to the voice connection.
 
 <Callout type="info">
-Requires Seyfert v5 and the exact `@slipher/voice` plugin instance used by the client. Node.js 22.13 or newer is the primary runtime. Bun and Deno are supported through their Node.js compatibility layers.
+Requires Seyfert v5 and the `@slipher/voice` plugin. Node.js 22.13 or newer is the primary runtime. Bun and Deno are supported through their Node.js compatibility layers.
 </Callout>
 
 ## Installation
@@ -21,17 +21,16 @@ For Deno, grant read access for local files, network access for remote media, an
 
 ## Configure the plugins
 
-Create the voice plugin once and pass that same object to `player()`. The player imports it, so Seyfert installs voice first and preserves both `client.voice` and `client.player` in the registry types:
+Register Voice before Player. Player declares Voice as a required Seyfert plugin, and the registry order preserves both `client.voice` and `client.player` in the registry types while ensuring Player closes before Voice:
 
 ```ts title="src/index.ts"
 import { player } from '@slipher/player';
 import { voice } from '@slipher/voice';
 import { Client, definePlugins } from 'seyfert';
 
-const voicePlugin = voice();
 const plugins = definePlugins(
+    voice(),
     player({
-        voice: voicePlugin,
         ffmpegPath: 'ffmpeg',
         historyLimit: 100,
     }),
@@ -196,7 +195,9 @@ The public player state is `idle`, `waiting`, `loading`, `playing`, `paused`, or
 A provider can resolve a vendor-specific query, open its tracks as Opus packets, or do both:
 
 ```ts
-import type { MediaProvider } from '@slipher/player';
+import { player, type MediaProvider } from '@slipher/player';
+import { voice } from '@slipher/voice';
+import { definePlugins } from 'seyfert';
 
 const catalogProvider: MediaProvider = {
     name: 'catalog',
@@ -210,8 +211,8 @@ const catalogProvider: MediaProvider = {
 };
 
 const plugins = definePlugins(
+    voice(),
     player({
-        voice: voicePlugin,
         providers: [catalogProvider],
     }),
 );
