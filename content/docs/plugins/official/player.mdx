@@ -47,6 +47,30 @@ export const client = new Client({ plugins });
 
 `ffmpegPath` defaults to `ffmpeg`. Omit it when that executable is already available on `PATH`. The same `PlayerManager` is exposed as `client.player` and `ctx.player`.
 
+Installing [`ffmpeg-static`](https://www.npmjs.com/package/ffmpeg-static) does not place its binary on `PATH`. Install it and pass its exported path explicitly:
+
+```bash copy title="Installing a bundled FFmpeg binary"
+pnpm add ffmpeg-static
+```
+
+```ts title="src/index.ts"
+import { player } from '@slipher/player';
+import { voice } from '@slipher/voice';
+import ffmpegPath from 'ffmpeg-static';
+import { Client, definePlugins } from 'seyfert';
+
+if (!ffmpegPath) {
+    throw new Error('ffmpeg-static does not support this platform.');
+}
+
+const plugins = definePlugins(
+    voice(),
+    player({ ffmpegPath }),
+);
+
+export const client = new Client({ plugins });
+```
+
 ## Play local media
 
 Connect through the voice manager, bind a guild player to the ready connection, and enqueue a track:
@@ -187,6 +211,8 @@ The plugin also emits typed Seyfert events:
 - `playerTrackEnd`
 - `playerTrackError`
 - `playerQueueEnd`
+
+`enqueue()` resolves when an item enters the queue; opening and playback can happen later. A background failure is logged through the Seyfert client logger and emitted as `playerTrackError`. FFmpeg failures expose the executable path, exit status, signal, and a bounded stderr tail through `PlayerError.metadata`.
 
 The public player state is `idle`, `waiting`, `loading`, `playing`, `paused`, or `destroyed`.
 
