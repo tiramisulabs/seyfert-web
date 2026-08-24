@@ -14,8 +14,10 @@ pnpm add @slipher/scheduler
 Requires Seyfert v5. The persistent driver uses BullMQ job schedulers, so install BullMQ only when you need cluster-aware, restart-surviving schedules:
 
 ```sh
-pnpm add bullmq@^5.23.0
+pnpm add bullmq
 ```
+
+The persistent driver supports BullMQ 5.23+ and 6.x.
 
 ## Usage
 
@@ -24,14 +26,14 @@ Tasks live on a single **registry**. A **driver** decides where they run: `memor
 Define tasks as decorated classes, build the plugin with a driver, and register it on the client:
 
 ```ts
-import { Client, definePlugins } from 'seyfert';
-import { Interval, memory, scheduler } from '@slipher/scheduler';
+import { Client, definePlugins, type UsingClient } from 'seyfert';
+import { Interval, memory, scheduler, type ScheduledTask } from '@slipher/scheduler';
 
 class MaintenanceTasks {
 	// run this method every 5 minutes
 	@Interval('5m', { id: 'heartbeat' })
-	heartbeat() {
-		// run work
+	heartbeat(_task: ScheduledTask, client: UsingClient) {
+		client.logger.info('heartbeat');
 	}
 }
 
@@ -50,19 +52,21 @@ declare module 'seyfert' {
 export const client = new Client({ plugins });
 ```
 
-Once registered, the plugin exposes `ctx.scheduler` and `client.scheduler`. The Seyfert lifecycle handles setup for you when the client starts, and teardown when it closes.
+Once registered, the plugin exposes `ctx.scheduler` and `client.scheduler`. The Seyfert lifecycle handles setup for you when the client starts, and teardown when it closes. Task callbacks receive the scheduled task and the active Seyfert client, so task modules do not need to import the client from the application entrypoint.
 
 ### Defining tasks with decorators
 
 Decorate methods with `@Cron` (a cron expression) or `@Interval` (a duration). The `ScheduledTask` passed to your method carries the task's runtime state:
 
 ```ts
+import { type UsingClient } from 'seyfert';
 import { Cron, Interval, type ScheduledTask } from '@slipher/scheduler';
 
 class Tasks {
 	// run on a cron expression: every day at 09:00
 	@Cron('0 9 * * *', { id: 'morning-report' })
-	report(task: ScheduledTask) {
+	report(task: ScheduledTask, client: UsingClient) {
+		client.logger.info('running morning report');
 		return task.id;
 	}
 
@@ -84,12 +88,13 @@ With `persistent()`, every decorated task must provide an explicit non-empty `id
 
 ```ts
 // schedule an interval task imperatively, by id and duration
-ctx.scheduler.interval('refresh-cache', '30s', async task => {
-	void task.runCount;
+ctx.scheduler.interval('refresh-cache', '30s', async (task, client) => {
+	client.logger.info(`Running ${task.id}`);
 });
 
 // schedule a cron task imperatively
-ctx.scheduler.cron('daily-cleanup', '0 0 * * *', async () => {
+ctx.scheduler.cron('daily-cleanup', '0 0 * * *', async (_task, client) => {
+	client.logger.info('Running daily cleanup');
 	// run work
 });
 ```
@@ -112,8 +117,8 @@ import { Command, Declare, type CommandContext } from 'seyfert';
 export default class RefreshCacheCommand extends Command {
 	async run(ctx: CommandContext) {
 		// schedule a task straight from the command via ctx.scheduler
-		ctx.scheduler.interval('refresh-cache', '30s', async task => {
-			void task.id;
+		ctx.scheduler.interval('refresh-cache', '30s', async (task, client) => {
+			client.logger.info(`Running ${task.id}`);
 		});
 
 		await ctx.write({ content: 'Cache refresh scheduled.' });
@@ -220,18 +225,22 @@ import { createScheduler, memory } from '@slipher/scheduler';
 const registry = createScheduler({ driver: memory() });
 
 // register a cron task
-registry.cron('daily-cleanup', '0 0 * * *', async () => {
+registry.cron('daily-cleanup', '0 0 * * *', async (_task, client) => {
+	void client;
 	// run work
 });
 
 // add() resolves cron vs. interval from the value automatically
-registry.add('poller', '10s', async task => {
+registry.add('poller', '10s', async (task, client) => {
 	void task.runCount;
+	void client;
 });
 
 // start the scheduler yourself, since there's no client lifecycle
 await registry.setup();
 ```
+
+Standalone registries keep the client optional. The second callback argument is `undefined` after `registry.setup()`, or the exact compatible client passed to `registry.setup(client)`.
 
 ## Events
 
