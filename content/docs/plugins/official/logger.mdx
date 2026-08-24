@@ -15,7 +15,7 @@ A wide event is one rich, structured entry describing *what happened to this req
 pnpm add @slipher/logger
 ```
 
-Requires Seyfert v5.
+Requires Node.js 22.13 or newer and Seyfert v5.
 
 ## Usage
 
@@ -63,6 +63,10 @@ The plugin attaches a wide-event logger to every command, component, and modal c
 - A successful run emits **one** wide event with `outcome: 'success'` and `durationMs` when the command returns.
 
 The result is one canonical entry per interaction.
+
+Collectors and awaited modal callbacks bypass Seyfert's normal component lifecycle, so the plugin scopes them separately. Their wide events include `collector: true`, the originating `command` and `parentInteractionId`, the current interaction identifiers, `waitDurationMs`, and `collectorResult` (`completed` or `error`). Component collectors also include `collectorMatch`.
+
+When OpenTelemetry is active, the collector event receives the collector interaction's native `trace_id` and `span_id`, not the already-ended command span. Calls to `useLogger().add()` inside the callback enrich that same collector event.
 
 ### Carry context through middlewares
 
@@ -267,8 +271,16 @@ logger({
 
 evlog is an optional peer dependency and is imported only by its factories. `pinoAdapter()` accepts a structural `PinoLoggerLike`, so install Pino only when you use it.
 
+### OpenTelemetry trace correlation
+
+When an OpenTelemetry span is active, the logger automatically adds its `trace_id` and `span_id` to every entry before sending it to the renderer and transports. Invalid or missing span contexts are ignored, so applications without tracing keep the same output.
+
+`@opentelemetry/api` is an optional peer dependency. Installing `@slipher/logger` alone does not initialize OpenTelemetry; register `@slipher/opentelemetry` or another SDK in the application to create the active spans used for correlation. The evlog adapter maps these fields to evlog's native `traceId` and `spanId` properties.
+
+Before fan-out, the core serializes every top-level `Error` field, including nested causes and custom enumerable properties. Adapters receive plain objects rather than the original prototypes and identities.
+
 <Callout type="warn">
-**Redaction belongs to the sink.** `prettyRenderer()` does **not** redact. Configure redaction in your runtime or collector, in your Pino instance, or in evlog's config. evlog's built-in patterns (`creditCard`, `email`, `jwt`, …) do **not** cover Discord bot tokens — add a pattern for those.
+**Redaction belongs to the sink.** Serialized errors can include SDK request or response metadata. `prettyRenderer()` and custom adapters do **not** redact. Configure sensitive paths in your collector, Pino instance, or evlog config. evlog's built-in patterns (`creditCard`, `email`, `jwt`, …) do **not** cover Discord bot tokens — add a pattern for those.
 </Callout>
 
 ### Console (default)

@@ -1,0 +1,255 @@
+---
+title: Player
+description: Resolve local and remote media, transcode it when needed, and manage playback queues on top of Slipher Voice.
+---
+
+`@slipher/player` adds media sources and one playback queue per guild on top of [`@slipher/voice`](/docs/plugins/official/voice). It opens local files, URLs, radio streams, and in-memory media; uses FFmpeg when conversion is necessary; and leaves Opus pacing, RTP, encryption, and Discord voice state to the voice connection.
+
+<Callout type="info">
+Requires Seyfert v5 and the `@slipher/voice` plugin. Node.js 22.13 or newer is the primary runtime. Bun and Deno are supported through their Node.js compatibility layers.
+</Callout>
+
+## Installation
+
+```bash copy title="Installing..."
+pnpm add @slipher/player @slipher/voice seyfert
+```
+
+[FFmpeg](https://ffmpeg.org/) must be available for MP3, WAV, AAC, FLAC, unknown containers, radio, seeking, and other media that cannot go directly to the Opus demuxers. Compatible Ogg Opus and WebM Opus sources can play without starting FFmpeg.
+
+For Deno, grant read access for local files, network access for remote media, and run access when FFmpeg is needed.
+
+## Configure the plugins
+
+Register Voice before Player. Player declares Voice as a required Seyfert plugin, and the registry order preserves both `client.voice` and `client.player` in the registry types while ensuring Player closes before Voice:
+
+```ts title="src/index.ts"
+import { player } from '@slipher/player';
+import { voice } from '@slipher/voice';
+import { Client, definePlugins } from 'seyfert';
+
+const plugins = definePlugins(
+    voice(),
+    player({
+        ffmpegPath: 'ffmpeg',
+        historyLimit: 100,
+    }),
+);
+
+declare module 'seyfert' {
+    interface SeyfertRegistry {
+        plugins: typeof plugins;
+    }
+}
+
+export const client = new Client({ plugins });
+```
+
+`ffmpegPath` defaults to `ffmpeg`. Omit it when that executable is already available on `PATH`. The same `PlayerManager` is exposed as `client.player` and `ctx.player`.
+
+Installing [`ffmpeg-static`](https://www.npmjs.com/package/ffmpeg-static) does not place its binary on `PATH`. Install it and pass its exported path explicitly:
+
+```bash copy title="Installing a bundled FFmpeg binary"
+pnpm add ffmpeg-static
+```
+
+```ts title="src/index.ts"
+import { player } from '@slipher/player';
+import { voice } from '@slipher/voice';
+import ffmpegPath from 'ffmpeg-static';
+import { Client, definePlugins } from 'seyfert';
+
+if (!ffmpegPath) {
+    throw new Error('ffmpeg-static does not support this platform.');
+}
+
+const plugins = definePlugins(
+    voice(),
+    player({ ffmpegPath }),
+);
+
+export const client = new Client({ plugins });
+```
+
+## Play local media
+
+Connect through the voice manager, bind a guild player to the ready connection, and enqueue a track:
+
+```ts
+import { file } from '@slipher/player';
+
+const connection = await client.voice.connect({
+    guildId,
+    channelId,
+});
+
+const guildPlayer = client.player.create(connection);
+await guildPlayer.enqueue(file('./music/song.mp3'));
+```
+
+`create(connection)` returns the existing player when the same guild and connection are already registered. If Discord destroys the connection and the bot reconnects, pass the replacement connection to `create()`; the player keeps its waiting queue and binds it to the new voice connection. Two live connections cannot own the same guild player.
+
+### Direct Opus playback
+
+Only `.opus` is inferred as Ogg Opus. An `.ogg` or `.webm` file can contain another codec, so identify a compatible container explicitly when you want to bypass FFmpeg:
+
+```ts
+await guildPlayer.enqueue(file('./music/song.ogg', { format: 'ogg-opus' }));
+await guildPlayer.enqueue(file('./music/song.webm', { format: 'webm-opus' }));
+```
+
+An explicit format means the source is already compatible. Corrupt data or a container whose audio is not Opus fails as a media error; the player does not silently retry it through FFmpeg.
+
+## Play URLs, radio, and memory
+
+Use `url()` for finite HTTP media and `radio()` for a live stream:
+
+```ts
+import { radio, url } from '@slipher/player';
+
+await guildPlayer.enqueue(
+    url('https://cdn.example.com/song.mp3', {
+        title: 'Remote song',
+    }),
+);
+
+await guildPlayer.enqueue(
+    radio('https://radio.example.com/live', {
+        title: 'Example FM',
+    }),
+);
+```
+
+Use `bytes()` when the complete source already lives in memory:
+
+```ts
+import { bytes } from '@slipher/player';
+
+await guildPlayer.enqueue(
+    bytes(audioBytes, {
+        title: 'Generated audio',
+        format: 'ogg-opus',
+    }),
+);
+```
+
+Byte tracks are process-local. They cannot be serialized, cloned into another process, or reopened after losing their in-memory backing data.
+
+## Resolve user input
+
+The manager can turn a local path, `file:` URL, or HTTP(S) URL into a track before choosing a guild player:
+
+```ts
+const result = await client.player.resolve(input);
+
+if (result.kind === 'track') {
+    await guildPlayer.enqueue(result.track);
+}
+```
+
+Resolution returns one of `track`, `playlist`, `search`, or `empty`. The built-in file and URL providers currently resolve user input; create radio and in-memory tracks through their explicit helpers.
+
+When several providers understand the same query, choose one by name:
+
+```ts
+const result = await client.player.resolve(input, {
+    provider: 'url',
+});
+```
+
+## Queue and playback controls
+
+Enqueue one track or an array. The return value contains the generated queue item IDs used by `remove()` and `move()`:
+
+```ts
+await guildPlayer.enqueue(firstTrack);
+const added = await guildPlayer.enqueue([secondTrack, thirdTrack]);
+await guildPlayer.enqueue(playNextTrack, { position: 0 });
+
+await guildPlayer.move(added[1].id, 0);
+await guildPlayer.remove(added[0].id);
+await guildPlayer.shuffle();
+```
+
+`remove()` and `move()` address items that are still waiting in the queue. The optional enqueue `position` is a zero-based index in that pending queue, so position `0` inserts a track next as one atomic operation.
+
+Control the current item through the player:
+
+```ts
+await guildPlayer.pause();
+await guildPlayer.resume();
+await guildPlayer.seek(30_000);
+await guildPlayer.setRepeat('queue');
+await guildPlayer.skip(2);
+await guildPlayer.stop();
+```
+
+A skip count includes the current item. Pending items bypassed by a multi-skip do not enter history because they never became current.
+
+Finite media pauses at its current packet boundary. A live stream closes when paused and reopens at its live edge when resumed. Seeking is available only for a finite track whose timeline is marked as seekable; it reopens the source at the requested offset through FFmpeg.
+
+If the bot is muted, Stage-suppressed, moving, recovering, or disconnected, the current item ends with `connection-unavailable`. Remaining queue items wait until voice becomes playable again.
+
+## History and events
+
+`guildPlayer.history` is an immutable, oldest-to-newest list of completed `{ item, reason }` snapshots. Reasons include `finished`, `skipped`, `stopped`, `load-failed`, `connection-unavailable`, and `destroyed`.
+
+`guildPlayer.previous` returns the most recent history entry. For finite media, `guildPlayer.positionMs` combines the latest seek offset with the duration of Opus audio sent to Discord. It is `null` for live media or when no item is current.
+
+The default history limit is 100. Configure another bound on the plugin, disable history with `historyLimit: 0`, or clear it at runtime:
+
+```ts
+await guildPlayer.clearHistory();
+```
+
+History deliberately omits queue metadata and in-memory byte payloads so completed tracks do not retain arbitrary application state or media buffers.
+
+The plugin also emits typed Seyfert events:
+
+- `playerStateChange`
+- `playerTrackStart`
+- `playerTrackEnd`
+- `playerTrackError`
+- `playerQueueEnd`
+
+`enqueue()` resolves when an item enters the queue; opening and playback can happen later. A background failure is logged through the Seyfert client logger and emitted as `playerTrackError`. FFmpeg failures expose the executable path, exit status, signal, and a bounded stderr tail through `PlayerError.metadata`.
+
+The public player state is `idle`, `waiting`, `loading`, `playing`, `paused`, or `destroyed`.
+
+## Add another media provider
+
+A provider can resolve a vendor-specific query, open its tracks as Opus packets, or do both:
+
+```ts
+import { player, type MediaProvider } from '@slipher/player';
+import { voice } from '@slipher/voice';
+import { definePlugins } from 'seyfert';
+
+const catalogProvider: MediaProvider = {
+    name: 'catalog',
+    async resolve(query, { signal }) {
+        signal.throwIfAborted();
+        return searchCatalog(query, signal);
+    },
+    async open(track, { signal, startAtMs }) {
+        return openCatalogTrack(track, { signal, startAtMs });
+    },
+};
+
+const plugins = definePlugins(
+    voice(),
+    player({
+        providers: [catalogProvider],
+    }),
+);
+```
+
+`resolve()` returns a `MediaLoadResult` or `null` when the provider does not recognize the query. `open()` returns `{ packets, close }`, where `packets` is an async iterable of complete Opus packets and `close()` releases every file, stream, process, and decoder owned by that resource.
+
+Provider names must be unique. A custom provider cannot replace the built-in `bytes`, `file`, `radio`, or `url` providers. Provider errors propagate unchanged so implementations can preserve their own typed error contracts.
+
+## Package boundary
+
+`@slipher/player` owns source resolution, bounded media-resource cleanup, optional FFmpeg transcoding, per-guild queues, repeat, pause, resume, seek, skip, and voice-availability coordination. `@slipher/voice` continues to own Opus pacing, speaking signaling, RTP, DAVE, encryption, and the Discord voice connection.
+
+Spotify and YouTube extraction, vendor authentication, recommendations, volume filters, PCM mixing, recording, and Opus decoding are not built in. Add those policies through providers or higher-level plugins instead of coupling them to the Discord transport.

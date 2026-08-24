@@ -67,6 +67,12 @@ const BOTS: Bot[] = [
         text: "All my homies use Seyfert so that's why I use it too.",
         ring: 2, angle: 260,
     },
+     {
+        name: "Nazha",
+        avatar: "/bots/thumbs/nazha.png",
+        text: "Building Nazha with Seyfert has been an amazing experience. The setup is incredibly smooth, the framework is modern, and developing with it is genuinely enjoyable.",
+        ring: 2, angle: 260,
+    },
 ];
 
 // ring radius as % of system size; period in seconds

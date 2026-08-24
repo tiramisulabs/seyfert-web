@@ -26,7 +26,7 @@ Everything flows through one registry, exposed as `ctx.queues`, `client.queues`,
 Install the plugin into the client via `new Client({ plugins })` and declare your queues:
 
 ```ts
-import { Client, definePlugins } from 'seyfert';
+import { Client, definePlugins, type UsingClient } from 'seyfert';
 import {
 	OnQueueEvent,
 	OnWorkerEvent,
@@ -56,7 +56,8 @@ declare module '@slipher/queues' {
 class AudioProcessor {
 	// the single handler for the queue; dispatch on job.name yourself
 	@Process()
-	async handle(job: QueueJobOf<'audio'>) {
+	async handle(job: QueueJobOf<'audio'>, client: UsingClient) {
+		client.logger.debug(`Processing ${job.name} from ${job.queueName}`);
 		switch (job.name) {
 			case 'transcode':
 				return transcode(job.data.fileId, job.data.format);
@@ -106,6 +107,14 @@ export const client = new Client({
 <Callout type="info">
 Each `@Processor()` class has exactly one `@Process()` handler — switch on `job.name` for named-job queues. There is no framework-level per-name dispatch, so typos are caught by the typed producer surface instead of becoming `"Queue process not found"` retries at runtime.
 </Callout>
+
+Decorated `@Process()` handlers receive the active Seyfert client as their second argument. Processor classes are still resolved eagerly, but the plugin waits until setup has bound the client before attaching them to the queue. With `memory()`, jobs queued during startup remain waiting. With `persistent()`, existing Redis jobs are not consumed before setup, while new `add()` calls reject until the driver is active.
+
+Registries created directly with `createQueues()` stay framework-independent. Their processors receive `undefined` unless you pass a compatible client to `registry.setup(client)`. The imperative `queue.process(job => ...)` API remains driver-level and receives only the job; capture the client from the surrounding scope when needed:
+
+```ts
+await queue.process(job => processMedia(job, client));
+```
 
 ### Producing Jobs
 
@@ -176,7 +185,7 @@ Avoid importing the exported `client` from processors or services that are loade
 
 `@OnQueueEvent(event)` is the queue/global channel and accepts `added`, `completed`, and `failed`. With `memory()` both decorators observe the same single-process queue. With `persistent()`, queue-level events come from BullMQ `QueueEvents` and use one extra Redis connection per queue per replica.
 
-All listeners receive one object payload: `{ job }`, `{ job, result }`, `{ job, error }`, `{ job, error, delay }`, or `{}` for `idle`. Global payloads always include `jobId`. With `persistent()`, `job` can be `undefined` when BullMQ has already removed it through `removeOnComplete` or `removeOnFail`; use `jobId` as the stable identity and call `queue.getJob(jobId)` when BullMQ still retains the job. Direct queue instances also support `on()` and `once()`.
+All listeners receive one object payload: `{ job }`, `{ job, result }`, `{ job, error }`, `{ job, error, delay }`, or `{}` for `idle`. Global payloads always include `jobId`. Persistent queue-wide payloads currently leave `job` undefined; use worker events when you need the hydrated job in the process that handled it, or use `jobId` as the stable identity and call `queue.getJob(jobId)` while BullMQ still retains the job. Direct queue instances also support `on()` and `once()`.
 
 Listener errors are isolated — throwing inside a handler is reported through `reportListenerError` and never changes job state, retry counts, or whether later listeners run:
 

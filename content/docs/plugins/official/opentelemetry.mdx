@@ -1,9 +1,9 @@
 ---
 title: OpenTelemetry
-description: Automatic traces and duration metrics for Seyfert interactions, gateway events, Discord REST, and cache operations.
+description: Traces and metrics for Seyfert interactions, events, Discord REST, cache operations, and gateway shard health.
 ---
 
-`@slipher/opentelemetry` instruments the main paths through a Seyfert bot and exports standard OpenTelemetry data. Commands, components, modals, gateway events, Discord REST requests, and cache operations become spans with duration histograms alongside them. You can add application-specific child spans through `ctx.trace` without passing a tracer through every layer.
+`@slipher/opentelemetry` instruments the main paths through a Seyfert bot and exports standard OpenTelemetry data. Commands, components, modals, gateway events, Discord REST requests, and cache operations become spans with duration histograms alongside them. Gateway shard connectivity and heartbeat latency remain observable even when a bot goes quiet. You can add application-specific child spans through `ctx.trace` without passing a tracer through every layer.
 
 The plugin is backend-neutral. Point it at Jaeger while developing, an OpenTelemetry Collector in production, or any vendor that accepts OTLP.
 
@@ -78,12 +78,13 @@ See the [Jaeger quick start](https://www.jaegertracing.io/docs/2.19/getting-star
 ```mermaid
 flowchart TD
     accTitle: OpenTelemetry plugin architecture
-    accDescr: Seyfert interactions, gateway events, Discord REST calls, and cache operations are instrumented by the plugin. Spans and duration metrics use the global OpenTelemetry provider, backed by either a plugin-owned NodeSDK or a host-provided SDK, before reaching an exporter or collector.
+    accDescr: Seyfert interactions, gateway events, Discord REST calls, cache operations, and gateway shard health are instrumented by the plugin. Spans and metrics use the global OpenTelemetry provider, backed by either a plugin-owned NodeSDK or a host-provided SDK, before reaching an exporter or collector.
 
     interactions["Interactions<br/>context scope + lifecycle observers"]
     events["Gateway events<br/>event wrapper"]
     rest["Discord REST<br/>api.rest observer"]
     cache["Cache adapter<br/>method wrappers"]
+    gateway["Gateway shards<br/>health observers"]
     plugin["@slipher/opentelemetry<br/>spans + duration metrics"]
     provider["Global OpenTelemetry API provider"]
     owned["Plugin-owned NodeSDK"]
@@ -94,6 +95,7 @@ flowchart TD
     events --> plugin
     rest --> plugin
     cache --> plugin
+    gateway --> plugin
     plugin --> provider
     provider --> owned
     provider --> host
@@ -101,34 +103,46 @@ flowchart TD
     host --> exporter
 ```
 
-`register` contributes interaction lifecycle instrumentation, while `setup` installs event, REST, and cache instrumentation and starts a `NodeSDK` only when the process does not already have a real provider. `teardown` removes every wrapper and shuts down the SDK only when the plugin owns it.
+`register` contributes interaction lifecycle instrumentation, while `setup` installs event, REST, cache, and gateway instrumentation and starts a `NodeSDK` only when the process does not already have a real provider. `teardown` removes every wrapper and observer and shuts down the SDK only when the plugin owns it.
 
 ## Automatic instrumentation
 
-Every surface is enabled by default and can be switched independently.
+Trace and metric signals are configured independently. Interaction, event, and REST traces are enabled by default; cache traces are disabled because one span per lookup is usually too noisy. All duration metrics and gateway health metrics are enabled by default.
 
 | Surface | Span kind | Spans | Duration metric |
 | --- | --- | --- | --- |
-| Commands, components, and modals | `INTERNAL` | Root span plus `Options`, `Middlewares`, and `Run` lifecycle children | `seyfert.interaction.duration` |
-| Gateway events | `INTERNAL` | `event {name}` | `seyfert.event.duration` |
+| Commands, components, and modals | `CONSUMER` | Root span plus `Options`, `Middlewares`, and `Run` lifecycle children | `seyfert.interaction.duration` |
+| Gateway events | `CONSUMER` | `event {name}` | `seyfert.event.duration` |
 | Discord REST | `CLIENT` | `HTTP {METHOD}` | `seyfert.rest.duration` |
-| Cache adapter | `INTERNAL` | `cache {op} {resource}` | `seyfert.cache.operation.duration` |
+| Cache adapter | `INTERNAL` | `cache {op} {resource}` when enabled | `seyfert.cache.operation.duration` |
+| Gateway shards | — | No spans | `seyfert.gateway.shard.connected`, `seyfert.gateway.shard.latency` |
 
 Disable a noisy or unused surface without removing the plugin:
 
 ```ts
 opentelemetry({
 	serviceName: 'my-bot',
-	instrument: {
-		interactions: true,
-		events: true,
-		rest: true,
-		cache: false,
-	},
+	traces: { cache: true },
+	metrics: { gateway: false },
 });
 ```
 
 Errors are recorded on their active spans and rethrown to Seyfert. HTTP `4xx` and `5xx` responses are marked as errors, while Seyfert `502`/`503` retries remain part of one logical REST span with `http.request.resend_count` updated.
+
+### Collector and modal flows
+
+Collector buttons and awaited modal submits continue the trace that created them while keeping a separate, short span per Discord interaction; no span stays open while waiting. Every span in that UI flow carries the same `seyfert.flow_id`.
+
+| Collector telemetry | Recorded on |
+| --- | --- |
+| `seyfert.collector.registered` with type, matcher, and timeout | The `Run` span that registers it |
+| `seyfert.button.presented` / `seyfert.modal.opened` | The span whose successful Discord response presents the UI |
+| `seyfert.button.clicked` / `seyfert.modal.submitted` | The collector interaction span |
+| `seyfert.collector.wait_duration_ms` | The collector interaction or terminal span |
+| `seyfert.collector.result` | `completed`, `timeout`, `stopped`, or `error` |
+| `seyfert.interaction.ack_latency_ms` and `seyfert.interaction.response_type` | The interaction span after a successful `reply`, `defer`, or `update` |
+
+Collector callbacks execute with their interaction span active, so database, REST, and application spans created inside the callback become its children. Timeout and manual-stop results use short terminal spans parented to the registration span. Standalone `ComponentCommand` handlers remain independent traces because Discord does not propagate trace context between interactions.
 
 ## Custom spans and attributes
 
@@ -197,7 +211,7 @@ const tracer = getTracer();
 
 ## Filtering
 
-`checkIfShouldTrace` runs before an automatic root span is created. It receives a discriminated `TraceSource`, so filtering can stay specific to the surface:
+`checkIfShouldTrace` runs before an automatic root span is created. It receives a discriminated `TraceSource`, so filtering can stay specific to the surface. It does not disable metrics for that operation:
 
 ```ts
 opentelemetry({
@@ -237,7 +251,8 @@ type TraceSource =
 | Option | Default | Description |
 | --- | --- | --- |
 | `serviceName` | `'seyfert'` | Tracer and meter name; also the resource service name when the plugin owns the SDK. |
-| `instrument` | All surfaces enabled | Enables or disables interactions, events, REST, and cache independently. |
+| `traces` | Interactions, events, and REST enabled; cache disabled | Enables or disables spans for each surface. |
+| `metrics` | All surfaces and gateway enabled | Enables or disables duration and gateway health metrics independently. |
 | `checkIfShouldTrace` | Always `true` | Filters automatic root spans before recording begins. |
 | `contextManager` | OpenTelemetry default | A `ContextManager` registered only when no global context manager is active. |
 | `cache.skipResources` | `['presence', 'voice_state']` | Cache namespaces that should never produce spans or duration metrics. |
@@ -262,7 +277,7 @@ Attributes are added only when the relevant value exists.
 | `seyfert.interaction_id` | Interaction ID. |
 | `seyfert.shard_id` | Shard ID when present. |
 
-Root span names are `command {name}`, `component {customId}`, and `modal {customId}`. Lifecycle children are `Options` for commands, `Middlewares`, and `Run`.
+Command roots are named `command {name}`. Component and modal roots use the handler's stable identity: an explicit `spanName`, a plain declared `customId`, or the class name. The runtime `custom_id` remains an attribute rather than becoming an unbounded span name. Lifecycle children are `Options` for commands, `Middlewares`, and `Run`.
 
 ### Gateway events
 
@@ -300,7 +315,7 @@ Component and modal `custom_id` values are intentionally included on interaction
 
 ## Metrics
 
-Every duration histogram uses seconds and adds `seyfert.error` when the operation fails. Instruments are created only for enabled `instrument.*` surfaces.
+Every duration histogram uses seconds and adds `seyfert.error` when the operation fails. Instruments are created only for enabled `metrics.*` surfaces.
 
 | Instrument | Typical attributes |
 | --- | --- |
@@ -308,6 +323,8 @@ Every duration histogram uses seconds and adds `seyfert.error` when the operatio
 | `seyfert.event.duration` | Event name and `seyfert.error`. |
 | `seyfert.rest.duration` | Method, URL template, status, and `seyfert.error`. |
 | `seyfert.cache.operation.duration` | Operation, resource, cache hit when applicable, and `seyfert.error`. |
+| `seyfert.gateway.shard.connected` | `1` or `0` per shard, with shard ID. |
+| `seyfert.gateway.shard.latency` | Heartbeat round-trip in seconds per connected shard. |
 
 A metric reader is required to export them. For a quick local check use `ConsoleMetricExporter`; in production, configure an OTLP metric exporter or another reader supported by the OpenTelemetry SDK. Custom metrics created through `getMeter()` use the same global meter provider.
 
@@ -320,6 +337,23 @@ IDs and custom IDs can still be sensitive in your application domain. Use `check
 <Callout type="warn">
 The plugin's REST correlation uses a FIFO queue for concurrent requests with the same method and exact path because Seyfert observer payloads do not expose a request ID. If those requests finish out of order, status and duration may be attached to the wrong span. Requests to different paths are unaffected.
 </Callout>
+
+## Preloading
+
+If another instrumented library must see the SDK before application modules load, start OpenTelemetry from a preload entry:
+
+```ts
+// instrumentation.ts
+import { startOpenTelemetry } from '@slipher/opentelemetry';
+
+startOpenTelemetry({ serviceName: 'my-bot' });
+```
+
+```sh
+node --import ./dist/instrumentation.js dist/index.js
+```
+
+The plugin detects the existing provider and installs only its Seyfert instrumentation. SDK options passed to the plugin do not replace the configuration owned by the preload entry.
 
 ## Using an existing SDK
 
