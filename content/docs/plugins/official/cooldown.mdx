@@ -204,11 +204,11 @@ Outside a command (admin commands, tests, background jobs) use the explicit form
 
 ```ts
 // preview the bucket without mutating it
-await client.cooldown?.check({ name: 'ping', target: userId, guildId });
+await client.cooldown.check({ name: 'ping', target: userId, guildId });
 // consume 2 uses at once via cost
-await client.cooldown?.consume({ name: 'ping', target: userId, guildId, cost: 2 });
+await client.cooldown.consume({ name: 'ping', target: userId, guildId, cost: 2 });
 // clear the bucket entirely
-await client.cooldown?.reset({ name: 'ping', target: userId, guildId });
+await client.cooldown.reset({ name: 'ping', target: userId, guildId });
 ```
 
 - `check` previews the result without mutating the bucket.
@@ -247,7 +247,7 @@ type CooldownResult =
 
 ## Shared buckets
 
-Commands that share a `group` share the same cache key, shaped as `${group ?? resolvedCommandName}:${typeLabel}:${target}`:
+Commands that share a `group` share the same cache key. The shape is `${encodeURIComponent(group ?? resolvedCommandName)}:${typeLabel}:${encodeURIComponent(target)}`. Ordinary Discord IDs remain unchanged, while custom values containing spaces or separators cannot collide:
 
 ```ts
 import { Command, Declare } from 'seyfert';
@@ -263,12 +263,42 @@ export class BanCommand extends Command {}
 export class KickCommand extends Command {}
 ```
 
-A user that runs `/ban` cannot immediately run `/kick`; both consume `moderation:user:<userId>`. `group` only changes the bucket namespace once a cooldown is resolved, it does not make subcommands inherit cooldowns.
+A user that runs `/ban` cannot immediately run `/kick`; both consume `moderation:user:<userId>`. `group` only changes the bucket namespace once a cooldown is resolved; it does not make subcommands inherit cooldowns.
+
+Commands in one group should use the same `type`, `interval`, and `uses`. The command being consumed supplies those settings, so mixing policies inside one shared bucket makes the effective limit depend on call order.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    accTitle: Cooldown plugin architecture
+    accDescr: A Seyfert command reaches the cooldown manager through decorator metadata or plugin context. The manager stores buckets through the client cache using either a regular adapter or an atomic Redis adapter.
+
+    invocation["Seyfert command invocation"]
+    metadata["@Cooldown metadata"]
+    context["Plugin context scope<br/>+ optional middleware"]
+    manager["CooldownManager"]
+    resource["client.cache / CooldownResource"]
+    regular["Regular cache adapter<br/>(process serialization)"]
+    atomic["AtomicCooldownAdapter<br/>(Redis EVAL + Redis TIME)"]
+
+    invocation --> metadata
+    invocation --> context
+    metadata --> manager
+    context --> manager
+    manager -->|"check / consume / reset"| resource
+    resource --> regular
+    resource --> atomic
+```
+
+The plugin creates one manager, exposes it as `client.cooldown` and `ctx.cooldown`, and attaches the Seyfert client during `setup`. The optional middleware consumes the active command's bucket before the handler runs. Cache storage remains owned by Seyfert; the adapter decides whether several processes can consume a shared bucket atomically.
 
 ## Storage atomicity
 
-`consume` is atomic when the cache adapter opts in to `AtomicCooldownAdapter` with `supportsAtomicCooldowns: true` and a Redis-compatible `eval(script, keys, args)` method. Adapters that expose `eval` without that marker fall back to the regular read-decide-write path.
+`consume` is atomic across processes when the cache adapter explicitly opts in to `AtomicCooldownAdapter` with `supportsAtomicCooldowns: true` and a Redis-compatible `eval(script, keys, args)` method. `RedisAdapter` from `@slipher/redis-adapter` provides that integration starting in v0.0.8. Adapters that merely expose `eval` without the marker use the regular read-decide-write path.
+
+The Redis script uses Redis `TIME` as its clock source and the package's resource key constants. `ExpirableRedisAdapter` deliberately does not opt in because its TTL and relationship bookkeeping are adapter-specific.
 
 <Callout type="info">
-Only `consume` uses the atomic path. `check` and `reset` remain regular cache operations, so make `consume` the admission authority in multi-worker bots.
+For non-atomic async adapters, one manager serializes `consume` and `reset` per bucket key. That prevents overspend inside one process without blocking unrelated buckets, but it cannot coordinate separate processes or replicas. `check` remains a read-only preview and can become stale immediately, so use `consume` as the admission authority.
 </Callout>

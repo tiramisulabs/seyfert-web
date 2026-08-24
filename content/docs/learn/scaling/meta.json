@@ -1,0 +1,11 @@
+{
+    "title": "Scaling",
+    "icon": "Network",
+    "defaultOpen": true,
+    "pages": [
+        "index",
+        "sharding",
+        "distributed",
+        "operations"
+    ]
+}

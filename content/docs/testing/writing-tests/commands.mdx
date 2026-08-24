@@ -75,7 +75,7 @@ Override the user for a single dispatch by passing `user`:
 ```ts
 import { apiUser } from '@slipher/testing';
 
-await bot.slash({ name: 'profile', user: apiUser({ id: '99', username: 'mara' }) });
+await bot.slash({ name: 'profile', user: apiUser({ id: '576805413148688424', username: 'freeaoi' }) });
 ```
 
 When a sequence of dispatches should come from one identity, bind it once with `bot.actor({ member, guildId, channel })` and call dispatchers on the returned actor. Each call drives the same in-process bot, so later steps see earlier state:
@@ -100,7 +100,7 @@ Primitive option values are encoded for you. For entity options, use the explici
 import { apiUser, userOption } from '@slipher/testing';
 
 await bot.slash({ name: 'ban',
-	options: { user: userOption(apiUser({ id: '42' })), reason: 'spam' },
+	options: { user: userOption(apiUser({ id: '220306163957235722' })), reason: 'spam' },
 });
 ```
 

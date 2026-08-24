@@ -9,6 +9,7 @@ import { notFound } from 'next/navigation';
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import { AutoTypeTable } from 'fumadocs-typescript/ui';
 import { Callout } from '@/components/docs/callout';
+import { Mermaid } from '@/components/docs/mermaid';
 import { MdxLink } from '@/components/docs/mdx-link';
 import { TocRail } from '@/components/docs/toc-rail';
 export default async function Page(props: {
@@ -44,6 +45,7 @@ export default async function Page(props: {
           ...defaultMdxComponents,
           AutoTypeTable,
           Callout,
+          Mermaid,
           a: MdxLink,
         }} />
       </DocsBody>

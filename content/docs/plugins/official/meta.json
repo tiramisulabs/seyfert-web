@@ -10,7 +10,6 @@
         "logger",
         "opentelemetry",
         "queues",
-        "scaler",
         "chartjs",
         "yuna"
     ]

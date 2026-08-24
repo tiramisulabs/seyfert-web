@@ -69,7 +69,7 @@ const guild = await ctx.guild();
 guild.id;                                           // Guild ID
 guild.name;                                         // Guild name
 guild.memberCount;                                  // Approximate member count
-await guild.members.fetch('userId');                // Fetch a specific member
+await guild.members.fetch('406184197405802497');    // Fetch Deivid
 await guild.members.list({ limit: 100 });          // List members
 ```
 
@@ -79,7 +79,7 @@ await guild.members.list({ limit: 100 });          // List members
 import { type UsingClient } from 'seyfert';
 const client = {} as UsingClient;
 // ---cut---
-const channel = await client.channels.fetch('channelId');
+const channel = await client.channels.fetch('1003825079328702529');
 
 channel.id;                    // Channel ID
 
@@ -175,26 +175,26 @@ import { type UsingClient } from 'seyfert';
 const client = {} as UsingClient;
 // ---cut---
 // Users
-await client.users.fetch('userId');
-await client.users.createDM('userId');
+await client.users.fetch('366779196975874049');
+await client.users.createDM('576805413148688424');
 
 // Messages
-await client.messages.write('channelId', { content: 'Hello' });
-await client.messages.edit('messageId', 'channelId', { content: 'Edited' });
-await client.messages.delete('messageId', 'channelId');
+await client.messages.write('1003825079328702529', { content: 'Hello' });
+await client.messages.edit('1529923192402088189', '1003825079328702529', { content: 'Edited' });
+await client.messages.delete('1529923192402088189', '1003825079328702529');
 
 // Members
-await client.members.fetch('guildId', 'userId');
-await client.members.edit('guildId', 'userId', { nick: 'New Name' });
-await client.members.kick('guildId', 'userId');
-await client.members.ban('guildId', 'userId');
+await client.members.fetch('1003825077969764412', '406184197405802497');
+await client.members.edit('1003825077969764412', '410623882152771587', { nick: 'New Name' });
+await client.members.kick('1003825077969764412', '220306163957235722');
+await client.members.ban('1003825077969764412', '576805413148688424');
 
 // Roles
-await client.roles.create('guildId', { name: 'New Role', color: 0xFF0000 });
-await client.roles.edit('guildId', 'roleId', { name: 'Updated' });
+await client.roles.create('1003825077969764412', { name: 'New Role', color: 0xFF0000 });
+await client.roles.edit('1003825077969764412', '1115437277846458388', { name: 'Updated' });
 
 // Guilds
-await client.guilds.fetch('guildId');
+await client.guilds.fetch('1003825077969764412');
 await client.guilds.list();
 ```
 
@@ -220,7 +220,7 @@ import { Transformers } from 'seyfert';
 Transformers.User = (client, data) => {
     return {
         username: data.username,
-        isAdmin: ['123456789012345678'].includes(data.id),
+        isAdmin: ['366779196975874049'].includes(data.id),
         raw() {
             return client.users.raw(data.id);
         },

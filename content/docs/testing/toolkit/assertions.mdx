@@ -140,14 +140,14 @@ import { BanCommand } from '../../src/commands/ban';
 
 test('/ban bans the target and confirms', async () => {
 	await using bot = await createMockBot({ commands: [BanCommand] });
-	const target = apiUser({ id: '42', username: 'spammer' });
+	const target = apiUser({ id: '220306163957235722', username: 'n128' });
 
 	const result = await bot.slash({ name: 'ban',
 		options: { user: userOption(target), reason: 'raid' },
 	});
 
 	outcome(result).get.response({ kind: 'reply' });
-	expect(result.content).toBe('Banned spammer');
+	expect(result.content).toBe('Banned n128');
 	const ban = await bot.waitForAction(Routes.ban);
 	expect(ban.reason).toBe('raid');
 });

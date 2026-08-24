@@ -160,8 +160,8 @@ If your adapter is asynchronous, set `isAsync = true` and return promises from i
 Seyfert's cache stores **values** keyed by a dotted path, plus **relationships** (sets of IDs) so it can tell who a resource belongs to. Keys look like this:
 
 ```ts
-<resource>.<id2>.<id1> // member.1003825077969764412.1095572785482444860
-<resource>.<id1>       // user.863313703072170014
+<resource>.<id2>.<id1> // member.1003825077969764412.366779196975874049
+<resource>.<id1>       // user.576805413148688424
 ```
 
 ### Implementing the Adapter interface
@@ -304,7 +304,7 @@ class MyAdapter implements Adapter {
 
 ```ts
 <resource>.<*>.<*> // member.*.*
-<resource>.<*>.<id> // member.*.1095572785482444860
+<resource>.<*>.<id> // member.*.366779196975874049
 <resource>.<id>.<*> // member.1003825077969764412.*
 <resource>.<*> // user.*
 ```

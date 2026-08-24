@@ -1,6 +1,6 @@
 import { defineDocs, defineConfig, defineCollections, frontmatterSchema } from 'fumadocs-mdx/config';
 import { transformerTwoslash } from 'fumadocs-twoslash';
-import { rehypeCodeDefaultOptions } from 'fumadocs-core/mdx-plugins';
+import { rehypeCodeDefaultOptions, remarkMdxMermaid } from 'fumadocs-core/mdx-plugins';
 import { z } from 'zod';
 import dacezuTheme from './dacezu.json';
 import { ThemeRegistrationAny } from 'shiki/types';
@@ -18,6 +18,7 @@ export const blog = defineCollections({
 
 export default defineConfig({
   mdxOptions: {
+    remarkPlugins: [remarkMdxMermaid],
     rehypeCodeOptions: {
       themes: {
         light: 'min-light',
