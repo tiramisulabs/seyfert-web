@@ -1,0 +1,193 @@
+---
+title: Cache Integrity
+description: Prevent stale Discord entities in a persistent Seyfert cache from surviving restarts or worker replacement.
+---
+
+`@slipher/cache-integrity` reconciles a persistent Seyfert cache against authoritative Gateway snapshots. It correlates
+each Gateway packet with the cache mutations Seyfert performs, hides entries that current evidence cannot validate, and
+physically removes confirmed stale entries only while the same causal evidence is still current.
+
+The plugin does not fetch from Discord. A hidden entry behaves like a normal cache miss, so the resource's configured
+cache `flow` still decides whether an on-demand REST request is allowed.
+
+## Installation
+
+```sh
+pnpm add @slipher/cache-integrity
+```
+
+Requires Seyfert v5. A shared Redis deployment also needs the supported Redis integration:
+
+```sh
+pnpm add @redis/client@6.1 @slipher/redis-adapter@0.0.9
+```
+
+## Choose a coordinator
+
+The coordinator defines where causal metadata and ownership fences live.
+
+| Deployment | Coordinator | Guarantee |
+| --- | --- | --- |
+| One process owns the persistent adapter | `localCoordinator()` | Visibility and cleanup are coordinated inside that process. |
+| Multiple clients or workers share one Redis namespace | `redisCoordinator()` | Leases, generations, tombstones, and adapter mutations are coordinated atomically in Redis. |
+
+`localCoordinator()` does not make Seyfert's `MemoryAdapter` durable. That adapter already starts empty, so cache
+integrity adds no restart-recovery value to it. Use this plugin when the backing adapter can outlive the process.
+
+## Single-process setup
+
+Create the plugin once, put it before other plugins that intercept Gateway dispatches, and configure the adapter before
+`client.start()`:
+
+```ts
+import { createClient } from '@redis/client';
+import { cacheIntegrity, localCoordinator } from '@slipher/cache-integrity';
+import { RedisAdapter } from '@slipher/redis-adapter';
+import { Client, definePlugins } from 'seyfert';
+
+const redis = createClient({ url: process.env.REDIS_URL });
+const adapter = new RedisAdapter({
+	client: redis,
+	namespace: 'bot-cache',
+});
+
+const integrity = cacheIntegrity({
+	coordinator: localCoordinator(),
+});
+
+const plugins = definePlugins(
+	integrity,
+	// Other plugins that contribute gateway.onDispatch go after integrity.
+);
+
+declare module 'seyfert' {
+	interface SeyfertRegistry {
+		plugins: typeof plugins;
+	}
+}
+
+const client = new Client({ plugins });
+client.setServices({ cache: { adapter } });
+await client.start();
+```
+
+`localCoordinator()` keeps causal metadata in memory while the adapter remains persistent. Use it only when this
+process is the sole owner of the adapter's storage. It does not provide cross-process safety.
+
+<Callout type="warn">
+Cache integrity must be the first resolved plugin that contributes `gateway.onDispatch`. Setup fails before replacing
+the cache adapter when an earlier interceptor exists, because the plugin could not prove that it observed the original
+packet identity.
+</Callout>
+
+## Shared Redis setup
+
+Import the distributed coordinator from its optional subpath. Every process sharing the cache namespace must use the
+same coordinator namespace:
+
+```ts
+import { createClient } from '@redis/client';
+import { cacheIntegrity } from '@slipher/cache-integrity';
+import { redisCoordinator } from '@slipher/cache-integrity/coordinators/redis';
+import { RedisAdapter } from '@slipher/redis-adapter';
+import { Client, definePlugins } from 'seyfert';
+
+const redis = createClient({ url: process.env.REDIS_URL });
+const adapter = new RedisAdapter({
+	client: redis,
+	namespace: 'bot-cache',
+});
+
+const plugins = definePlugins(
+	cacheIntegrity({
+		coordinator: redisCoordinator({
+			client: redis,
+			cacheNamespace: adapter.namespace,
+			namespace: 'bot-cache-integrity',
+		}),
+	}),
+);
+
+declare module 'seyfert' {
+	interface SeyfertRegistry {
+		plugins: typeof plugins;
+	}
+}
+
+const client = new Client({ plugins });
+client.setServices({ cache: { adapter } });
+await client.start();
+```
+
+The cache and coordinator namespaces must be non-empty, disjoint keyspaces without Redis glob characters, and must not
+end in `:`. The first successful startup reserves
+`${cacheNamespace}:__slipher_cache_integrity_control` to bind both namespaces. That key intentionally survives a
+clean shutdown and prevents a differently configured coordinator from acquiring the same cache later.
+
+The coordinator requires the exact `RedisAdapter` implementation from `@slipher/redis-adapter` 0.0.9 and a standalone
+`@redis/client` 6.1.x client without `keyPrefix`. `ExpirableRedisAdapter`, subclasses, clusters, sentinels, and writes
+that bypass the reconciled adapter are not supported in this version.
+
+<Callout type="info">
+Redis owns every coordinated adapter operation. Reads gain an asynchronous Redis round trip, and value mutations,
+relationship mutations, visibility changes, delete claims, and generation fences are committed atomically with Lua.
+The plugin never closes the caller-owned Redis client or backing adapter.
+</Callout>
+
+## Reconciliation behavior
+
+Visibility is separated from physical cleanup:
+
+| State | Read behavior | Cleanup behavior |
+| --- | --- | --- |
+| Visible | The cache may return the entry. | Nothing to remove. |
+| Unknown, preserved | Reads miss because current evidence has not validated the entry. | The plugin does not have authority to delete it. |
+| Hidden, pending | Reads miss after an authoritative snapshot identified a ghost. | Removal proceeds only while its generation and causal fence remain current. |
+| Reconciled | The stale entry was removed or superseded by a newer write. | Older cleanup cannot defeat the newer write. |
+
+A failed physical removal remains hidden and appears in diagnostics. A later authoritative snapshot may retry it; the
+plugin does not run an independent retry scheduler.
+
+Snapshot authority depends on the resource:
+
+| Resource | Startup behavior |
+| --- | --- |
+| Guild existence | Replaced from the shard's `READY` guild set after every expected guild outcome settles. |
+| Roles, non-thread channels, emojis, overwrites, voice states, and stage instances | Replaced by an available guild snapshot. |
+| Stickers | Replaced only when the snapshot includes the field. |
+| Active or viewable threads | Replaced within the shared channel namespace; archived or unclassified threads are preserved. |
+| Members and presences | Previous entries remain hidden until reobserved and are never snapshot-swept. |
+| Messages and bans | Preserved as unknown until a current write and never startup-swept. |
+| Users | Visible after a current write and never owned or swept by one shard. |
+
+Unavailable guilds are preserved. Removing a stale guild uses Seyfert's existing guild cascade, while an internal
+unfiltered scope keeps hidden descendants available to that cleanup without exposing them to concurrent callers.
+
+## Workers and failures
+
+`redisCoordinator()` coordinates clients or workers sharing one supported Redis namespace. A `WorkerClient` must own a
+real adapter; Seyfert's RPC-backed `WorkerAdapter` is rejected because its store belongs to `WorkerManager`, outside the
+plugin process.
+
+A replacement worker that only receives `RESUMED` cannot prove the Discord session generation. Shard-scoped reads and
+mutations therefore remain fail-closed until that instance observes a new `READY`.
+
+Lease loss or a Redis transport failure is terminal for that coordinator instance. New visibility-dependent reads
+return cache-miss shapes and pending destructive work remains fenced. Recovery requires constructing a fresh client,
+plugin, and coordinator; a failed incarnation never reacquires ownership.
+
+## Status and shutdown
+
+The client extension is observability-only:
+
+```ts
+const status = client.cacheIntegrity.status();
+await client.cacheIntegrity.waitForIdle();
+```
+
+`status()` reports lifecycle state, adapter ownership, packet correlation counts, and deduplicated diagnostics. The
+public API intentionally exposes no manual flush or deletion operation.
+
+The plugin instance is one-shot. Replacing the installed adapter, cache packet handler, paired cache-write handlers, or
+Seyfert's member or presence duplicate filters terminally disables reconciliation. During `client.close()`, the plugin
+stops new work, drains admitted operations, releases only leases it still owns, and restores hooks that it still owns.

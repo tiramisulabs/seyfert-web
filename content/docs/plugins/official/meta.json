@@ -5,6 +5,7 @@
         "index",
         "voice",
         "player",
+        "cache-integrity",
         "cooldown",
         "scheduler",
         "logger",
