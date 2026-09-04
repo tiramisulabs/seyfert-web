@@ -16,7 +16,8 @@ normal cache miss, so the resource's configured cache `flow` still decides wheth
 pnpm add @slipher/cache-integrity
 ```
 
-Requires Seyfert v5.
+Requires Seyfert v5 with the atomic adapter contract. The Redis setup below requires Redis 8.0 or newer and a single
+writable keyspace; Redis Cluster is unsupported.
 
 ## Setup
 
@@ -72,7 +73,8 @@ when plugin setup runs.
 
 ## Fresh values and process-local collections
 
-Every successful value write stores freshness metadata beside the value in the configured adapter. On a later process,
+Every successful write commits the value and its relationship together, then stores freshness metadata as a separate
+entry in the configured adapter. On a later process,
 `get` and `bulkGet` can return that value while its timestamp remains within `maxAge`. The metadata is checked on every
 direct lookup of an earlier-process value; reading a value does not extend its freshness.
 
@@ -83,21 +85,31 @@ as current Gateway and REST writes pass through Seyfert's cache.
 | --- | --- |
 | `get`, `bulkGet` | Return current-process values or persisted values no older than `maxAge`. |
 | `scan`, `values`, relationship reads | Return only entries rebuilt by this process. |
-| `set`, `bulkSet` | Persist the value, then its freshness metadata, then admit the value locally. |
+| `set`, `bulkSet` | Commit value and relationship, then freshness metadata, then admit both locally. |
 | `patch`, `bulkPatch` | Patch recent values; replace expired or unverified values so stale fields cannot survive. |
-| Removals | Delete the value before deleting its freshness metadata. |
+| `remove`, `bulkRemove` | Remove value and relationship, then freshness metadata. |
+| Relationship removals | Remove owned values and memberships; hidden sidecars may remain until adapter expiry or `flush`. |
 | `flush` | Clear data, metadata, and process-local visibility through the backing adapter. |
 
 Entries without metadata—including values written before installing this version—are treated as cache misses. A new or
-unverified value becomes visible only after both the value and its metadata succeed.
+unverified value and its relationship become visible only after both the entry and its metadata succeed.
 
-The generic adapter contract cannot atomically write a value and its sidecar. If an already recent value is overwritten
-but refreshing its timestamp fails, the newer value can remain readable under the previous timestamp until that
-timestamp expires. The timestamp is conservative, so the configured staleness bound still holds.
+The generic adapter contract cannot atomically write an entry and its sidecar together. If refreshing metadata fails,
+the write rejects, but an overwrite can remain readable through existing current-process visibility or a previous
+valid timestamp. After restart, that older timestamp does not extend the persisted reuse window. A failed write does
+not roll back the backing adapter or revoke visibility established by an earlier successful write.
+
+Bulk writes and removals attempt every entry in bounded groups and report failures with an `AggregateError` only after
+all submitted work settles. Successful entries remain committed and visible. There is no batch atomicity. The wrapper
+uses per-entry operations so it can publish the successful subset even when another entry fails.
+
+`maxAge` applies to values reused from an earlier process. Values successfully written by the current process remain
+locally visible beyond that window, while they exist in the backing adapter. A warm read does not grant that visibility
+or add the entry to scans and relationships.
 
 <Callout type="info">
-`maxAge` is a bounded-staleness contract, not proof that Discord still has the same state. A direct lookup may return a
-value that old. Use a small window appropriate for the application.
+`maxAge` bounds reuse after restart, not the age of every current-process read or proof that Discord still has the same
+state. Choose the persisted reuse window appropriate for the application.
 </Callout>
 
 <Callout type="warn">
