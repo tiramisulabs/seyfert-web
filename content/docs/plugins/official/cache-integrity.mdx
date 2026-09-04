@@ -1,0 +1,144 @@
+---
+title: Cache Integrity
+description: Bound persistent cache staleness after a process restart.
+---
+
+`@slipher/cache-integrity` lets direct cache lookups reuse recently written persisted values while keeping relationships
+and enumerations from an earlier process hidden. It is intended for cache adapters whose storage can outlive the bot
+process.
+
+The plugin does not validate entries against Discord or delete old storage. An expired or hidden entry behaves like a
+normal cache miss, so the resource's configured cache `flow` still decides whether an on-demand REST request is allowed.
+
+## Installation
+
+```sh
+pnpm add @slipher/cache-integrity
+```
+
+Requires Seyfert v5 with the atomic adapter contract. The Redis setup below requires Redis 8.0 or newer and a single
+writable keyspace; Redis Cluster is unsupported.
+
+## Setup
+
+Add the plugin and configure the persistent adapter before `client.start()`:
+
+```ts
+import { createClient } from '@redis/client';
+import { cacheIntegrity } from '@slipher/cache-integrity';
+import { ExpirableRedisAdapter } from '@slipher/redis-adapter';
+import { Client, definePlugins } from 'seyfert';
+
+const maxAge = 5 * 60_000;
+const retention = 24 * 60 * 60_000;
+const redis = createClient({ url: process.env.REDIS_URL });
+const plugins = definePlugins(cacheIntegrity({
+	maxAge,
+}));
+
+declare module 'seyfert' {
+	interface SeyfertRegistry {
+		plugins: typeof plugins;
+	}
+}
+
+const client = new Client({ plugins });
+
+client.setServices({
+	cache: {
+		adapter: new ExpirableRedisAdapter(
+			{
+				client: redis,
+				namespace: 'bot-cache',
+			},
+			{
+				default: {
+					expire: retention,
+					ondemand: true,
+				},
+			},
+		),
+	},
+});
+
+await client.start();
+```
+
+`maxAge` is required and expressed in milliseconds. It states the maximum persisted staleness the application accepts
+for lookups by explicit key. `expire` belongs to `ExpirableRedisAdapter` and bounds physical retention instead. Keep
+`expire` at least as large as `maxAge` if values should remain available throughout the freshness window.
+
+There are no coordinator, namespace, or plugin-order options. Cache integrity wraps whichever adapter is configured
+when plugin setup runs.
+
+## Fresh values and process-local collections
+
+Every successful write commits the value and its relationship together, then stores freshness metadata as a separate
+entry in the configured adapter. On a later process,
+`get` and `bulkGet` can return that value while its timestamp remains within `maxAge`. The metadata is checked on every
+direct lookup of an earlier-process value; reading a value does not extend its freshness.
+
+Relationships and enumeration visibility remain in memory. They start empty in every process and are rebuilt naturally
+as current Gateway and REST writes pass through Seyfert's cache.
+
+| Operation | Behavior |
+| --- | --- |
+| `get`, `bulkGet` | Return current-process values or persisted values no older than `maxAge`. |
+| `scan`, `values`, relationship reads | Return only entries rebuilt by this process. |
+| `set`, `bulkSet` | Commit value and relationship, then freshness metadata, then admit both locally. |
+| `patch`, `bulkPatch` | Patch recent values; replace expired or unverified values so stale fields cannot survive. |
+| `remove`, `bulkRemove` | Remove value and relationship, then freshness metadata. |
+| Relationship removals | Remove owned values and memberships; hidden sidecars may remain until adapter expiry or `flush`. |
+| `flush` | Clear data, metadata, and process-local visibility through the backing adapter. |
+
+Entries without metadata—including values written before installing this version—are treated as cache misses. A new or
+unverified value and its relationship become visible only after both the entry and its metadata succeed.
+
+The generic adapter contract cannot atomically write an entry and its sidecar together. If refreshing metadata fails,
+the write rejects, but an overwrite can remain readable through existing current-process visibility or a previous
+valid timestamp. After restart, that older timestamp does not extend the persisted reuse window. A failed write does
+not roll back the backing adapter or revoke visibility established by an earlier successful write.
+
+Bulk writes and removals attempt every entry in bounded groups and report failures with an `AggregateError` only after
+all submitted work settles. Successful entries remain committed and visible. There is no batch atomicity. The wrapper
+uses per-entry operations so it can publish the successful subset even when another entry fails.
+
+`maxAge` applies to values reused from an earlier process. Values successfully written by the current process remain
+locally visible beyond that window, while they exist in the backing adapter. A warm read does not grant that visibility
+or add the entry to scans and relationships.
+
+<Callout type="info">
+`maxAge` bounds reuse after restart, not the age of every current-process read or proof that Discord still has the same
+state. Choose the persisted reuse window appropriate for the application.
+</Callout>
+
+<Callout type="warn">
+`maxAge` is not a storage TTL. An adapter without expiration can retain hidden values, relationships, and freshness
+metadata indefinitely. Configure retention in the backing adapter when physical storage must also be bounded.
+</Callout>
+
+## Multiple processes and workers
+
+Collection visibility belongs to the process running the plugin. A later write that bypasses the wrapper—including a
+write from another process—can replace a value without refreshing its freshness metadata.
+
+Use one writer per keyspace, or partition shared storage so processes do not overwrite each other's admitted keys.
+Cache integrity does not provide distributed isolation, ownership leases, or fencing.
+
+<Callout type="warn">
+Seyfert's RPC-backed `WorkerAdapter` is not supported. Seyfert v5 resolves worker cache responses through the exact
+adapter instance installed on the client, so replacing it with a wrapper would leave requests pending until timeout.
+Configure cache integrity only where the client owns a real adapter.
+</Callout>
+
+## Lifecycle and limitations
+
+Configure the adapter before starting the client. During plugin teardown, cache integrity restores the original
+adapter only if its wrapper is still installed, so it does not overwrite a later adapter replacement.
+
+Writes that bypass Seyfert's installed cache adapter do not create or refresh freshness metadata and do not rebuild
+process-local relationships. They can still replace keys that this process already admitted. The plugin has no status
+API, background reconciliation, sweeper, or distributed coordinator. Old physical entries and metadata may remain until
+the application or adapter removes them; the setup above gives Redis that responsibility through `expire`.
+
+Using it with Seyfert's `MemoryAdapter` is supported but redundant because that adapter already starts empty.
