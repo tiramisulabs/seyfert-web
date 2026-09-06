@@ -1,8 +1,4 @@
-import { blogSource } from '@/lib/source';
-import { DocsLayout } from 'fumadocs-ui/layouts/docs';
-import { GeistSans } from "geist/font/sans";
 import type { Metadata } from 'next';
-import { baseOptions } from '../../layout.config';
 
 export const metadata: Metadata = {
     title: {
@@ -23,15 +19,5 @@ export default function BlogLayout({
 }: {
     children: React.ReactNode;
 }) {
-    return <div className={GeistSans.className}>
-        <DocsLayout
-            tree={blogSource.pageTree}
-            {...baseOptions}
-            sidebar={{
-                enabled: false,
-            }}
-        >
-            {children}
-        </DocsLayout>
-    </div>;
-} 
+    return <div className="min-w-0 w-full">{children}</div>;
+}

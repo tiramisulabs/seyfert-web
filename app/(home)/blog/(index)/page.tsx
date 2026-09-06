@@ -17,7 +17,6 @@ export default function BlogIndexPage() {
     return (
         <div
             className="blog-index mx-auto max-w-6xl px-4 py-20 sm:px-6"
-            style={{ gridColumn: "1 / -1" }}
         >
             <div className="mb-14 text-center">
                 <h1 className="mb-5 bg-linear-to-b from-gray-100 to-gray-400 bg-clip-text text-5xl font-bold tracking-tight text-transparent sm:text-6xl">

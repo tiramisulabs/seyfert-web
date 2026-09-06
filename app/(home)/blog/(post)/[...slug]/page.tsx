@@ -25,9 +25,9 @@ export default async function Page(props: {
     const tocItems = [{ title: clean, url: '#_top', depth: 2 }, ...toc];
 
     return (
-        <div className="seyfert-docs" style={{ gridColumn: '1 / -1' }}>
+        <div className="seyfert-docs">
             <div className="mx-auto flex max-w-6xl gap-10 px-4 py-14 sm:px-6">
-                <article className="min-w-0 flex-1">
+                <article className="min-w-0 flex-1 [overflow-wrap:anywhere]">
                     <Link
                         href="/blog"
                         className="flex w-fit items-center gap-1 text-sm text-fd-muted-foreground transition-colors hover:text-fd-foreground"

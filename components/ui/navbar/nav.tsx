@@ -63,9 +63,9 @@ export default function Navbar() {
           isHomePage && isScrolled ? "rounded-sm" : "rounded-none"
         )}
       />
-      <div className="h-full flex items-center justify-between mx-auto px-4 sm:px-6 relative">
+      <div className="h-full flex items-center justify-between mx-auto px-0 sm:px-6 relative">
         <div className="flex items-center gap-3 sm:gap-6">
-          <Link href="/">
+          <Link href="/" className="shrink-0">
             <div className="flex items-center">
               <Image src={logo} alt="Seyfert" width={32} height={32} />
               <h1 className="hidden text-2xl font-bold sm:block">eyfert</h1>
@@ -76,7 +76,7 @@ export default function Navbar() {
           <NavMenu />
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-3">
           <Button
             asChild
             variant="ghost"
