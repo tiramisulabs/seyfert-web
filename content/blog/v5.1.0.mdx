@@ -1,0 +1,253 @@
+---
+title: "Seyfert v5.1.0: Stable Orbit"
+description: "Atomic cache writes, a single-flight reconnect lifecycle, safer REST throttling, extensible permission checks, and sharper diagnostics across the framework."
+date: 2026-09-06
+---
+
+## The Reliability Release
+
+Seyfert v5.0 gave the framework a new extension model. **Seyfert v5.1.0** makes that model—and the runtime underneath it—much harder to knock over.
+
+The biggest work happened where production bots feel failures most: cache ownership is now committed with the value it belongs to, shard reconnects cannot leak work from an old socket into a new one, and malformed rate-limit headers no longer trick the REST queue into sending early. Commands, components, workers, and plugins also gained a handful of small but useful contracts.
+
+This is not a feature parade. It is the release where the machinery keeps its promises.
+
+---
+
+## Cache Writes Own Their Relationships
+
+Cache adapters previously stored a value and registered its relationship in separate calls. A failure between those calls could leave data without an owner, or an owner pointing at data that was never committed. v5.1 moves both pieces into the same adapter operation.
+
+Custom adapters must now accept the relationship alongside every write:
+
+```ts
+import type { AdapterEntry, AdapterRelationship } from 'seyfert';
+
+class CustomAdapter {
+  set(key: string, value: unknown, relationship: AdapterRelationship) {
+    // Commit the value and its relationship as one logical operation.
+  }
+
+  bulkSet(entries: AdapterEntry[]) {
+    for (const [key, value, relationship] of entries) {
+      this.set(key, value, relationship);
+    }
+  }
+}
+```
+
+`patch`, `bulkSet`, and `bulkPatch` follow the same contract. `addToRelationship` and `bulkAddToRelationShip` are gone; adapters no longer ask callers to repair ownership after a write.
+
+The guarantee is deliberately precise: **each entry is atomic, the batch is not**. A rejected batch may have committed a subset of its entries, but the returned promise does not settle while writes are still pending. Adapter authors should preserve that boundary instead of treating `bulkSet` as an all-or-nothing transaction.
+
+The built-in memory adapters were reorganized around that ownership model. Cleanup by guild or channel now removes the values it owns, indexed misses avoid scanning unrelated buckets, and limited caches keep message ownership next to their storage index.
+
+### What the memory and CPU work buys
+
+The cache work was benchmarked in stages so the cost of the index and the later compaction did not blur together.
+
+At a Miyu-sized `LimitedMemoryAdapter` workload—6,680 guild buckets retaining 6.68 million messages—an indexed miss went from scanning every compatible bucket to a direct lookup. In five isolated runs, miss throughput moved from roughly **1,055 ops/s to 2.84 million ops/s**, total CPU for preload and reads fell **20.6%**, and the maximum event-loop delay fell from **4.865 seconds to 894 ms**. A separate seven-shard Gateway pressure run measured **15.4% less total CPU** and reduced the worst observed stall from **8.735 seconds to 874 ms** while keeping peak RSS effectively unchanged at about 8.97 GiB.
+
+The final bookkeeping compaction then removed the separate per-message relationship index. In the 200,000-message fixture, that cut physical index records from **400,000 to 200,000**. Seven isolated Node runs measured individual writes at **8.1% higher throughput with 7.1 MiB less retained heap**, 1,000-entry batches at **18.8% higher throughput with 10.2% less CPU**, and the TTL workload with **13.9 MiB less peak RSS**.
+
+These are separate benchmark results, not numbers derived from the release diff, and they are workload-specific rather than a blanket speed claim. Against the pre-index baseline, cold preload was about 9.9% slower and known hits 2.6% slower; the final compaction made message hits another 16.1% slower and used 16.7% more CPU on that read-only scenario. The result removes catastrophic miss scans and reduces write-side bookkeeping, while explicitly trading some read-only hit performance for lower memory and write cost.
+
+### Presence cache is guild-scoped
+
+A Discord user can have different presence data in different guilds. The old global lookup could therefore return the wrong presence. Both public helpers now require the guild:
+
+```ts
+const presence = client.members.presence(guildId, memberId);
+const samePresence = user.presence(guildId);
+```
+
+This is a breaking signature change, but it removes an ambiguity the cache could not solve correctly.
+
+### Limited collections tell you whether a write survived
+
+`LimitedCollection.set(...)` now returns a boolean: `true` when the configured limit retained the entry and `false` when the limit rejected it. Expiration handling was tightened at the same time. `Infinity`, zero, and negative delays mean “do not expire”; `NaN` and finite delays beyond JavaScript's maximum timer range are rejected.
+
+If you subclass `LimitedCollection`, override `set`, or inspect `LimitedMemoryAdapter.keyToStorage`, update those integrations. The storage index can now contain `LimitedMemoryStorageIndex` values with relationship metadata.
+
+Adapter conformance checks also moved into their own module. That is a maintainer-facing refactor, not a new cache feature, but it makes the contract above testable without keeping a large test harness inside `Cache` itself.
+
+`cache.testAdapter()` remains intentionally destructive: it flushes the adapter before, during, and after its conformance run. Point it at isolated test storage, never a live cache. Custom adapters must also preserve one ownership invariant: the same physical key cannot move between logical relationships.
+
+---
+
+## Gateway and Workers Recover Deliberately
+
+The shard reconnect path was rebuilt around connection ownership. Delayed connects, heartbeat callbacks, close events, and queued Identify or Resume payloads are now tied to the socket that created them. When a socket is replaced, stale work from the previous lifecycle is ignored.
+
+That changes several failure paths you can observe:
+
+- A missed heartbeat ACK is handled on the next heartbeat cycle instead of by a second ACK timeout.
+- Discord-requested reconnects happen immediately and resume when the session is still valid.
+- Invalid sessions reconnect through a fresh socket, resetting session state only when Discord says it cannot be resumed.
+- Local shutdowns finalize once across Node, Bun, and custom socket implementations.
+- Fatal close codes stop the lifecycle instead of accidentally scheduling another connection.
+
+`ShardHeart.ackTimeout` was removed. Code that inspected or cleared that internal timer should stop doing so; heartbeat ownership now belongs entirely to the shard lifecycle.
+
+The connect queue also preserves consumed capacity when Discord changes `max_concurrency`. Raising or lowering concurrency no longer forgets in-flight slots, restarts the pacing window, or strands callbacks in the queue.
+
+### Worker controls
+
+`WorkerManager` now defaults to **8 shards per worker**, down from 16. Set `shardsPerWorker: 16` explicitly if the old topology is part of your deployment assumptions.
+
+Workers can receive deployment-specific environment variables without replacing the parent environment:
+
+```ts
+const manager = new WorkerManager({
+  mode: 'threads',
+  path: './dist/client.js',
+  workerEnv: {
+    REGION: 'iad',
+    LOG_FORMAT: 'json',
+  },
+});
+```
+
+Seyfert's own worker variables take precedence over conflicting `workerEnv` keys. The same overlay is forwarded to custom worker adapters.
+
+`WorkerClient` can also send directly through the gateway wrappers and shard rate limiter:
+
+```ts
+const sent = await client.sendGatewayPayload(shardId, payload);
+```
+
+It returns `false` when a plugin vetoes the payload, `true` after the shard sends it, and throws when that worker does not own the requested shard.
+
+Cache-adapter failures that cross the worker proxy now preserve structured causes and serializable values instead of collapsing into a timeout or string. The related manager-message and serialized-error types are exported from the package root for custom worker integrations.
+
+---
+
+## Commands and Interactions Keep More Context
+
+The old generic `HandleCommand.checkPermissions()` hook could be replaced, but it did not distinguish member checks from bot checks or receive all the command and execution context needed by external policies. v5.1 adds the narrower `checkMemberPermissions(...)` and `checkBotPermissions(...)` hooks; either may be synchronous or asynchronous, and thrown errors still reach `onInternalError`.
+
+```ts
+import { HandleCommand } from 'seyfert/lib/commands/handle';
+
+class PolicyHandleCommand extends HandleCommand {
+  override checkMemberPermissions(
+    ...args: Parameters<HandleCommand['checkMemberPermissions']>
+  ) {
+    const [, context] = args;
+    if (context.author.id === process.env.OWNER_ID) return;
+    return super.checkMemberPermissions(...args);
+  }
+}
+
+client.setServices({ handleCommand: PolicyHandleCommand });
+```
+
+Return the missing permission names to use the normal rejection flow, or `undefined` to continue. Member checks apply to slash and prefix commands; bot checks also cover context menus and entry points.
+
+Prefix commands now preserve a user resolved from an ID or mention. Unknown users and members produce an option failure, while unrelated REST failures still propagate instead of being mistaken for “not found.”
+
+The middleware registry types were also reworked to avoid circular inference through `CommandContext`. Large middleware registries keep autocomplete and metadata inference without collapsing into a recursive type error.
+
+Several interaction resolution bugs are gone:
+
+- Mentionable and user selects only materialize values actually present in resolved data, including mixed selections and non-guild users.
+- `ModalSubmitInteraction.getFiles(customId)` returns the attachments selected by that file-upload component, not every attachment resolved by the modal.
+- Custom-event collectors receive the event's declared argument tuple instead of resolving it through the gateway-event shape.
+- `GuildTemplate.fetch()` requests its template code rather than the source guild ID.
+
+Resolved guild-channel options now expose the invoking member's `permissions` and, when Discord sends `app_permissions`, the bot's `appPermissions`. Group DMs also keep their own channel shape instead of being typed as ordinary DMs.
+
+Role hierarchy checks now follow Discord's tie-break rule: when two roles share a position, the lower snowflake ranks higher. `GuildRole.comparePositions(...)` and `role.comparePositionTo(...)` expose the same comparison used by member sorting and manageability checks.
+
+---
+
+## REST Matches Discord—and Distrusts Its Headers
+
+The REST scheduler now learns Discord bucket hashes with their major parameter, keeps global limits isolated by authentication token, and decodes successful, empty, and error responses consistently. A global 429 blocks the matching credential without unnecessarily stopping interaction callbacks or requests made with a different token.
+
+Successful decoding now preserves JSON scalars such as `false`, `0`, `null`, and `""`; recognizes `+json` media types; leaves text as text and binary as binary; and returns `undefined` for empty responses. Top-level arrays serialize correctly for bulk command writes, while token-authenticated webhook and interaction calls no longer attach the bot authorization header.
+
+Rate-limit input is treated as untrusted. Invalid counts, negative or non-finite delays, empty 429 bodies, and delays larger than the runtime timer limit cannot bypass throttling or schedule an overflowing timer. When Seyfert cannot derive a safe retry delay, it rejects the request instead of immediately replaying it.
+
+The typed route proxy was corrected in a few places. If you call these routes directly, migrate the path rather than casting around the error:
+
+```ts
+client.proxy.voice.region.get(); // [!code --]
+client.proxy.voice.regions.get(); // [!code ++]
+
+client.proxy.guilds(guildId)['bulk-bans'].post(args); // [!code --]
+client.proxy.guilds(guildId)['bulk-ban'].post(args); // [!code ++]
+
+client.proxy.skus(skuId).get(args); // [!code --]
+client.proxy.skus(skuId).subscriptions.get(args); // [!code ++]
+```
+
+OAuth2 current-application, guild onboarding, guild incident actions, and SKU subscription routes are now present in the proxy. Webhook query types, invite bodies, application-command permission results, and required request bodies were aligned with Discord's endpoints as well.
+
+Discord's current payload surface brought a few notable changes:
+
+- `SubscriptionStatus` is now `Active = 0`, `Inactive = 1`, `Ending = 2`. Do not persist the old enum's numeric values across the upgrade without migrating them.
+- Message gateway payloads and `Message` structures can expose `channelType`.
+- Applications can expose the string-backed `flagsNew` response field, and presence client status can include `vr`.
+- The current-user application role connection can be deleted through the proxy.
+- `RESTJSONErrorCodes` includes Discord's newer asset, upload, entitlement, provisional-account, and moderation errors.
+- `AuditLogEvent.VoiceChannelStatusCreate` is the canonical name for value 192, with `VoiceChannelStatusUpdate` retained as an alias.
+
+Seyfert errors now prefer a useful `metadata.detail` when it says more than the catalog message. Worker lookup failures report the effective shard range or worker ID, and timeouts name the operation and nonce. The code remains machine-readable; the message is simply worth reading now.
+
+---
+
+## Components and Plugins Get Sharper Edges
+
+File uploads can advertise the types they accept, using Discord's media groups or dot-prefixed extensions:
+
+```ts
+new FileUpload()
+  .setCustomId('receipt')
+  .setFileTypes('image', '.pdf')
+  .setMaxValues(3);
+```
+
+The same `file_types` contract is available on attachment command options. Seyfert includes it when comparing local and uploaded commands, so changing a filter triggers a new upload. Attachment builders also preserve Discord's `is_spoiler` metadata all the way through messages, webhooks, threads, and interaction responses; received attachments expose `attachment.spoiler` from either the flag or the legacy filename prefix.
+
+`componentFactory(...)` now materializes labels as `LabelComponent` instead of falling back to `BaseComponent`, and `LabelComponent` is exported from the package root. Stateful global or sticky regular expressions used for component or modal IDs no longer leak `lastIndex` between interactions, so the same handler keeps matching repeated IDs.
+
+Plugin handler transforms gained an explicit veto:
+
+```ts
+api.handlers.transform(
+  event => event.data.name === 'debugEvent' ? false : undefined,
+  { kinds: ['event'] },
+);
+```
+
+Return `false` to exclude a command, component, modal, or event. Return `undefined` to keep the current instance, or return a replacement instance to transform it. The callback is narrowed from the `kinds` option, and reloads preserve the raw export slot even when a transform renames or vetoes an event. Files that export multiple events are reloaded once as a unit.
+
+Builder failures gained specific codes for missing modal IDs and titles, poll questions and answers, media, and option labels or values. Unknown custom codes are title-cased instead of producing an empty message. Two smaller fixes belong here too: `Logger.clearLogs()` closes every pending stream before deleting files, and `ChannelFlags.IsSpoilerChannel` reflects Discord's spoiler-channel bit.
+
+---
+
+## Tooling and Test Coverage
+
+The test suite now uses `@slipher/testing` for full command and interaction paths, and the Gateway lifecycle runs against Bun's native WebSocket transport in CI. Adapter conformance, REST routing and throttling, custom permissions, component materialization, reconnect races, worker environments, and the public type surface all gained focused coverage.
+
+The workflows themselves were modernized and formatting was split from build and runtime checks. Those are repository-maintenance changes—not runtime features—but they let Node, Bun, and Deno exercise the contracts users actually install.
+
+---
+
+## Upgrade Checklist
+
+Before moving a production bot to v5.1:
+
+1. Update custom cache adapters to consume `AdapterRelationship` in every write, remove the old relationship-registration methods, and keep each physical key under one stable relationship.
+2. Pass `guildId` to `MemberShorter.presence(...)` and `User.presence(...)`.
+3. Review subclasses or callers that depend on the return type of `LimitedCollection.set(...)` or inspect `LimitedMemoryAdapter.keyToStorage`.
+4. Remove reads of `ShardHeart.ackTimeout` and set `shardsPerWorker` explicitly if you need the old 16-shard topology.
+5. Update direct proxy calls for renamed REST routes and audit persisted `SubscriptionStatus` numbers.
+6. Run adapter conformance checks and exercise reconnects, worker startup, and custom handler transforms in the runtimes you deploy.
+
+```bash
+pnpm install seyfert@5.1.0
+```
+
+v5.1 is less interested in looking clever than in staying correct while Discord reconnects, a cache write fails halfway through, or an API header lies. That is the kind of release you notice most when nothing goes wrong.
