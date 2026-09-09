@@ -8,6 +8,7 @@
         "cooldown",
         "scheduler",
         "logger",
+        "macros",
         "opentelemetry",
         "queues",
         "scaler",
