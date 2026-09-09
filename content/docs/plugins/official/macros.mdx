@@ -1,0 +1,138 @@
+---
+title: Macros
+description: Automatic context types and application macros for Seyfert.
+---
+
+Automatic context types for Seyfert classes, plus compile-time macros written by the application. All integration lives in this package; Seyfert needs no changes or dependencies.
+
+## Setup
+
+This v1 is not published yet. From the Slipher checkout containing `packages/macros`, build a local tarball:
+
+```sh
+git submodule update --init packages/macros/vendor/ts-macros
+pnpm install --ignore-scripts
+pnpm --filter @slipher/macros build
+cd packages/macros
+npm pack --ignore-scripts
+```
+
+In the bot project, install that tarball as a development dependency alongside TypeScript 6.0.x and Seyfert 5.1 or later:
+
+```sh
+npm install -D /absolute/path/to/slipher-macros-0.1.0.tgz
+npx slipher-macros setup
+```
+
+Setup adds `@slipher/macros/plugin` to `compilerOptions.plugins` and replaces a leading `tsc` in the build script with `slipher-macros build`. It preserves other plugins, JSONC comments and surrounding script commands. It infers an existing `-p`/`--project` from that build script. Repeating setup is harmless. Unsupported custom build tools and conflicting project selections are rejected before editing files. Use `setup -p tsconfig.build.json` when configuring a specific project.
+
+Use a Seyfert project with `experimentalDecorators: true` in its TypeScript configuration. Setup preserves your compiler options; it does not create a complete bot configuration.
+
+In VS Code, select **TypeScript: Select TypeScript Version → Use Workspace Version**, then restart the TypeScript server. The setup does not install or patch TypeScript globally. There is no `ts-patch`, postinstall script or client runtime plugin.
+
+## Context types
+
+```ts
+import { Context, GuildContext } from '@slipher/macros';
+import { Command, Options, createStringOption } from 'seyfert';
+
+const options = {
+  query: createStringOption({ description: 'Search query', required: true }),
+};
+
+@Options(options)
+export class Search extends Command {
+  @Context()
+  async run(ctx) {
+    const query: string = ctx.options.query;
+    await ctx.write({ content: query });
+  }
+}
+```
+
+`@GuildContext()` selects the existing Guild context types. It does not add a runtime guard or restrict a command to servers. Both decorators disappear from JavaScript, along with their imports. Aliased imports are recognized by symbol identity.
+
+The first context parameter must be untyped. Direct subclasses of `Command`, `SubCommand`, `ComponentCommand`, `ModalCommand`, `ContextMenuCommand` and `EntryPointCommand` are supported. Method parameters are inferred for existing hooks as well as `run` and component/modal `filter`.
+
+Options come from `@Options(namedOptions)`. Middlewares come from a literal string array or named tuple. Their availability follows Seyfert's lifecycle: early hooks do not promise middleware metadata, middleware failure sees partial metadata, and option failure sees partial options. The secondary hook parameters use the base class signatures. `onInternalError` receives a client, so only `@Context()` applies there.
+
+## Application macros with logic
+
+The built-in Seyfert decorators only add types. Application macros may generate runtime logic using the bundled ts-macros engine:
+
+```ts
+function $record(events: string[], value: string): void {
+  events.push(value);
+}
+
+const events: string[] = [];
+$record!(events, 'started');
+```
+
+The macro call expands into the push operation. Function declarations beginning with `$` are reserved for macros and removed from JavaScript and declarations. Local TypeScript modules can directly export/import macro implementations; aliases keep the `$` prefix at call sites. Runtime references, calls without `!`, and re-export bindings are rejected instead of emitting dangling references. The engine is created per compilation, so it does not share application macro registrations between projects.
+
+For AST generation, the v1 public engine surface exposes `$$raw` and its context types:
+
+```ts
+import { $$raw } from '@slipher/macros/builtin';
+
+function $double(value: number): number {
+  return $$raw!((context, input) => {
+    return context.factory.createMultiply(
+      input,
+      context.factory.createNumericLiteral(2),
+    );
+  });
+}
+
+const answer = $double!(21);
+```
+
+`$$raw` runs during compilation and returns AST nodes; its arguments represent the enclosing macro's arguments. Its callback uses a block body. These callbacks have the compiler process's permissions, like other build plugins.
+
+In v1, application macros generate **implementations of their declared TypeScript signatures**. The compiler checks those source signatures before expansion; the editor uses those same signatures and does not execute application macros. Arbitrary AST output is not checked again. Creating new public types or members visible only after macro expansion is outside this v1 contract. `Context` and `GuildContext` have dedicated shared compiler/editor inference, so their generated parameter types are checked and visible in the editor.
+
+## Custom decorators that extend the context
+
+`ContextExtension<Methods>` lets a class decorator declare the extra properties it provides to specific hooks. `@Context()` and `@GuildContext()` intersect those properties with the inferred Seyfert context. The compiler and editor read the decorator's instantiated return type, including literal arguments; neither executes the decorator to infer types.
+
+`CustomId` is a user-owned example, not a built-in. Its source lives at `examples/macros/custom-id.ts` in the [Slipher repository](https://github.com/tiramisulabs/extra), outside the package tarball. Copy that file into your source directory and import it locally:
+
+```ts
+import { Context } from '@slipher/macros';
+import { ComponentCommand } from 'seyfert';
+import { CustomId } from './custom-id.js';
+
+@CustomId('user:{userId}')
+export class UserButton extends ComponentCommand {
+  componentType = 'Button' as const;
+
+  @Context()
+  async run(ctx) {
+    const userId: string = ctx.params.userId;
+    await ctx.write({ content: userId });
+  }
+}
+```
+
+The example matches segments exactly, using `:` by default. Pass a second argument to select another nonempty string separator, including multiple characters: `@CustomId('user/{userId}', '/')` or `@CustomId('user::{userId}', '::')`. `{userId}` captures one nonempty segment as a string; `user:123` matches, while `user:`, `other:123` and `user:123:extra` do not. Parameters must use identifier names and cannot repeat. There is no decoding, wildcard matching or implicit numeric conversion. Use literal patterns and separators to infer exact parameter names. With a nonliteral string, parameter lookups return `string | undefined`; unions retain the possible parameter shapes.
+
+It wraps the class's `filter` method, populates `ctx.params`, then calls the original filter with the same `this`. Synchronous and asynchronous rejection are preserved. Use one `@CustomId` on a direct `ComponentCommand` subclass, with ordinary prototype methods; instance-field filters would replace the wrapper. Do not also set `customId`: Seyfert applies that check before calling `filter`. Calling `run` directly bypasses extraction.
+
+The decorator advertises `params` only for `filter` and `run`. Other hooks retain their normal context types. An extension may advertise other supported interaction hooks when its implementation guarantees the property is available there. `onInternalError` receives a client and is not extended.
+
+The `ContextExtension` brand is type-only. Its assertion is a promise made by the extension author: the package does not inject values or verify the decorator's runtime implementation. Extensions add properties through intersections; they do not override existing context fields. Aliased decorator imports work without registering names or changing compiler configuration.
+
+Both the brand import and the built-in `@Context()` marker disappear from emitted JavaScript. The local `CustomId` implementation remains, so the compiled bot does not need `@slipher/macros` installed.
+
+## Building and distribution
+
+```sh
+npx slipher-macros build
+npx slipher-macros build -p tsconfig.json
+npx slipher-macros build --noEmit
+```
+
+Node/CommonJS and ESM projects are supported. Compiled bots run without this development package. The package has no regular dependencies; TypeScript and Seyfert are peers.
+
+Watch mode, project references, bundler transforms, custom class inheritance and inline option expressions are outside v1. Editor tests cover diagnostics, completion, hover, navigation, reload and in-memory edits through native tsserver, not the VS Code UI. Rename/refactor/code-action composition is not covered.
