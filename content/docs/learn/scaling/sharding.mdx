@@ -155,7 +155,7 @@ The manager catches cache-adapter failures and sends them back in `CACHE_RESULT`
 
 Give every worker a Redis adapter connected to the same Redis database. Workers then share one external source of truth without routing cache traffic through `WorkerManager`:
 
-```ts showLineNumbers
+```ts twoslash showLineNumbers
 import { RedisAdapter } from '@slipher/redis-adapter';
 import { type ParseClient, WorkerClient } from 'seyfert';
 

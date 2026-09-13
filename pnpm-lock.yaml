@@ -36,20 +36,20 @@ importers:
         specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.16)(react@19.2.7)
       '@slipher/cooldown':
-        specifier: ^1.0.0
-        version: 1.0.0(seyfert@5.1.0)
+        specifier: https://pkg.pr.new/tiramisulabs/extra/@slipher/cooldown@9b9a414
+        version: https://pkg.pr.new/tiramisulabs/extra/@slipher/cooldown@9b9a414(seyfert@5.1.0)
       '@slipher/eslint-plugin':
-        specifier: ^1.0.0
-        version: 1.0.0(eslint@10.4.1(jiti@2.6.1))(seyfert@5.1.0)(typescript@6.0.3)
+        specifier: https://pkg.pr.new/tiramisulabs/extra/@slipher/eslint-plugin@9b9a414
+        version: https://pkg.pr.new/tiramisulabs/extra/@slipher/eslint-plugin@9b9a414(eslint@10.4.1(jiti@2.6.1))(seyfert@5.1.0)(typescript@6.0.3)
       '@slipher/generic-adapter':
-        specifier: ^0.0.8
-        version: 0.0.8
+        specifier: https://pkg.pr.new/tiramisulabs/extra/@slipher/generic-adapter@9b9a414
+        version: https://pkg.pr.new/tiramisulabs/extra/@slipher/generic-adapter@9b9a414(seyfert@5.1.0)
       '@slipher/redis-adapter':
-        specifier: ^0.0.8
-        version: 0.0.8(seyfert@5.1.0)
+        specifier: https://pkg.pr.new/tiramisulabs/extra/@slipher/redis-adapter@9b9a414
+        version: https://pkg.pr.new/tiramisulabs/extra/@slipher/redis-adapter@9b9a414(seyfert@5.1.0)
       '@slipher/uws-adapter':
-        specifier: ^0.0.8
-        version: 0.0.8(seyfert@5.1.0)
+        specifier: https://pkg.pr.new/tiramisulabs/extra/@slipher/uws-adapter@9b9a414
+        version: https://pkg.pr.new/tiramisulabs/extra/@slipher/uws-adapter@9b9a414(seyfert@5.1.0)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1240,28 +1240,35 @@ packages:
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
 
-  '@slipher/cooldown@1.0.0':
-    resolution: {integrity: sha512-+15jGoKQftszUw/WpEC8/PdIRPLLGNTbkGxm8H9ErqidH2xlCrqHJR1ZRxyIlcv8+ETdwLYSLQ4ie61MUu0erQ==}
+  '@slipher/cooldown@https://pkg.pr.new/tiramisulabs/extra/@slipher/cooldown@9b9a414':
+    resolution: {integrity: sha512-j6h1t/dVr0YeXsjT7emUVyGummAb2oXzRmVSmSIdudWzQt9+nkV6g4qA+qlzC9+ErBDYfhO/oYoCUjGJeHayqw==, tarball: https://pkg.pr.new/tiramisulabs/extra/@slipher/cooldown@9b9a414}
+    version: 1.0.0
     peerDependencies:
       seyfert: 5.1.0
 
-  '@slipher/eslint-plugin@1.0.0':
-    resolution: {integrity: sha512-frHYY9skZ/QOA7QNBLz14v/zqU9Ji1nPmA8Dupy01tkG5h68/BhzLq2hYWzcIQofWi4YE0aIR8AujPdFSWIyOQ==}
+  '@slipher/eslint-plugin@https://pkg.pr.new/tiramisulabs/extra/@slipher/eslint-plugin@9b9a414':
+    resolution: {integrity: sha512-FBAhXFgm1OzvtFg2XDvM0A1KuCNeFfqbC5oCSP9orD10tHJH6G6tLY3EV22yBfJ7tCByKTqLeZF+uC+dDW0jRQ==, tarball: https://pkg.pr.new/tiramisulabs/extra/@slipher/eslint-plugin@9b9a414}
+    version: 1.0.0
     peerDependencies:
       eslint: '>=9.0.0'
       seyfert: 5.1.0
       typescript: '>=5.0.0'
 
-  '@slipher/generic-adapter@0.0.8':
-    resolution: {integrity: sha512-i0a1q68LgHCnRquTp4+/+p+FTOOfCx0TfpBHaYJmkxWSqflfHmJ0XqKXyZC9t2K/F5K7F/ptdKJ/q598tocxzA==}
-
-  '@slipher/redis-adapter@0.0.8':
-    resolution: {integrity: sha512-4udsquOAAFmt2qLFw7LX8yMzQGd6teeVKYZXs9dGR5c/2dQHcyfXjNnVbtU6ODfNmYs/XO/jnZoTyTdSm9oMQg==}
+  '@slipher/generic-adapter@https://pkg.pr.new/tiramisulabs/extra/@slipher/generic-adapter@9b9a414':
+    resolution: {integrity: sha512-NA4QlUP+bLz3yHpwHU2+ioiuFMJwObDt7rDmjmEnnJcRWxndTkwkIs68BIT6aTB08OwDoF1J7Xo88GYocL2wCw==, tarball: https://pkg.pr.new/tiramisulabs/extra/@slipher/generic-adapter@9b9a414}
+    version: 0.0.7
     peerDependencies:
       seyfert: 5.1.0
 
-  '@slipher/uws-adapter@0.0.8':
-    resolution: {integrity: sha512-GFDO5qW6L00jpOfbnQFH3RR+6oOv7RNwlDpUCrzhsyjLL7PpzHN1DqNq/O3J2gMeEn008KQoTd9xIpndWli9ag==}
+  '@slipher/redis-adapter@https://pkg.pr.new/tiramisulabs/extra/@slipher/redis-adapter@9b9a414':
+    resolution: {integrity: sha512-pHI+3PF/9UgbIjffRWZIZ/5DnA1ZOP4h0HpvJaFQRjz0eVtdf3ky/uILdTXl9JA9PV0L7OO4ROX/UKrgDz3efQ==, tarball: https://pkg.pr.new/tiramisulabs/extra/@slipher/redis-adapter@9b9a414}
+    version: 0.0.9
+    peerDependencies:
+      seyfert: 5.1.0
+
+  '@slipher/uws-adapter@https://pkg.pr.new/tiramisulabs/extra/@slipher/uws-adapter@9b9a414':
+    resolution: {integrity: sha512-7a1YuV+Wb4AWkq25MlhDcpka9/30/nrfEX86L5gJj4k7QlgdBB/OrIYLEanJpiuw1AsHAbBA9F8lNghFgDPKTQ==, tarball: https://pkg.pr.new/tiramisulabs/extra/@slipher/uws-adapter@9b9a414}
+    version: 0.0.8
     peerDependencies:
       seyfert: 5.1.0
 
@@ -4964,11 +4971,11 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@slipher/cooldown@1.0.0(seyfert@5.1.0)':
+  '@slipher/cooldown@https://pkg.pr.new/tiramisulabs/extra/@slipher/cooldown@9b9a414(seyfert@5.1.0)':
     dependencies:
       seyfert: 5.1.0
 
-  '@slipher/eslint-plugin@1.0.0(eslint@10.4.1(jiti@2.6.1))(seyfert@5.1.0)(typescript@6.0.3)':
+  '@slipher/eslint-plugin@https://pkg.pr.new/tiramisulabs/extra/@slipher/eslint-plugin@9b9a414(eslint@10.4.1(jiti@2.6.1))(seyfert@5.1.0)(typescript@6.0.3)':
     dependencies:
       '@typescript-eslint/utils': 8.62.1(eslint@10.4.1(jiti@2.6.1))(typescript@6.0.3)
       eslint: 10.4.1(jiti@2.6.1)
@@ -4977,12 +4984,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@slipher/generic-adapter@0.0.8':
+  '@slipher/generic-adapter@https://pkg.pr.new/tiramisulabs/extra/@slipher/generic-adapter@9b9a414(seyfert@5.1.0)':
     dependencies:
       seyfert: 5.1.0
       tweetnacl: 1.0.3
 
-  '@slipher/redis-adapter@0.0.8(seyfert@5.1.0)':
+  '@slipher/redis-adapter@https://pkg.pr.new/tiramisulabs/extra/@slipher/redis-adapter@9b9a414(seyfert@5.1.0)':
     dependencies:
       '@redis/client': 6.1.0
       seyfert: 5.1.0
@@ -4990,7 +4997,7 @@ snapshots:
       - '@node-rs/xxhash'
       - '@opentelemetry/api'
 
-  '@slipher/uws-adapter@0.0.8(seyfert@5.1.0)':
+  '@slipher/uws-adapter@https://pkg.pr.new/tiramisulabs/extra/@slipher/uws-adapter@9b9a414(seyfert@5.1.0)':
     dependencies:
       seyfert: 5.1.0
       tweetnacl: 1.0.3
