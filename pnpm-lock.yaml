@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  seyfert: 5.0.0
+  seyfert: 5.1.0
 
 importers:
 
@@ -37,19 +37,19 @@ importers:
         version: 1.2.4(@types/react@19.2.16)(react@19.2.7)
       '@slipher/cooldown':
         specifier: ^1.0.0
-        version: 1.0.0(seyfert@5.0.0)
+        version: 1.0.0(seyfert@5.1.0)
       '@slipher/eslint-plugin':
         specifier: ^1.0.0
-        version: 1.0.0(eslint@10.4.1(jiti@2.6.1))(seyfert@5.0.0)(typescript@6.0.3)
+        version: 1.0.0(eslint@10.4.1(jiti@2.6.1))(seyfert@5.1.0)(typescript@6.0.3)
       '@slipher/generic-adapter':
         specifier: ^0.0.8
         version: 0.0.8
       '@slipher/redis-adapter':
         specifier: ^0.0.8
-        version: 0.0.8(seyfert@5.0.0)
+        version: 0.0.8(seyfert@5.1.0)
       '@slipher/uws-adapter':
         specifier: ^0.0.8
-        version: 0.0.8(seyfert@5.0.0)
+        version: 0.0.8(seyfert@5.1.0)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -102,8 +102,8 @@ importers:
         specifier: ^19.2.7
         version: 19.2.7(react@19.2.7)
       seyfert:
-        specifier: 5.0.0
-        version: 5.0.0
+        specifier: 5.1.0
+        version: 5.1.0
       shiki:
         specifier: ^4.2.0
         version: 4.2.0
@@ -1243,13 +1243,13 @@ packages:
   '@slipher/cooldown@1.0.0':
     resolution: {integrity: sha512-+15jGoKQftszUw/WpEC8/PdIRPLLGNTbkGxm8H9ErqidH2xlCrqHJR1ZRxyIlcv8+ETdwLYSLQ4ie61MUu0erQ==}
     peerDependencies:
-      seyfert: 5.0.0
+      seyfert: 5.1.0
 
   '@slipher/eslint-plugin@1.0.0':
     resolution: {integrity: sha512-frHYY9skZ/QOA7QNBLz14v/zqU9Ji1nPmA8Dupy01tkG5h68/BhzLq2hYWzcIQofWi4YE0aIR8AujPdFSWIyOQ==}
     peerDependencies:
       eslint: '>=9.0.0'
-      seyfert: 5.0.0
+      seyfert: 5.1.0
       typescript: '>=5.0.0'
 
   '@slipher/generic-adapter@0.0.8':
@@ -1258,12 +1258,12 @@ packages:
   '@slipher/redis-adapter@0.0.8':
     resolution: {integrity: sha512-4udsquOAAFmt2qLFw7LX8yMzQGd6teeVKYZXs9dGR5c/2dQHcyfXjNnVbtU6ODfNmYs/XO/jnZoTyTdSm9oMQg==}
     peerDependencies:
-      seyfert: 5.0.0
+      seyfert: 5.1.0
 
   '@slipher/uws-adapter@0.0.8':
     resolution: {integrity: sha512-GFDO5qW6L00jpOfbnQFH3RR+6oOv7RNwlDpUCrzhsyjLL7PpzHN1DqNq/O3J2gMeEn008KQoTd9xIpndWli9ag==}
     peerDependencies:
-      seyfert: 5.0.0
+      seyfert: 5.1.0
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -3632,8 +3632,8 @@ packages:
     resolution: {integrity: sha512-RJRdvCo6IAnPdsvP/7m6bsQqNnn1FCBX5ZNtFL98MmFF/4xAIJTIg1YbHW5DC2W5SKZanrC6i4HsJqlajw/dZw==}
     engines: {node: '>= 0.4'}
 
-  seyfert@5.0.0:
-    resolution: {integrity: sha512-73tb7/RiToy7+IO1in84zzn736XMXtf2Td0I26bSL2+09wcyEdZG1J4vj5M6twesMACFqv498ELImx6CpddCCQ==}
+  seyfert@5.1.0:
+    resolution: {integrity: sha512-FeNWUioMHeQwDnO3An+1xiV0qRcf+8INKfct8b/45OatXHEbqdAAdkbeoL+v0104MdtZPBJoUq6+QRSlM7cJsw==}
 
   sharp@0.34.5:
     resolution: {integrity: sha512-Ou9I5Ft9WNcCbXrU9cMgPBcCK8LiwLqcbywW3t4oDV37n1pzpuNLsYiAV8eODnjbtQlSDwZ2cUEeQz4E54Hltg==}
@@ -4964,35 +4964,35 @@ snapshots:
 
   '@shikijs/vscode-textmate@10.0.2': {}
 
-  '@slipher/cooldown@1.0.0(seyfert@5.0.0)':
+  '@slipher/cooldown@1.0.0(seyfert@5.1.0)':
     dependencies:
-      seyfert: 5.0.0
+      seyfert: 5.1.0
 
-  '@slipher/eslint-plugin@1.0.0(eslint@10.4.1(jiti@2.6.1))(seyfert@5.0.0)(typescript@6.0.3)':
+  '@slipher/eslint-plugin@1.0.0(eslint@10.4.1(jiti@2.6.1))(seyfert@5.1.0)(typescript@6.0.3)':
     dependencies:
       '@typescript-eslint/utils': 8.62.1(eslint@10.4.1(jiti@2.6.1))(typescript@6.0.3)
       eslint: 10.4.1(jiti@2.6.1)
-      seyfert: 5.0.0
+      seyfert: 5.1.0
       typescript: 6.0.3
     transitivePeerDependencies:
       - supports-color
 
   '@slipher/generic-adapter@0.0.8':
     dependencies:
-      seyfert: 5.0.0
+      seyfert: 5.1.0
       tweetnacl: 1.0.3
 
-  '@slipher/redis-adapter@0.0.8(seyfert@5.0.0)':
+  '@slipher/redis-adapter@0.0.8(seyfert@5.1.0)':
     dependencies:
       '@redis/client': 6.1.0
-      seyfert: 5.0.0
+      seyfert: 5.1.0
     transitivePeerDependencies:
       - '@node-rs/xxhash'
       - '@opentelemetry/api'
 
-  '@slipher/uws-adapter@0.0.8(seyfert@5.0.0)':
+  '@slipher/uws-adapter@0.0.8(seyfert@5.1.0)':
     dependencies:
-      seyfert: 5.0.0
+      seyfert: 5.1.0
       tweetnacl: 1.0.3
       uWebSockets.js: https://codeload.github.com/uNetworking/uWebSockets.js/tar.gz/6609a88ffa9a16ac5158046761356ce03250a0df
 
@@ -8014,7 +8014,7 @@ snapshots:
       es-errors: 1.3.0
       es-object-atoms: 1.1.1
 
-  seyfert@5.0.0: {}
+  seyfert@5.1.0: {}
 
   sharp@0.34.5:
     dependencies:

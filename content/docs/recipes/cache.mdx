@@ -170,12 +170,13 @@ Below is a complete async skeleton backed by an imaginary `storage` driver. Meth
 
 ```ts twoslash
 interface SeyfertDotDev {
-    set(key: string, value: any): Promise<void>;
+    // Commits the value and its relationship as one logical operation.
+    set(key: string, value: any, relationship: readonly [to: string, id: string]): Promise<void>;
+    patch(key: string, value: any, relationship: readonly [to: string, id: string]): Promise<void>;
     get(key: string): Promise<any>;
     remove(key: string): Promise<void>;
     flush(): Promise<void>;
     entries(): Promise<[string, unknown][]>;
-    setAdd(to: string, key: string): Promise<void>;
     setGet(key: string): Promise<string[] | undefined>;
     setPull(to: string, key: string[]): Promise<void>;
     setRemove(key: string): Promise<void>;
@@ -183,7 +184,7 @@ interface SeyfertDotDev {
 }
 // @noErrors
 // ---cut---
-import { Adapter } from 'seyfert';
+import { Adapter, type AdapterEntry, type AdapterRelationship } from 'seyfert';
 
 class MyAdapter implements Adapter {
     // ---cut-start---
@@ -196,23 +197,21 @@ class MyAdapter implements Adapter {
     }
 
     // --- Storing values ---
-    async set(key: string, value: any | any[]) {
-        await this.storage.set(key, { value });
+    async set(key: string, value: any | any[], relationship: AdapterRelationship) {
+        await this.storage.set(key, value, relationship);
     }
 
-    async bulkSet(keys: [string, any][]) {
-        for (const [key, value] of keys) await this.set(key, value);
+    async bulkSet(entries: AdapterEntry[]) {
+        for (const entry of entries) await this.set(...entry);
     }
 
     // patch only overwrites the properties you pass, not the whole value
-    async patch(key: string, value: any | any[]) {
-        const oldData = await this.storage.get(key) ?? {};
-        const newValue = Array.isArray(value) ? value : { ...oldData, ...value };
-        await this.storage.set(key, { value: newValue });
+    async patch(key: string, value: any | any[], relationship: AdapterRelationship) {
+        await this.storage.patch(key, value, relationship);
     }
 
-    async bulkPatch(keys: [string, any][]) {
-        for (const [key, value] of keys) await this.patch(key, value);
+    async bulkPatch(entries: AdapterEntry[]) {
+        for (const entry of entries) await this.patch(...entry);
     }
 
     // --- Retrieving values ---
@@ -225,17 +224,7 @@ class MyAdapter implements Adapter {
         return values.filter(value => value); // drop nulls
     }
 
-    // --- Storing/removing relationships (sets of unique IDs) ---
-    async addToRelationship(id: string, keys: string | string[]) {
-        for (const key of Array.isArray(keys) ? keys : [keys]) {
-            await this.storage.setAdd(id, key);
-        }
-    }
-
-    async bulkAddToRelationShip(data: Record<string, string[]>) {
-        for (const i in data) await this.addToRelationship(i, data[i]);
-    }
-
+    // --- Reading/removing relationships (sets of unique IDs) ---
     async getToRelationship(to: string) {
         return await this.storage.setGet(to) ?? [];
     }

@@ -122,7 +122,7 @@ Choose the worker mode based on the isolation boundary you need:
 | `'clusters'` | Separate Node.js processes on one host | Process isolation or independent memory heaps matter. |
 | `'custom'` | Your `WorkerAdapter` implementation | Another local worker runtime owns execution. |
 
-`WorkerManager` assigns one or more shards to each worker. `shardsPerWorker` defaults to 16; tune it from observed load rather than assuming one worker per shard.
+`WorkerManager` assigns one or more shards to each worker. `shardsPerWorker` defaults to 8; tune it from observed load rather than assuming one worker per shard. Set it to `16` explicitly if your deployment relies on the previous topology.
 
 ## Cache across workers
 
@@ -135,7 +135,7 @@ We do not recommend `WorkerAdapter` as the default cache for a worker deployment
 ```mermaid
 sequenceDiagram
     accTitle: WorkerAdapter cache request
-    accDescr: A WorkerClient sends every cache operation over process or thread IPC to WorkerManager. The manager executes the operation on its configured cache backend and returns the result over IPC. The worker keeps a pending promise until the response arrives or its 60-second timeout expires.
+    accDescr: A WorkerClient sends every cache operation over process or thread IPC to WorkerManager. The manager executes the operation on its configured cache backend and returns either the value or a serialized error over IPC. The worker keeps a pending promise until the response arrives or its 60-second timeout expires.
 
     participant Worker as WorkerClient
     participant Manager as WorkerManager
@@ -144,18 +144,18 @@ sequenceDiagram
     Worker->>Manager: CACHE_REQUEST(method, args, nonce)
     Manager->>Backend: adapter[method](...args)
     Backend-->>Manager: result
-    Manager-->>Worker: CACHE_RESULT(nonce, result)
+    Manager-->>Worker: CACHE_RESULT(nonce, result or error)
 ```
 
 This adds an IPC round trip to every cache operation and makes the manager a required intermediary and failure domain. The manager defaults to `MemoryAdapter`, so that cache is also process-local and is lost when the manager restarts.
 
-In the current protocol, the manager returns only successful `CACHE_RESULT` messages. If its backend throws before sending the result, the worker receives no error payload and the pending request rejects with `CACHE_TIMEOUT` after 60 seconds.
+The manager catches cache-adapter failures and sends them back in `CACHE_RESULT`. The worker reconstructs the error, including serializable metadata and causes, and rejects the pending operation immediately. `CACHE_TIMEOUT` remains the fallback when no response arrives within 60 seconds.
 
 ### Recommended: connect each worker to Redis
 
 Give every worker a Redis adapter connected to the same Redis database. Workers then share one external source of truth without routing cache traffic through `WorkerManager`:
 
-```ts twoslash showLineNumbers
+```ts showLineNumbers
 import { RedisAdapter } from '@slipher/redis-adapter';
 import { type ParseClient, WorkerClient } from 'seyfert';
 
