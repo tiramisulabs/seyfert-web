@@ -49,7 +49,7 @@ export const discordEmbed = {
             {
                 type: 10,
                 content:
-                    "✓ **Typed end to end**: options, events and replies, 0 `as any`\n✓ **84 MB** where discord.js needs 206, under the same load\n✓ **Day-1 support** for components v2, polls and threads\n```\nnpm i seyfert\n```\n-# // one hour here is seven years in discord.js",
+                    "✓ **Typed end to end**: options, events and replies, 0 `as any`\n✓ **84 MB** where discord.js needs 206, under the same load\n✓ **Day-1 support** for new Discord features\n```\nnpm i seyfert\n```\n-# // one hour here is seven years in discord.js",
             },
             {
                 type: 1,
