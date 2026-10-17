@@ -1,0 +1,130 @@
+---
+title: Guild Events and Administration
+description: Manage scheduled events, live Stage instances, community settings and targeted invites with Seyfert 5.2.
+---
+
+These helpers are available from **Seyfert 5.2.0**. The examples use an already started `Client` named `client`; replace the sample snowflakes with IDs from your application. Discord checks the permissions and guild features required by each endpoint.
+
+## Scheduled events
+
+`client.guilds.events` provides `list`, `create`, `fetch`, `edit`, `delete` and `subscribers`. `guild.events` binds the guild ID for the same operations.
+
+An external event needs a location and an end time:
+
+```ts twoslash
+import type { Client } from 'seyfert';
+declare const client: Client;
+// ---cut---
+import { GuildScheduledEventEntityType, GuildScheduledEventPrivacyLevel } from 'seyfert';
+
+const guildId = '1003825077969764412';
+const event = await client.guilds.events.create(guildId, {
+    name: 'Community meetup',
+    privacy_level: GuildScheduledEventPrivacyLevel.GuildOnly,
+    entity_type: GuildScheduledEventEntityType.External,
+    entity_metadata: { location: 'Community hall' },
+    scheduled_start_time: new Date(Date.now() + 60 * 60_000).toISOString(),
+    scheduled_end_time: new Date(Date.now() + 2 * 60 * 60_000).toISOString(),
+}, 'Schedule the next meetup');
+
+await event.edit({ description: 'Bring your questions.' });
+const subscribers = await event.subscribers({ with_member: true, limit: 100 });
+```
+
+`GuildScheduledEvent` exposes `startAt` and `endAt` as dates, `coverURL()` for the optional cover image, and `fetch()`, `edit()`, `delete()` and `subscribers()` methods. Gateway scheduled-event handlers receive the same structure.
+
+The event's `entityType` narrows its location data:
+
+```ts twoslash
+import type { GuildScheduledEventStructure } from 'seyfert';
+declare const event: GuildScheduledEventStructure;
+// ---cut---
+import { GuildScheduledEventEntityType } from 'seyfert';
+
+if (event.entityType === GuildScheduledEventEntityType.External) {
+    console.log(event.entityMetadata.location);
+} else {
+    console.log(event.channelId);
+}
+```
+
+For Stage or voice events, supply the appropriate `entity_type` and `channel_id` when creating the event. Request bodies keep Discord's snake_case names; returned structures use camelCase.
+
+Subscriber rows contain a `user` structure and optional `member` data when requested. Discord returns subscribers in ascending user-ID order. If both `before` and `after` are sent, only `before` is respected. `with_user_count: true` on event list or fetch requests includes the subscriber count.
+
+## Live Stage instances
+
+`client.stageInstances` manages a live session in a Stage channel. These routes use the **channel ID**, not the Stage instance's `id`.
+
+```ts twoslash
+import type { Client } from 'seyfert';
+declare const client: Client;
+// ---cut---
+import { StageInstancePrivacyLevel } from 'seyfert';
+
+const channelId = '1003825077969764413';
+const stage = await client.stageInstances.create({
+    channel_id: channelId,
+    topic: 'Community Q&A',
+    privacy_level: StageInstancePrivacyLevel.GuildOnly,
+});
+
+await stage.edit({ topic: 'Questions from the community' });
+const refreshed = await stage.fetch(true);
+await refreshed.delete();
+```
+
+Stage topics must contain 1–120 characters. `fetch(channelId, true)` skips the Stage cache. A returned instance exposes `channel()`, `guild()`, `isGuildOnly`, `fetch()`, `edit()` and `delete()`.
+
+A `StageChannel` exposes the same operations through `channel.stage`; `channel.stage.create()` supplies the channel ID for you. A scheduled Stage event and a live Stage instance are separate resources: scheduling an event does not create the live instance.
+
+## Community settings
+
+Use these shorters when the guild ID is already known:
+
+| Task | Shorter | Returned data |
+| --- | --- | --- |
+| Read the audit log | `client.guilds.audit.fetch(guildId, query)` | Discord audit-log payload |
+| Read or edit onboarding | `client.guilds.onboarding.fetch()` / `.edit()` | `GuildOnboarding` structure |
+| Read or edit the welcome screen | `client.guilds.welcome.fetch()` / `.edit()` | `GuildWelcomeScreen` structure |
+| Read or edit widget settings | `client.guilds.widget.settings()` / `.edit()` | Discord widget settings |
+| Read the public widget | `client.guilds.widget.fetch(guildId)` | Discord widget payload |
+| Download the widget image | `client.guilds.widget.image(guildId, query)` | PNG bytes |
+| Update incident actions | `client.guilds.incidents(guildId, body, reason)` | Discord incident-action payload |
+
+Every fetch or edit in the table takes `guildId` first. Onboarding and welcome-screen structures also provide `fetch()`, `edit()` and `guild()` methods. A `Guild` binds these operations as `auditLog()`, `onboarding()`, `editOnboarding()`, `welcomeScreen()`, `editWelcomeScreen()`, `widgetSettings()`, `editWidgetSettings()`, `widget()`, `widgetImage()` and `editIncidents()`.
+
+```ts twoslash
+import type { Client } from 'seyfert';
+declare const client: Client;
+// ---cut---
+const guildId = '1003825077969764412';
+const audit = await client.guilds.audit.fetch(guildId, { limit: 25 });
+const welcome = await client.guilds.welcome.fetch(guildId);
+await welcome.edit({ enabled: true, description: 'Welcome to the community!' });
+
+const settings = await client.guilds.widget.settings(guildId);
+```
+
+Audit-log limits must be integers from 1 to 100, and `before` and `after` cannot be combined. Incident updates require at least one of `invites_disabled_until` or `dms_disabled_until`; use `null` to clear the corresponding action.
+
+## Targeted invite users
+
+The invite shorter supports individual and bulk changes to an invite's target-user list:
+
+```ts twoslash
+import type { Client } from 'seyfert';
+declare const client: Client;
+// ---cut---
+const code = 'community-meetup';
+const userId = '1003825077969764414';
+
+await client.invites.addTargetUser(code, userId);
+await client.invites.bulkAddTargetUsers(code, [
+    '1003825077969764415',
+    '1003825077969764416',
+]);
+await client.invites.removeTargetUser(code, userId);
+```
+
+`bulkRemoveTargetUsers(code, userIds)` removes a batch. Discord limits each bulk request to 1,000 user IDs. `getTargetUsers()`, `updateTargetUsers()` and `jobStatus()` remain available for the CSV-based workflow.

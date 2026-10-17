@@ -191,6 +191,12 @@ export default class PingCommand extends Command {
 
 ```
 
+## Subcommand inheritance
+
+A subcommand inherits its parent's middleware before its own. From Seyfert 5.2.0, the merged command chain keeps the first occurrence of each middleware key.
+
+For example, parent middleware `['auth', 'audit']` and child middleware `['auth', 'rateLimit']` produce `['auth', 'audit', 'rateLimit']`. The shared `auth` check runs once in that inherited chain, with parent order preserved. This merge applies to the command and subcommand declarations.
+
 ## Global Middlewares
 
 Global middlewares follow the same rule and structure explained above, with the brief difference that they have a unique property in the context and are declared separately.

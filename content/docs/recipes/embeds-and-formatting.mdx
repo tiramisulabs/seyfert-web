@@ -54,6 +54,29 @@ new Embed().setColor('Blue');      // Named color
 new Embed().setColor('Blurple');   // Discord's brand color
 ```
 
+Numeric colors must be integers from `0` to `0xFFFFFF`. Hexadecimal strings must fit the same range, and RGB inputs use integer channels from `0` to `255`. Invalid numbers, hexadecimal values or RGB channels throw before the message is sent.
+
+## Received component embeds
+
+From Seyfert 5.2.0, website link previews with `EmbedType.Components` expose their containers through `InMessageEmbed.components`:
+
+```ts twoslash
+import { createEvent, EmbedType } from 'seyfert';
+
+export default createEvent({
+    data: { name: 'messageCreate' },
+    run(message) {
+        for (const embed of message.embeds) {
+            if (embed.type === EmbedType.Components) {
+                console.log(embed.components);
+            }
+        }
+    },
+});
+```
+
+The getter returns `ContainerComponent` structures when containers are present, or `undefined` when the embed has none. These received website previews are separate from top-level `message.components`. For outgoing messages, use the `Embed` builder or top-level [Components v2](/docs/learn/components/v2).
+
 ## Formatter Utilities
 
 Seyfert provides a `Formatter` class with static methods for Discord markdown formatting:
