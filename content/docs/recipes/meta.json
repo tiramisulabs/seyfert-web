@@ -12,6 +12,7 @@
         "hot-reload",
         "eslint",
         "api-access",
+        "guild-management",
         "music",
         "monetization",
         "cloudflare-workers",

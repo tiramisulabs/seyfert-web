@@ -5,7 +5,7 @@ import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
 
 With Seyfert you can now control the latest Discord monetization features.
 
-This section will show the basic creation of **premium buttons, events and commands**.
+Use entitlements to decide who can access a premium offering, and subscriptions for billing state. This guide covers **SKUs, subscriptions, premium buttons, events and commands**.
 
 <Callout title="Activate Monetization">
 
@@ -13,9 +13,53 @@ First you need to activate the monetization in your bot for all this to work, le
 
 </Callout>
 
-### Entitlements
+## SKUs and subscriptions
+
+From Seyfert 5.2.0, `client.monetization` returns `SKU` and `Subscription` structures. The examples below assume an already started `client`.
+
+```ts twoslash
+import type { Client } from 'seyfert';
+declare const client: Client;
+// ---cut---
+const userId = '1003825077969764414';
+const skus = await client.monetization.listSKUs();
+const offering = skus.find(sku => sku.isSubscription && sku.isUserSubscription);
+
+if (offering) {
+    const subscriptions = await offering.subscriptions({ user_id: userId, limit: 50 });
+    const hasAccess = await offering.hasUser(userId);
+    console.log(hasAccess, subscriptions.map(subscription => subscription.currentPeriodEndAt));
+}
+```
+
+Discord returns both the subscription offering and a subscription-group row. Use `isSubscription` to select the offering. Other SKU helpers include `isDurable`, `isConsumable`, `isAvailable`, `isGuildSubscription` and `isUserSubscription`.
+
+`fetchSKU(skuId)` selects from the application's SKU list and throws `UNKNOWN_SKU` if no row matches. `subscriptions(skuId, query)` accepts pagination and a `user_id`; list limits must be integers from 1 to 100. Discord requires `user_id` for bot-authenticated subscription lists. `fetchSubscription(skuId, subscriptionId)` fetches one subscription, and `subscription.fetch()` uses its first SKU ID unless one is supplied explicitly.
+
+Subscriptions expose `isActive`, `isInactive`, `isEnding`, `currentPeriodStartAt`, `currentPeriodEndAt` and `canceledAtDate`. **Do not grant access from subscription status:** payment retries and other billing transitions can leave a subscription active while access must be determined from entitlements.
+
+`sku.hasUser(userId)` queries user entitlements for that SKU with `exclude_ended: true`. For guild-granted access, query `client.applications.listEntitlements()` with `guild_id` and the relevant `sku_ids` instead.
+
+### Subscription events
+
+`subscriptionCreate`, `subscriptionUpdate` and `subscriptionDelete` receive `Subscription` structures:
+
+```ts twoslash title="events/subscriptionUpdate.ts"
+import { createEvent } from 'seyfert';
+
+export default createEvent({
+    data: { name: 'subscriptionUpdate' },
+    run(subscription) {
+        console.log(subscription.id, subscription.currentPeriodEndAt);
+    },
+});
+```
+
+## Entitlements
 
 Entitlements in Discord represent that a user or guild has access to a premium offering in your application, with this you can know if a user is subscribed to your application and give him the benefits you want.
+
+In 5.2, entitlements provide `startsAtDate`, `endsAtDate`, `isTestEntitlement`, `isEnded` and `isConsumed`. `client.applications.fetchEntitlement(id)` and `entitlement.fetch()` retrieve one entitlement. Use `entitlement.consume()` or `client.applications.consumeEntitlement(id)` for a consumable one-time SKU after fulfilling its benefit.
 
 ### Receiving Events
 

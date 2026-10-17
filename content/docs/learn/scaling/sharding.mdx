@@ -236,6 +236,14 @@ const response = await client.tellWorker(
 
 The callback source and `vars` cross a worker boundary. Do not close over local variables; pass required JSON-serializable values through `vars`. Use `tellWorkers()` only when every worker must perform the operation.
 
+From Seyfert 5.2.0, pending worker requests are registered before asynchronous transport delivery can produce a reply. A transport failure rejects the pending request instead of leaving it to wait for its response timeout. Custom adapters can also return a promise from `spawn()`; the manager waits for it before registering the worker heartbeat.
+
+## Automatic resharding and process lifetime
+
+When a manager owns the full shard range, automatic resharding checks run every eight hours by default. Set `resharding.interval` to change the period, or to `0` to disable the checks.
+
+In 5.2.0, the periodic check no longer keeps an otherwise idle process running. It continues while sockets, worker transports, heartbeats or other application resources keep the event loop alive.
+
 ## Inspect a worker topology
 
 `Client` and `WorkerClient` expose different helpers:

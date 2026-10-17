@@ -1,0 +1,72 @@
+---
+title: "Seyfert v5.2.0: Guild Resources and Monetization"
+description: "Scheduled events, live Stage instances, guild administration, SKUs and subscriptions, and typed component embeds, with fixes for workers and process shutdown."
+date: 2026-10-17
+---
+
+Seyfert 5.2.0 adds high-level access to more of Discord's guild and monetization APIs. Scheduled events, live Stage instances, SKUs and subscriptions now have structures with methods for the operations that follow a fetch. Community settings and targeted invites also get shorters, so applications can work from known IDs without constructing REST paths.
+
+The release includes fixes for asynchronous worker transports, inherited middleware, guild availability, color validation, and the background timer that could keep an idle process alive.
+
+## Scheduled Events and Live Stages
+
+`client.guilds.events` provides `list`, `create`, `fetch`, `edit`, `delete` and `subscribers`. A `Guild` exposes the same operations through `guild.events`, with its ID already bound.
+
+Fetched events are `GuildScheduledEvent` structures. They expose `startAt`, `endAt`, `coverURL()`, and methods such as `edit()` and `subscribers()`. External events narrow to a location and a null channel; Stage and voice events narrow to a channel instead. Scheduled-event Gateway handlers receive these structures too.
+
+Live stages have their own `client.stageInstances` shorter. Fetch, edit and delete operations use the **Stage channel ID**, which is distinct from the instance ID. A `StageChannel` also exposes the bound `stage` helper.
+
+The [guild management recipe](/docs/recipes/guild-management) covers creation, subscribers, Stage lifecycle and the relevant return shapes.
+
+## Community Administration and Targeted Invites
+
+Guild administration now includes audit logs, onboarding, welcome screens, widget settings and images, and incident actions:
+
+```ts
+import type { Client } from 'seyfert';
+
+declare const client: Client; // An already started client.
+const guildId = '1003825077969764412';
+
+const audit = await client.guilds.audit.fetch(guildId, { limit: 25 });
+const onboarding = await client.guilds.onboarding.fetch(guildId);
+const welcome = await client.guilds.welcome.fetch(guildId);
+```
+
+Onboarding and welcome screens return structures with `fetch()`, `edit()` and `guild()` helpers. Audit logs, widgets and incident actions preserve the Discord response shape. Local validation catches conflicting audit-log cursors, invalid limits and empty incident-action requests before they reach Discord.
+
+Targeted invites can add or remove individual users through `client.invites.addTargetUser()` and `removeTargetUser()`, or use `bulkAddTargetUsers()` and `bulkRemoveTargetUsers()` for batches.
+
+## SKUs, Subscriptions and Entitlements
+
+`client.monetization` groups the SKU and subscription endpoints and returns `SKU` and `Subscription` structures. SKUs expose offering and availability flags; subscriptions expose billing-period dates, status helpers and `fetch()`.
+
+Subscription status describes billing state. **Entitlements determine access.** `sku.hasUser(userId)` queries user entitlements for that SKU, while guild access uses an entitlement query with `guild_id`. The helper intentionally covers user access, so a guild subscription needs its own guild-scoped check.
+
+`subscriptionCreate`, `subscriptionUpdate` and `subscriptionDelete` now receive `Subscription` structures. Entitlements gain date and state helpers plus `fetch()` and `consume()`; consumption is for consumable one-time purchases after their benefit has been fulfilled.
+
+See [Monetization](/docs/recipes/monetization) for SKU selection, subscription queries, entitlement checks and events.
+
+## Received Component Embeds
+
+Discord website previews can contain a component embed. `EmbedType.Components`, `APIEmbed.components` and `InMessageEmbed.components` make those received containers available through the normal message model.
+
+`message.embeds` exposes these previews separately from top-level `message.components`. The received containers use Seyfert's `ContainerComponent` structure. This is support for reading website previews; normal outgoing messages still use rich embeds or top-level Components v2.
+
+The [embed recipe](/docs/recipes/embeds-and-formatting#received-component-embeds) includes a message event example.
+
+## Runtime Fixes
+
+- Worker requests register their response before asynchronous delivery can produce a reply. A failed transport rejects the pending request instead of leaving it to expire, and asynchronous custom-worker creation finishes before heartbeat registration.
+- Middleware repeated on a parent command and its subcommand runs once in the inherited command chain. Parent order is preserved, followed by middleware found only on the child.
+- A cached `guildDelete` payload gets its `unavailable` value from the current dispatch, including an absent flag on a real removal.
+- Color resolution rejects non-integer or out-of-range numbers, oversized hexadecimal colors, and invalid RGB channels.
+- Automatic resharding checks no longer keep an otherwise idle process running. They continue while active sockets, workers or other application resources keep the event loop alive.
+
+## Upgrade
+
+```bash
+pnpm add seyfert@5.2.0
+```
+
+The new resources build on the 5.1 cache-adapter contract. Existing atomic adapter implementations continue to use the same write signatures and relationship ownership rules.
