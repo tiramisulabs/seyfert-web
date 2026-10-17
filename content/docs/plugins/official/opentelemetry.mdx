@@ -1,44 +1,41 @@
 ---
 title: OpenTelemetry
-description: Traces and metrics for Seyfert interactions, events, Discord REST, cache operations, and gateway shard health.
+description: Traces and metrics for Seyfert interactions, events, Discord REST, cache, gateway health, and process memory.
 ---
 
-`@slipher/opentelemetry` instruments the main paths through a Seyfert bot and exports standard OpenTelemetry data. Commands, components, modals, gateway events, Discord REST requests, and cache operations become spans with duration histograms alongside them. Gateway shard connectivity and heartbeat latency remain observable even when a bot goes quiet. You can add application-specific child spans through `ctx.trace` without passing a tracer through every layer.
+`@slipher/opentelemetry` instruments the main paths through a Seyfert bot and exports standard OpenTelemetry data. Commands, components, modals, gateway events, Discord REST requests, and cache operations become spans with duration histograms alongside them. Gateway health, process memory, and active collector counts remain observable even when a bot goes quiet. You can add application-specific child spans through `ctx.trace` without passing a tracer through every layer.
 
 The plugin is backend-neutral. Point it at Jaeger while developing, an OpenTelemetry Collector in production, or any vendor that accepts OTLP.
 
 <Callout type="info">
-The plugin requires Seyfert v5. Exporters and processors are intentionally not bundled, so your application chooses where traces and metrics go.
+The plugin requires Seyfert v5. Its SDK supports OTLP export through environment variables; custom exporters and readers remain optional.
 </Callout>
 
 ## Installation
 
-Install the plugin, the OpenTelemetry API, and the trace exporter you want to use. This example uses OTLP over HTTP/protobuf:
+Install the plugin and the OpenTelemetry API:
 
 ```sh
-pnpm add @slipher/opentelemetry @opentelemetry/api \
-  @opentelemetry/sdk-trace-node \
-  @opentelemetry/exporter-trace-otlp-proto
+pnpm add @slipher/opentelemetry @opentelemetry/api
 ```
 
 ## Quick start
 
-Create the plugin once, register the plugin map for type inference, and pass it to the client:
+Point the plugin at an OTLP collector that accepts traces and metrics:
+
+```sh
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318
+export OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf
+export OTEL_METRICS_EXPORTER=otlp
+```
+
+Create the plugin once and pass it to the client. No exporter or metric reader needs to be constructed in application code:
 
 ```ts
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
-import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-node';
 import { opentelemetry } from '@slipher/opentelemetry';
 import { Client, definePlugins } from 'seyfert';
 
-const plugins = definePlugins(
-	opentelemetry({
-		serviceName: 'my-bot',
-		spanProcessors: [
-			new BatchSpanProcessor(new OTLPTraceExporter()),
-		],
-	}),
-);
+const plugins = definePlugins(opentelemetry({ serviceName: 'my-bot' }));
 
 declare module 'seyfert' {
 	interface SeyfertRegistry {
@@ -63,10 +60,11 @@ docker run --rm --name seyfert-jaeger \
   cr.jaegertracing.io/jaegertracing/jaeger:2.19.0
 ```
 
-Point the OTLP exporter at it before starting the bot:
+Jaeger displays traces only. For this trace-only setup, disable metric export and point the trace exporter at Jaeger:
 
 ```sh
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318
+export OTEL_METRICS_EXPORTER=none
 ```
 
 Run a command, then open [http://127.0.0.1:16686](http://127.0.0.1:16686), select `my-bot`, and open a trace such as `command ping`. The container uses in-memory storage and loses its traces when it stops; it is intended for local inspection, not production.
@@ -78,14 +76,15 @@ See the [Jaeger quick start](https://www.jaegertracing.io/docs/2.19/getting-star
 ```mermaid
 flowchart TD
     accTitle: OpenTelemetry plugin architecture
-    accDescr: Seyfert interactions, gateway events, Discord REST calls, cache operations, and gateway shard health are instrumented by the plugin. Spans and metrics use the global OpenTelemetry provider, backed by either a plugin-owned NodeSDK or a host-provided SDK, before reaching an exporter or collector.
+    accDescr: Seyfert interactions, gateway events, Discord REST calls, cache operations, gateway shard health, process memory, and active collectors are instrumented by the plugin. Spans and metrics use the global OpenTelemetry provider, backed by either a plugin-owned NodeSDK or a host-provided SDK, before reaching an exporter or collector.
 
     interactions["Interactions<br/>context scope + lifecycle observers"]
     events["Gateway events<br/>event wrapper"]
     rest["Discord REST<br/>api.rest observer"]
     cache["Cache adapter<br/>method wrappers"]
     gateway["Gateway shards<br/>health observers"]
-    plugin["@slipher/opentelemetry<br/>spans + duration metrics"]
+    diagnostics["Process memory<br/>active collectors"]
+    plugin["@slipher/opentelemetry<br/>spans + metrics"]
     provider["Global OpenTelemetry API provider"]
     owned["Plugin-owned NodeSDK"]
     host["Host / preloaded SDK"]
@@ -96,6 +95,7 @@ flowchart TD
     rest --> plugin
     cache --> plugin
     gateway --> plugin
+    diagnostics --> plugin
     plugin --> provider
     provider --> owned
     provider --> host
@@ -103,11 +103,11 @@ flowchart TD
     host --> exporter
 ```
 
-`register` contributes interaction lifecycle instrumentation, while `setup` installs event, REST, cache, and gateway instrumentation and starts a `NodeSDK` only when the process does not already have a real provider. `teardown` removes every wrapper and observer and shuts down the SDK only when the plugin owns it.
+`register` contributes interaction lifecycle instrumentation, while `setup` installs event, REST, cache, gateway, and memory instrumentation and starts a `NodeSDK` only when the process does not already have a real provider. `teardown` removes every wrapper and observer and shuts down the SDK only when the plugin owns it.
 
 ## Automatic instrumentation
 
-Trace and metric signals are configured independently. Interaction, event, and REST traces are enabled by default; cache traces are disabled because one span per lookup is usually too noisy. All duration metrics and gateway health metrics are enabled by default.
+Trace and metric signals are configured independently. Interaction, event, and REST traces are enabled by default; cache traces are disabled because one span per lookup is usually too noisy. All metrics are enabled by default, including gateway health, process memory, and collector counts.
 
 | Surface | Span kind | Spans | Duration metric |
 | --- | --- | --- | --- |
@@ -252,7 +252,7 @@ type TraceSource =
 | --- | --- | --- |
 | `serviceName` | `'seyfert'` | Tracer and meter name; also the resource service name when the plugin owns the SDK. |
 | `traces` | Interactions, events, and REST enabled; cache disabled | Enables or disables spans for each surface. |
-| `metrics` | All surfaces and gateway enabled | Enables or disables duration and gateway health metrics independently. |
+| `metrics` | All surfaces enabled | Enables or disables duration metrics, `gateway`, `memory`, and `collectors` independently. |
 | `checkIfShouldTrace` | Always `true` | Filters automatic root spans before recording begins. |
 | `contextManager` | OpenTelemetry default | A `ContextManager` registered only when no global context manager is active. |
 | `cache.skipResources` | `['presence', 'voice_state']` | Cache namespaces that should never produce spans or duration metrics. |
@@ -325,8 +325,43 @@ Every duration histogram uses seconds and adds `seyfert.error` when the operatio
 | `seyfert.cache.operation.duration` | Operation, resource, cache hit when applicable, and `seyfert.error`. |
 | `seyfert.gateway.shard.connected` | `1` or `0` per shard, with shard ID. |
 | `seyfert.gateway.shard.latency` | Heartbeat round-trip in seconds per connected shard. |
+| `seyfert.process.memory.usage` | Bytes, with `seyfert.memory.type`: `rss`, `heapUsed`, `heapTotal`, or `external`. |
+| `seyfert.collector.active` | Registration count, with `seyfert.collector.type`: `component`, `event`, or `modal`. |
 
-A metric reader is required to export them. For a quick local check use `ConsoleMetricExporter`; in production, configure an OTLP metric exporter or another reader supported by the OpenTelemetry SDK. Custom metrics created through `getMeter()` use the same global meter provider.
+The quick start exports these metrics through OTLP. To inspect them locally without a backend, set `OTEL_METRICS_EXPORTER=console`. For OTLP, set `OTEL_METRIC_EXPORT_INTERVAL=30000` to collect every 30 seconds. Custom metrics created through `getMeter()` use the same global meter provider. Advanced integrations can still pass a `metricReader` to the SDK.
+
+### Memory diagnostics
+
+Memory and collector measurements are enabled automatically. To disable either one:
+
+```ts
+opentelemetry({ metrics: { memory: false, collectors: false } });
+```
+
+Plot one process or replica at a time. `rss` covers resident process memory; `heapUsed` and `heapTotal` describe the JavaScript heap. `external` is memory tracked externally by the runtime, not all native allocations. These measurements overlap, so do not add them together. In worker threads, RSS covers the whole process while heap measurements cover the current thread.
+
+The `seyfert` prefix identifies the instrumentation, not the allocation owner. Process memory includes application code, dependencies, and the runtime. Collector counts measure registrations, not bytes; event registrations are counted individually, and HTTP clients omit the unavailable `event` point. Application-specific caches need their own metrics through `getMeter()`.
+
+If memory keeps growing:
+
+1. **Heap grows:** capture two heap snapshots from the same process after warm-up, separated by comparable workload. Compare growing object groups and their **Retainers** paths in Chrome DevTools to find which references keep them alive. Check the owner's cleanup or expiry contract before calling it a leak.
+2. **RSS grows with a stable heap:** inspect other worker heaps, buffers, native dependencies, and the runtime allocator. JavaScript snapshots do not account for every native allocation.
+
+Node and Bun can capture a snapshot manually:
+
+```ts
+import { writeHeapSnapshot } from 'node:v8';
+
+writeHeapSnapshot(`heap-${process.pid}-${Date.now()}.heapsnapshot`);
+```
+
+<Callout type="warn">
+Snapshots pause execution and need extra memory. Use a replica with headroom and keep the files private: they can contain application data and credentials. The plugin does not trigger snapshots or force GC.
+</Callout>
+
+Measurements run during SDK collection. Repeated setup replaces observers, and teardown removes them; a host SDK can retain the last numeric samples. Neither rising collector counts nor memory growth during a handler identifies the allocation owner by itself.
+
+See [Node heap snapshots](https://nodejs.org/learn/diagnostics/memory/using-heap-snapshot) and [Bun memory diagnostics](https://bun.com/blog/debugging-memory-leaks) for runtime profiling details.
 
 ## Privacy and cardinality
 
