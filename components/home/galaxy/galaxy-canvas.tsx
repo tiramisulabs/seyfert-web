@@ -659,8 +659,24 @@ const blurFrag = /* glsl */ `
   }
 `;
 
-export default function GalaxyCanvas() {
+// Optional drivers for pages that are NOT the spiral home (e.g. /journey).
+// Omitted, the hero behaviour is unchanged: dive = first-viewport scroll.
+//  · dive  — returns the dive target each frame (0 = rest, 1 = hero dive,
+//            >1 keeps falling: the shader just keeps closing in)
+//  · quiet — true while the scene sits under an opaque veil; the march and
+//            composite drop to a low cadence nobody can see through the veil
+//  · centered — keep the hole mid-screen on portrait viewports too (the home
+//            parks it at the top there, above the title)
+type GalaxyDrivers = { dive?: () => number; quiet?: () => boolean; centered?: boolean };
+
+export default function GalaxyCanvas({ dive, quiet, centered = false }: GalaxyDrivers = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const diveRef = useRef(dive);
+  const quietRef = useRef(quiet);
+  useEffect(() => {
+    diveRef.current = dive;
+    quietRef.current = quiet;
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -848,7 +864,7 @@ export default function GalaxyCanvas() {
       // v5 "Cygnus": hole centered (matches the static fallback's 50% anchor so
       // there's no jump on boot), behind the centered SEYFERT title
       center[0] = 0;
-      center[1] = aspect > 1 ? 0.04 : 1.05;
+      center[1] = aspect > 1 ? 0.04 : centered ? 0.1 : 1.05;
       marchProgram.uniforms.uCenter.value = center;
       marchProgram.uniforms.uScale.value = aspect > 1 ? 0.92 : 0.5;
 
@@ -998,8 +1014,9 @@ export default function GalaxyCanvas() {
 
       mouse.x += (target.x - mouse.x) * 0.09;
       mouse.y += (target.y - mouse.y) * 0.09;
-      const diveTarget = smoothstep01(scrollT);
+      const diveTarget = diveRef.current ? diveRef.current() : smoothstep01(scrollT);
       zoom += (diveTarget - zoom) * 0.06;
+      const isQuiet = quietRef.current?.() ?? false;
 
       // ── march cadence ──
       // PASS 1 (the geodesic march) is ~90% of the GPU bill and the scene it
@@ -1016,7 +1033,7 @@ export default function GalaxyCanvas() {
       // the user is moving. The dive and parallax are slow eased motions;
       // sampled at 30fps under the 60fps film grain they read identical, and
       // one fixed cadence means there is no smoothness mode-switch to notice.
-      if (marchDirty || frame % 2 === 0) {
+      if (marchDirty || frame % (isQuiet ? 6 : 2) === 0) {
         marchProgram.uniforms.uTime.value = elapsed;
         marchProgram.uniforms.uTilt.value = [mouse.x, mouse.y];
         marchProgram.uniforms.uZoom.value = zoom;
@@ -1036,6 +1053,9 @@ export default function GalaxyCanvas() {
         }
         marchDirty = false;
       }
+
+      // under an opaque veil the grain/CA can't be seen either: ~20fps
+      if (isQuiet && fallbackHidden && frame % 3 !== 0) return;
 
       compositeProgram.uniforms.uTime.value = elapsed;
       // PASS 2: composite/upscale → screen (every frame: grain/CA/vignette)
@@ -1071,7 +1091,7 @@ export default function GalaxyCanvas() {
       // browser starts reaping the oldest ones
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, []);
+  }, [centered]);
 
   // starts transparent; the render loop fades it in on the first real frame
   return (
