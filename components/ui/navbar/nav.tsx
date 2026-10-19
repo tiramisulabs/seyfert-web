@@ -12,12 +12,15 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { config } from "@/app.config";
 const SCROLL_THRESHOLD = 50;
+// Full-bleed heroes the bar floats over (and shrinks into a pill above). The
+// root `/` is the design index now, so it gets the regular in-flow bar.
+const OVERLAY_ROUTES = new Set(["/cygnus", "/spiral"]);
 
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
-  const isHomePage = pathname === "/";
+  const isHomePage = OVERLAY_ROUTES.has(pathname);
 
   useEffect(() => {
     const checkScroll = () => {

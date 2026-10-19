@@ -1,16 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useCallback, useRef, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { GeistMono } from "geist/font/mono";
-import { GeistSans } from "geist/font/sans";
 import {
     motion,
     useMotionTemplate,
     useMotionValue,
     useScroll,
+    useSpring,
     useTransform,
     type MotionValue,
 } from "motion/react";
@@ -18,12 +18,18 @@ import GalaxyCanvas from "@/components/home/galaxy/galaxy-canvas";
 import GalaxyLite from "@/components/home/galaxy/galaxy-lite";
 import { CopyButton } from "@/components/home/galaxy/copy-button";
 import { cn } from "@/lib/utils";
+import { CAP, NUCLEUS, STROKE, WORD_MASK_URL, WORD_PATH, WORD_W } from "./wordmark";
 
 // THE REVEAL — a trailer-style preview. The page is a sequence of pinned
 // chapters; scroll is the playhead. It opens on the SEYFERT wordmark as a window
 // onto the black hole: scrolling zooms through the F until you are inside
 // the scene. Each chapter after that is scrubbed, not triggered — scroll
 // back and it un-assembles.
+//
+// First pushed in f3bcdd1 (PR #40). Review refinements: a drawn
+// wordmark (./wordmark.ts) instead of outlined Geist, an opening laid out by
+// CSS with a captured first frame of the scene, a gliding playhead, and the
+// fixed blended grain moved into the page background.
 
 export type CodeLines = { c: string; k: string }[][];
 
@@ -44,10 +50,21 @@ function useReduce() {
     return useSyncExternalStore(subscribeReduce, () => window.matchMedia(REDUCE).matches, () => false);
 }
 
+// lg and up; the server renders the desktop layout (the chapter using it is
+// far below the fold when React hydrates)
+const WIDE = "(min-width: 1024px)";
+function subscribeWide(on: () => void) {
+    const mq = window.matchMedia(WIDE);
+    mq.addEventListener("change", on);
+    return () => mq.removeEventListener("change", on);
+}
+function useWide() {
+    return useSyncExternalStore(subscribeWide, () => window.matchMedia(WIDE).matches, () => true);
+}
+
 export function RevealPage({ echo, djs, boot }: { echo: CodeLines; djs: CodeLines; boot: CodeLines }) {
     return (
         <main className="spiral-page reveal-page relative overflow-x-clip">
-            <div aria-hidden className="reveal-grain pointer-events-none fixed inset-0 z-40" />
             <Opening />
             <OneFile lines={echo} />
             <Ceremony djs={djs} boot={boot} />
@@ -67,7 +84,7 @@ function Pin({ height, label, children }: { height: string; label: string; child
     const ref = useRef<HTMLElement>(null);
     const reduce = useReduce();
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
-    const progress = useScrubbed(scrollYProgress);
+    const progress = useGlide(scrollYProgress);
     const done = useMotionValue(1);
     return (
         <section ref={ref} aria-label={label} className="relative" style={{ height: reduce ? "auto" : height }}>
@@ -78,24 +95,14 @@ function Pin({ height, label, children }: { height: string; label: string; child
     );
 }
 
-// motion hands range-mapped scroll values to native ScrollTimeline (WAAPI)
-// when it can. With per-section offsets that path drifted from the real
-// progress here (opacity ~0.05 at p = 0.95), so every chapter reads a plain
-// JS copy: a function transform can't be compiled to keyframes, which keeps
-// the whole chain on the main-thread scrub that always matches scroll.
-function useScrubbed(v: MotionValue<number>) {
-    return useTransform(v, (x) => x);
-}
-
-function useViewport() {
-    const [vp, setVp] = useState({ w: 1440, h: 900 });
-    useEffect(() => {
-        const on = () => setVp({ w: window.innerWidth, h: window.innerHeight });
-        on();
-        window.addEventListener("resize", on);
-        return () => window.removeEventListener("resize", on);
-    }, []);
-    return vp;
+// The playhead glides after the scrollbar instead of jumping with it. Scroll
+// itself stays native; only the scrubbed scene eases toward it, so a wheel
+// notch (100px, 4-8% of a chapter) plays as a short move, not a cut. A spring
+// is a JS value, so this also keeps every chapter on the main-thread scrub:
+// motion's native ScrollTimeline path drifted from the real progress here
+// (opacity ~0.05 at p = 0.95).
+function useGlide(v: MotionValue<number>) {
+    return useSpring(v, { stiffness: 260, damping: 36, mass: 0.5, restDelta: 0.0005 });
 }
 
 /* ── 0 · the opening: through the wordmark ──────────────────────────── */
@@ -104,140 +111,106 @@ function Opening() {
     return <Pin height="240vh" label="Seyfert">{(p, still) => <OpeningStage p={p} still={still} />}</Pin>;
 }
 
-// the wordmark is a window: letters cut out of the dark, the black hole
-// showing through them. The zoom dives into the stem of the F — the middle
-// letter, and a solid vertical bar, so it fills the screen cleanly.
-const WORD = "SEYFERT";
-const DIVE_CHAR = 3; // "F"
-const WORD_WEIGHT = 700;
+// Everything the first frame needs is server HTML sized by CSS: the drawn
+// wordmark (no font to wait for), its plate, the plane and a painted stand-in
+// for the black hole. Nothing here depends on measuring the viewport, so the
+// opening doesn't shift when React hydrates or when WebGL arrives; the canvas
+// only crossfades over a frame that was already complete.
+const WORD_RATIO = WORD_W / CAP;
+// where the word sits: centred, as wide as the screen allows without
+// crowding a short landscape viewport
+const wordVars = {
+    "--word-w": "min(80vw, 150svh)",
+    "--word-h": `calc(var(--word-w) / ${WORD_RATIO.toFixed(4)})`,
+    // the nucleus (F stem on the plane) in stage coordinates
+    "--ox": `calc(50% + ${(NUCLEUS.x / WORD_W - 0.5).toFixed(4)} * var(--word-w))`,
+    "--oy": "50%",
+    "--word-mask": WORD_MASK_URL,
+} as CSSProperties;
 
 function OpeningStage({ p, still }: { p: MotionValue<number>; still: boolean }) {
-    const { w, h } = useViewport();
-    const font = GeistSans.style.fontFamily;
-    // 7 tracked caps: sized by width (the tracked word runs ~5.2em wide, so
-    // 0.155w leaves a margin each side), capped so it never crowds the height
-    const fs = Math.min(w * (w < 640 ? 0.165 : 0.155), h * 0.34);
-    const tracking = fs * 0.06;
-    const base = h / 2 + fs * 0.35;
-
-    // the F's stem, measured from the real glyph once the font is in:
-    // a row through the lower half of the cap crosses only the stem, so the
-    // first solid run on it is the stem — its centre is the zoom origin
-    const wordRef = useRef<SVGTextElement>(null);
-    const [stem, setStem] = useState<{ x: number; y: number } | null>(null);
-    useEffect(() => {
-        let alive = true;
-        const measure = () => {
-            const t = wordRef.current;
-            if (!t || !alive) return;
-            const ext = t.getExtentOfChar(DIVE_CHAR);
-            const cw = Math.ceil(ext.width);
-            const ch = Math.ceil(ext.height);
-            const ctx = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
-            if (!ctx || cw < 1 || ch < 1) return;
-            ctx.canvas.width = cw;
-            ctx.canvas.height = ch;
-            ctx.font = `${WORD_WEIGHT} ${fs}px ${font}`;
-            ctx.fillText(WORD[DIVE_CHAR], 0, base - ext.y);
-            const row = Math.round(base - fs * 0.16 - ext.y);
-            const px = ctx.getImageData(0, row, cw, 1).data;
-            let start = -1;
-            let end = -1;
-            for (let x = 0; x < cw; x++) {
-                const solid = px[x * 4 + 3] > 128;
-                if (solid && start < 0) start = x;
-                if (!solid && start >= 0) { end = x; break; }
-            }
-            if (start < 0) return;
-            if (end < 0) end = cw;
-            setStem({ x: ext.x + (start + end) / 2, y: base - fs * 0.36 });
-        };
-        document.fonts.ready.then(measure);
-        return () => { alive = false; };
-    }, [w, h, fs, base, font]);
-    // a motion value, not a plain style string: motion applies a static
-    // transformOrigin once and ignores later re-renders, which froze the
-    // origin at the first-render guess (w = 1440) on every screen
-    const ox = useMotionValue(w / 2);
-    const oy = useMotionValue(base - fs * 0.36);
-    useEffect(() => {
-        // until measured: the middle of the word, near enough for frame one
-        ox.set(stem ? stem.x : w / 2);
-        oy.set(stem ? stem.y : base - fs * 0.36);
-    }, [ox, oy, stem, w, base, fs]);
-    const origin = useMotionTemplate`${ox}px ${oy}px`;
-
-    // The cut follows the word, not the zoom: by p ≈ 0.22 SEYFERT has grown
-    // past the screen edges and stops reading as a word, so from there the
-    // dark around the letters dissolves straight into the whole scene and
-    // the headline arrives with it. Zooming all the way through the stem
-    // first left a beat of near-black (the F's dark counters filling the
-    // screen) and then a beat of bare black hole before any copy.
-    const scale = useTransform(p, (v) => 1 + 5 * Math.pow(clamp01(v / 0.32), 2.2));
-    // the cut is an iris, not a fade: a hole opens from the stem's fixed
-    // point (transform-origin doesn't move under scale) and swallows the
-    // dark. A fade left the half-opaque dark lying on the bright disk as
-    // muddy grey panels. The iris sits on an unscaled wrapper, so its
-    // radius is in screen px.
-    const reach = Math.hypot(w, h);
-    const iris = useTransform(p, [0.21, 0.28], [0, reach], { clamp: true });
-    const irisMask = useMotionTemplate`radial-gradient(circle at ${ox}px ${oy}px, transparent ${iris}px, #000 calc(${iris}px + 1.5px))`;
-    const veil = useTransform(p, [0.27, 0.29], [1, 0]);
-    // the rim stroke scales with the zoom (CSS transform ignores
-    // non-scaling-stroke), so it leaves before it turns into a band
-    const rim = useTransform(p, [0.04, 0.16], [1, 0]);
+    // The dive: the word scales around the nucleus until it stops reading as
+    // a word, then an iris opens from that same point and the plate is gone.
+    // Spans are generous on purpose: at a 100px wheel notch on a 240vh track
+    // the old 0.21→0.28 iris was a single notch, a cut rather than a move.
+    const scale = useTransform(p, (v) => 1 + 5 * Math.pow(clamp01(v / 0.34), 2.2));
+    const iris = useTransform(p, (v) => {
+        const t = clamp01((v - 0.17) / 0.14);
+        return `${(t * t * (3 - 2 * t) * 150).toFixed(2)}vmax`;
+    });
+    const plate = useTransform(p, [0.29, 0.32], [1, 0]);
+    // glass, plane and nucleus thicken under scale, so they leave early
+    const glass = useTransform(p, [0.05, 0.18], [1, 0]);
     const intro = useTransform(p, [0, 0.07], [1, 0]);
-    const head = useTransform(p, [0.24, 0.34], [0, 1]);
-    const headY = useTransform(p, [0.24, 0.36], [40, 0]);
+    const head = useTransform(p, [0.24, 0.36], [0, 1]);
+    const headY = useTransform(p, [0.24, 0.38], [40, 0]);
     const out = useTransform(p, [0.9, 1], [1, 0.35]);
 
     // the camera falls in with you while the wordmark opens
     const dive = useCallback(() => clamp01(p.get() / 0.4) * 1.35, [p]);
+    const irisMask = useMotionTemplate`radial-gradient(circle at var(--ox) var(--oy), transparent ${iris}, #000 calc(${iris} + 1.5px))`;
 
     return (
-        <>
+        <div className="absolute inset-0" style={wordVars}>
             <motion.div className="absolute inset-0" style={{ opacity: out }}>
-                <div data-galaxy-fallback className="core-glow absolute left-1/2 top-1/2 size-[46vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70" />
+                {/* the scene before WebGL: a frame of this exact render frozen
+                    at t = 0 (?bhfreeze=0), so the canvas' crossfade is the
+                    photo starting to move. Both renders size the hole by
+                    height and centre it, hence h-full and a centred img. The
+                    painted ring covers portrait tablets, which have no capture */}
+                <div aria-hidden data-galaxy-fallback className="reveal-scene-fallback absolute inset-0 overflow-hidden transition-opacity duration-500">
+                    <picture>
+                        <source media="(min-width: 768px) and (min-aspect-ratio: 1/1)" srcSet="/reveal/scene-wide.webp" />
+                        <img src="/reveal/scene-mobile.webp" alt="" fetchPriority="high" decoding="async" className="reveal-scene-photo absolute left-1/2 top-0 h-full w-auto max-w-none -translate-x-1/2" />
+                    </picture>
+                </div>
                 <GalaxyCanvas dive={dive} centered />
                 <GalaxyLite dive={dive} centered />
             </motion.div>
 
             {!still && (
-                <motion.div aria-hidden className="pointer-events-none absolute inset-0" style={{ maskImage: irisMask, WebkitMaskImage: irisMask, opacity: veil }}>
-                <motion.svg
-                    className="absolute inset-0 h-full w-full overflow-visible"
-                    viewBox={`0 0 ${w} ${h}`}
-                    style={{ scale, transformOrigin: origin }}
-                >
-                    <defs>
-                        <mask id="reveal-word" maskUnits="userSpaceOnUse" x={-w} y={-h} width={w * 3} height={h * 3}>
-                            <rect x={-w} y={-h} width={w * 3} height={h * 3} fill="white" />
-                            <text ref={wordRef} x={w / 2} y={base} textAnchor="middle" fontSize={fs} fontWeight={WORD_WEIGHT} letterSpacing={tracking} fill="black" style={{ fontFamily: font }}>{WORD}</text>
-                        </mask>
-                    </defs>
-                    <rect x={-w} y={-h} width={w * 3} height={h * 3} fill="#05070d" mask="url(#reveal-word)" />
-                    {/* lit rim on the letters — reads as light catching the cut edge */}
-                    <motion.text
-                        x={w / 2}
-                        y={base}
-                        textAnchor="middle"
-                        fontSize={fs}
-                        fontWeight={WORD_WEIGHT}
-                        letterSpacing={tracking}
-                        fill="none"
-                        stroke="rgba(255,217,160,0.55)"
-                        strokeWidth={1.1}
-                        style={{ fontFamily: font, opacity: rim }}
-                    >
-                        {WORD}
-                    </motion.text>
-                </motion.svg>
+                <motion.div aria-hidden className="pointer-events-none absolute inset-0" style={{ maskImage: irisMask, WebkitMaskImage: irisMask, opacity: plate }}>
+                    {/* will-change: rastered once and scaled by the compositor.
+                        Re-rastering the masked plate at every zoom step doubled
+                        GPU time per frame in a trace; the softer edges at 2-3×
+                        only exist mid-dive, where the letters are rushing past */}
+                    <motion.div className="absolute inset-0 will-change-transform" style={{ scale, transformOrigin: "var(--ox) var(--oy)" }}>
+                        {/* the plate: the void with the letters cut out of it */}
+                        <div className="reveal-plate absolute inset-0">
+                            <motion.span style={{ opacity: glass }} className="reveal-plane absolute inset-x-0 top-1/2 block h-px -translate-y-1/2" />
+                        </div>
+                        {/* glass in the cut-outs, so a letter over empty sky
+                            still reads as a letter, plus the nucleus */}
+                        <motion.svg
+                            viewBox={`0 0 ${WORD_W} ${CAP}`}
+                            className="absolute left-1/2 top-1/2 h-(--word-h) w-(--word-w) -translate-x-1/2 -translate-y-1/2 overflow-visible"
+                            style={{ opacity: glass }}
+                        >
+                            <defs>
+                                <linearGradient id="reveal-glass" x1="0" y1="0" x2="0" y2={CAP} gradientUnits="userSpaceOnUse">
+                                    <stop offset="0" stopColor="#fff4e2" stopOpacity="0.26" />
+                                    <stop offset="0.5" stopColor="#ffd9a0" stopOpacity="0.5" />
+                                    <stop offset="1" stopColor="#fff4e2" stopOpacity="0.16" />
+                                </linearGradient>
+                                <radialGradient id="reveal-nucleus">
+                                    <stop offset="0" stopColor="#fffaf0" />
+                                    <stop offset="0.25" stopColor="#ffe7c2" stopOpacity="0.9" />
+                                    <stop offset="1" stopColor="#ffd9a0" stopOpacity="0" />
+                                </radialGradient>
+                                <clipPath id="reveal-cap"><rect width={WORD_W} height={CAP} /></clipPath>
+                            </defs>
+                            <g className="reveal-glass">
+                                <path d={WORD_PATH} clipPath="url(#reveal-cap)" fill="none" stroke="url(#reveal-glass)" strokeWidth={STROKE} strokeLinejoin="miter" strokeMiterlimit={8} />
+                                <circle className="reveal-nucleus" cx={NUCLEUS.x} cy={NUCLEUS.y} r={9} fill="url(#reveal-nucleus)" />
+                            </g>
+                        </motion.svg>
+                    </motion.div>
                 </motion.div>
             )}
 
             {!still && (
                 <motion.div style={{ opacity: intro }} className="pointer-events-none absolute inset-0">
-                    <span className={cn(mono, "absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-[11px] tracking-[0.35em] text-[var(--text-dim)]")}>
+                    <span className={cn(mono, "reveal-cue absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-[11px] tracking-[0.35em] text-[var(--text-dim)]")}>
                         SCROLL TO ENTER
                         <span className="reveal-drop block h-10 w-px bg-gradient-to-b from-[#ffd9a0] to-transparent" />
                     </span>
@@ -250,7 +223,7 @@ function OpeningStage({ p, still }: { p: MotionValue<number>; still: boolean }) 
                 </h1>
                 <code translate="no" className={cn(mono, "text-[14px] tracking-[0.08em] text-[#efe6d2] [text-shadow:0_1px_16px_rgba(0,0,0,0.95)]")}>npm i seyfert</code>
             </motion.div>
-        </>
+        </div>
     );
 }
 
@@ -346,8 +319,7 @@ function Ceremony({ djs, boot }: { djs: CodeLines; boot: CodeLines }) {
 }
 
 function CeremonyStage({ p, djs, boot }: { p: MotionValue<number>; djs: CodeLines; boot: CodeLines }) {
-    const { w } = useViewport();
-    const wide = w >= 1024;
+    const wide = useWide();
     const written = (c: CodeLines) => c.filter((l) => l.some((t) => t.c.trim() && !t.c.trim().startsWith("//"))).length;
     const before = written(djs);
     const after = written(boot);
@@ -357,7 +329,6 @@ function CeremonyStage({ p, djs, boot }: { p: MotionValue<number>; djs: CodeLine
     const djsScale = useTransform(p, [0.5, 0.64], [1, 0.62]);
     const djsX = useTransform(p, [0.5, 0.64], wide ? ["0%", "-34%"] : ["0%", "-18%"]);
     const djsO = useTransform(p, [0.5, 0.64], [1, 0.28]);
-    const djsBlur = useTransform(p, [0.5, 0.64], ["blur(0px)", "blur(2px)"]);
     // seyfert: flies in over it
     const bootO = useTransform(p, [0.58, 0.7], [0, 1]);
     const bootX = useTransform(p, [0.58, 0.74], wide ? ["40%", "12%"] : ["40%", "0%"]);
@@ -383,7 +354,7 @@ function CeremonyStage({ p, djs, boot }: { p: MotionValue<number>; djs: CodeLine
             </motion.div>
 
             <div className="relative min-h-[420px]">
-                <motion.div style={{ scale: djsScale, x: djsX, opacity: djsO, filter: djsBlur }} className="absolute inset-x-0 top-0 origin-left overflow-hidden rounded-xl border border-white/10 bg-[#090b12]/90 lg:right-[22%]">
+                <motion.div style={{ scale: djsScale, x: djsX, opacity: djsO }} className="absolute inset-x-0 top-0 origin-left overflow-hidden rounded-xl border border-white/10 bg-[#090b12]/90 lg:right-[22%]">
                     <div className={cn(mono, "border-b border-white/[0.07] px-4 py-2.5 text-[11px] tracking-[0.1em] text-[var(--text-dim)]")}>discord.js v14 · index.js</div>
                     <div className={cn(mono, "overflow-x-auto px-4 py-4 text-[11px] leading-[1.7] sm:text-[12.5px]")}>
                         {djs.map((line, i) => <StruckLine key={i} line={line} p={p} at={0.12 + (i / nd) * 0.34} />)}
@@ -472,7 +443,7 @@ function Orbit() {
     const ref = useRef<HTMLElement>(null);
     const reduce = useReduce();
     const { scrollYProgress: raw } = useScroll({ target: ref, offset: ["start end", "end start"] });
-    const scrollYProgress = useScrubbed(raw);
+    const scrollYProgress = useGlide(raw);
     const left = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["4%", "-46%"]);
     const right = useTransform(scrollYProgress, [0, 1], reduce ? ["-30%", "-30%"] : ["-52%", "0%"]);
     const half = BOTS.length / 2;
@@ -510,8 +481,19 @@ function Finale() {
     return (
         <section aria-label="Get started" className="relative flex min-h-svh flex-col items-center justify-center gap-10 px-5 pb-28 text-center">
             <div aria-hidden className="core-glow absolute left-1/2 top-[38%] size-[60vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25 blur-2xl" />
-            {/* bookends the opening: the same wordmark, now solid ground */}
-            <span className="reveal-outline relative text-[clamp(56px,13vw,200px)] font-bold uppercase leading-none tracking-[0.06em]">Seyfert</span>
+            {/* bookends the opening: the same drawn wordmark, now solid ground */}
+            <svg role="img" aria-label="Seyfert" viewBox={`0 0 ${WORD_W} ${CAP}`} className="relative h-auto w-[min(84vw,880px)] overflow-visible">
+                <defs>
+                    <linearGradient id="reveal-finale-metal" x1="0" y1="0" x2={WORD_W} y2={CAP} gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stopColor="#f2d7a6" />
+                        <stop offset="0.35" stopColor="#fff3d8" />
+                        <stop offset="0.5" stopColor="#ffffff" />
+                        <stop offset="1" stopColor="#c9d0da" />
+                    </linearGradient>
+                    <clipPath id="reveal-finale-cap"><rect width={WORD_W} height={CAP} /></clipPath>
+                </defs>
+                <path d={WORD_PATH} clipPath="url(#reveal-finale-cap)" fill="none" stroke="url(#reveal-finale-metal)" strokeWidth={STROKE} strokeLinejoin="miter" strokeMiterlimit={8} />
+            </svg>
             <div className="relative flex flex-col items-center gap-3">
                 <span className={cn(mono, "text-[11px] tracking-[0.35em] text-[var(--text-dim)]")}>START BUILDING</span>
                 <span className="flex items-center gap-4">

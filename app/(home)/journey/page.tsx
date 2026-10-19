@@ -1,14 +1,11 @@
-import type { Metadata } from "next";
 import { highlight } from "@/lib/highlight";
 import { Journey } from "@/components/home/journey/journey";
+import { archiveMetadata } from "@/lib/design-archive";
 
 // Preview of the "journey" landing: one /echo falls from the Discord gateway
 // through Seyfert's rings into the core and is shot back out as a reply.
-// Lives beside the spiral home so both can be compared; not indexed.
-export const metadata: Metadata = {
-    title: "Seyfert | Follow one command into the core",
-    robots: { index: false },
-};
+// Lives beside the other designs so they can be compared; not indexed.
+export const metadata = archiveMetadata("journey", "Seyfert | Follow one command into the core");
 
 const ECHO = `const options = {
   message: createStringOption({
@@ -38,5 +35,9 @@ export default async function JourneyPage() {
         highlight(ECHO),
         highlight(LOGGER),
     ]);
-    return <Journey echoHtml={echoHtml} loggerHtml={loggerHtml} />;
+    return (
+        <>
+            <Journey echoHtml={echoHtml} loggerHtml={loggerHtml} />
+        </>
+    );
 }

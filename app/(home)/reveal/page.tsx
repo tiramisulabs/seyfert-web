@@ -1,14 +1,11 @@
-import type { Metadata } from "next";
 import { codeToTokens } from "shiki";
 import { RevealPage, type CodeLines } from "@/components/home/reveal/reveal";
+import { archiveMetadata } from "@/lib/design-archive";
 
 // Experiment: a trailer-style reveal (think the GTA VI preview site) — the
 // SEYFERT wordmark you scroll *through* into the black hole, then pinned
 // chapters the scroll assembles, strikes out and counts down. Not indexed.
-export const metadata: Metadata = {
-    title: "Seyfert | The TypeScript framework for Discord",
-    robots: { index: false },
-};
+export const metadata = archiveMetadata("reveal", "Seyfert | The TypeScript framework for Discord");
 
 const ECHO = `import {
   Declare, Options, Command, createStringOption, type CommandContext,
@@ -71,5 +68,9 @@ async function tokens(code: string): Promise<CodeLines> {
 
 export default async function Page() {
     const [echo, djs, boot] = await Promise.all([tokens(ECHO), tokens(DJS), tokens(BOOT)]);
-    return <RevealPage echo={echo} djs={djs} boot={boot} />;
+    return (
+        <>
+            <RevealPage echo={echo} djs={djs} boot={boot} />
+        </>
+    );
 }
