@@ -2,7 +2,9 @@
 
 Past and proposed seyfert.dev landings, each rebuilt from its own commit and
 served at its own route. The catalog (names, dates, source commits) lives in
-`lib/design-archive.ts`; the index at `/` renders it.
+`lib/design-archive.ts`; the unlisted index at `/archive` renders it. Reveal is
+the public home at `/`, and `/reveal` redirects there. The catalog has no
+links from the landings and is excluded from search results.
 
 | Route | Source | What is here |
 | --- | --- | --- |
@@ -12,7 +14,7 @@ served at its own route. The catalog (names, dates, source commits) lives in
 | `/chad` | `bbdfb03` | `chad/src/`: verbatim snapshot |
 | `/spiral` | `509cf65` | `spiral/src/`: verbatim snapshot (own galaxy renderer) |
 
-`/cygnus`, `/journey`, `/journey-refined` and `/reveal` are current code under
+`/cygnus`, `/journey`, `/journey-refined` and `/` are current code under
 `app/(home)` and `components/home`.
 
 ## Snapshots
@@ -27,7 +29,7 @@ Deliberate changes, all marked in place where they touch code:
 
 - Navbars float over the hero only on `/`; the snapshots check their new
   route instead (`/classic`, `/chad`). The live navbar does the same for
-  `/cygnus` and `/spiral`, since `/` is now the index.
+  `/cygnus` and `/spiral`; Reveal uses an in-flow navbar at `/`.
 - Bot avatars point at today's `/bots/thumbs/*` (the same images,
   downscaled) instead of restoring ~8 MB of original PNGs.
 - Spiral's static first frame was deleted with Cygnus; it is restored from
