@@ -477,11 +477,34 @@ function OrbitItem({ bot, solid }: { bot: (typeof BOTS)[number]; solid: boolean 
 
 /* ── 5 · finale: the release line ───────────────────────────────────── */
 
+// The trajectory: an inclined orbit through the word, in word units. It
+// rises from under the S behind the letters, crosses the plane at the
+// nucleus (the F stem the opening dove through) and comes out in front,
+// leaving past the T. Two cubics, smooth at the node.
+const NODE = `${NUCLEUS.x} ${NUCLEUS.y}`;
+const TRAJ_BACK = `M-40 120C90 140 250 118 ${NODE}`;
+const TRAJ_FRONT = `M${NODE}C352 -6 540 -40 702 -44`;
+// share of the whole length behind the word, so one scrub draws both
+const TRAJ_SPLIT = 0.48;
+// the head: tangent at the end of TRAJ_FRONT
+const HEAD = { x: 702, y: -44, deg: (Math.atan2(-4, 162) * 180) / Math.PI };
+
 function Finale() {
+    const ref = useRef<HTMLElement>(null);
+    const reduce = useReduce();
+    const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end end"] });
+    const p = useGlide(scrollYProgress);
+    // scrubbed like every chapter: drawn while the word rises into view
+    const draw = useTransform(p, (v) => (reduce ? 1 : clamp01((v - 0.2) / 0.55)));
+    const back = useTransform(draw, (v) => clamp01(v / TRAJ_SPLIT));
+    const front = useTransform(draw, (v) => clamp01((v - TRAJ_SPLIT) / (1 - TRAJ_SPLIT)));
+    const node = useTransform(draw, [TRAJ_SPLIT - 0.04, TRAJ_SPLIT + 0.04], [0, 1]);
+    const head = useTransform(draw, [0.9, 1], [0, 1]);
     return (
-        <section aria-label="Get started" className="relative flex min-h-svh flex-col items-center justify-center gap-10 px-5 pb-28 text-center">
+        <section ref={ref} aria-label="Get started" className="relative flex min-h-svh flex-col items-center justify-center gap-10 px-5 pb-28 text-center">
             <div aria-hidden className="core-glow absolute left-1/2 top-[38%] size-[60vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25 blur-2xl" />
-            {/* bookends the opening: the same drawn wordmark, now solid ground */}
+            {/* bookends the opening: the same drawn wordmark, now solid ground,
+                with a trajectory threaded through it */}
             <svg role="img" aria-label="Seyfert" viewBox={`0 0 ${WORD_W} ${CAP}`} className="relative h-auto w-[min(84vw,880px)] overflow-visible">
                 <defs>
                     <linearGradient id="reveal-finale-metal" x1="0" y1="0" x2={WORD_W} y2={CAP} gradientUnits="userSpaceOnUse">
@@ -490,9 +513,36 @@ function Finale() {
                         <stop offset="0.5" stopColor="#ffffff" />
                         <stop offset="1" stopColor="#c9d0da" />
                     </linearGradient>
+                    <linearGradient id="reveal-finale-orbit" x1="-40" y1="0" x2="702" y2="0" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stopColor="#b4683c" stopOpacity="0" />
+                        <stop offset="0.3" stopColor="#f0cf8c" stopOpacity="0.7" />
+                        <stop offset="0.75" stopColor="#ffe7c2" />
+                        <stop offset="1" stopColor="#fffaf0" />
+                    </linearGradient>
+                    <filter id="reveal-finale-blur" x="-10%" y="-60%" width="120%" height="220%">
+                        <feGaussianBlur stdDeviation="4" />
+                    </filter>
                     <clipPath id="reveal-finale-cap"><rect width={WORD_W} height={CAP} /></clipPath>
+                    {/* where the trajectory passes in front, the metal parts
+                        around it so the crossing reads as over, not on */}
+                    <mask id="reveal-finale-cut" maskUnits="userSpaceOnUse" x="-60" y="-80" width={WORD_W + 120} height="260">
+                        <rect x="-60" y="-80" width={WORD_W + 120} height="260" fill="#fff" />
+                        <motion.path d={TRAJ_FRONT} fill="none" stroke="#000" strokeWidth={7} style={{ pathLength: front }} />
+                    </mask>
                 </defs>
-                <path d={WORD_PATH} clipPath="url(#reveal-finale-cap)" fill="none" stroke="url(#reveal-finale-metal)" strokeWidth={STROKE} strokeLinejoin="miter" strokeMiterlimit={8} />
+                <g aria-hidden fill="none" stroke="url(#reveal-finale-orbit)">
+                    <motion.path d={TRAJ_BACK} strokeWidth={9} opacity={0.35} filter="url(#reveal-finale-blur)" style={{ pathLength: back }} />
+                    <motion.path d={TRAJ_BACK} strokeWidth={2} style={{ pathLength: back }} />
+                </g>
+                <path d={WORD_PATH} clipPath="url(#reveal-finale-cap)" mask="url(#reveal-finale-cut)" fill="none" stroke="url(#reveal-finale-metal)" strokeWidth={STROKE} strokeLinejoin="miter" strokeMiterlimit={8} />
+                <g aria-hidden fill="none" stroke="url(#reveal-finale-orbit)">
+                    <motion.path d={TRAJ_FRONT} strokeWidth={9} opacity={0.35} filter="url(#reveal-finale-blur)" style={{ pathLength: front }} />
+                    <motion.path d={TRAJ_FRONT} strokeWidth={2} style={{ pathLength: front }} />
+                    <motion.circle cx={NUCLEUS.x} cy={NUCLEUS.y} r={3.2} fill="#fffaf0" stroke="none" style={{ opacity: node }} />
+                    <g transform={`translate(${HEAD.x} ${HEAD.y}) rotate(${HEAD.deg.toFixed(2)})`}>
+                        <motion.path d="M-13 -6.5L0 0L-13 6.5" stroke="#fffaf0" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ opacity: head }} />
+                    </g>
+                </g>
             </svg>
             <div className="relative flex flex-col items-center gap-3">
                 <span className={cn(mono, "text-[11px] tracking-[0.35em] text-[var(--text-dim)]")}>START BUILDING</span>
