@@ -37,9 +37,9 @@ function processMetrics(chunks) {
     const sumHeapTotal = chunk.reduce((acc, curr) => acc + curr.heapTotal, 0);
     const sumRss = chunk.reduce((acc, curr) => acc + curr.rss, 0);
     return {
-      heapUsed: Math.round(sumHeap / chunk.length / 1024 / 1024),
-      heapTotal: Math.round(sumHeapTotal / chunk.length / 1024 / 1024),
-      rss: Math.round(sumRss / chunk.length / 1024 / 1024),
+      heapUsed: Math.round(sumHeap / chunk.length / 1_000_000),
+      heapTotal: Math.round(sumHeapTotal / chunk.length / 1_000_000),
+      rss: Math.round(sumRss / chunk.length / 1_000_000),
     };
   });
 

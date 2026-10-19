@@ -19,6 +19,8 @@ import GalaxyLite from "@/components/home/galaxy/galaxy-lite";
 import { CopyButton } from "@/components/home/galaxy/copy-button";
 import { cn } from "@/lib/utils";
 import { CAP, NUCLEUS, STROKE, WORD_MASK_URL, WORD_PATH, WORD_W } from "./wordmark";
+import seyfertMemory from "@/public/bench/node/meadianseyfert.json";
+import discordMemory from "@/public/bench/node/meadiandiscordjs.json";
 
 // THE REVEAL — a trailer-style preview. The page is a sequence of pinned
 // chapters; scroll is the playhead. It opens on the SEYFERT wordmark as a window
@@ -375,14 +377,24 @@ function CeremonyStage({ p, djs, boot }: { p: MotionValue<number>; djs: CodeLine
 
 /* ── 3 · burn less ───────────────────────────────────────────────────── */
 
+function medianRss(samples: number[]) {
+    const sorted = [...samples].sort((a, b) => a - b);
+    const middle = sorted.length / 2;
+    return Math.round((sorted[Math.floor(middle)] + sorted[Math.ceil(middle) - 1]) / 2);
+}
+
+const SEYFERT_RSS = medianRss(seyfertMemory.rss);
+const DISCORD_RSS = medianRss(discordMemory.rss);
+const RSS_CEILING = Math.ceil((DISCORD_RSS * 1.05) / 10) * 10;
+
 function Memory() {
     return <Pin height="280vh" label="Memory under load">{(p) => <MemoryStage p={p} />}</Pin>;
 }
 
 function MemoryStage({ p }: { p: MotionValue<number> }) {
-    const mb = useTransform(p, [0.18, 0.66], [206, 84], { clamp: true });
+    const mb = useTransform(p, [0.18, 0.66], [DISCORD_RSS, SEYFERT_RSS], { clamp: true });
     const mbText = useTransform(mb, (v) => String(Math.round(v)));
-    const bar = useTransform(p, [0.18, 0.66], [206 / 220, 84 / 220], { clamp: true });
+    const bar = useTransform(p, [0.18, 0.66], [DISCORD_RSS / RSS_CEILING, SEYFERT_RSS / RSS_CEILING], { clamp: true });
     const ghost = useTransform(p, [0.18, 0.3], [0, 1]);
     const heat = useTransform(p, [0.4, 0.66], ["#fafafa", "#ffd9a0"]);
     // each label only names a real measurement: discord.js before the count
@@ -412,13 +424,13 @@ function MemoryStage({ p }: { p: MotionValue<number> }) {
             </motion.div>
 
             <motion.div style={{ opacity: intro }} className="relative h-2 w-full max-w-3xl bg-white/[0.05]">
-                <motion.div style={{ opacity: ghost }} className="absolute inset-y-0 left-0 w-[93.6%] border-r border-white/30" />
+                <motion.div style={{ opacity: ghost, width: `${DISCORD_RSS / RSS_CEILING * 100}%` }} className="absolute inset-y-0 left-0 border-r border-white/30" />
                 <motion.div style={{ scaleX: bar }} className="absolute inset-0 origin-left bg-gradient-to-r from-[#b4683c] via-[#ffd9a0] to-[#fff4e2] shadow-[0_0_24px_rgba(255,217,160,0.45)]" />
             </motion.div>
 
             <motion.div style={{ opacity: tail }} className="relative flex flex-col items-center gap-3">
                 <p className="text-[clamp(20px,2.4vw,30px)] font-medium tracking-[-0.01em]">
-                    2.45× lighter under the same gateway load.
+                    {(DISCORD_RSS / SEYFERT_RSS).toFixed(2)}× lighter under the same gateway load.
                 </p>
                 <Link href="/benchmark" className={cn(mono, "text-[11px] tracking-[0.25em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline")}>FULL MEASUREMENTS ↗</Link>
             </motion.div>
