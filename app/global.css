@@ -1044,3 +1044,32 @@ html {
   .journey-page .journey-travel { left: 50%; }
   .journey-page .journey-jet { display: none; }
 }
+
+/* ── Reveal experiment (/reveal) ────────────────────────────────────────
+   Scoped to .reveal-page. */
+.reveal-page .reveal-grain {
+  opacity: 0.12;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 8 -3.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' fill='%23fff'/%3E%3C/svg%3E");
+  background-size: 88px 88px;
+}
+.reveal-page .reveal-metal {
+  background: linear-gradient(125deg, #f2d7a6 0%, #fff3d8 30%, #ffffff 42%, #d6dce5 78%, #c9d0da 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.reveal-page .reveal-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 217, 160, 0.55);
+}
+@keyframes reveal-drop {
+  0% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  51% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+.reveal-page .reveal-drop { animation: reveal-drop 2.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal-page .reveal-drop { animation: none; }
+}
