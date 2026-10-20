@@ -5,11 +5,11 @@ import { GeistMono } from "geist/font/mono";
 import { ArrowUpRight } from "lucide-react";
 import { commitUrl, designs, type DesignEntry } from "@/lib/design-archive";
 
-// An unlisted catalog of past and proposed landings. Static previews keep
+// An unlisted catalog of shipped landings. Static previews keep
 // the archive light; each design loads only when opened.
 export const metadata: Metadata = {
     title: "Seyfert | Every landing, 2024 to now",
-    description: "Every design seyfert.dev has shipped or proposed, each one live at its own route.",
+    description: "Every design seyfert.dev has shipped, each one live at its own route.",
     robots: { index: false, follow: true },
 };
 
@@ -78,7 +78,6 @@ function Plate({ d, index }: { d: DesignEntry; index: number }) {
 
 export default function Archive() {
     const shipped = designs.filter((d) => d.status !== "proposal");
-    const proposals = designs.filter((d) => d.status === "proposal");
     return (
         <>
             <main className="mx-auto w-full max-w-[1320px] px-5 pt-16 pb-28 sm:px-8 sm:pt-24">
@@ -90,7 +89,7 @@ export default function Archive() {
                         Every landing, from 2024 to now.
                     </h1>
                     <p className="mt-6 max-w-[38rem] text-[16px] leading-[1.6] text-white/65">
-                        Each design Seyfert has shipped or put up for review, rebuilt from its own commit and running
+                        Each design Seyfert has shipped, rebuilt from its own commit and running
                         at its own address. Older pages keep the versions, numbers and links of their time.
                     </p>
                     <p className="mt-6 text-[14px] text-white/55">
@@ -115,19 +114,6 @@ export default function Archive() {
                     </ol>
                 </section>
 
-                <section aria-labelledby="proposals" className="mt-24">
-                    <div className="flex items-baseline justify-between border-t border-white/10 pt-4">
-                        <h2 id="proposals" className={`${mono} text-[11px] uppercase tracking-[0.22em] text-white/55`}>
-                            Proposals under review
-                        </h2>
-                        <span className={`${mono} text-[11px] text-white/35`}>Oct 2026</span>
-                    </div>
-                    <ol className="mt-8 grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 xl:grid-cols-3">
-                        {proposals.map((d, i) => (
-                            <Plate key={d.slug} d={d} index={shipped.length + i} />
-                        ))}
-                    </ol>
-                </section>
             </main>
         </>
     );

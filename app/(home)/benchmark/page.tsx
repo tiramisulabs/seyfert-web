@@ -190,7 +190,7 @@ export default function Page() {
   };
 
   return (
-    <main className="spiral-page relative min-h-screen overflow-hidden">
+    <main className="spiral-page relative min-h-screen overflow-hidden pt-15">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(129,140,248,0.09),transparent_34%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:linear-gradient(to_bottom,black,transparent_72%)]" />
 

@@ -12,8 +12,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { config } from "@/app.config";
 const SCROLL_THRESHOLD = 50;
-// Full-bleed heroes the bar floats over (and shrinks into a pill above).
-// Reveal and the archive use the regular in-flow bar.
+// Historical heroes keep their floating navigation.
 const OVERLAY_ROUTES = new Set(["/cygnus", "/spiral"]);
 
 
@@ -21,6 +20,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const isHomePage = OVERLAY_ROUTES.has(pathname);
+  const isIntegrated = pathname === "/" || pathname === "/benchmark";
 
   useEffect(() => {
     const checkScroll = () => {
@@ -50,7 +50,7 @@ export default function Navbar() {
         // explicit property list (never transition-all) + reduced-motion off
         "p-3 z-50 transition-[width,top] duration-500 ease-out relative motion-reduce:transition-none",
         "left-1/2 -translate-x-1/2",
-        isHomePage ? "fixed" : "relative",
+        isHomePage ? "fixed" : isIntegrated ? "absolute" : "relative",
         isHomePage && isScrolled
           ? "w-[min(60rem,95vw)] top-3"
           : "w-full rounded-none top-0"
@@ -60,12 +60,14 @@ export default function Navbar() {
       {/* no backdrop-blur: blurring the 60fps hero canvas underneath costs a
           full nav-strip blur every frame, and behind ~95% opacity it was
           invisible anyway */}
-      <div
-        className={cn(
-          "border bg-background/95 w-full h-full absolute top-0 left-0 -z-10",
-          isHomePage && isScrolled ? "rounded-sm" : "rounded-none"
-        )}
-      />
+      {!isIntegrated && (
+        <div
+          className={cn(
+            "border bg-background/95 w-full h-full absolute top-0 left-0 -z-10",
+            isHomePage && isScrolled ? "rounded-sm" : "rounded-none"
+          )}
+        />
+      )}
       <div className="h-full flex items-center justify-between mx-auto px-0 sm:px-6 relative">
         <div className="flex items-center gap-3 sm:gap-6">
           <Link href="/" className="shrink-0">
