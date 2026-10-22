@@ -73,7 +73,9 @@ export default function Navbar() {
           <Link href="/" className="shrink-0">
             <div className="flex items-center">
               <Image src={logo} alt="Seyfert" width={32} height={32} />
-              <h1 className="hidden text-2xl font-bold sm:block">eyfert</h1>
+              {pathname !== "/" && (
+                <h1 className="hidden text-2xl font-bold sm:block">eyfert</h1>
+              )}
             </div>
           </Link>
 
