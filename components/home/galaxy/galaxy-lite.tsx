@@ -176,8 +176,19 @@ const fragment = /* glsl */ `
   }
 `;
 
-export default function GalaxyLite() {
+// Same optional drivers as galaxy-canvas (see there); omitted = hero behaviour.
+// `centered` moves the hole from the hero's bottom-right pocket to the middle
+// of the screen, for pages whose copy is laid out around it instead.
+type GalaxyDrivers = { dive?: () => number; quiet?: () => boolean; centered?: boolean };
+
+export default function GalaxyLite({ dive, quiet, centered = false }: GalaxyDrivers = {}) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const diveRef = useRef(dive);
+  const quietRef = useRef(quiet);
+  useEffect(() => {
+    diveRef.current = dive;
+    quietRef.current = quiet;
+  });
 
   useEffect(() => {
     const container = containerRef.current;
@@ -236,7 +247,8 @@ export default function GalaxyLite() {
       program.uniforms.uResolution.value = [gl.canvas.width, gl.canvas.height];
       // hole center x at ~86.8% of the width on every aspect
       const aspect = gl.canvas.width / gl.canvas.height;
-      program.uniforms.uCenter.value = [aspect * 0.736, -0.78];
+      program.uniforms.uCenter.value = centered ? [0, 0.1] : [aspect * 0.736, -0.78];
+      if (centered) program.uniforms.uScale.value = 0.3;
     };
     window.addEventListener("resize", resize, false);
     resize();
@@ -277,7 +289,8 @@ export default function GalaxyLite() {
       raf = requestAnimationFrame(update);
       if (!visible || hidden) { last = t; return; }
       const dt = Math.min(t - last, 64);
-      if (dt < 31) return; // 30fps cap — battery first, the motion is slow
+      // 30fps cap — battery first, the motion is slow; ~10fps under a veil
+      if (dt < (quietRef.current?.() ? 95 : 31)) return;
       last = t;
       const dts = dt * 0.001;
       // hold the disk frozen at its captured t=0 phase through the 500ms fade so
@@ -285,7 +298,8 @@ export default function GalaxyLite() {
       const settling = fadeStart === 0 || t < fadeStart + 560;
       elapsed = freeze ?? (settling ? 0 : (elapsed + dts) % TIME_WRAP);
 
-      zoom += (scrollT - zoom) * 0.08;
+      const diveTarget = diveRef.current ? diveRef.current() : scrollT;
+      zoom += (diveTarget - zoom) * 0.08;
 
       program.uniforms.uTime.value = elapsed;
       program.uniforms.uZoom.value = zoom;
@@ -311,7 +325,7 @@ export default function GalaxyLite() {
       if (container.contains(gl.canvas)) container.removeChild(gl.canvas);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, []);
+  }, [centered]);
 
   // starts transparent; the render loop fades it in on the first real frame
   return (

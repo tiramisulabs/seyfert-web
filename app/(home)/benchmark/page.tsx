@@ -5,7 +5,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { BenchmarkChart } from "@/components/benchmark-chart";
-import { ArmLabel } from "@/components/home/galaxy/arm-label";
 import { cn } from "@/lib/utils";
 
 type RuntimeKey = "node" | "deno" | "bun";
@@ -191,19 +190,18 @@ export default function Page() {
   };
 
   return (
-    <main className="spiral-page relative min-h-screen overflow-hidden">
+    <main className="spiral-page relative min-h-screen overflow-hidden pt-15">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(129,140,248,0.09),transparent_34%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:linear-gradient(to_bottom,black,transparent_72%)]" />
 
       <div className="relative mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
         <section className="grid gap-10 lg:grid-cols-12 lg:gap-x-16">
           <div className="flex flex-col gap-6 lg:col-span-5">
-            <ArmLabel index="04" name="Luminosity" />
             <h1 className="max-w-[12ch] text-balance text-4xl font-semibold leading-[1.04] tracking-[-0.025em] sm:text-5xl">
               Memory under a <span className="text-[var(--brand-indigo)]">twelve-hour sky</span>
             </h1>
             <p className="max-w-[48ch] text-[15px] leading-relaxed text-[var(--text-dim)]">
-              Median memory telemetry from five Discord clients handling the same gateway workload. Lower is better.
+              Five Discord clients under the same gateway workload.
             </p>
             <Link
               href="https://github.com/tiramisulabs/benchmark"
@@ -217,14 +215,13 @@ export default function Page() {
           <div className="lg:col-span-7 lg:col-start-6 lg:pt-9">
             <dl className="border-t border-white/10">
               {[
-                ["Window", "12 hours", "A long-running process, not a synthetic burst"],
-                ["Cadence", "24 samples", "One median reading every thirty minutes"],
-                ["Load", "Identical", "The same events and gateway traffic for every client"]
-              ].map(([term, value, detail]) => (
-                <div key={term} className="grid grid-cols-[5.5rem_7rem_1fr] items-baseline gap-3 border-b border-white/10 py-4 sm:grid-cols-[7rem_8rem_1fr]">
+                ["Window", "12 hours"],
+                ["Samples", "24 · every 30 min"],
+                ["Load", "Identical"]
+              ].map(([term, value]) => (
+                <div key={term} className="grid grid-cols-[5.5rem_1fr] items-baseline gap-3 border-b border-white/10 py-4 sm:grid-cols-[7rem_1fr]">
                   <dt className="font-mono text-[9px] tracking-[0.18em] text-[var(--text-dim)]/60 uppercase">{term}</dt>
                   <dd className="text-sm font-medium text-[var(--text-bright)]">{value}</dd>
-                  <dd className="text-xs leading-relaxed text-[var(--text-dim)]">{detail}</dd>
                 </div>
               ))}
             </dl>
@@ -234,8 +231,7 @@ export default function Page() {
         <section className="relative mt-14 overflow-hidden rounded-xl border border-white/10 bg-[var(--space-deep)]/75 shadow-[0_28px_90px_-48px_rgba(37,99,235,0.65)] backdrop-blur-sm sm:mt-20">
           <div className="flex flex-col gap-6 border-b border-white/10 px-4 py-5 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="font-mono text-[9px] tracking-[0.22em] text-[var(--brand-indigo)] uppercase">Memory telemetry</p>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.015em]">Median usage over time</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.015em]">Memory usage</h2>
               <p className="mt-1 text-xs text-[var(--text-dim)]">{METRICS[metric].description}</p>
             </div>
 
@@ -272,7 +268,7 @@ export default function Page() {
               <div className="absolute inset-0 z-20 grid place-items-center bg-[var(--space-deep)]/70 backdrop-blur-sm">
                 <div className="flex items-center gap-3 font-mono text-[10px] tracking-[0.18em] text-[var(--text-dim)] uppercase">
                   <span className="size-2 animate-pulse rounded-full bg-[var(--brand-indigo)]" />
-                  Loading telemetry
+                  Loading…
                 </div>
               </div>
             )}
@@ -280,10 +276,6 @@ export default function Page() {
             <BenchmarkChart data={chartData} config={chartConfig} />
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 px-4 py-3 font-mono text-[9px] tracking-[0.16em] text-[var(--text-dim)]/60 sm:px-6">
-            <span>{RUNTIMES[runtime]} · {METRICS[metric].label} · LINE · GRADIENT · MEDIAN MB</span>
-            <span className="text-[var(--brand-indigo)]">LOWER IS BETTER</span>
-          </div>
         </section>
       </div>
     </main>
