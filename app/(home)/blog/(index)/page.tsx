@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import { blogSource } from "@/lib/source";
@@ -42,7 +43,7 @@ export default function BlogIndexPage() {
                     const size = isHero ? "hero" : isMajor ? "wide" : "sm";
 
                     return (
-                        <a key={page.url} href={page.url} className={`bcard ${size}`}>
+                        <Link key={page.url} href={page.url} className={`bcard ${size}`}>
                             {wm && <span className="wm">{wm}</span>}
                             <span className="scrim" />
                             <div className="bcontent">
@@ -62,7 +63,7 @@ export default function BlogIndexPage() {
                                     </span>
                                 )}
                             </div>
-                        </a>
+                        </Link>
                     );
                 })}
             </div>

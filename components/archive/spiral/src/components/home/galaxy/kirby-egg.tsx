@@ -19,7 +19,7 @@ const FALL_MS = 1700;
 
 function KirbySvg() {
     return (
-        <svg viewBox="0 0 64 64" className="h-14 w-14 drop-shadow-[0_0_10px_rgba(255,166,201,0.45)]">
+        <svg aria-hidden="true" viewBox="0 0 64 64" className="h-14 w-14 drop-shadow-[0_0_10px_rgba(255,166,201,0.45)]">
             {/* arms up — he knows */}
             <ellipse cx="10" cy="22" rx="7" ry="9" fill="#ff9ec7" transform="rotate(-30 10 22)" />
             <ellipse cx="54" cy="22" rx="7" ry="9" fill="#ff9ec7" transform="rotate(30 54 22)" />

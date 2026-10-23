@@ -49,7 +49,9 @@ export function BenchmarkChart({
   const entranceStartedRef = useRef<number | null>(null)
   const [size, setSize] = useState({ width: 0, height: 0 })
   const [hoverIndex, setHoverIndex] = useState<number | null>(null)
-  const [focusKey, setFocusKey] = useState<string | null>(null)
+  const [hoverKey, setHoverKey] = useState<string | null>(null)
+  const [activeKey, setActiveKey] = useState<string | null>(null)
+  const focusKey = hoverKey ?? activeKey
   const [starTick, setStarTick] = useState(0)
   const keys = useMemo(() => Object.keys(config), [config])
 
@@ -91,8 +93,8 @@ export function BenchmarkChart({
     const context = canvas.getContext("2d")
     if (!context) return
 
-    const topPadding = 8
-    const bottomPadding = 14
+    const topPadding = 16 * rows / size.height
+    const bottomPadding = 28 * rows / size.height
     const plotHeight = rows - topPadding - bottomPadding
     const started = entranceStartedRef.current ?? performance.now()
     entranceStartedRef.current ??= started
@@ -180,19 +182,25 @@ export function BenchmarkChart({
     return () => cancelAnimationFrame(frame)
   }, [config, data, focusKey, hoverIndex, keys, max, size, starTick])
 
-  const xTicks = data.filter((_, index) => index % 3 === 0)
+  // Position ticks at their actual sample, including the final one.
+  const tickStep = Math.max(1, Math.ceil((data.length - 1) / (size.width < 500 ? 3 : 6)))
+  const xTicks = data.flatMap((row, index) =>
+    index === 0 || index === data.length - 1 ||
+    (index % tickStep === 0 && index < data.length - 1 - tickStep / 2)
+      ? [{ row, index }] : []
+  )
   const yTicks = Array.from({ length: max / 50 + 1 }, (_, index) => index * 50)
   const hoverTop = hoverIndex == null
     ? 0
     : Math.max(
         112,
-        8 +
+        16 +
           (1 - Math.max(...keys.map((key) => Number(data[hoverIndex]?.[key] ?? 0))) / max) *
-            Math.max(0, size.height - 22)
+            Math.max(0, size.height - 44)
       )
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="flex h-full min-h-0 flex-col pl-12">
       <div
         ref={hostRef}
         className="relative min-h-0 flex-1"
@@ -203,10 +211,10 @@ export function BenchmarkChart({
         }}
         onPointerLeave={() => setHoverIndex(null)}
       >
-        <div className="pointer-events-none absolute inset-x-0 top-2 bottom-7 flex flex-col justify-between">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-4 bottom-7 flex flex-col justify-between">
           {[...yTicks].reverse().map((tick) => (
             <div key={tick} className="relative border-t border-white/[0.07]">
-              <span className="absolute -top-2.5 left-0 font-mono text-[9px] text-[var(--text-dim)]">
+              <span className="absolute top-0 -left-12 -translate-y-1/2 pr-2 font-mono text-[11px] text-[var(--text-dim)]">
                 {tick} MB
               </span>
             </div>
@@ -215,12 +223,17 @@ export function BenchmarkChart({
         <canvas
           ref={canvasRef}
           role="img"
-          aria-label="Chart"
+          aria-label="Memory usage in MB over time. Values are available in the table following the chart."
           className="pointer-events-none absolute inset-0 size-full"
           style={{ imageRendering: "pixelated" }}
         />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-between pl-1 font-mono text-[9px] text-[var(--text-dim)]">
-          {xTicks.map((row) => <span key={row.time}>{formatTime(row.time)}</span>)}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-4 font-mono text-[11px] text-[var(--text-dim)]">
+          {xTicks.map(({ row, index }) => (
+            <span key={row.time} className="absolute whitespace-nowrap" style={{
+              left: `${index / Math.max(1, data.length - 1) * 100}%`,
+              transform: index === 0 ? undefined : index === data.length - 1 ? "translateX(-100%)" : "translateX(-50%)",
+            }}>{formatTime(row.time)}</span>
+          ))}
         </div>
         {hoverIndex != null && data[hoverIndex] && (
           <div
@@ -248,15 +261,24 @@ export function BenchmarkChart({
           <button
             key={key}
             type="button"
-            className="flex items-center gap-2 font-mono text-[10px] text-[var(--text-dim)] transition-opacity"
-            onPointerEnter={() => setFocusKey(key)}
-            onPointerLeave={() => setFocusKey(null)}
+            className="flex min-h-11 items-center gap-2 font-mono text-[11px] text-[var(--text-dim)] transition-opacity focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
+            aria-pressed={activeKey === key}
+            onPointerEnter={() => setHoverKey(key)}
+            onPointerLeave={() => setHoverKey(null)}
+            onFocus={() => setHoverKey(key)}
+            onBlur={() => setHoverKey(null)}
+            onClick={() => setActiveKey((active) => active === key ? null : key)}
           >
             <span className="size-2 rounded-sm" style={{ backgroundColor: rgb(PALETTE[config[key].color]) }} />
             {config[key].label ?? key}
           </button>
         ))}
       </div>
+      <table className="sr-only">
+        <caption>Memory usage in MB by elapsed time</caption>
+        <thead><tr><th scope="col">Time</th>{keys.map((key) => <th key={key} scope="col">{config[key].label ?? key}</th>)}</tr></thead>
+        <tbody>{data.map((row) => <tr key={row.time}><th scope="row">{formatTime(row.time)}</th>{keys.map((key) => <td key={key}>{Number(row[key]).toFixed(2)} MB</td>)}</tr>)}</tbody>
+      </table>
     </div>
   )
 }

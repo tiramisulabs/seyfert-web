@@ -48,7 +48,7 @@ export function PandaRoot({
         <div
             style={pandaTheme(brand)}
             className={cn(
-                "min-h-screen bg-(--bg-950) text-(--bg-50) leading-normal",
+                "panda-archive min-h-screen bg-(--bg-950) text-(--bg-50) leading-normal",
                 className,
             )}
         >
@@ -58,17 +58,17 @@ export function PandaRoot({
 }
 
 // patterns.container: relative, maxW 8xl (90rem), mx auto, px 4/6/8
-export function Container({ className, children }: { className?: string; children: ReactNode }) {
+export function Container({ as: Tag = "div", className, children }: { as?: "div" | "main"; className?: string; children: ReactNode }) {
     return (
-        <div className={cn("relative mx-auto max-w-[90rem] px-4 md:px-6 lg:px-8", className)}>
+        <Tag className={cn("relative mx-auto max-w-[90rem] px-4 md:px-6 lg:px-8", className)}>
             {children}
-        </div>
+        </Tag>
     );
 }
 
 // recipes: heading (base 500/1.25, sizes set their own weight)
 const headingSizes = {
-    "5xl": "text-[3rem] font-extrabold",
+    "5xl": "text-[clamp(2.5rem,12.8vw,3rem)] font-extrabold",
     "3xl": "text-[1.875rem] font-extrabold",
     "2xl": "text-[1.5rem] font-bold",
     xl: "text-[1.25rem] font-bold",
@@ -76,18 +76,20 @@ const headingSizes = {
 } as const;
 
 export function Heading({
+    as: Tag = "h2",
     size = "2xl",
     className,
     children,
 }: {
+    as?: "h1" | "h2" | "h3" | "span";
     size?: keyof typeof headingSizes;
     className?: string;
     children: ReactNode;
 }) {
     return (
-        <h1 className={cn("tracking-normal leading-[1.25]", headingSizes[size], className)}>
+        <Tag className={cn("min-w-0 break-words tracking-normal leading-[1.25]", headingSizes[size], className)}>
             {children}
-        </h1>
+        </Tag>
     );
 }
 

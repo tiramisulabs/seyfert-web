@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { GeistMono } from "geist/font/mono";
 import {
     AnimatePresence,
+    MotionConfig,
     motion,
     useReducedMotion,
     useScroll,
@@ -151,63 +152,65 @@ export function Journey({ echoHtml, loggerHtml }: { echoHtml: string; loggerHtml
     }, []);
 
     return (
-        <main className="spiral-page journey-page relative overflow-x-clip">
-            {/* the black hole, fixed behind everything — and falling with you */}
-            <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
-                <div data-galaxy-fallback className="core-glow absolute left-1/2 top-1/2 size-[42vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60" />
-                <GalaxyCanvas dive={dive} quiet={quiet} centered />
-                <GalaxyLite dive={dive} quiet={quiet} centered />
-            </div>
-            {/* the veil: thick over the rings, clear at the core */}
-            <div
-                aria-hidden
-                className="pointer-events-none fixed inset-0 z-[1] transition-[background-color] duration-700 ease-out"
-                style={{ backgroundColor: stage ? stage.veil : "rgba(5,7,13,0)" }}
-            />
-            <div aria-hidden className="journey-grain pointer-events-none fixed inset-0 z-[2]" />
+        <MotionConfig reducedMotion="user">
+            <div className="spiral-page journey-page relative overflow-x-clip">
+                {/* the black hole, fixed behind everything — and falling with you */}
+                <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
+                    <div data-galaxy-fallback className="core-glow absolute left-1/2 top-1/2 size-[42vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60" />
+                    <GalaxyCanvas dive={dive} quiet={quiet} centered />
+                    <GalaxyLite dive={dive} quiet={quiet} centered />
+                </div>
+                {/* the veil: thick over the rings, clear at the core */}
+                <div
+                    aria-hidden
+                    className="pointer-events-none fixed inset-0 z-[1] transition-[background-color] duration-700 ease-out"
+                    style={{ backgroundColor: stage ? stage.veil : "rgba(5,7,13,0)" }}
+                />
+                <div aria-hidden className="journey-grain pointer-events-none fixed inset-0 z-[2]" />
 
-            <div className="relative z-10">
-                <Hero msg={msg} setMsg={setMsg} />
+                <div className="relative z-10">
+                    <Hero msg={msg} setMsg={setMsg} />
 
-                <div className="mx-auto w-full max-w-6xl px-5 lg:grid lg:grid-cols-[240px_56px_minmax(0,1fr)] lg:gap-8">
-                    <aside className="hidden lg:block">
-                        <div className="sticky top-24 pt-24">
-                            <PacketHud stage={stage} index={active} text={text} />
+                    <div className="mx-auto w-full max-w-6xl px-5 lg:grid lg:grid-cols-[240px_56px_minmax(0,1fr)] lg:gap-8">
+                        <aside className="hidden lg:block">
+                            <div className="sticky top-24 pt-24">
+                                <PacketHud stage={stage} index={active} text={text} />
+                            </div>
+                        </aside>
+
+                        <FallTrack stage={stage} />
+
+                        <div className="min-w-0">
+                            <GatewayStage text={text} />
+                            <ShardsStage />
+                            <CacheStage />
+                            <CommandStage text={text} />
+                            <MiddlewareStage loggerHtml={loggerHtml} />
+                            <CoreStage echoHtml={echoHtml} text={text} />
+                            <JetStage text={text} />
                         </div>
-                    </aside>
-
-                    <FallTrack stage={stage} />
-
-                    <div className="min-w-0">
-                        <GatewayStage text={text} />
-                        <ShardsStage />
-                        <CacheStage />
-                        <CommandStage text={text} />
-                        <MiddlewareStage loggerHtml={loggerHtml} />
-                        <CoreStage echoHtml={echoHtml} text={text} />
-                        <JetStage text={text} />
                     </div>
+
+                    <Finale />
                 </div>
 
-                <Finale />
+                {/* phones: the packet rides along as a bottom readout */}
+                <AnimatePresence>
+                    {stage && (
+                        <motion.div
+                            initial={false}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 12 }}
+                            className={cn(mono, "fixed inset-x-4 bottom-4 z-30 flex items-center gap-3 rounded-full border border-white/10 bg-[#080a12]/90 px-4 py-2.5 text-[11px] tracking-[0.12em] text-[var(--text-dim)] backdrop-blur lg:hidden")}
+                        >
+                            <span className="size-2.5 shrink-0 rounded-full" style={{ background: stage.glow, boxShadow: `0 0 12px ${stage.glow}` }} />
+                            <span className="shrink-0 whitespace-nowrap uppercase text-[var(--text-bright)]">{stage.name}</span>
+                            <span className="min-w-0 truncate">{hudLines(stage.id, text)[0]}</span>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-
-            {/* phones: the packet rides along as a bottom readout */}
-            <AnimatePresence>
-                {stage && (
-                    <motion.div
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 12 }}
-                        className={cn(mono, "fixed inset-x-4 bottom-4 z-30 flex items-center gap-3 rounded-full border border-white/10 bg-[#080a12]/90 px-4 py-2.5 text-[11px] tracking-[0.12em] text-[var(--text-dim)] backdrop-blur lg:hidden")}
-                    >
-                        <span className="size-2.5 shrink-0 rounded-full" style={{ background: stage.glow, boxShadow: `0 0 12px ${stage.glow}` }} />
-                        <span className="shrink-0 whitespace-nowrap uppercase text-[var(--text-bright)]">{stage.name}</span>
-                        <span className="min-w-0 truncate">{hudLines(stage.id, text)[0]}</span>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </main>
+        </MotionConfig>
     );
 }
 
@@ -321,8 +324,8 @@ function hudLines(id: StageId, text: string): string[] {
         case "shards": return ["ShardManager → shard 11", "WorkerManager → worker 1", "socket: open"];
         case "cache": return ["MemoryAdapter ← user, member", "next lookup: no REST call", "84 MB at load"];
         case "command": return ["HandleCommand → EchoCommand", "ctx.options.message: string", `= "${text}"`];
-        case "middleware": return ["logger ✓", "cooldown ✓", "permissions ✓ → run()"];
-        case "core": return ["EchoCommand.run(ctx)", `ctx.write({ content: "${text}" })`, "your code: 1 line"];
+        case "middleware": return ["logger ✓", "next()", "→ run()"];
+        case "core": return ["EchoCommand.run(ctx)", `ctx.write({ content: "${text}" })`, "your response: ctx.write()"];
         case "jet": return ["POST /interactions/…/callback", "delivered to #general", `"${text}"`];
     }
 }
@@ -384,7 +387,7 @@ function PacketHud({ stage, index, text }: { stage: Stage | null; index: number;
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={stage?.id ?? "hero"}
-                        initial={{ opacity: 0, y: 6, filter: "blur(3px)" }}
+                        initial={false}
                         animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
                         exit={{ opacity: 0, y: -6, filter: "blur(3px)" }}
                         transition={{ duration: 0.28 }}
@@ -478,7 +481,7 @@ function Reveal({ children, delay = 0, className }: { children: React.ReactNode;
     return (
         <motion.div
             className={className}
-            initial={{ opacity: 0, y: 24 }}
+            initial={false}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
@@ -531,7 +534,7 @@ function GatewayStage({ text }: { text: string }) {
         >
             <div className="grid gap-5 xl:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
                 <Reveal>
-                    <Panel label="wss://gateway.discord.gg" aside="live">
+                    <Panel label="wss://gateway.discord.gg" aside="example">
                         <ol className={cn(mono, "flex flex-col gap-1 px-4 py-4 text-[12px]")}>
                             {lines.map((l, i) => (
                                 <li key={l.n} className="journey-log flex gap-3 text-[#7f8799]" style={{ opacity: 0.35 + i * 0.1 }}>
@@ -639,7 +642,7 @@ function CacheStage() {
                 <Reveal className="flex flex-col gap-3">
                     <span className="journey-metal text-[clamp(72px,9vw,128px)] font-semibold leading-none tracking-[-0.04em]">84<span className="text-[0.4em] tracking-normal"> MB</span></span>
                     <p className="text-[15px] text-[var(--text-dim)]">median memory under the same gateway load, <span className="text-[var(--text-bright)]">{multiplier}× lighter</span> than discord.js.</p>
-                    <Link href="/benchmark" className={cn(mono, "mt-2 text-[11px] tracking-[0.22em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline")}>FULL MEASUREMENTS ↗</Link>
+                    <Link href="/benchmark" className={cn(mono, "mt-2 inline-flex min-h-11 items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[11px] tracking-[0.22em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline")}>FULL MEASUREMENTS ↗</Link>
                 </Reveal>
                 <Reveal delay={0.08}>
                     <div className="flex flex-col">
@@ -650,7 +653,7 @@ function CacheStage() {
                                     <motion.div
                                         className={cn("bench-fill absolute inset-y-0 left-0 origin-left", i === 0 ? "bg-gradient-to-r from-[#b4683c] via-[#ffd9a0] to-[#fff4e2] shadow-[0_0_18px_rgba(255,217,160,0.5)]" : "bg-white/15")}
                                         style={{ width: `${(b.mb / 220) * 100}%` }}
-                                        initial={{ scaleX: 0 }}
+                                        initial={false}
                                         whileInView={{ scaleX: 1 }}
                                         viewport={{ once: true, margin: "-60px" }}
                                         transition={{ duration: 0.9, delay: 0.1 + i * 0.08, ease: [0.22, 1, 0.36, 1] }}
@@ -859,7 +862,7 @@ function JetStage({ text }: { text: string }) {
                                 </li>
                             ))}
                         </ul>
-                        <a href="https://github.com/tiramisulabs/seyfert-web" target="_blank" className={cn(mono, "text-[11px] tracking-[0.22em] text-[var(--text-dim)] hover:text-[var(--text-bright)]")}>ADD YOURS — OPEN A PR ↗</a>
+                        <a href="https://github.com/tiramisulabs/seyfert-web" target="_blank" className={cn(mono, "inline-flex min-h-11 items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[11px] tracking-[0.22em] text-[var(--text-dim)] hover:text-[var(--text-bright)]")}>ADD YOURS — OPEN A PR ↗</a>
                     </div>
                 </Reveal>
             </div>

@@ -70,11 +70,11 @@ export default function Navbar() {
       )}
       <div className="h-full flex items-center justify-between mx-auto px-0 sm:px-6 relative">
         <div className="flex items-center gap-3 sm:gap-6">
-          <Link href="/" className="shrink-0">
+          <Link href="/" aria-label="Seyfert" className="shrink-0">
             <div className="flex items-center">
-              <Image src={logo} alt="Seyfert" width={32} height={32} />
+              <Image src={logo} alt="" width={32} height={32} />
               {pathname !== "/" && (
-                <h1 className="hidden text-2xl font-bold sm:block">eyfert</h1>
+                <span className="hidden text-2xl font-bold sm:block">eyfert</span>
               )}
             </div>
           </Link>

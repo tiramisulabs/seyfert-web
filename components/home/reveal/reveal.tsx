@@ -66,14 +66,14 @@ function useWide() {
 
 export function RevealPage({ echo, djs, boot }: { echo: CodeLines; djs: CodeLines; boot: CodeLines }) {
     return (
-        <main className="spiral-page reveal-page relative overflow-x-clip">
+        <div className="spiral-page reveal-page relative overflow-x-clip">
             <Opening />
             <OneFile lines={echo} />
             <Ceremony djs={djs} boot={boot} />
             <Memory />
             <Orbit />
             <Finale />
-        </main>
+        </div>
     );
 }
 
@@ -212,14 +212,17 @@ function OpeningStage({ p, still }: { p: MotionValue<number>; still: boolean }) 
 
             {!still && (
                 <motion.div style={{ opacity: intro }} className="pointer-events-none absolute inset-0">
-                    <span className={cn(mono, "reveal-cue absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-[11px] tracking-[0.35em] text-[var(--text-dim)]")}>
+                    <span className={cn(mono, "reveal-cue absolute bottom-24 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-[11px] tracking-[0.35em] text-[var(--text-dim)]")}>
                         SCROLL TO ENTER
                         <span className="reveal-drop block h-10 w-px bg-gradient-to-b from-[#ffd9a0] to-transparent" />
                     </span>
                 </motion.div>
             )}
 
-            <motion.div style={{ opacity: head, y: headY }} className="absolute inset-x-0 bottom-[12%] flex flex-col items-center gap-5 px-6 text-center">
+            <Link href="/docs/learn/getting-started" className="absolute bottom-8 left-1/2 z-20 inline-flex h-11 -translate-x-1/2 items-center gap-3 bg-[var(--core-white)] px-6 text-sm font-semibold text-[var(--space-void)] transition-colors hover:bg-[var(--core-amber)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--core-white)]">
+                Get started <span aria-hidden="true">→</span>
+            </Link>
+            <motion.div style={{ opacity: head, y: headY }} className="absolute inset-x-0 bottom-[18%] flex flex-col items-center gap-5 px-6 text-center">
                 <h1 className="max-w-[16ch] text-balance text-5xl font-semibold leading-[0.98] tracking-[-0.03em] [text-shadow:0_2px_40px_rgba(0,0,0,0.95)] sm:text-7xl">
                     The TypeScript framework for Discord
                 </h1>
@@ -366,7 +369,7 @@ function CeremonyStage({ p, djs, boot }: { p: MotionValue<number>; djs: CodeLine
                     <div className={cn(mono, "border-b border-white/[0.07] px-4 py-2.5 text-[11px] tracking-[0.1em] text-[#ffd9a0]")}>seyfert · the whole boot</div>
                     <div className={cn(mono, "overflow-x-auto px-4 py-4 text-[11px] leading-[1.75] sm:text-[13px]")}>
                         {boot.map((line, i) => (
-                            <div key={i} className="whitespace-pre">{line.length === 0 ? " " : line.map((t, k) => <span key={k} style={{ color: t.k }}>{t.c}</span>)}</div>
+                            <div key={i} className="whitespace-pre-wrap break-words pl-[2ch] -indent-[2ch] sm:whitespace-pre sm:pl-0 sm:indent-0">{line.length === 0 ? " " : line.map((t, k) => <span key={k} style={{ color: t.k }}>{t.c}</span>)}</div>
                         ))}
                     </div>
                 </motion.div>
@@ -432,7 +435,7 @@ function MemoryStage({ p }: { p: MotionValue<number> }) {
                 <p className="text-[clamp(20px,2.4vw,30px)] font-medium tracking-[-0.01em]">
                     {(DISCORD_RSS / SEYFERT_RSS).toFixed(2)}× lighter under the same gateway load.
                 </p>
-                <Link href="/benchmark" className={cn(mono, "text-[11px] tracking-[0.25em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline")}>FULL MEASUREMENTS ↗</Link>
+                <Link href="/benchmark" className={cn(mono, "inline-flex min-h-11 items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[11px] tracking-[0.25em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline")}>FULL MEASUREMENTS ↗</Link>
             </motion.div>
         </div>
     );
@@ -462,24 +465,24 @@ function Orbit() {
     return (
         <section ref={ref} aria-label="Bots running on Seyfert" className="relative flex flex-col gap-10 overflow-hidden py-40">
             <div className="mx-auto w-full max-w-6xl px-5">
-                <span className={cn(mono, "text-[11px] tracking-[0.35em] text-[var(--text-dim)]")}>IN ORBIT · BOTS RUNNING ON SEYFERT</span>
+                <span className={cn(mono, "text-[11px] tracking-[0.16em] text-[var(--text-dim)] sm:tracking-[0.35em]")}>IN ORBIT · BOTS RUNNING ON SEYFERT</span>
             </div>
             <motion.ul style={{ x: left }} className="flex w-max items-center gap-10 whitespace-nowrap">
-                {[...BOTS.slice(0, half), ...BOTS.slice(0, half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 0} />)}
+                {[...BOTS.slice(0, half), ...BOTS.slice(0, half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 0} duplicate={i >= half} />)}
             </motion.ul>
             <motion.ul style={{ x: right }} className="flex w-max items-center gap-10 whitespace-nowrap">
-                {[...BOTS.slice(half), ...BOTS.slice(half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 1} />)}
+                {[...BOTS.slice(half), ...BOTS.slice(half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 1} duplicate={i >= BOTS.length - half} />)}
             </motion.ul>
             <div className="mx-auto w-full max-w-6xl px-5">
-                <a href="https://github.com/tiramisulabs/seyfert-web" target="_blank" className={cn(mono, "text-[11px] tracking-[0.25em] text-[var(--text-dim)] hover:text-[var(--text-bright)]")}>ADD YOURS — OPEN A PR ↗</a>
+                <a href="https://github.com/tiramisulabs/seyfert-web" target="_blank" className={cn(mono, "inline-flex min-h-11 items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[11px] tracking-[0.25em] text-[var(--text-dim)] hover:text-[var(--text-bright)]")}>ADD YOURS — OPEN A PR ↗</a>
             </div>
         </section>
     );
 }
 
-function OrbitItem({ bot, solid }: { bot: (typeof BOTS)[number]; solid: boolean }) {
+function OrbitItem({ bot, solid, duplicate }: { bot: (typeof BOTS)[number]; solid: boolean; duplicate: boolean }) {
     return (
-        <li className="flex items-center gap-6">
+        <li aria-hidden={duplicate || undefined} className="flex items-center gap-6">
             <Image src={bot.avatar} alt="" width={88} height={88} unoptimized={bot.avatar.endsWith(".gif")} className="size-16 rounded-2xl ring-1 ring-white/15 sm:size-[88px]" />
             <span className={cn("text-[clamp(56px,9vw,136px)] font-semibold leading-none tracking-[-0.04em]", solid ? "text-[var(--text-bright)]" : "reveal-outline")}>{bot.name}</span>
             <span className={cn(mono, "max-w-[18ch] whitespace-normal text-[12px] leading-snug tracking-[0.08em] text-[var(--text-dim)]")}>“{bot.quote}”</span>
@@ -564,7 +567,7 @@ function Finale() {
                 </span>
             </div>
             <div className="relative flex flex-wrap items-center justify-center gap-3.5">
-                <Link href="/docs/learn/getting-started" className="group inline-flex h-11 items-center gap-2 bg-[#f8f1e4] px-10 text-sm font-semibold text-[var(--space-void)] shadow-[0_0_34px_8px_rgba(240,206,142,0.25)] transition-all hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-indigo)]">
+                <Link href="/docs/learn/getting-started" className="group inline-flex h-11 items-center gap-2 bg-[#f8f1e4] px-10 text-sm font-semibold text-[var(--space-void)] shadow-[0_0_34px_8px_rgba(240,206,142,0.25)] transition-[background-color,box-shadow] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-indigo)]">
                     Get started
                     <ArrowRight aria-hidden className="size-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
