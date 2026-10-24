@@ -492,35 +492,57 @@ function OrbitItem({ bot, solid, duplicate }: { bot: (typeof BOTS)[number]; soli
 
 /* ── 5 · finale: the release line ───────────────────────────────────── */
 
-// The trajectory: an inclined orbit through the word, in word units. It
-// rises from under the S behind the letters, crosses the plane at the
-// nucleus (the F stem the opening dove through) and comes out in front,
-// leaving past the T. Two cubics, smooth at the node.
-const NODE = `${NUCLEUS.x} ${NUCLEUS.y}`;
-const TRAJ_BACK = `M-40 120C90 140 250 118 ${NODE}`;
-const TRAJ_FRONT = `M${NODE}C352 -6 540 -40 702 -44`;
-// share of the whole length behind the word, so one scrub draws both
-const TRAJ_SPLIT = 0.48;
-// the head: tangent at the end of TRAJ_FRONT
-const HEAD = { x: 702, y: -44, deg: (Math.atan2(-4, 162) * 180) / Math.PI };
+// The orbit: an inclined ring around the word, on the plane its middle
+// strokes share, in word units. Tilted just enough that the far half dips
+// behind the S and the near half rises across the T's stem, parting the
+// metal there; everywhere else it clears the letters. A photon rides it once
+// it's drawn, slipping behind the word and coming back out in front.
+const ORBIT = { cx: WORD_W / 2, cy: NUCLEUS.y, rx: 390, ry: 70, tilt: -5 };
+const ORBIT_L = `${ORBIT.cx - ORBIT.rx} ${ORBIT.cy}`;
+const ORBIT_R = `${ORBIT.cx + ORBIT.rx} ${ORBIT.cy}`;
+const ORBIT_ARC = `A${ORBIT.rx} ${ORBIT.ry} 0 0 1`;
+const ORBIT_FAR = `M${ORBIT_L}${ORBIT_ARC} ${ORBIT_R}`;
+const ORBIT_NEAR = `M${ORBIT_R}${ORBIT_ARC} ${ORBIT_L}`;
+const ORBIT_FULL = `M${ORBIT_L}${ORBIT_ARC} ${ORBIT_R}${ORBIT_ARC} ${ORBIT_L}`;
+const ORBIT_TILT = `rotate(${ORBIT.tilt} ${ORBIT.cx} ${ORBIT.cy})`;
+// the photon: a round head and a fading tail, as dashes on a 100-unit path
+// whose heads line up (offset = length - travelled)
+const PHOTON = [
+    { len: 28, width: 1.25, opacity: 0.1 },
+    { len: 12, width: 1.75, opacity: 0.22 },
+    { len: 4, width: 2.5, opacity: 0.5 },
+    { len: 0.01, width: 5, opacity: 1 },
+];
+
+function Photon() {
+    return (
+        <g fill="none" stroke="#fffaf0" strokeLinecap="round">
+            {PHOTON.map((d) => (
+                <path key={d.len} d={ORBIT_FULL} pathLength={100} strokeWidth={d.width} strokeOpacity={d.opacity} strokeDasharray={`${d.len} ${100 - d.len}`}>
+                    <animate attributeName="stroke-dashoffset" from={d.len} to={d.len - 100} dur="11s" repeatCount="indefinite" />
+                </path>
+            ))}
+        </g>
+    );
+}
 
 function Finale() {
     const ref = useRef<HTMLElement>(null);
     const reduce = useReduce();
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end end"] });
     const p = useGlide(scrollYProgress);
-    // scrubbed like every chapter: drawn while the word rises into view
+    // scrubbed like every chapter: the ring closes while the word rises into
+    // view, far half first, then the near half sweeping back under it
     const draw = useTransform(p, (v) => (reduce ? 1 : clamp01((v - 0.2) / 0.55)));
-    const back = useTransform(draw, (v) => clamp01(v / TRAJ_SPLIT));
-    const front = useTransform(draw, (v) => clamp01((v - TRAJ_SPLIT) / (1 - TRAJ_SPLIT)));
-    const node = useTransform(draw, [TRAJ_SPLIT - 0.04, TRAJ_SPLIT + 0.04], [0, 1]);
-    const head = useTransform(draw, [0.9, 1], [0, 1]);
+    const far = useTransform(draw, (v) => clamp01(v / 0.5));
+    const near = useTransform(draw, (v) => clamp01((v - 0.5) / 0.5));
+    const photon = useTransform(draw, [0.94, 1], [0, 1]);
     return (
         <section ref={ref} aria-label="Get started" className="relative flex min-h-svh flex-col items-center justify-center gap-10 px-5 pb-28 text-center">
             <div aria-hidden className="core-glow absolute left-1/2 top-[38%] size-[60vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25 blur-2xl" />
             {/* bookends the opening: the same drawn wordmark, now solid ground,
-                with a trajectory threaded through it */}
-            <svg role="img" aria-label="Seyfert" viewBox={`0 0 ${WORD_W} ${CAP}`} className="relative h-auto w-[min(84vw,880px)] overflow-visible">
+                with its orbit around it */}
+            <svg role="img" aria-label="Seyfert" viewBox={`0 0 ${WORD_W} ${CAP}`} className="relative my-12 h-auto w-[min(80vw,860px)] overflow-visible">
                 <defs>
                     <linearGradient id="reveal-finale-metal" x1="0" y1="0" x2={WORD_W} y2={CAP} gradientUnits="userSpaceOnUse">
                         <stop offset="0" stopColor="#f2d7a6" />
@@ -528,35 +550,47 @@ function Finale() {
                         <stop offset="0.5" stopColor="#ffffff" />
                         <stop offset="1" stopColor="#c9d0da" />
                     </linearGradient>
-                    <linearGradient id="reveal-finale-orbit" x1="-40" y1="0" x2="702" y2="0" gradientUnits="userSpaceOnUse">
-                        <stop offset="0" stopColor="#b4683c" stopOpacity="0" />
-                        <stop offset="0.3" stopColor="#f0cf8c" stopOpacity="0.7" />
-                        <stop offset="0.75" stopColor="#ffe7c2" />
-                        <stop offset="1" stopColor="#fffaf0" />
+                    {/* perspective: the far side dims toward its middle, the
+                        near side is brightest where it's closest */}
+                    <linearGradient id="reveal-finale-far" x1={ORBIT.cx - ORBIT.rx} x2={ORBIT.cx + ORBIT.rx} y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stopColor="#f0cf8c" stopOpacity="0.7" />
+                        <stop offset="0.5" stopColor="#b4683c" stopOpacity="0.25" />
+                        <stop offset="1" stopColor="#f0cf8c" stopOpacity="0.7" />
                     </linearGradient>
-                    <filter id="reveal-finale-blur" x="-10%" y="-60%" width="120%" height="220%">
-                        <feGaussianBlur stdDeviation="4" />
+                    <linearGradient id="reveal-finale-near" x1={ORBIT.cx - ORBIT.rx} x2={ORBIT.cx + ORBIT.rx} y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stopColor="#f0cf8c" stopOpacity="0.7" />
+                        <stop offset="0.5" stopColor="#fff3d8" />
+                        <stop offset="1" stopColor="#f0cf8c" stopOpacity="0.7" />
+                    </linearGradient>
+                    <filter id="reveal-finale-blur" x="-20%" y="-100%" width="140%" height="300%">
+                        <feGaussianBlur stdDeviation="3" />
                     </filter>
                     <clipPath id="reveal-finale-cap"><rect width={WORD_W} height={CAP} /></clipPath>
-                    {/* where the trajectory passes in front, the metal parts
+                    {/* the near half only, in the ring's tilted frame */}
+                    <clipPath id="reveal-finale-near-half">
+                        <rect x={ORBIT.cx - ORBIT.rx - 20} y={ORBIT.cy} width={ORBIT.rx * 2 + 40} height={ORBIT.ry + 20} />
+                    </clipPath>
+                    {/* where the near half passes in front, the metal parts
                         around it so the crossing reads as over, not on */}
-                    <mask id="reveal-finale-cut" maskUnits="userSpaceOnUse" x="-60" y="-80" width={WORD_W + 120} height="260">
-                        <rect x="-60" y="-80" width={WORD_W + 120} height="260" fill="#fff" />
-                        <motion.path d={TRAJ_FRONT} fill="none" stroke="#000" strokeWidth={7} style={{ pathLength: front }} />
+                    <mask id="reveal-finale-cut" maskUnits="userSpaceOnUse" x="-80" y="-80" width={WORD_W + 160} height="260">
+                        <rect x="-80" y="-80" width={WORD_W + 160} height="260" fill="#fff" />
+                        <motion.path d={ORBIT_NEAR} transform={ORBIT_TILT} fill="none" stroke="#000" strokeWidth={8} style={{ pathLength: near }} />
                     </mask>
                 </defs>
-                <g aria-hidden fill="none" stroke="url(#reveal-finale-orbit)">
-                    <motion.path d={TRAJ_BACK} strokeWidth={9} opacity={0.35} filter="url(#reveal-finale-blur)" style={{ pathLength: back }} />
-                    <motion.path d={TRAJ_BACK} strokeWidth={2} style={{ pathLength: back }} />
+                <g aria-hidden fill="none" transform={ORBIT_TILT}>
+                    <motion.path d={ORBIT_FAR} stroke="url(#reveal-finale-far)" strokeWidth={1.25} style={{ pathLength: far }} />
+                    {!reduce && <motion.g style={{ opacity: photon }}><Photon /></motion.g>}
                 </g>
                 <path d={WORD_PATH} clipPath="url(#reveal-finale-cap)" mask="url(#reveal-finale-cut)" fill="none" stroke="url(#reveal-finale-metal)" strokeWidth={STROKE} strokeLinejoin="miter" strokeMiterlimit={8} />
-                <g aria-hidden fill="none" stroke="url(#reveal-finale-orbit)">
-                    <motion.path d={TRAJ_FRONT} strokeWidth={9} opacity={0.35} filter="url(#reveal-finale-blur)" style={{ pathLength: front }} />
-                    <motion.path d={TRAJ_FRONT} strokeWidth={2} style={{ pathLength: front }} />
-                    <motion.circle cx={NUCLEUS.x} cy={NUCLEUS.y} r={3.2} fill="#fffaf0" stroke="none" style={{ opacity: node }} />
-                    <g transform={`translate(${HEAD.x} ${HEAD.y}) rotate(${HEAD.deg.toFixed(2)})`}>
-                        <motion.path d="M-13 -6.5L0 0L-13 6.5" stroke="#fffaf0" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ opacity: head }} />
-                    </g>
+                <g aria-hidden fill="none" transform={ORBIT_TILT}>
+                    <motion.path d={ORBIT_NEAR} stroke="url(#reveal-finale-near)" strokeWidth={6} opacity={0.3} filter="url(#reveal-finale-blur)" style={{ pathLength: near }} />
+                    <motion.path d={ORBIT_NEAR} stroke="url(#reveal-finale-near)" strokeWidth={1.75} style={{ pathLength: near }} />
+                    {!reduce && (
+                        <motion.g clipPath="url(#reveal-finale-near-half)" style={{ opacity: photon }}>
+                            <g filter="url(#reveal-finale-blur)"><Photon /></g>
+                            <Photon />
+                        </motion.g>
+                    )}
                 </g>
             </svg>
             <div className="relative flex flex-col items-center gap-3">
