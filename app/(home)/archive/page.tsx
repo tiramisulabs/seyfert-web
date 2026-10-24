@@ -26,47 +26,44 @@ function Plate({ d, index }: { d: DesignEntry; index: number }) {
         <li className="group relative flex min-w-0 flex-col">
             <Link
                 href={d.href}
-                className="relative block overflow-hidden rounded-[6px] border border-white/10 bg-[#0c0c0e] outline-none transition-colors group-hover:border-white/25 focus-visible:ring-2 focus-visible:ring-white/70"
+                className="block rounded-[6px] outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-4 focus-visible:ring-offset-background"
             >
-                <Image
-                    src={d.preview}
-                    alt={`${d.name}, the ${d.era} landing`}
-                    width={1152}
-                    height={720}
-                    sizes="(min-width: 1280px) 400px, (min-width: 768px) 46vw, 92vw"
-                    className="aspect-[16/10] h-auto w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.015] motion-reduce:transition-none"
-                    priority={index < 3}
-                />
-                <span className="sr-only">Open {d.name}</span>
+                <div className="overflow-hidden rounded-[6px] border border-white/10 bg-background transition-colors group-hover:border-white/25">
+                    <Image
+                        src={d.preview}
+                        alt={`${d.name}, the ${d.era} landing`}
+                        width={1152}
+                        height={720}
+                        sizes="(min-width: 1280px) 400px, (min-width: 768px) 46vw, 92vw"
+                        className="aspect-[16/10] h-auto w-full object-cover object-top transition-transform duration-500 ease-out group-hover:scale-[1.015] motion-reduce:transition-none"
+                        priority={index < 3}
+                    />
+                </div>
+
+                <div className="mt-4 flex min-w-0 items-baseline justify-between gap-3">
+                    <h2 className="min-w-0 truncate text-[19px] font-semibold tracking-[-0.01em] text-white">
+                        {d.name}
+                    </h2>
+                    <span
+                        className={`${mono} shrink-0 text-[11px] uppercase tracking-[0.14em] ${
+                            d.status === "proposal" ? "text-[#f2d7a6]" : d.status === "live" ? "text-[#a5b4fc]" : "text-white/60"
+                        }`}
+                    >
+                        {statusLabel[d.status]}
+                    </span>
+                </div>
+                <p className={`${mono} mt-1 text-[11.5px] tracking-[0.04em] text-white/60`}>{d.era}</p>
+                <p className="mt-3 text-[14.5px] leading-[1.55] text-white/70">{d.idea}</p>
             </Link>
 
-            <div className="mt-4 flex min-w-0 items-baseline justify-between gap-3">
-                <h2 className="min-w-0 truncate text-[19px] font-semibold tracking-[-0.01em] text-white">
-                    <Link href={d.href} className="hover:underline hover:underline-offset-4">
-                        {d.name}
-                    </Link>
-                </h2>
-                <span
-                    className={`${mono} shrink-0 text-[11px] uppercase tracking-[0.14em] ${
-                        d.status === "proposal" ? "text-[#f2d7a6]" : d.status === "live" ? "text-[#a5b4fc]" : "text-white/45"
-                    }`}
-                >
-                    {statusLabel[d.status]}
-                </span>
-            </div>
-            <p className={`${mono} mt-1 text-[11.5px] tracking-[0.04em] text-white/45`}>{d.era}</p>
-            <p className="mt-3 text-[14.5px] leading-[1.55] text-white/70">{d.idea}</p>
-
-            <div className={`${mono} mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11.5px] text-white/45`}>
-                <Link href={d.href} className="text-white/85 hover:text-white">
-                    {d.href}
-                </Link>
+            <div className={`${mono} mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11.5px] text-white/60`}>
+                <span className="text-white/85">{d.href}</span>
                 <a
                     href={commitUrl(d.source.commit)}
                     target="_blank"
                     rel="noreferrer"
                     title={d.source.note}
-                    className="inline-flex items-center gap-0.5 hover:text-white/80"
+                    className="inline-flex min-h-11 items-center gap-0.5 hover:text-white/80 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current"
                 >
                     from {d.source.commit}
                     <ArrowUpRight className="size-3" aria-hidden />
@@ -80,9 +77,9 @@ export default function Archive() {
     const shipped = designs.filter((d) => d.status !== "proposal");
     return (
         <>
-            <main className="mx-auto w-full max-w-[1320px] px-5 pt-16 pb-28 sm:px-8 sm:pt-24">
+            <div className="mx-auto w-full max-w-[1320px] px-5 pt-16 pb-28 sm:px-8 sm:pt-24">
                 <header className="max-w-[46rem]">
-                    <p className={`${mono} text-[11px] uppercase tracking-[0.22em] text-white/45`}>
+                    <p className={`${mono} text-[11px] uppercase tracking-[0.22em] text-white/60`}>
                         seyfert.dev · design archive
                     </p>
                     <h1 className="mt-5 text-balance text-[clamp(2.25rem,5vw,3.6rem)] font-semibold leading-[1.02] tracking-[-0.03em] text-white">
@@ -105,7 +102,7 @@ export default function Archive() {
                         <h2 id="shipped" className={`${mono} text-[11px] uppercase tracking-[0.22em] text-white/55`}>
                             Shipped, in order
                         </h2>
-                        <span className={`${mono} text-[11px] text-white/35`}>2024 → 2026</span>
+                        <span className={`${mono} text-[11px] text-white/60`}>2024 → 2026</span>
                     </div>
                     <ol className="mt-8 grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 xl:grid-cols-3">
                         {shipped.map((d, i) => (
@@ -114,7 +111,7 @@ export default function Archive() {
                     </ol>
                 </section>
 
-            </main>
+            </div>
         </>
     );
 }

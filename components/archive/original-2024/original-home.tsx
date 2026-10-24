@@ -24,8 +24,8 @@ function Header() {
             <Container className="w-full">
                 <div className="flex items-center justify-between">
                     {/* archive: a plain heading in 2024; it links to the design index here */}
-                    <Link href="/">
-                        <Heading>Seyfert</Heading>
+                    <Link href="/" aria-label="Seyfert">
+                        <Heading as="span">Seyfert</Heading>
                     </Link>
                     <Link
                         href="https://github.com/tiramisulabs/seyfert"
@@ -87,14 +87,14 @@ export function OriginalHome() {
         <PandaRoot brand={brandOriginal}>
             <Particles className="absolute inset-0" quantity={100} ease={80} refresh />
             <Header />
-            <Container className="py-11">
+            <Container as="main" className="py-11">
                 <div className="flex flex-col justify-between gap-5 lg:flex-row">
                     <div className="flex max-w-3xl flex-col gap-4">
                         <span className="inline-flex w-fit items-center justify-center rounded-[0.5rem] bg-(--brand-950) px-3 py-0.5 text-[0.875rem] font-medium text-(--brand-500)">
                             Seyfert 2.0 is coming soon!
                             <IconRocket size={16} className="ml-1" />
                         </span>
-                        <Heading size="5xl">
+                        <Heading as="h1" size="5xl">
                             The Discord library that{" "}
                             <span className="rounded-[0.75rem] bg-(--brand-500)/20 px-6 py-1 font-mono text-(--brand-500) italic">
                                 satisfies

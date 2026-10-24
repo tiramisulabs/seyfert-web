@@ -45,7 +45,20 @@ const config = {
       "fixtures",
       "defaults",
     ];
+    const sectionStarts = {
+      commands: "intro",
+      components: "building-components",
+      i18n: "languages",
+      tips: "structures",
+    };
     return [
+      ...Object.entries(sectionStarts).flatMap(([section, first]) =>
+        [`/docs/${section}`, `/docs/learn/${section}`].map((source) => ({
+          source,
+          destination: `/docs/learn/${section}/${first}`,
+          permanent: true,
+        }))
+      ),
       {
         source: "/guide",
         destination: "/docs/learn/getting-started",

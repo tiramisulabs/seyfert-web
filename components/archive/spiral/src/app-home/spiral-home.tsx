@@ -19,7 +19,7 @@ import { InstallPill } from "@/components/archive/spiral/src/components/home/gal
 export async function SpiralHome() {
     const stats = await getRepoStats(config.repository);
     return (
-        <main className="spiral-page flex flex-col">
+        <div className="spiral-page flex flex-col">
             <div className="relative flex min-h-screen flex-col justify-center overflow-hidden">
                 <GalaxyFallback />
                 <GalaxyCanvas />
@@ -105,6 +105,6 @@ export async function SpiralHome() {
 
             {/* the dive, instrumented: scroll progress as distance in rs */}
             <CoreDistance />
-        </main>
+        </div>
     );
 }

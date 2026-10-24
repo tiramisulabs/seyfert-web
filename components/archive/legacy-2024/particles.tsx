@@ -80,11 +80,18 @@ const Particles: React.FC<ParticlesProps> = ({
 			context.current = canvasRef.current.getContext("2d");
 		}
 		initCanvas();
-		animate();
+		const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+        const syncMotion = () => {
+            cancelAnimationFrame(frame.current);
+            if (!media.matches) animate();
+        };
+        syncMotion();
+        media.addEventListener("change", syncMotion);
 		window.addEventListener("resize", initCanvas);
 
 		return () => {
 			window.removeEventListener("resize", initCanvas);
+            media.removeEventListener("change", syncMotion);
 			// archive fix: the original loop never stopped, so it kept running
 			// after a client-side navigation back to the design index
 			cancelAnimationFrame(frame.current);

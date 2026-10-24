@@ -47,23 +47,27 @@ type ApiCodeToken = {
 };
 type ShikiStyle = CSSProperties & Record<`--${string}`, string | undefined>;
 
-const featuredNames = [
-  'Client',
-  'Command',
-  'Declare',
-  'CommandContext',
-  'ComponentContext',
-  'ActionRow',
-  'Button',
-  'Embed',
-  'createEvent',
-  'config',
+// Explicit kind slugs keep featured links stable when an export has both
+// runtime and type declarations. Client's alias documents its instance API.
+const featuredSlugs = [
+  'Client:TypeAlias', 'Command:Class', 'Declare:Function',
+  'CommandContext:Class', 'ComponentContext:Class', 'ActionRow:Class',
+  'Button:Class', 'Embed:Class', 'createEvent:Function', 'config:Variable',
 ];
+const featuredDescriptions: Record<string, string> = {
+  'Client:TypeAlias': 'Gateway client instance, including registered plugin extensions.',
+  'Command:Class': 'Base class for chat input commands.',
+  'Declare:Function': 'Decorator that sets a command’s name, description and registration options.',
+  'CommandContext:Class': 'Context for a chat input command, including its options and response methods.',
+  'ComponentContext:Class': 'Context for button and select menu interactions.',
+  'config:Variable': 'Helpers to define gateway bot and HTTP server configurations.',
+};
 
 const entriesBySlug = new Map<string, ApiEntry>();
 const entriesByName = new Map<string, ApiEntry>();
 
-for (const entry of apiEntries) {
+for (const original of apiEntries) {
+  const entry = { ...original, summary: original.summary || featuredDescriptions[original.slug] || "" };
   entriesBySlug.set(entry.slug, entry);
   entriesBySlug.set(encodeURIComponent(entry.slug), entry);
   if (!entriesByName.has(entry.name)) {
@@ -75,14 +79,15 @@ const fallbackTypeNames = [...entriesByName.keys()]
   .filter((name) => name.length >= 4)
   .sort((a, b) => b.length - a.length);
 
-const featuredEntries = featuredNames.flatMap((name) => {
-  const entry = entriesByName.get(name);
+const featuredEntries = featuredSlugs.flatMap((slug) => {
+  const entry = entriesBySlug.get(slug);
   return entry ? [entry] : [];
 });
 
 async function detailFor(entry: ApiEntry) {
   const { detailForSlug } = await import('@/lib/api-reference/details');
-  return detailForSlug(entry.slug, entry.kind);
+  const detail = await detailForSlug(entry.slug, entry.kind);
+  return detail ? { ...detail, summary: detail.summary || entry.summary } : undefined;
 }
 
 function getApiTarget(apiSlug: string[]): ApiTarget | undefined {
@@ -185,7 +190,8 @@ function EntryRow({ entry }: { entry: ApiEntry }) {
 
 function ApiKindCard({ kind }: { kind: ApiKind }) {
   const entries = entriesByKind(kind);
-  const preview = entries.slice(0, 5);
+  const preferred = featuredEntries.filter((entry) => entry.kind === kind);
+  const preview = [...preferred, ...entries.filter((entry) => !entry.name.startsWith("_") && !preferred.some((item) => item.slug === entry.slug))].slice(0, 5);
 
   return (
     <Link

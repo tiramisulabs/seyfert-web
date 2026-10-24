@@ -37,10 +37,10 @@ function Header() {
             <Container className="w-full">
                 <div className="flex items-center justify-between">
                     {/* the logo linked home; home is the design index now */}
-                    <Link href="/">
+                    <Link href="/" aria-label="Seyfert">
                         <div className="flex items-center">
-                            <Image src={logo} alt="Seyfert Logo" className="mt-[-1px] mr-[-2px] h-[30px] w-[30px]" />
-                            <Heading>eyfert</Heading>
+                            <Image src={logo} alt="" className="mt-[-1px] mr-[-2px] h-[30px] w-[30px]" />
+                            <Heading as="span">eyfert</Heading>
                         </div>
                     </Link>
                     <Link
@@ -143,7 +143,7 @@ function HomeFeatures() {
                     <div key={title} className={card}>
                         <div className="flex h-full flex-col items-start gap-[10px]">
                             <Icon className="h-9 w-9" />
-                            <Heading size="lg" className={i === 0 ? "md:text-[1.25rem]" : undefined}>
+                            <Heading as="h3" size="lg" className={i === 0 ? "md:text-[1.25rem]" : undefined}>
                                 {title}
                             </Heading>
                             <Text>{body}</Text>
@@ -194,8 +194,8 @@ function HomeBots() {
                                         className="rounded-full"
                                     />
                                     <div className="flex flex-col items-start">
-                                        <Heading size="2xl">{bot.displayName}</Heading>
-                                        <Text className="text-[0.875rem] text-[#6b7280]">@{bot.username}</Text>
+                                        <Heading as="h3" size="2xl">{bot.displayName}</Heading>
+                                        <Text className="text-[0.875rem] text-(--bg-300)">@{bot.username}</Text>
                                     </div>
                                 </div>
                                 <Text className="text-[1.5rem] font-bold">
@@ -245,8 +245,8 @@ function HomeHaters() {
                                     className="rounded-full"
                                 />
                                 <div className="flex flex-col items-start">
-                                    <Heading size="2xl">{hater.displayName}</Heading>
-                                    <Text className="text-[0.875rem] text-[#6b7280]">@{hater.username}</Text>
+                                    <Heading as="h3" size="2xl">{hater.displayName}</Heading>
+                                    <Text className="text-[0.875rem] text-(--bg-300)">@{hater.username}</Text>
                                 </div>
                             </div>
                             <Text>{hater.content}</Text>
@@ -272,7 +272,7 @@ export function V2Home() {
         <PandaRoot brand={brandV2}>
             <Particles className="absolute inset-0" quantity={300} ease={80} refresh />
             <Header />
-            <Container className="py-11">
+            <Container as="main" className="py-11">
                 <div className="flex flex-col gap-8 md:gap-12">
                     <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center lg:gap-0">
                         <div className="flex max-w-full flex-col gap-4 lg:max-w-3xl">
@@ -284,7 +284,7 @@ export function V2Home() {
                                     </span>
                                 </Link>
                             </span>
-                            <Heading size="5xl">
+                            <Heading as="h1" size="5xl">
                                 The Discord framework that{" "}
                                 <span className="my-2 inline-block rounded-[0.75rem] bg-(--brand-500)/20 px-2 py-1 font-mono text-(--brand-500) italic sm:px-4 md:my-0 md:px-6">
                                     satisfies

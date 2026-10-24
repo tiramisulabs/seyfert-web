@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { Renderer, Camera, Program, Mesh, Triangle, RenderTarget } from "ogl";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -678,13 +679,12 @@ export default function GalaxyCanvas({ dive, quiet, centered = false }: GalaxyDr
     quietRef.current = quiet;
   });
 
+  const enabled = useMediaQuery("(min-width: 768px) and (prefers-reduced-motion: no-preference)");
+
   useEffect(() => {
     const container = containerRef.current;
+    if (!enabled) return;
     if (!container) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    // phones: the half-res raymarch reads as pixel noise at small sizes and
-    // eats battery — the static astrophoto fallback is the better hero there
-    if (window.matchMedia("(max-width: 767px)").matches) return;
 
     const probe = document.createElement("canvas");
     const probeGl = probe.getContext("webgl2");
@@ -1085,13 +1085,15 @@ export default function GalaxyCanvas({ dive, quiet, centered = false }: GalaxyDr
       gl.canvas.removeEventListener("webglcontextlost", onContextLost);
       cancelAnimationFrame(raf);
       if (container.contains(gl.canvas)) container.removeChild(gl.canvas);
+      container.style.opacity = "0";
+      if (fallback) fallback.style.opacity = "1";
       // deterministic GL teardown (the contextlost listener is already
       // removed above, so this won't resurrect the CSS fallback): without it,
       // strict-mode double-mount + HMR accumulate live contexts until the
       // browser starts reaping the oldest ones
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, [centered]);
+  }, [enabled, centered]);
 
   // starts transparent; the render loop fades it in on the first real frame
   return (

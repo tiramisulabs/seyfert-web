@@ -27,7 +27,7 @@ export default async function Page(props: {
     return (
         <div className="seyfert-docs">
             <div className="mx-auto flex max-w-6xl gap-10 px-4 py-14 sm:px-6">
-                <article className="min-w-0 flex-1 [overflow-wrap:anywhere]">
+                <article className="blog-article min-w-0 flex-1 [overflow-wrap:anywhere]">
                     <Link
                         href="/blog"
                         className="flex w-fit items-center gap-1 text-sm text-fd-muted-foreground transition-colors hover:text-fd-foreground"
@@ -36,10 +36,7 @@ export default async function Page(props: {
                         Back to blog
                     </Link>
 
-                    <div className="mt-7 font-mono text-xs text-neutral-500">
-                        // release notes
-                    </div>
-                    <div className="mb-4 mt-2 flex flex-wrap items-center gap-3">
+                    <div className="mb-4 mt-7 flex flex-wrap items-center gap-3">
                         {version && (
                             <span className="inline-flex items-center rounded-md border border-fd-border bg-fd-secondary/60 px-2 py-0.5 font-mono text-xs font-medium text-fd-foreground">
                                 {version}

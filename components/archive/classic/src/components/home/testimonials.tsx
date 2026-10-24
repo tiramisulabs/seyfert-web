@@ -78,7 +78,7 @@ export function Testimonials() {
                         <GridBG size={20} />
                         <div className="w-full flex mb-4 items-center">
                             <Avatar className="w-10 h-10">
-                                <AvatarImage src={testimonial.avatar} />
+                                <AvatarImage src={testimonial.avatar} alt="" />
                                 <AvatarFallback>
                                     {testimonial.name.charAt(0)}
                                 </AvatarFallback>

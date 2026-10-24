@@ -13,7 +13,7 @@ interface Contributor {
 }
 
 interface Stats {
-    stars: number;
+    stars: number | null;
     contributors: Contributor[];
 }
 
@@ -51,7 +51,7 @@ async function getGithubStats(repository: string, githubToken?: string): Promise
         ]);
 
         if (!repoResponse.ok || !contributorsResponse.ok) {
-            return { stars: 0, contributors: [] };
+            return { stars: null, contributors: [] };
         }
 
         const repoData = await repoResponse.json();
@@ -63,7 +63,7 @@ async function getGithubStats(repository: string, githubToken?: string): Promise
         };
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
-        return { stars: 0, contributors: [] };
+        return { stars: null, contributors: [] };
     }
 }
 
@@ -98,12 +98,14 @@ function StatBox({
     sub,
     href,
     big = false,
+    available = true,
 }: {
     value: string | number;
     label: string;
     sub?: string;
     href?: string;
     big?: boolean;
+    available?: boolean;
 }) {
     const Wrapper = href ? motion.a : motion.div;
     return (
@@ -124,9 +126,9 @@ function StatBox({
                 <span className="text-[10px] uppercase tracking-[0.25em] font-mono font-bold text-zinc-600">
                     {label.split(" ").length > 1 ? "// " + label.split(" ")[0] : "// METRIC"}
                 </span>
-                <span className="text-[10px] uppercase tracking-[0.2em] font-mono font-bold text-emerald-400">
+                {available && <span className="text-[10px] uppercase tracking-[0.2em] font-mono font-bold text-emerald-400">
                     ↗ Live
-                </span>
+                </span>}
             </div>
 
             <div className={cn(
@@ -187,7 +189,8 @@ function OpenSourceContent({
             {/* Stats grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
                 <StatBox
-                    value={stars}
+                    value={stars ?? "—"}
+                    available={stars != null}
                     label="Stars of Approval"
                     sub="Certified W ↑"
                     href={`https://github.com/${repository}`}
@@ -195,7 +198,8 @@ function OpenSourceContent({
                 />
                 <div className="flex flex-col gap-6">
                     <StatBox
-                        value={`${contributors.length}+`}
+                        value={stars == null ? "—" : `${contributors.length}+`}
+                        available={stars != null}
                         label="Chad Devs"
                         sub="Join the squad"
                         href={`https://github.com/${repository}/graphs/contributors`}
@@ -259,7 +263,7 @@ function OpenSourceData({
     githubToken,
     ...props
 }: OpenSourceProps) {
-    const [stats, setStats] = useState<Stats>({ stars: 0, contributors: [] });
+    const [stats, setStats] = useState<Stats>({ stars: null, contributors: [] });
 
     useEffect(() => {
         const fetchStats = async () => {

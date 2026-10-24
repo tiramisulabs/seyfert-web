@@ -385,6 +385,7 @@ function memberFromDeclaration(member, fallbackSymbol, ownerNode) {
 }
 
 function hasEffectiveMembers(node) {
+  if (ts.isTypeAliasDeclaration(node) && ts.isIntersectionTypeNode(node.type)) return true;
   if (!ts.isClassDeclaration(node) && !ts.isInterfaceDeclaration(node)) return false;
 
   const symbol = declarationSymbol(node);
@@ -404,9 +405,11 @@ function memberSignatureName(name) {
 function apparentMemberFromSymbol(symbol, node) {
   if (symbol.name.startsWith('__@')) return [];
 
-  const declarations = symbol.getDeclarations()?.filter((declaration) => {
-    return memberKind(declaration) !== undefined;
-  });
+  const allDeclarations = symbol.getDeclarations() ?? [];
+  if (allDeclarations.some((declaration) =>
+    ts.getCombinedModifierFlags(declaration) & (ts.ModifierFlags.Private | ts.ModifierFlags.Protected)
+  )) return [];
+  const declarations = allDeclarations.filter((declaration) => memberKind(declaration) !== undefined);
 
   if (declarations?.length) {
     return declarations
@@ -504,9 +507,7 @@ function membersFor(node) {
         ? node.type.members
         : undefined;
 
-  if (!members) return [];
-
-  const declaredMembers = members
+  const declaredMembers = (members ?? [])
     .map((member) => memberFromDeclaration(member))
     .filter(Boolean);
 
