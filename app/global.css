@@ -1107,6 +1107,40 @@ html {
   -webkit-text-stroke: 1.5px rgba(255, 217, 160, 0.55);
 }
 
+/* The compact cut for returning visitors. data-reveal="compact" is set before
+   paint, but the server HTML is the full Reveal, so until React renders the
+   cut the chapters are unpinned and the opening shows its last frame: no
+   plate, the headline in place, the scene dimmed. Matches Pin and
+   OpeningStage with still = true. */
+html[data-reveal="compact"] .reveal-page .reveal-pin {
+  height: auto !important;
+}
+html[data-reveal="compact"] .reveal-page .reveal-stage {
+  position: relative;
+  height: auto;
+  min-height: 100svh;
+  padding-block: 6rem;
+}
+html[data-reveal="compact"] .reveal-page .reveal-dive {
+  display: none;
+}
+html[data-reveal="compact"] .reveal-page .reveal-head {
+  opacity: 1 !important;
+  transform: none !important;
+}
+html[data-reveal="compact"] .reveal-page .reveal-scene {
+  opacity: 0.35 !important;
+}
+html[data-reveal="compact"] .reveal-page .reveal-replay {
+  display: inline-flex;
+}
+/* replaying is pointless when reduced motion keeps every chapter still */
+@media (prefers-reduced-motion: reduce) {
+  html[data-reveal="compact"] .reveal-page .reveal-replay {
+    display: none;
+  }
+}
+
 /* Opening. The plate is the void with the drawn wordmark cut out of it
    (a CSS mask, so it is sized by CSS and correct in the server HTML). */
 .reveal-page .reveal-plate {
