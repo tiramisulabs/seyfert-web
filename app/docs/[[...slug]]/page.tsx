@@ -40,7 +40,7 @@ export default async function Page(props: {
       <DocsDescription className="mt-3 text-[1.0625rem] leading-relaxed text-fd-foreground/70">
         {page.data.description}
       </DocsDescription>
-      <DocsBody>
+      <DocsBody className="docs-guide-body">
         <MDX components={{
           ...defaultMdxComponents,
           AutoTypeTable,

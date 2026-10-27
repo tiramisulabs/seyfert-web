@@ -8,7 +8,7 @@ import Link from 'next/link';
 import HomeSections from './sections';
 export default function Home() {
   return (
-    <main className="flex flex-col">
+    <div className="flex flex-col">
       <div className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden gap-10">
         <div className="absolute inset-0 -z-10 w-full h-full">
           <StarryBackground />
@@ -37,7 +37,7 @@ export default function Home() {
             <span className="w-full md:max-w-[500px]">Experience the perfect balance of power and simplicity.</span>
             <span className="w-full md:max-w-[500px]">A modern Discord framework engineered for scalability, without sacrificing developer experience.</span>
           </p>
-          <div className="mt-10 flex items-center justify-center gap-5">
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-5">
             <Link
               href="/guide"
               target="_blank"
@@ -64,10 +64,10 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="mx-auto max-w-xs sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mt-8 relative space-y-16">
+      <div className="mx-auto w-[calc(100%_-_2rem)] max-w-xs sm:w-full sm:max-w-md md:max-w-2xl lg:max-w-4xl xl:max-w-6xl mt-8 relative space-y-16">
 
         <HomeSections />
       </div>
-    </main>
+    </div>
   );
 };

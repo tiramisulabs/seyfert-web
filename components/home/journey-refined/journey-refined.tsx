@@ -149,7 +149,7 @@ export function JourneyRefined({ echoHtml, loggerHtml }: { echoHtml: Record<Echo
     }, []);
 
     return (
-        <main className="spiral-page journey-refined-page relative overflow-x-clip">
+        <div className="spiral-page journey-refined-page relative overflow-x-clip">
             {/* the black hole, fixed behind everything — and falling with you */}
             <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
                 <div data-galaxy-fallback className="core-glow absolute left-1/2 top-1/2 size-[42vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-60" />
@@ -190,7 +190,7 @@ export function JourneyRefined({ echoHtml, loggerHtml }: { echoHtml: Record<Echo
                 <Finale />
             </div>
 
-        </main>
+        </div>
     );
 }
 
@@ -536,7 +536,7 @@ function CacheStage() {
                 <Reveal className="flex flex-col gap-3">
                     <span className="journey-refined-metal text-[clamp(72px,9vw,128px)] font-semibold leading-none tracking-[-0.04em]">84<span className="text-[0.4em] tracking-normal"> MB</span></span>
                     <p className="text-[15px] text-[var(--text-dim)]">median memory under the same gateway load, <span className="text-[var(--text-bright)]">{multiplier}× lighter</span> than discord.js.</p>
-                    <Link href="/benchmark" className={cn(mono, "mt-2 text-[11px] tracking-[0.22em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline")}>FULL MEASUREMENTS ↗</Link>
+                    <Link href="/benchmark" className={cn(mono, "mt-2 inline-flex min-h-11 items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[11px] tracking-[0.22em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline")}>FULL MEASUREMENTS ↗</Link>
                 </Reveal>
                 <Reveal delay={0.08}>
                     <div className="flex flex-col">
@@ -771,7 +771,7 @@ function JetStage({ text }: { text: string }) {
                                 </li>
                             ))}
                         </ul>
-                        <a href="https://github.com/tiramisulabs/seyfert-web" target="_blank" className={cn(mono, "text-[11px] tracking-[0.22em] text-[var(--text-dim)] hover:text-[var(--text-bright)]")}>ADD YOURS — OPEN A PR ↗</a>
+                        <a href="https://github.com/tiramisulabs/seyfert-web" target="_blank" className={cn(mono, "inline-flex min-h-11 items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[11px] tracking-[0.22em] text-[var(--text-dim)] hover:text-[var(--text-bright)]")}>ADD YOURS — OPEN A PR ↗</a>
                     </div>
                 </Reveal>
             </div>

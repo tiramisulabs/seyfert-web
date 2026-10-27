@@ -40,8 +40,8 @@ export function CopyButton({
             className={cn(
                 GeistMono.className,
                 // -m/p pair: the glyph stays small but the hit area grows to
-                // ~37px — the install pill is the page's main mobile action
-                "-m-3 inline-flex touch-manipulation items-center p-3 text-[11px] leading-none tracking-[0.1em] text-[var(--text-dim)]/70 transition-colors duration-200 hover:text-[var(--text-bright)] focus-visible:text-[var(--text-bright)] focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-[var(--brand-indigo)] data-[copied]:text-[var(--brand-indigo)]",
+                // at least 44px, without enlarging the glyph.
+                "-m-3 inline-flex min-h-11 min-w-11 touch-manipulation items-center justify-center p-3 text-[11px] leading-none tracking-[0.1em] text-[var(--text-dim)]/70 transition-colors duration-200 hover:text-[var(--text-bright)] focus-visible:text-[var(--text-bright)] focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-[var(--brand-indigo)] data-[copied]:text-[var(--brand-indigo)]",
                 className,
             )}
         >

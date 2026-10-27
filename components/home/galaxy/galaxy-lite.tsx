@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import { Renderer, Camera, Program, Mesh, Triangle } from "ogl";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -190,12 +191,12 @@ export default function GalaxyLite({ dive, quiet, centered = false }: GalaxyDriv
     quietRef.current = quiet;
   });
 
+  const enabled = useMediaQuery("(max-width: 767px) and (prefers-reduced-motion: no-preference)");
+
   useEffect(() => {
     const container = containerRef.current;
+    if (!enabled) return;
     if (!container) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    // desktop boots the geodesic raymarcher instead
-    if (window.matchMedia("(min-width: 768px)").matches) return;
 
     const renderer = new Renderer({
       depth: false,
@@ -323,9 +324,11 @@ export default function GalaxyLite({ dive, quiet, centered = false }: GalaxyDriv
       gl.canvas.removeEventListener("webglcontextlost", onContextLost);
       cancelAnimationFrame(raf);
       if (container.contains(gl.canvas)) container.removeChild(gl.canvas);
+      container.style.opacity = "0";
+      if (fallback) fallback.style.opacity = "1";
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
-  }, [centered]);
+  }, [enabled, centered]);
 
   // starts transparent; the render loop fades it in on the first real frame
   return (

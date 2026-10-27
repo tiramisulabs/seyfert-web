@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
@@ -9,6 +9,7 @@ import {
     motion,
     useMotionTemplate,
     useMotionValue,
+    useMotionValueEvent,
     useScroll,
     useSpring,
     useTransform,
@@ -18,7 +19,9 @@ import GalaxyCanvas from "@/components/home/galaxy/galaxy-canvas";
 import GalaxyLite from "@/components/home/galaxy/galaxy-lite";
 import { CopyButton } from "@/components/home/galaxy/copy-button";
 import { cn } from "@/lib/utils";
+import { medianMb } from "@/lib/benchmark";
 import { CAP, NUCLEUS, STROKE, WORD_MASK_URL, WORD_PATH, WORD_W } from "./wordmark";
+import { REVEAL_SEEN_KEY } from "./seen";
 import seyfertMemory from "@/public/bench/node/meadianseyfert.json";
 import discordMemory from "@/public/bench/node/meadiandiscordjs.json";
 
@@ -52,6 +55,45 @@ function useReduce() {
     return useSyncExternalStore(subscribeReduce, () => window.matchMedia(REDUCE).matches, () => false);
 }
 
+// Returning visitors get the compact cut: every chapter at its last frame,
+// unpinned, the path reduced motion already takes. The full Reveal plays until
+// someone has dived through the opening once (REVEAL_SEEN_KEY). The root
+// layout's pre-paint script turns that into data-reveal="compact" on <html>,
+// and global.css styles the server HTML to match until React renders it, so
+// a returning visit never flashes the wordmark first. The mode is read from
+// the attribute, not storage, so marking a visit as seen never collapses the
+// page mid-scroll; it applies from the next load or client navigation.
+const COMPACT_EVENT = "seyfert:reveal-mode";
+function subscribeCompact(on: () => void) {
+    window.addEventListener(COMPACT_EVENT, on);
+    return () => window.removeEventListener(COMPACT_EVENT, on);
+}
+function useCompact() {
+    return useSyncExternalStore(subscribeCompact, () => document.documentElement.dataset.reveal === "compact", () => false);
+}
+function setCompact(on: boolean) {
+    if (on) document.documentElement.dataset.reveal = "compact";
+    else delete document.documentElement.dataset.reveal;
+    window.dispatchEvent(new Event(COMPACT_EVENT));
+}
+function hasSeen() {
+    try {
+        return localStorage.getItem(REVEAL_SEEN_KEY) !== null;
+    } catch {
+        return false;
+    }
+}
+function markSeen() {
+    try {
+        localStorage.setItem(REVEAL_SEEN_KEY, "1");
+    } catch {
+        // private mode: the full Reveal plays every time
+    }
+}
+
+// every chapter at its last frame: reduced motion, or the compact cut
+const StillContext = createContext(false);
+
 // lg and up; the server renders the desktop layout (the chapter using it is
 // far below the fold when React hydrates)
 const WIDE = "(min-width: 1024px)";
@@ -65,33 +107,54 @@ function useWide() {
 }
 
 export function RevealPage({ echo, djs, boot }: { echo: CodeLines; djs: CodeLines; boot: CodeLines }) {
+    const reduce = useReduce();
+    const compact = useCompact();
+    const still = reduce || compact;
+    // leaving after the dive: a client navigation back opens on the compact cut
+    useEffect(() => () => {
+        if (hasSeen()) setCompact(true);
+    }, []);
     return (
-        <main className="spiral-page reveal-page relative overflow-x-clip">
-            <Opening />
-            <OneFile lines={echo} />
-            <Ceremony djs={djs} boot={boot} />
-            <Memory />
-            <Orbit />
-            <Finale />
-        </main>
+        <StillContext value={still}>
+            <div className="spiral-page reveal-page relative overflow-x-clip">
+                <Opening />
+                <OneFile lines={echo} />
+                <Ceremony djs={djs} boot={boot} />
+                <Memory />
+                <Orbit />
+                <Finale />
+            </div>
+        </StillContext>
     );
 }
 
 /* ── pinning ─────────────────────────────────────────────────────────── */
 
 // A chapter: `height` of scroll track, one viewport pinned inside it, and
-// the track's 0→1 progress handed to the stage. Reduced motion gets the
-// final frame of every chapter, unpinned.
+// the track's 0→1 progress handed to the stage. Reduced motion and the compact
+// cut get the final frame of every chapter, unpinned.
 function Pin({ height, label, children }: { height: string; label: string; children: (p: MotionValue<number>, still: boolean) => ReactNode }) {
     const ref = useRef<HTMLElement>(null);
-    const reduce = useReduce();
+    const still = useContext(StillContext);
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
     const progress = useGlide(scrollYProgress);
     const done = useMotionValue(1);
+    // leaving the still cut (Replay): the track grows under a scroll position
+    // that doesn't move, so nothing re-measures it and the stage would stay on
+    // its last frame. Re-measure on the next frame, then land on the real
+    // progress instead of gliding back through the chapter.
+    useEffect(() => {
+        if (still) return;
+        let raf = requestAnimationFrame(() => {
+            window.dispatchEvent(new Event("scroll"));
+            raf = requestAnimationFrame(() => progress.jump(scrollYProgress.get()));
+        });
+        return () => cancelAnimationFrame(raf);
+    }, [still, progress, scrollYProgress]);
     return (
-        <section ref={ref} aria-label={label} className="relative" style={{ height: reduce ? "auto" : height }}>
-            <div className={cn("overflow-hidden", reduce ? "relative min-h-svh py-24" : "sticky top-0 h-svh")}>
-                {children(reduce ? done : progress, reduce)}
+        <section ref={ref} aria-label={label} className="reveal-pin relative" style={{ height: still ? "auto" : height }}>
+            <div className={cn("reveal-stage overflow-hidden", still ? "relative min-h-svh py-24" : "sticky top-0 h-svh")}>
+                {children(still ? done : progress, still)}
             </div>
         </section>
     );
@@ -99,7 +162,7 @@ function Pin({ height, label, children }: { height: string; label: string; child
 
 // The playhead glides after the scrollbar instead of jumping with it. Scroll
 // itself stays native; only the scrubbed scene eases toward it, so a wheel
-// notch (100px, 4-8% of a chapter) plays as a short move, not a cut. A spring
+// notch (100px, 7-16% of a chapter) plays as a short move, not a cut. A spring
 // is a JS value, so this also keeps every chapter on the main-thread scrub:
 // motion's native ScrollTimeline path drifted from the real progress here
 // (opacity ~0.05 at p = 0.95).
@@ -110,7 +173,7 @@ function useGlide(v: MotionValue<number>) {
 /* ── 0 · the opening: through the wordmark ──────────────────────────── */
 
 function Opening() {
-    return <Pin height="240vh" label="Seyfert">{(p, still) => <OpeningStage p={p} still={still} />}</Pin>;
+    return <Pin height="170vh" label="Seyfert">{(p, still) => <OpeningStage p={p} still={still} />}</Pin>;
 }
 
 // Everything the first frame needs is server HTML sized by CSS: the drawn
@@ -133,28 +196,36 @@ const wordVars = {
 function OpeningStage({ p, still }: { p: MotionValue<number>; still: boolean }) {
     // The dive: the word scales around the nucleus until it stops reading as
     // a word, then an iris opens from that same point and the plate is gone.
-    // Spans are generous on purpose: at a 100px wheel notch on a 240vh track
-    // the old 0.21→0.28 iris was a single notch, a cut rather than a move.
-    const scale = useTransform(p, (v) => 1 + 5 * Math.pow(clamp01(v / 0.34), 2.2));
+    // The headline lands by 60% of the 70vh track; the rest is a short read
+    // before the scene dims. The iris still spans ~1.5 wheel notches (100px):
+    // a single notch played as a cut rather than a move.
+    const scale = useTransform(p, (v) => 1 + 5 * Math.pow(clamp01(v / 0.54), 2.2));
     const iris = useTransform(p, (v) => {
-        const t = clamp01((v - 0.17) / 0.14);
+        const t = clamp01((v - 0.25) / 0.25);
         return `${(t * t * (3 - 2 * t) * 150).toFixed(2)}vmax`;
     });
-    const plate = useTransform(p, [0.29, 0.32], [1, 0]);
+    const plate = useTransform(p, [0.47, 0.52], [1, 0]);
     // glass, plane and nucleus thicken under scale, so they leave early
-    const glass = useTransform(p, [0.05, 0.18], [1, 0]);
-    const intro = useTransform(p, [0, 0.07], [1, 0]);
-    const head = useTransform(p, [0.24, 0.36], [0, 1]);
-    const headY = useTransform(p, [0.24, 0.38], [40, 0]);
-    const out = useTransform(p, [0.9, 1], [1, 0.35]);
+    const glass = useTransform(p, [0.08, 0.28], [1, 0]);
+    const intro = useTransform(p, [0, 0.11], [1, 0]);
+    const head = useTransform(p, [0.38, 0.57], [0, 1]);
+    const headY = useTransform(p, [0.38, 0.6], [40, 0]);
+    const out = useTransform(p, [0.85, 1], [1, 0.35]);
+    // past the iris and the headline: this visitor has seen the dive
+    const marked = useRef(false);
+    useMotionValueEvent(p, "change", (v) => {
+        if (v <= 0.6 || marked.current) return;
+        marked.current = true;
+        markSeen();
+    });
 
     // the camera falls in with you while the wordmark opens
-    const dive = useCallback(() => clamp01(p.get() / 0.4) * 1.35, [p]);
+    const dive = useCallback(() => clamp01(p.get() / 0.63) * 1.35, [p]);
     const irisMask = useMotionTemplate`radial-gradient(circle at var(--ox) var(--oy), transparent ${iris}, #000 calc(${iris} + 1.5px))`;
 
     return (
         <div className="absolute inset-0" style={wordVars}>
-            <motion.div className="absolute inset-0" style={{ opacity: out }}>
+            <motion.div className="reveal-scene absolute inset-0" style={{ opacity: out }}>
                 {/* the scene before WebGL: a frame of this exact render frozen
                     at t = 0 (?bhfreeze=0), so the canvas' crossfade is the
                     photo starting to move. Both renders size the hole by
@@ -171,7 +242,7 @@ function OpeningStage({ p, still }: { p: MotionValue<number>; still: boolean }) 
             </motion.div>
 
             {!still && (
-                <motion.div aria-hidden className="pointer-events-none absolute inset-0" style={{ maskImage: irisMask, WebkitMaskImage: irisMask, opacity: plate }}>
+                <motion.div aria-hidden className="reveal-dive pointer-events-none absolute inset-0" style={{ maskImage: irisMask, WebkitMaskImage: irisMask, opacity: plate }}>
                     {/* will-change: rastered once and scaled by the compositor.
                         Re-rastering the masked plate at every zoom step doubled
                         GPU time per frame in a trace; the softer edges at 2-3×
@@ -211,19 +282,41 @@ function OpeningStage({ p, still }: { p: MotionValue<number>; still: boolean }) 
             )}
 
             {!still && (
-                <motion.div style={{ opacity: intro }} className="pointer-events-none absolute inset-0">
-                    <span className={cn(mono, "reveal-cue absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-[11px] tracking-[0.35em] text-[var(--text-dim)]")}>
+                <motion.div style={{ opacity: intro }} className="reveal-dive pointer-events-none absolute inset-0">
+                    <span className={cn(mono, "reveal-cue absolute bottom-24 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 text-[11px] tracking-[0.35em] text-[var(--text-dim)]")}>
                         SCROLL TO ENTER
                         <span className="reveal-drop block h-10 w-px bg-gradient-to-b from-[#ffd9a0] to-transparent" />
                     </span>
                 </motion.div>
             )}
 
-            <motion.div style={{ opacity: head, y: headY }} className="absolute inset-x-0 bottom-[12%] flex flex-col items-center gap-5 px-6 text-center">
+            <Link href="/docs/learn/getting-started" className="absolute bottom-8 left-1/2 z-20 inline-flex h-11 -translate-x-1/2 items-center gap-3 bg-[var(--core-white)] px-6 text-sm font-semibold text-[var(--space-void)] transition-colors hover:bg-[var(--core-amber)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--core-white)]">
+                Get started <span aria-hidden="true">→</span>
+            </Link>
+            <motion.div style={{ opacity: head, y: headY }} className="reveal-head absolute inset-x-0 bottom-[18%] flex flex-col items-center gap-5 px-6 text-center">
                 <h1 className="max-w-[16ch] text-balance text-5xl font-semibold leading-[0.98] tracking-[-0.03em] [text-shadow:0_2px_40px_rgba(0,0,0,0.95)] sm:text-7xl">
                     The TypeScript framework for Discord
                 </h1>
                 <code translate="no" className={cn(mono, "text-[14px] tracking-[0.08em] text-[#efe6d2] [text-shadow:0_1px_16px_rgba(0,0,0,0.95)]")}>npm i seyfert</code>
+                {/* proof beside the promise, from the same measurements the
+                    Memory chapter shows */}
+                <p className={cn(mono, "flex flex-col gap-1 text-[11px] leading-relaxed tracking-[0.2em] text-[var(--text-dim)] [text-shadow:0_1px_16px_rgba(0,0,0,0.95)]")}>
+                    <span>{(DISCORD_RSS / SEYFERT_RSS).toFixed(2)}× LESS MEMORY THAN DISCORD.JS</span>
+                    <span>POWERING BOTS IN PRODUCTION</span>
+                </p>
+                {/* always in the HTML, shown by global.css in the compact cut
+                    only, so it doesn't push the headline up when React
+                    hydrates */}
+                <button
+                    type="button"
+                    onClick={() => {
+                        window.scrollTo({ top: 0, behavior: "instant" });
+                        setCompact(false);
+                    }}
+                    className={cn(mono, "reveal-replay hidden min-h-11 items-center text-[11px] tracking-[0.25em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current")}
+                >
+                    REPLAY THE INTRO ↺
+                </button>
             </motion.div>
         </div>
     );
@@ -246,7 +339,7 @@ function CodeLine({ line, p, at, span = 0.07 }: { line: CodeLines[number]; p: Mo
 
 function OneFile({ lines }: { lines: CodeLines }) {
     return (
-        <Pin height="320vh" label="A command is one file">
+        <Pin height="250vh" label="A command is one file">
             {(p) => <OneFileStage p={p} lines={lines} />}
         </Pin>
     );
@@ -302,8 +395,8 @@ function OneFileStage({ p, lines }: { p: MotionValue<number>; lines: CodeLines }
 /* ── 2 · leave the ceremony behind ──────────────────────────────────── */
 
 function StruckLine({ line, p, at }: { line: CodeLines[number]; p: MotionValue<number>; at: number }) {
-    const strike = useTransform(p, [at, at + 0.03], [0, 1]);
-    const dim = useTransform(p, [at, at + 0.03], [1, 0.4]);
+    const strike = useTransform(p, [at, at + 0.036], [0, 1]);
+    const dim = useTransform(p, [at, at + 0.036], [1, 0.4]);
     return (
         <motion.div style={{ opacity: dim }} className="relative whitespace-pre">
             {line.length === 0 ? " " : line.map((t, i) => <span key={i} style={{ color: t.k }}>{t.c}</span>)}
@@ -314,7 +407,7 @@ function StruckLine({ line, p, at }: { line: CodeLines[number]; p: MotionValue<n
 
 function Ceremony({ djs, boot }: { djs: CodeLines; boot: CodeLines }) {
     return (
-        <Pin height="360vh" label="Leave the ceremony behind">
+        <Pin height="260vh" label="Leave the ceremony behind">
             {(p) => <CeremonyStage p={p} djs={djs} boot={boot} />}
         </Pin>
     );
@@ -326,18 +419,18 @@ function CeremonyStage({ p, djs, boot }: { p: MotionValue<number>; djs: CodeLine
     const before = written(djs);
     const after = written(boot);
 
-    const intro = useTransform(p, [0, 0.08], [0, 1]);
+    const intro = useTransform(p, [0, 0.1], [0, 1]);
     // discord.js: struck line by line, then crushed and pushed aside
-    const djsScale = useTransform(p, [0.5, 0.64], [1, 0.62]);
-    const djsX = useTransform(p, [0.5, 0.64], wide ? ["0%", "-34%"] : ["0%", "-18%"]);
-    const djsO = useTransform(p, [0.5, 0.64], [1, 0.28]);
+    const djsScale = useTransform(p, [0.61, 0.78], [1, 0.62]);
+    const djsX = useTransform(p, [0.61, 0.78], wide ? ["0%", "-34%"] : ["0%", "-18%"]);
+    const djsO = useTransform(p, [0.61, 0.78], [1, 0.28]);
     // seyfert: flies in over it
-    const bootO = useTransform(p, [0.58, 0.7], [0, 1]);
-    const bootX = useTransform(p, [0.58, 0.74], wide ? ["40%", "12%"] : ["40%", "0%"]);
-    const count = useTransform(p, [0.12, 0.74], [before, after], { clamp: true });
+    const bootO = useTransform(p, [0.7, 0.85], [0, 1]);
+    const bootX = useTransform(p, [0.7, 0.9], wide ? ["40%", "12%"] : ["40%", "0%"]);
+    const count = useTransform(p, [0.15, 0.9], [before, after], { clamp: true });
     const countText = useTransform(count, (v) => String(Math.round(v)));
-    const label = useTransform(p, [0.66, 0.72], [0, 1]);
-    const labelOld = useTransform(p, [0.66, 0.72], [1, 0]);
+    const label = useTransform(p, [0.8, 0.88], [0, 1]);
+    const labelOld = useTransform(p, [0.8, 0.88], [1, 0]);
 
     const nd = djs.length;
     return (
@@ -359,14 +452,14 @@ function CeremonyStage({ p, djs, boot }: { p: MotionValue<number>; djs: CodeLine
                 <motion.div style={{ scale: djsScale, x: djsX, opacity: djsO }} className="absolute inset-x-0 top-0 origin-left overflow-hidden rounded-xl border border-white/10 bg-[#090b12]/90 lg:right-[22%]">
                     <div className={cn(mono, "border-b border-white/[0.07] px-4 py-2.5 text-[11px] tracking-[0.1em] text-[var(--text-dim)]")}>discord.js v14 · index.js</div>
                     <div className={cn(mono, "overflow-x-auto px-4 py-4 text-[11px] leading-[1.7] sm:text-[12.5px]")}>
-                        {djs.map((line, i) => <StruckLine key={i} line={line} p={p} at={0.12 + (i / nd) * 0.34} />)}
+                        {djs.map((line, i) => <StruckLine key={i} line={line} p={p} at={0.15 + (i / nd) * 0.41} />)}
                     </div>
                 </motion.div>
                 <motion.div style={{ opacity: bootO, x: bootX }} className="absolute inset-x-0 top-10 overflow-hidden rounded-xl border border-[#ffd9a0]/35 bg-[#0b0806]/95 shadow-[0_0_80px_rgba(255,217,160,0.12),0_40px_120px_rgba(0,0,0,0.7)] lg:left-[18%] lg:right-0">
                     <div className={cn(mono, "border-b border-white/[0.07] px-4 py-2.5 text-[11px] tracking-[0.1em] text-[#ffd9a0]")}>seyfert · the whole boot</div>
                     <div className={cn(mono, "overflow-x-auto px-4 py-4 text-[11px] leading-[1.75] sm:text-[13px]")}>
                         {boot.map((line, i) => (
-                            <div key={i} className="whitespace-pre">{line.length === 0 ? " " : line.map((t, k) => <span key={k} style={{ color: t.k }}>{t.c}</span>)}</div>
+                            <div key={i} className="whitespace-pre-wrap break-words pl-[2ch] -indent-[2ch] sm:whitespace-pre sm:pl-0 sm:indent-0">{line.length === 0 ? " " : line.map((t, k) => <span key={k} style={{ color: t.k }}>{t.c}</span>)}</div>
                         ))}
                     </div>
                 </motion.div>
@@ -377,32 +470,26 @@ function CeremonyStage({ p, djs, boot }: { p: MotionValue<number>; djs: CodeLine
 
 /* ── 3 · burn less ───────────────────────────────────────────────────── */
 
-function medianRss(samples: number[]) {
-    const sorted = [...samples].sort((a, b) => a - b);
-    const middle = sorted.length / 2;
-    return Math.round((sorted[Math.floor(middle)] + sorted[Math.ceil(middle) - 1]) / 2);
-}
-
-const SEYFERT_RSS = medianRss(seyfertMemory.rss);
-const DISCORD_RSS = medianRss(discordMemory.rss);
+const SEYFERT_RSS = medianMb(seyfertMemory.rss);
+const DISCORD_RSS = medianMb(discordMemory.rss);
 const RSS_CEILING = Math.ceil((DISCORD_RSS * 1.05) / 10) * 10;
 
 function Memory() {
-    return <Pin height="280vh" label="Memory under load">{(p) => <MemoryStage p={p} />}</Pin>;
+    return <Pin height="225vh" label="Memory under load">{(p) => <MemoryStage p={p} />}</Pin>;
 }
 
 function MemoryStage({ p }: { p: MotionValue<number> }) {
-    const mb = useTransform(p, [0.18, 0.66], [DISCORD_RSS, SEYFERT_RSS], { clamp: true });
+    const mb = useTransform(p, [0.19, 0.71], [DISCORD_RSS, SEYFERT_RSS], { clamp: true });
     const mbText = useTransform(mb, (v) => String(Math.round(v)));
-    const bar = useTransform(p, [0.18, 0.66], [DISCORD_RSS / RSS_CEILING, SEYFERT_RSS / RSS_CEILING], { clamp: true });
-    const ghost = useTransform(p, [0.18, 0.3], [0, 1]);
-    const heat = useTransform(p, [0.4, 0.66], ["#fafafa", "#ffd9a0"]);
+    const bar = useTransform(p, [0.19, 0.71], [DISCORD_RSS / RSS_CEILING, SEYFERT_RSS / RSS_CEILING], { clamp: true });
+    const ghost = useTransform(p, [0.19, 0.32], [0, 1]);
+    const heat = useTransform(p, [0.43, 0.71], ["#fafafa", "#ffd9a0"]);
     // each label only names a real measurement: discord.js before the count
     // starts, seyfert once it lands — mid-scrub numbers belong to nobody
-    const nameOld = useTransform(p, [0.18, 0.24], [1, 0]);
-    const nameNew = useTransform(p, [0.6, 0.66], [0, 1]);
-    const tail = useTransform(p, [0.72, 0.84], [0, 1]);
-    const intro = useTransform(p, [0, 0.1], [0, 1]);
+    const nameOld = useTransform(p, [0.19, 0.26], [1, 0]);
+    const nameNew = useTransform(p, [0.64, 0.71], [0, 1]);
+    const tail = useTransform(p, [0.77, 0.9], [0, 1]);
+    const intro = useTransform(p, [0, 0.11], [0, 1]);
 
     return (
         <div className="relative flex h-full flex-col items-center justify-center gap-6 px-5 text-center">
@@ -432,7 +519,7 @@ function MemoryStage({ p }: { p: MotionValue<number> }) {
                 <p className="text-[clamp(20px,2.4vw,30px)] font-medium tracking-[-0.01em]">
                     {(DISCORD_RSS / SEYFERT_RSS).toFixed(2)}× lighter under the same gateway load.
                 </p>
-                <Link href="/benchmark" className={cn(mono, "text-[11px] tracking-[0.25em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline")}>FULL MEASUREMENTS ↗</Link>
+                <Link href="/benchmark" className={cn(mono, "inline-flex min-h-11 items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[11px] tracking-[0.25em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline")}>FULL MEASUREMENTS ↗</Link>
             </motion.div>
         </div>
     );
@@ -462,24 +549,24 @@ function Orbit() {
     return (
         <section ref={ref} aria-label="Bots running on Seyfert" className="relative flex flex-col gap-10 overflow-hidden py-40">
             <div className="mx-auto w-full max-w-6xl px-5">
-                <span className={cn(mono, "text-[11px] tracking-[0.35em] text-[var(--text-dim)]")}>IN ORBIT · BOTS RUNNING ON SEYFERT</span>
+                <span className={cn(mono, "text-[11px] tracking-[0.16em] text-[var(--text-dim)] sm:tracking-[0.35em]")}>IN ORBIT · BOTS RUNNING ON SEYFERT</span>
             </div>
             <motion.ul style={{ x: left }} className="flex w-max items-center gap-10 whitespace-nowrap">
-                {[...BOTS.slice(0, half), ...BOTS.slice(0, half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 0} />)}
+                {[...BOTS.slice(0, half), ...BOTS.slice(0, half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 0} duplicate={i >= half} />)}
             </motion.ul>
             <motion.ul style={{ x: right }} className="flex w-max items-center gap-10 whitespace-nowrap">
-                {[...BOTS.slice(half), ...BOTS.slice(half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 1} />)}
+                {[...BOTS.slice(half), ...BOTS.slice(half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 1} duplicate={i >= BOTS.length - half} />)}
             </motion.ul>
             <div className="mx-auto w-full max-w-6xl px-5">
-                <a href="https://github.com/tiramisulabs/seyfert-web" target="_blank" className={cn(mono, "text-[11px] tracking-[0.25em] text-[var(--text-dim)] hover:text-[var(--text-bright)]")}>ADD YOURS — OPEN A PR ↗</a>
+                <a href="https://github.com/tiramisulabs/seyfert-web" target="_blank" className={cn(mono, "inline-flex min-h-11 items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[11px] tracking-[0.25em] text-[var(--text-dim)] hover:text-[var(--text-bright)]")}>ADD YOURS — OPEN A PR ↗</a>
             </div>
         </section>
     );
 }
 
-function OrbitItem({ bot, solid }: { bot: (typeof BOTS)[number]; solid: boolean }) {
+function OrbitItem({ bot, solid, duplicate }: { bot: (typeof BOTS)[number]; solid: boolean; duplicate: boolean }) {
     return (
-        <li className="flex items-center gap-6">
+        <li aria-hidden={duplicate || undefined} className="flex items-center gap-6">
             <Image src={bot.avatar} alt="" width={88} height={88} unoptimized={bot.avatar.endsWith(".gif")} className="size-16 rounded-2xl ring-1 ring-white/15 sm:size-[88px]" />
             <span className={cn("text-[clamp(56px,9vw,136px)] font-semibold leading-none tracking-[-0.04em]", solid ? "text-[var(--text-bright)]" : "reveal-outline")}>{bot.name}</span>
             <span className={cn(mono, "max-w-[18ch] whitespace-normal text-[12px] leading-snug tracking-[0.08em] text-[var(--text-dim)]")}>“{bot.quote}”</span>
@@ -489,35 +576,58 @@ function OrbitItem({ bot, solid }: { bot: (typeof BOTS)[number]; solid: boolean 
 
 /* ── 5 · finale: the release line ───────────────────────────────────── */
 
-// The trajectory: an inclined orbit through the word, in word units. It
-// rises from under the S behind the letters, crosses the plane at the
-// nucleus (the F stem the opening dove through) and comes out in front,
-// leaving past the T. Two cubics, smooth at the node.
-const NODE = `${NUCLEUS.x} ${NUCLEUS.y}`;
-const TRAJ_BACK = `M-40 120C90 140 250 118 ${NODE}`;
-const TRAJ_FRONT = `M${NODE}C352 -6 540 -40 702 -44`;
-// share of the whole length behind the word, so one scrub draws both
-const TRAJ_SPLIT = 0.48;
-// the head: tangent at the end of TRAJ_FRONT
-const HEAD = { x: 702, y: -44, deg: (Math.atan2(-4, 162) * 180) / Math.PI };
+// The orbit: an inclined ring around the word, on the plane its middle
+// strokes share, in word units. Tilted just enough that the far half dips
+// behind the S and the near half rises across the T's stem, parting the
+// metal there; everywhere else it clears the letters. A photon rides it once
+// it's drawn, slipping behind the word and coming back out in front.
+const ORBIT = { cx: WORD_W / 2, cy: NUCLEUS.y, rx: 390, ry: 70, tilt: -5 };
+const ORBIT_L = `${ORBIT.cx - ORBIT.rx} ${ORBIT.cy}`;
+const ORBIT_R = `${ORBIT.cx + ORBIT.rx} ${ORBIT.cy}`;
+const ORBIT_ARC = `A${ORBIT.rx} ${ORBIT.ry} 0 0 1`;
+const ORBIT_FAR = `M${ORBIT_L}${ORBIT_ARC} ${ORBIT_R}`;
+const ORBIT_NEAR = `M${ORBIT_R}${ORBIT_ARC} ${ORBIT_L}`;
+const ORBIT_FULL = `M${ORBIT_L}${ORBIT_ARC} ${ORBIT_R}${ORBIT_ARC} ${ORBIT_L}`;
+const ORBIT_TILT = `rotate(${ORBIT.tilt} ${ORBIT.cx} ${ORBIT.cy})`;
+// the photon: a round head and a fading tail, as dashes on a 100-unit path
+// whose heads line up (offset = length - travelled)
+const PHOTON = [
+    { len: 28, width: 1.25, opacity: 0.1 },
+    { len: 12, width: 1.75, opacity: 0.22 },
+    { len: 4, width: 2.5, opacity: 0.5 },
+    { len: 0.01, width: 5, opacity: 1 },
+];
+
+function Photon() {
+    return (
+        <g fill="none" stroke="#fffaf0" strokeLinecap="round">
+            {PHOTON.map((d) => (
+                <path key={d.len} d={ORBIT_FULL} pathLength={100} strokeWidth={d.width} strokeOpacity={d.opacity} strokeDasharray={`${d.len} ${100 - d.len}`}>
+                    <animate attributeName="stroke-dashoffset" from={d.len} to={d.len - 100} dur="11s" repeatCount="indefinite" />
+                </path>
+            ))}
+        </g>
+    );
+}
 
 function Finale() {
     const ref = useRef<HTMLElement>(null);
     const reduce = useReduce();
+    const still = useContext(StillContext);
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end end"] });
     const p = useGlide(scrollYProgress);
-    // scrubbed like every chapter: drawn while the word rises into view
-    const draw = useTransform(p, (v) => (reduce ? 1 : clamp01((v - 0.2) / 0.55)));
-    const back = useTransform(draw, (v) => clamp01(v / TRAJ_SPLIT));
-    const front = useTransform(draw, (v) => clamp01((v - TRAJ_SPLIT) / (1 - TRAJ_SPLIT)));
-    const node = useTransform(draw, [TRAJ_SPLIT - 0.04, TRAJ_SPLIT + 0.04], [0, 1]);
-    const head = useTransform(draw, [0.9, 1], [0, 1]);
+    // scrubbed like every chapter: the ring closes while the word rises into
+    // view, far half first, then the near half sweeping back under it
+    const draw = useTransform(p, (v) => (still ? 1 : clamp01((v - 0.2) / 0.55)));
+    const far = useTransform(draw, (v) => clamp01(v / 0.5));
+    const near = useTransform(draw, (v) => clamp01((v - 0.5) / 0.5));
+    const photon = useTransform(draw, [0.94, 1], [0, 1]);
     return (
         <section ref={ref} aria-label="Get started" className="relative flex min-h-svh flex-col items-center justify-center gap-10 px-5 pb-28 text-center">
             <div aria-hidden className="core-glow absolute left-1/2 top-[38%] size-[60vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25 blur-2xl" />
             {/* bookends the opening: the same drawn wordmark, now solid ground,
-                with a trajectory threaded through it */}
-            <svg role="img" aria-label="Seyfert" viewBox={`0 0 ${WORD_W} ${CAP}`} className="relative h-auto w-[min(84vw,880px)] overflow-visible">
+                with its orbit around it */}
+            <svg role="img" aria-label="Seyfert" viewBox={`0 0 ${WORD_W} ${CAP}`} className="relative my-12 h-auto w-[min(80vw,860px)] overflow-visible">
                 <defs>
                     <linearGradient id="reveal-finale-metal" x1="0" y1="0" x2={WORD_W} y2={CAP} gradientUnits="userSpaceOnUse">
                         <stop offset="0" stopColor="#f2d7a6" />
@@ -525,35 +635,47 @@ function Finale() {
                         <stop offset="0.5" stopColor="#ffffff" />
                         <stop offset="1" stopColor="#c9d0da" />
                     </linearGradient>
-                    <linearGradient id="reveal-finale-orbit" x1="-40" y1="0" x2="702" y2="0" gradientUnits="userSpaceOnUse">
-                        <stop offset="0" stopColor="#b4683c" stopOpacity="0" />
-                        <stop offset="0.3" stopColor="#f0cf8c" stopOpacity="0.7" />
-                        <stop offset="0.75" stopColor="#ffe7c2" />
-                        <stop offset="1" stopColor="#fffaf0" />
+                    {/* perspective: the far side dims toward its middle, the
+                        near side is brightest where it's closest */}
+                    <linearGradient id="reveal-finale-far" x1={ORBIT.cx - ORBIT.rx} x2={ORBIT.cx + ORBIT.rx} y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stopColor="#f0cf8c" stopOpacity="0.7" />
+                        <stop offset="0.5" stopColor="#b4683c" stopOpacity="0.25" />
+                        <stop offset="1" stopColor="#f0cf8c" stopOpacity="0.7" />
                     </linearGradient>
-                    <filter id="reveal-finale-blur" x="-10%" y="-60%" width="120%" height="220%">
-                        <feGaussianBlur stdDeviation="4" />
+                    <linearGradient id="reveal-finale-near" x1={ORBIT.cx - ORBIT.rx} x2={ORBIT.cx + ORBIT.rx} y1="0" y2="0" gradientUnits="userSpaceOnUse">
+                        <stop offset="0" stopColor="#f0cf8c" stopOpacity="0.7" />
+                        <stop offset="0.5" stopColor="#fff3d8" />
+                        <stop offset="1" stopColor="#f0cf8c" stopOpacity="0.7" />
+                    </linearGradient>
+                    <filter id="reveal-finale-blur" x="-20%" y="-100%" width="140%" height="300%">
+                        <feGaussianBlur stdDeviation="3" />
                     </filter>
                     <clipPath id="reveal-finale-cap"><rect width={WORD_W} height={CAP} /></clipPath>
-                    {/* where the trajectory passes in front, the metal parts
+                    {/* the near half only, in the ring's tilted frame */}
+                    <clipPath id="reveal-finale-near-half">
+                        <rect x={ORBIT.cx - ORBIT.rx - 20} y={ORBIT.cy} width={ORBIT.rx * 2 + 40} height={ORBIT.ry + 20} />
+                    </clipPath>
+                    {/* where the near half passes in front, the metal parts
                         around it so the crossing reads as over, not on */}
-                    <mask id="reveal-finale-cut" maskUnits="userSpaceOnUse" x="-60" y="-80" width={WORD_W + 120} height="260">
-                        <rect x="-60" y="-80" width={WORD_W + 120} height="260" fill="#fff" />
-                        <motion.path d={TRAJ_FRONT} fill="none" stroke="#000" strokeWidth={7} style={{ pathLength: front }} />
+                    <mask id="reveal-finale-cut" maskUnits="userSpaceOnUse" x="-80" y="-80" width={WORD_W + 160} height="260">
+                        <rect x="-80" y="-80" width={WORD_W + 160} height="260" fill="#fff" />
+                        <motion.path d={ORBIT_NEAR} transform={ORBIT_TILT} fill="none" stroke="#000" strokeWidth={8} style={{ pathLength: near }} />
                     </mask>
                 </defs>
-                <g aria-hidden fill="none" stroke="url(#reveal-finale-orbit)">
-                    <motion.path d={TRAJ_BACK} strokeWidth={9} opacity={0.35} filter="url(#reveal-finale-blur)" style={{ pathLength: back }} />
-                    <motion.path d={TRAJ_BACK} strokeWidth={2} style={{ pathLength: back }} />
+                <g aria-hidden fill="none" transform={ORBIT_TILT}>
+                    <motion.path d={ORBIT_FAR} stroke="url(#reveal-finale-far)" strokeWidth={1.25} style={{ pathLength: far }} />
+                    {!reduce && <motion.g style={{ opacity: photon }}><Photon /></motion.g>}
                 </g>
                 <path d={WORD_PATH} clipPath="url(#reveal-finale-cap)" mask="url(#reveal-finale-cut)" fill="none" stroke="url(#reveal-finale-metal)" strokeWidth={STROKE} strokeLinejoin="miter" strokeMiterlimit={8} />
-                <g aria-hidden fill="none" stroke="url(#reveal-finale-orbit)">
-                    <motion.path d={TRAJ_FRONT} strokeWidth={9} opacity={0.35} filter="url(#reveal-finale-blur)" style={{ pathLength: front }} />
-                    <motion.path d={TRAJ_FRONT} strokeWidth={2} style={{ pathLength: front }} />
-                    <motion.circle cx={NUCLEUS.x} cy={NUCLEUS.y} r={3.2} fill="#fffaf0" stroke="none" style={{ opacity: node }} />
-                    <g transform={`translate(${HEAD.x} ${HEAD.y}) rotate(${HEAD.deg.toFixed(2)})`}>
-                        <motion.path d="M-13 -6.5L0 0L-13 6.5" stroke="#fffaf0" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" style={{ opacity: head }} />
-                    </g>
+                <g aria-hidden fill="none" transform={ORBIT_TILT}>
+                    <motion.path d={ORBIT_NEAR} stroke="url(#reveal-finale-near)" strokeWidth={6} opacity={0.3} filter="url(#reveal-finale-blur)" style={{ pathLength: near }} />
+                    <motion.path d={ORBIT_NEAR} stroke="url(#reveal-finale-near)" strokeWidth={1.75} style={{ pathLength: near }} />
+                    {!reduce && (
+                        <motion.g clipPath="url(#reveal-finale-near-half)" style={{ opacity: photon }}>
+                            <g filter="url(#reveal-finale-blur)"><Photon /></g>
+                            <Photon />
+                        </motion.g>
+                    )}
                 </g>
             </svg>
             <div className="relative flex flex-col items-center gap-3">
@@ -564,7 +686,7 @@ function Finale() {
                 </span>
             </div>
             <div className="relative flex flex-wrap items-center justify-center gap-3.5">
-                <Link href="/docs/learn/getting-started" className="group inline-flex h-11 items-center gap-2 bg-[#f8f1e4] px-10 text-sm font-semibold text-[var(--space-void)] shadow-[0_0_34px_8px_rgba(240,206,142,0.25)] transition-all hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-indigo)]">
+                <Link href="/docs/learn/getting-started" className="group inline-flex h-11 items-center gap-2 bg-[#f8f1e4] px-10 text-sm font-semibold text-[var(--space-void)] shadow-[0_0_34px_8px_rgba(240,206,142,0.25)] transition-[background-color,box-shadow] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-indigo)]">
                     Get started
                     <ArrowRight aria-hidden className="size-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
