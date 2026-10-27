@@ -4,7 +4,8 @@ import { Github01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { BenchmarkChart } from "@/components/benchmark-chart";
+import { BenchmarkChart, chartColor } from "@/components/benchmark-chart";
+import { medianMb } from "@/lib/benchmark";
 import { cn } from "@/lib/utils";
 
 type RuntimeKey = "node" | "deno" | "bun";
@@ -164,6 +165,16 @@ export default function Page() {
     ) as Record<LibraryKey, number>;
   }, [metric, runtimeData]);
 
+  // the figures the landing quotes: medians, lowest first, each against Seyfert
+  const medians = useMemo(() => {
+    if (!runtimeData) return null;
+    const entries = (Object.keys(LIBRARIES) as LibraryKey[]).map((key) => ({ key, mb: medianMb(runtimeData[key][metric]) }));
+    const seyfert = entries.find((entry) => entry.key === "seyfert")!.mb;
+    return entries
+      .map((entry) => ({ ...entry, ratio: entry.mb / seyfert }))
+      .sort((left, right) => left.mb - right.mb);
+  }, [metric, runtimeData]);
+
   const orderedLibraries = useMemo(() => {
     if (!libraryAverages) return selectedLibraries;
 
@@ -241,26 +252,42 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 border-b border-white/8 px-4 py-3 sm:px-6" aria-label="Visible libraries">
-            {(Object.keys(LIBRARIES) as LibraryKey[]).map((key) => {
-              const active = selectedLibraries.includes(key);
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => toggleLibrary(key)}
-                  className={cn(
-                    "rounded-full border px-3 py-1 font-mono text-[10px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-indigo)]",
-                    active
-                      ? "border-white/15 bg-white/8 text-[var(--text-bright)]"
-                      : "border-white/6 text-[var(--text-dim)]/45 hover:text-[var(--text-dim)]"
-                  )}
-                >
-                  {LIBRARIES[key].name}
-                </button>
-              );
-            })}
+          {/* the results double as the series toggles: each cell is one
+              library's median for the selected runtime and metric */}
+          <div className="border-b border-white/8 px-4 py-4 sm:px-6">
+            <p className="font-mono text-[9px] tracking-[0.2em] text-[var(--text-dim)]/60 uppercase">
+              Median over 12 hours · {RUNTIMES[runtime]} · {METRICS[metric].label}
+            </p>
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5" aria-label="Libraries in the chart">
+              {(medians ?? (Object.keys(LIBRARIES) as LibraryKey[]).map((key) => ({ key, mb: null, ratio: null }))).map(({ key, mb, ratio }) => {
+                const active = selectedLibraries.includes(key);
+                const seyfert = key === "seyfert";
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => toggleLibrary(key)}
+                    className={cn(
+                      "flex flex-col items-start gap-1 rounded-lg border px-3 py-2.5 text-left transition-[opacity,border-color,background-color] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-indigo)]",
+                      seyfert ? "border-white/20 bg-white/[0.06]" : "border-white/8 bg-black/20 hover:border-white/15",
+                      !active && "opacity-40"
+                    )}
+                  >
+                    <span className="flex items-center gap-2 font-mono text-[10px] tracking-[0.08em] text-[var(--text-dim)]">
+                      <span aria-hidden className="size-2 rounded-sm" style={{ backgroundColor: chartColor(LIBRARIES[key].color) }} />
+                      {LIBRARIES[key].name}
+                    </span>
+                    <span className="text-xl font-semibold tabular-nums tracking-[-0.02em] text-[var(--text-bright)]">
+                      {mb === null ? "…" : `${mb} MB`}
+                    </span>
+                    <span className="font-mono text-[10px] text-[var(--text-dim)]">
+                      {ratio === null ? " " : seyfert ? "Baseline" : `${ratio.toFixed(2)}× Seyfert`}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="relative h-[390px] px-2 py-5 sm:h-[540px] sm:px-5" aria-busy={isLoading}>

@@ -4,7 +4,7 @@
 // https://github.com/Boring-Software-Inc/tripwire
 import { useEffect, useMemo, useRef, useState } from "react"
 
-type ChartColor = "green" | "blue" | "purple" | "pink" | "orange" | "red" | "grey"
+export type ChartColor = "green" | "blue" | "purple" | "pink" | "orange" | "red" | "grey"
 type ChartRow = Record<string, unknown> & { time: number; timeLabel: string }
 type ChartConfig = Record<string, { label?: string; color: ChartColor }>
 
@@ -29,6 +29,9 @@ const MARKER_COLOR: [number, number, number] = [255, 232, 164]
 
 const rgb = ([r, g, b]: [number, number, number], alpha = 1) =>
   `rgba(${r},${g},${b},${alpha})`
+
+/** a series colour as CSS, for UI that sits beside the chart */
+export const chartColor = (color: ChartColor) => rgb(PALETTE[color])
 
 const formatTime = (minutes: number) => {
   const hours = Math.floor(minutes / 60)
