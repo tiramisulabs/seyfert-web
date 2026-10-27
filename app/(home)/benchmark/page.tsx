@@ -3,7 +3,7 @@
 import { Github01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { BenchmarkChart, chartColor } from "@/components/benchmark-chart";
 import { medianMb } from "@/lib/benchmark";
 import { cn } from "@/lib/utils";
@@ -61,6 +61,17 @@ const METRICS: Record<MetricKey, { label: string; description: string }> = {
 const METRIC_LABELS = Object.fromEntries(
   Object.entries(METRICS).map(([key, item]) => [key, item.label])
 ) as Record<MetricKey, string>;
+
+// The run these numbers come from: tiramisulabs/benchmark at df104d9
+// (February 2025), versions from its pnpm-lock.yaml. Its main branch has since
+// moved on to a 32-shard rerun, so the source link pins this commit.
+const BENCH_SOURCE = "https://github.com/tiramisulabs/benchmark/tree/df104d9b8df2ac45a363b2ca389065f08ea3ec54";
+const RUN = [
+  ["Run", "February 2025"],
+  ["Window", "12 hours, sampled every 5 s and averaged per 30 min"],
+  ["Load", "3 shards, every non-privileged intent, only the guild cache enabled"],
+  ["Versions", ["Seyfert 2.2.1 (dev build)", "discord.js 14.18.0", "Eris 0.18.0", "Oceanic 1.11.2", "Detritus 0.16.3"]]
+] as const;
 
 const formatTime = (minutes: number) => {
   const hours = Math.floor(minutes / 60);
@@ -215,7 +226,7 @@ export default function Page() {
               Five Discord clients under the same gateway workload.
             </p>
             <Link
-              href="https://github.com/tiramisulabs/benchmark"
+              href={BENCH_SOURCE}
               className="flex w-fit items-center gap-2 font-mono text-[10px] tracking-[0.18em] text-[var(--text-dim)] transition-colors hover:text-[var(--text-bright)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-indigo)]"
             >
               <HugeiconsIcon icon={Github01Icon} className="size-4" />
@@ -225,14 +236,18 @@ export default function Page() {
 
           <div className="lg:col-span-7 lg:col-start-6 lg:pt-9">
             <dl className="border-t border-white/10">
-              {[
-                ["Window", "12 hours"],
-                ["Samples", "24 · every 30 min"],
-                ["Load", "Identical"]
-              ].map(([term, value]) => (
+              {RUN.map(([term, value]) => (
                 <div key={term} className="grid grid-cols-[5.5rem_1fr] items-baseline gap-3 border-b border-white/10 py-4 sm:grid-cols-[7rem_1fr]">
                   <dt className="font-mono text-[9px] tracking-[0.18em] text-[var(--text-dim)]/60 uppercase">{term}</dt>
-                  <dd className="text-sm font-medium text-[var(--text-bright)]">{value}</dd>
+                  <dd className="text-sm font-medium text-[var(--text-bright)]">
+                    {typeof value === "string" ? value : value.map((item, index) => (
+                      // lines break at the separators, never inside a version
+                      <Fragment key={item}>
+                        {index > 0 && " · "}
+                        <span className="whitespace-nowrap">{item}</span>
+                      </Fragment>
+                    ))}
+                  </dd>
                 </div>
               ))}
             </dl>
