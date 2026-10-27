@@ -15,6 +15,7 @@ import { guideSource } from "@/lib/source";
 import { GeistSans } from "geist/font/sans";
 import { config } from "@/app.config";
 import { DocsHeader } from "@/components/docs/docs-header";
+import { SkipLink } from "@/components/ui/skip-link";
 import { SidebarSearchSeparator } from "@/components/docs/sidebar-search-separator";
 import { apiEntries, type ApiEntry, type ApiKind } from "@/lib/api-reference/generated";
 import {
@@ -272,6 +273,7 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <div className={`${GeistSans.className} seyfert-docs`}>
+      <SkipLink href="#nd-page" />
       <DocsLayout
         tree={tree}
         nav={{ ...baseOptions.nav }}
