@@ -3,9 +3,9 @@
 import { Github01Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { BenchmarkChart } from "@/components/benchmark-chart";
-import { ArmLabel } from "@/components/home/galaxy/arm-label";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { BenchmarkChart, chartColor } from "@/components/benchmark-chart";
+import { medianMb } from "@/lib/benchmark";
 import { cn } from "@/lib/utils";
 
 type RuntimeKey = "node" | "deno" | "bun";
@@ -61,6 +61,17 @@ const METRICS: Record<MetricKey, { label: string; description: string }> = {
 const METRIC_LABELS = Object.fromEntries(
   Object.entries(METRICS).map(([key, item]) => [key, item.label])
 ) as Record<MetricKey, string>;
+
+// The run these numbers come from: tiramisulabs/benchmark at df104d9
+// (February 2025), versions from its pnpm-lock.yaml. Its main branch has since
+// moved on to a 32-shard rerun, so the source link pins this commit.
+const BENCH_SOURCE = "https://github.com/tiramisulabs/benchmark/tree/df104d9b8df2ac45a363b2ca389065f08ea3ec54";
+const RUN = [
+  ["Run", "February 2025"],
+  ["Window", "12 hours, sampled every 5 s and averaged per 30 min"],
+  ["Load", "3 shards, every non-privileged intent, only the guild cache enabled"],
+  ["Versions", ["Seyfert 2.2.1 (dev build)", "discord.js 14.18.0", "Eris 0.18.0", "Oceanic 1.11.2", "Detritus 0.16.3"]]
+] as const;
 
 const formatTime = (minutes: number) => {
   const hours = Math.floor(minutes / 60);
@@ -165,6 +176,16 @@ export default function Page() {
     ) as Record<LibraryKey, number>;
   }, [metric, runtimeData]);
 
+  // the figures the landing quotes: medians, lowest first, each against Seyfert
+  const medians = useMemo(() => {
+    if (!runtimeData) return null;
+    const entries = (Object.keys(LIBRARIES) as LibraryKey[]).map((key) => ({ key, mb: medianMb(runtimeData[key][metric]) }));
+    const seyfert = entries.find((entry) => entry.key === "seyfert")!.mb;
+    return entries
+      .map((entry) => ({ ...entry, ratio: entry.mb / seyfert }))
+      .sort((left, right) => left.mb - right.mb);
+  }, [metric, runtimeData]);
+
   const orderedLibraries = useMemo(() => {
     if (!libraryAverages) return selectedLibraries;
 
@@ -191,22 +212,21 @@ export default function Page() {
   };
 
   return (
-    <main className="spiral-page relative min-h-screen overflow-hidden">
+    <div className="spiral-page relative min-h-screen overflow-hidden pt-15">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_72%_18%,rgba(129,140,248,0.09),transparent_34%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:28px_28px] [mask-image:linear-gradient(to_bottom,black,transparent_72%)]" />
 
       <div className="relative mx-auto w-full max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
         <section className="grid gap-10 lg:grid-cols-12 lg:gap-x-16">
           <div className="flex flex-col gap-6 lg:col-span-5">
-            <ArmLabel index="04" name="Luminosity" />
             <h1 className="max-w-[12ch] text-balance text-4xl font-semibold leading-[1.04] tracking-[-0.025em] sm:text-5xl">
               Memory under a <span className="text-[var(--brand-indigo)]">twelve-hour sky</span>
             </h1>
             <p className="max-w-[48ch] text-[15px] leading-relaxed text-[var(--text-dim)]">
-              Median memory telemetry from five Discord clients handling the same gateway workload. Lower is better.
+              Five Discord clients under the same gateway workload.
             </p>
             <Link
-              href="https://github.com/tiramisulabs/benchmark"
+              href={BENCH_SOURCE}
               className="flex w-fit items-center gap-2 font-mono text-[10px] tracking-[0.18em] text-[var(--text-dim)] transition-colors hover:text-[var(--text-bright)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-indigo)]"
             >
               <HugeiconsIcon icon={Github01Icon} className="size-4" />
@@ -216,15 +236,18 @@ export default function Page() {
 
           <div className="lg:col-span-7 lg:col-start-6 lg:pt-9">
             <dl className="border-t border-white/10">
-              {[
-                ["Window", "12 hours", "A long-running process, not a synthetic burst"],
-                ["Cadence", "24 samples", "One median reading every thirty minutes"],
-                ["Load", "Identical", "The same events and gateway traffic for every client"]
-              ].map(([term, value, detail]) => (
-                <div key={term} className="grid grid-cols-[5.5rem_7rem_1fr] items-baseline gap-3 border-b border-white/10 py-4 sm:grid-cols-[7rem_8rem_1fr]">
+              {RUN.map(([term, value]) => (
+                <div key={term} className="grid grid-cols-[5.5rem_1fr] items-baseline gap-3 border-b border-white/10 py-4 sm:grid-cols-[7rem_1fr]">
                   <dt className="font-mono text-[9px] tracking-[0.18em] text-[var(--text-dim)]/60 uppercase">{term}</dt>
-                  <dd className="text-sm font-medium text-[var(--text-bright)]">{value}</dd>
-                  <dd className="text-xs leading-relaxed text-[var(--text-dim)]">{detail}</dd>
+                  <dd className="text-sm font-medium text-[var(--text-bright)]">
+                    {typeof value === "string" ? value : value.map((item, index) => (
+                      // lines break at the separators, never inside a version
+                      <Fragment key={item}>
+                        {index > 0 && " · "}
+                        <span className="whitespace-nowrap">{item}</span>
+                      </Fragment>
+                    ))}
+                  </dd>
                 </div>
               ))}
             </dl>
@@ -234,8 +257,7 @@ export default function Page() {
         <section className="relative mt-14 overflow-hidden rounded-xl border border-white/10 bg-[var(--space-deep)]/75 shadow-[0_28px_90px_-48px_rgba(37,99,235,0.65)] backdrop-blur-sm sm:mt-20">
           <div className="flex flex-col gap-6 border-b border-white/10 px-4 py-5 sm:px-6 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="font-mono text-[9px] tracking-[0.22em] text-[var(--brand-indigo)] uppercase">Memory telemetry</p>
-              <h2 className="mt-2 text-xl font-semibold tracking-[-0.015em]">Median usage over time</h2>
+              <h2 className="text-xl font-semibold tracking-[-0.015em]">Memory usage</h2>
               <p className="mt-1 text-xs text-[var(--text-dim)]">{METRICS[metric].description}</p>
             </div>
 
@@ -245,26 +267,42 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 border-b border-white/8 px-4 py-3 sm:px-6" aria-label="Visible libraries">
-            {(Object.keys(LIBRARIES) as LibraryKey[]).map((key) => {
-              const active = selectedLibraries.includes(key);
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  aria-pressed={active}
-                  onClick={() => toggleLibrary(key)}
-                  className={cn(
-                    "rounded-full border px-3 py-1 font-mono text-[10px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-indigo)]",
-                    active
-                      ? "border-white/15 bg-white/8 text-[var(--text-bright)]"
-                      : "border-white/6 text-[var(--text-dim)]/45 hover:text-[var(--text-dim)]"
-                  )}
-                >
-                  {LIBRARIES[key].name}
-                </button>
-              );
-            })}
+          {/* the results double as the series toggles: each cell is one
+              library's median for the selected runtime and metric */}
+          <div className="border-b border-white/8 px-4 py-4 sm:px-6">
+            <p className="font-mono text-[9px] tracking-[0.2em] text-[var(--text-dim)]/60 uppercase">
+              Median over 12 hours · {RUNTIMES[runtime]} · {METRICS[metric].label}
+            </p>
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5" aria-label="Libraries in the chart">
+              {(medians ?? (Object.keys(LIBRARIES) as LibraryKey[]).map((key) => ({ key, mb: null, ratio: null }))).map(({ key, mb, ratio }) => {
+                const active = selectedLibraries.includes(key);
+                const seyfert = key === "seyfert";
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() => toggleLibrary(key)}
+                    className={cn(
+                      "flex flex-col items-start gap-1 rounded-lg border px-3 py-2.5 text-left transition-[opacity,border-color,background-color] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-indigo)]",
+                      seyfert ? "border-white/20 bg-white/[0.06]" : "border-white/8 bg-black/20 hover:border-white/15",
+                      !active && "opacity-40"
+                    )}
+                  >
+                    <span className="flex items-center gap-2 font-mono text-[10px] tracking-[0.08em] text-[var(--text-dim)]">
+                      <span aria-hidden className="size-2 rounded-sm" style={{ backgroundColor: chartColor(LIBRARIES[key].color) }} />
+                      {LIBRARIES[key].name}
+                    </span>
+                    <span className="text-xl font-semibold tabular-nums tracking-[-0.02em] text-[var(--text-bright)]">
+                      {mb === null ? "…" : `${mb} MB`}
+                    </span>
+                    <span className="font-mono text-[10px] text-[var(--text-dim)]">
+                      {ratio === null ? " " : seyfert ? "Baseline" : `${ratio.toFixed(2)}× Seyfert`}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="relative h-[390px] px-2 py-5 sm:h-[540px] sm:px-5" aria-busy={isLoading}>
@@ -272,7 +310,7 @@ export default function Page() {
               <div className="absolute inset-0 z-20 grid place-items-center bg-[var(--space-deep)]/70 backdrop-blur-sm">
                 <div className="flex items-center gap-3 font-mono text-[10px] tracking-[0.18em] text-[var(--text-dim)] uppercase">
                   <span className="size-2 animate-pulse rounded-full bg-[var(--brand-indigo)]" />
-                  Loading telemetry
+                  Loading…
                 </div>
               </div>
             )}
@@ -280,12 +318,8 @@ export default function Page() {
             <BenchmarkChart data={chartData} config={chartConfig} />
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 px-4 py-3 font-mono text-[9px] tracking-[0.16em] text-[var(--text-dim)]/60 sm:px-6">
-            <span>{RUNTIMES[runtime]} · {METRICS[metric].label} · LINE · GRADIENT · MEDIAN MB</span>
-            <span className="text-[var(--brand-indigo)]">LOWER IS BETTER</span>
-          </div>
         </section>
       </div>
-    </main>
+    </div>
   );
 }

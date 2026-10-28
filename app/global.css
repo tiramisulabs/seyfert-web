@@ -12,6 +12,7 @@
 
 
 :root {
+  --blog-muted: #9ca3af;
 
   --background: hsl(0 0% 100%);
 
@@ -927,12 +928,12 @@ html {
   border-radius: 5px; background: #818cf8; color: #0b0b10; font-weight: 700; padding: 3px 7px;
   font-size: 10.5px; letter-spacing: .04em; text-transform: uppercase; box-shadow: 0 0 18px -4px #818cf8;
 }
-.blog-bento .date { font-size: 12px; color: #6b7280; }
+.blog-bento .date { font-size: 12px; color: var(--blog-muted); }
 .blog-bento .ctitle { font-weight: 700; color: #fafafa; line-height: 1.22; letter-spacing: -0.01em; font-size: 15px; }
 .blog-bento .wide .ctitle { font-size: 16.5px; }
 .blog-bento .hero .ctitle { font-size: 30px; max-width: 18ch; }
 .blog-bento .cdesc {
-  margin-top: 8px; font-size: 13px; color: #6b7280; line-height: 1.5; max-width: 36ch;
+  margin-top: 8px; font-size: 13px; color: var(--blog-muted); line-height: 1.5; max-width: 36ch;
   display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .blog-bento .hero .cdesc { -webkit-line-clamp: 3; max-width: 48ch; }
@@ -941,7 +942,7 @@ html {
 .blog-bento .bcard:hover .more svg { transform: translateX(3px); }
 
 .blog-index .eyebrow { display: flex; align-items: center; gap: 14px; margin: 0 0 18px; }
-.blog-index .eyebrow span { font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: #6b7280; font-family: ui-monospace, "Geist Mono", Menlo, monospace; }
+.blog-index .eyebrow span { font-size: 11px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--blog-muted); font-family: ui-monospace, "Geist Mono", Menlo, monospace; }
 .blog-index .eyebrow .rule { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.08), transparent); }
 
 .blog-bento .bcard:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.18); box-shadow: 0 18px 44px -18px rgba(0,0,0,.75); }
@@ -967,4 +968,258 @@ html {
   .blog-bento .bcard, .blog-bento .wm { transition: none !important; }
   .blog-bento .bcard:hover { transform: none !important; }
   .blog-bento .bcard:hover .wm { transform: none !important; }
+}
+
+/* ── Journey preview (/journey) ─────────────────────────────────────────
+   Scoped to .journey-page so the spiral home is untouched. */
+.journey-page .journey-grain {
+  opacity: 0.14;
+  mix-blend-mode: screen;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 8 -3.5'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' fill='%23fff'/%3E%3C/svg%3E");
+  background-size: 88px 88px;
+}
+.journey-page .journey-ghost {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.07);
+}
+.journey-page .journey-metal {
+  background: linear-gradient(125deg, #f2d7a6 0%, #fff3d8 30%, #ffffff 42%, #d6dce5 78%, #c9d0da 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 30px rgba(255, 217, 160, 0.18));
+}
+.journey-page .journey-code pre,
+.journey-page .journey-code code { background: transparent !important; }
+.journey-page .journey-code { line-height: 1.75; }
+
+@keyframes journey-ring-dash { to { stroke-dashoffset: -400; } }
+.journey-page .journey-ring { animation: journey-ring-dash 30s linear infinite; }
+
+@keyframes journey-shard-pulse {
+  0%, 82%, 100% { background-color: rgba(185, 198, 230, 0.03); }
+  88% { background-color: rgba(185, 198, 230, 0.32); }
+}
+.journey-page .journey-shard { animation: journey-shard-pulse 3.2s ease-in-out infinite; }
+
+@keyframes journey-travel {
+  0% { left: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+.journey-page .journey-travel { animation: journey-travel 3.6s cubic-bezier(0.45, 0, 0.55, 1) infinite; }
+
+@keyframes journey-jet {
+  0% { bottom: 0%; opacity: 0; }
+  15% { opacity: 1; }
+  100% { bottom: 100%; opacity: 0; }
+}
+.journey-page .journey-jet { animation: journey-jet 3.3s cubic-bezier(0.3, 0, 0.2, 1) infinite; }
+
+@keyframes journey-orb {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.12); opacity: 1; }
+}
+.journey-page .journey-orb { animation: journey-orb 2.4s ease-in-out infinite; }
+
+@keyframes journey-caret { 50% { opacity: 0; } }
+.journey-page .journey-caret { animation: journey-caret 1.1s steps(1) infinite; }
+
+@keyframes journey-drop {
+  0% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  51% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+.journey-page .journey-drop { animation: journey-drop 2.2s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-page .journey-ring,
+  .journey-page .journey-shard,
+  .journey-page .journey-travel,
+  .journey-page .journey-jet,
+  .journey-page .journey-orb,
+  .journey-page .journey-caret,
+  .journey-page .journey-drop { animation: none; }
+  .journey-page .journey-travel { left: 50%; }
+  .journey-page .journey-jet { display: none; }
+}
+
+/* ── Journey, refined (/journey-refined) ───────────────────────────────
+   The reviewed local iteration of /journey. Its own namespace so the
+   original /journey keeps its grain, ghost text and ring animations. */
+.journey-refined-page .journey-refined-metal {
+  background: linear-gradient(125deg, #fff3d8, #ffffff 45%, #c9d0da);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.journey-refined-page .journey-refined-code pre,
+.journey-refined-page .journey-refined-code code { background: transparent !important; }
+.journey-refined-page .journey-refined-code { line-height: 1.7; }
+.journey-refined-page .journey-refined-code pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+/* a wrapped code line hangs under itself instead of falling to column 0 */
+.journey-refined-page .journey-refined-code .line {
+  display: inline-block;
+  width: 100%;
+  padding-left: 4ch;
+  text-indent: -4ch;
+  vertical-align: top;
+}
+@keyframes journey-refined-drop {
+  0% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  51% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+.journey-refined-page .journey-refined-drop { animation: journey-refined-drop 2.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .journey-refined-page *,
+  .journey-refined-page *::before,
+  .journey-refined-page *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ── Reveal experiment (/reveal) ────────────────────────────────────────
+   Scoped to .reveal-page. */
+/* Grain is painted into the page background (it scrolls with the page)
+   instead of a fixed full-screen layer blended over the WebGL canvas, which
+   cost a full-viewport blend on every composited frame. */
+.reveal-page {
+  background-color: var(--space-void);
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 8 -3.5'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='linear' slope='0.12'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' fill='%23fff'/%3E%3C/svg%3E");
+  background-size: 88px 88px;
+}
+.reveal-page .reveal-metal {
+  background: linear-gradient(125deg, #f2d7a6 0%, #fff3d8 30%, #ffffff 42%, #d6dce5 78%, #c9d0da 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.reveal-page .reveal-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 217, 160, 0.55);
+}
+
+/* The compact cut for returning visitors. data-reveal="compact" is set before
+   paint, but the server HTML is the full Reveal, so until React renders the
+   cut the chapters are unpinned and the opening shows its last frame: no
+   plate, the headline in place, the scene dimmed. Matches Pin and
+   OpeningStage with still = true. */
+html[data-reveal="compact"] .reveal-page .reveal-pin {
+  height: auto !important;
+}
+html[data-reveal="compact"] .reveal-page .reveal-stage {
+  position: relative;
+  height: auto;
+  min-height: 100svh;
+  padding-block: 6rem;
+}
+html[data-reveal="compact"] .reveal-page .reveal-dive {
+  display: none;
+}
+html[data-reveal="compact"] .reveal-page .reveal-head {
+  opacity: 1 !important;
+  transform: none !important;
+}
+html[data-reveal="compact"] .reveal-page .reveal-scene {
+  opacity: 0.35 !important;
+}
+html[data-reveal="compact"] .reveal-page .reveal-replay {
+  display: inline-flex;
+}
+/* replaying is pointless when reduced motion keeps every chapter still */
+@media (prefers-reduced-motion: reduce) {
+  html[data-reveal="compact"] .reveal-page .reveal-replay {
+    display: none;
+  }
+}
+
+/* Opening. The plate is the void with the drawn wordmark cut out of it
+   (a CSS mask, so it is sized by CSS and correct in the server HTML). */
+.reveal-page .reveal-plate {
+  background-color: #05070d;
+  -webkit-mask-image: linear-gradient(#000 0 0), var(--word-mask);
+  mask-image: linear-gradient(#000 0 0), var(--word-mask);
+  -webkit-mask-size: 100% 100%, var(--word-w) var(--word-h);
+  mask-size: 100% 100%, var(--word-w) var(--word-h);
+  -webkit-mask-position: 0 0, center;
+  mask-position: 0 0, center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+/* the galactic plane the letters' middle strokes sit on */
+.reveal-page .reveal-plane {
+  background: linear-gradient(90deg, transparent, rgba(255, 217, 160, 0.4) 22%, rgba(255, 240, 220, 0.75) 50%, rgba(255, 217, 160, 0.4) 78%, transparent);
+}
+/* under the captured frame (and alone on portrait tablets, which render a
+   different composition): the photon ring and the disk, tilted like the
+   live render */
+@media (min-width: 768px) and (max-aspect-ratio: 1/1) {
+  .reveal-page .reveal-scene-photo { display: none; }
+}
+.reveal-page .reveal-scene-fallback {
+  background:
+    radial-gradient(circle at 50% 51% , transparent 0 calc(var(--fb) * 0.27), rgba(255, 238, 210, 0.85) calc(var(--fb) * 0.285), rgba(255, 217, 160, 0.3) calc(var(--fb) * 0.31), transparent calc(var(--fb) * 0.36)),
+    radial-gradient(circle at 50% 51%, rgba(255, 217, 160, 0.16), transparent calc(var(--fb) * 0.5));
+  --fb: 62vmin;
+}
+.reveal-page .reveal-scene-fallback::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 51%;
+  width: calc(var(--fb) * 1.15);
+  height: calc(var(--fb) * 0.05);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotate(-24deg);
+  background: radial-gradient(closest-side, rgba(255, 236, 205, 0.85), rgba(255, 200, 140, 0.35) 55%, transparent);
+}
+
+/* Entrance, CSS-only so it runs from the first paint, before hydration:
+   the plane draws out from the nucleus, the letters light, the cue follows. */
+@keyframes reveal-plane-in { from { transform: scaleX(0); } }
+@keyframes reveal-glass-in { from { opacity: 0; } }
+@keyframes reveal-nucleus { 0%, 100% { opacity: 0.85; } 50% { opacity: 1; } }
+.reveal-page .reveal-plane { animation: reveal-plane-in 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both; }
+.reveal-page .reveal-glass { animation: reveal-glass-in 0.5s ease-out both; }
+.reveal-page .reveal-nucleus { animation: reveal-nucleus 2.6s ease-in-out 1.2s infinite; }
+.reveal-page .reveal-cue { animation: reveal-glass-in 0.6s ease-out 0.9s both; }
+
+@keyframes reveal-drop {
+  0% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  51% { transform: scaleY(1); transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+.reveal-page .reveal-drop { animation: reveal-drop 2.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal-page .reveal-drop,
+  .reveal-page .reveal-plane,
+  .reveal-page .reveal-glass,
+  .reveal-page .reveal-nucleus,
+  .reveal-page .reveal-cue { animation: none; }
+}
+
+/* Reading measure and keyboard focus, scoped to the affected templates. */
+.blog-article :where(p, ul, ol, blockquote),
+.docs-guide-body > :where(p, ul, ol, blockquote) {
+  max-width: 65ch;
+}
+.panda-archive :is(a, button):focus-visible {
+  outline: 2px solid var(--bg-50);
+  outline-offset: 4px;
+}
+@media (max-width: 767px) {
+  .seyfert-docs :is(#nd-sidebar, #nd-sidebar-mobile) a:not([href="/"]) {
+    min-height: 44px !important;
+  }
 }
