@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, RotateCcw } from "lucide-react";
 import { GeistMono } from "geist/font/mono";
 import {
     motion,
@@ -274,7 +274,7 @@ function OpeningStage({ p, still }: { p: MotionValue<number>; still: boolean }) 
                             </defs>
                             <g className="reveal-glass">
                                 <path d={WORD_PATH} clipPath="url(#reveal-cap)" fill="none" stroke="url(#reveal-glass)" strokeWidth={STROKE} strokeLinejoin="miter" strokeMiterlimit={8} />
-                                <circle className="reveal-nucleus" cx={NUCLEUS.x} cy={NUCLEUS.y} r={9} fill="url(#reveal-nucleus)" />
+                                <circle cx={NUCLEUS.x} cy={NUCLEUS.y} r={9} fill="url(#reveal-nucleus)" />
                             </g>
                         </motion.svg>
                     </motion.div>
@@ -290,8 +290,9 @@ function OpeningStage({ p, still }: { p: MotionValue<number>; still: boolean }) 
                 </motion.div>
             )}
 
-            <Link href="/docs/learn/getting-started" className="absolute bottom-8 left-1/2 z-20 inline-flex h-11 -translate-x-1/2 items-center gap-3 bg-[var(--core-white)] px-6 text-sm font-semibold text-[var(--space-void)] transition-colors hover:bg-[var(--core-amber)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--core-white)]">
-                Get started <span aria-hidden="true">→</span>
+            <Link href="/docs/learn/getting-started" className="absolute bottom-8 left-1/2 z-20 inline-flex h-11 -translate-x-1/2 items-center gap-2 bg-[var(--core-white)] px-8 text-sm font-semibold text-[var(--space-void)] transition-colors hover:bg-[var(--core-amber)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--core-white)]">
+                Get started
+                <ArrowRight aria-hidden className="size-4" />
             </Link>
             <motion.div style={{ opacity: head, y: headY }} className="reveal-head absolute inset-x-0 bottom-[18%] flex flex-col items-center gap-5 px-6 text-center">
                 <h1 className="max-w-[16ch] text-balance text-5xl font-semibold leading-[0.98] tracking-[-0.03em] [text-shadow:0_2px_40px_rgba(0,0,0,0.95)] sm:text-7xl">
@@ -300,9 +301,9 @@ function OpeningStage({ p, still }: { p: MotionValue<number>; still: boolean }) 
                 <code translate="no" className={cn(mono, "text-[14px] tracking-[0.08em] text-[#efe6d2] [text-shadow:0_1px_16px_rgba(0,0,0,0.95)]")}>npm i seyfert</code>
                 {/* proof beside the promise, from the same measurements the
                     Memory chapter shows */}
-                <p className={cn(mono, "flex flex-col gap-1 text-[11px] leading-relaxed tracking-[0.2em] text-[var(--text-dim)] [text-shadow:0_1px_16px_rgba(0,0,0,0.95)]")}>
-                    <span>{(DISCORD_RSS / SEYFERT_RSS).toFixed(2)}× LESS MEMORY THAN DISCORD.JS</span>
-                    <span>POWERING BOTS IN PRODUCTION</span>
+                <p className={cn(mono, "flex flex-col gap-1 text-[12px] leading-relaxed tracking-[0.02em] text-[var(--text-dim)] [text-shadow:0_1px_16px_rgba(0,0,0,0.95)]")}>
+                    <span>{(DISCORD_RSS / SEYFERT_RSS).toFixed(2)}× less memory than discord.js</span>
+                    <span>Powering bots in production</span>
                 </p>
                 {/* always in the HTML, shown by global.css in the compact cut
                     only, so it doesn't push the headline up when React
@@ -313,9 +314,10 @@ function OpeningStage({ p, still }: { p: MotionValue<number>; still: boolean }) 
                         window.scrollTo({ top: 0, behavior: "instant" });
                         setCompact(false);
                     }}
-                    className={cn(mono, "reveal-replay hidden min-h-11 items-center text-[11px] tracking-[0.25em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current")}
+                    className={cn(mono, "reveal-replay hidden min-h-11 items-center gap-2 text-[12px] tracking-[0.02em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current")}
                 >
-                    REPLAY THE INTRO ↺
+                    <RotateCcw aria-hidden className="size-4" />
+                    Replay the intro
                 </button>
             </motion.div>
         </div>
@@ -351,14 +353,13 @@ function OneFileStage({ p, lines }: { p: MotionValue<number>; lines: CodeLines }
     const h1y = useTransform(p, [0.02, 0.16], [30, 0]);
     const reply = useTransform(p, [0.78, 0.88], [0, 1]);
     const replyY = useTransform(p, [0.78, 0.9], [40, 0]);
-    const glow = useTransform(p, [0.7, 0.9], [0, 1]);
     const n = lines.length;
     return (
         <div className="mx-auto grid h-full max-w-6xl content-center items-center gap-6 px-5 py-14 sm:gap-10 sm:py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
             <motion.div style={{ y: h1y }} className="flex flex-col gap-6">
-                <h2 className="text-[clamp(44px,7vw,104px)] font-semibold leading-[0.92] tracking-[-0.04em]">
+                <h2 className="text-[clamp(44px,5.5vw,80px)] font-semibold leading-[0.92] tracking-[-0.04em]">
                     <motion.span style={{ opacity: h1a }} className="block">A command</motion.span>
-                    <motion.span style={{ opacity: h1b }} className="reveal-metal block">is one file.</motion.span>
+                    <motion.span style={{ opacity: h1b }} className="block text-[var(--core-white)]">is one file</motion.span>
                 </h2>
                 <motion.p style={{ opacity: h1b }} className="max-w-[40ch] text-[15px] leading-relaxed text-[var(--text-dim)] sm:text-[17px]">
                     Declare it, type its options, write <code className={cn(mono, "text-[15px] text-[#ffc799]")}>run</code>. Seyfert loads it, registers it with Discord and hands you a typed context.
@@ -366,19 +367,18 @@ function OneFileStage({ p, lines }: { p: MotionValue<number>; lines: CodeLines }
             </motion.div>
 
             <div className="relative min-w-0">
-                <motion.div aria-hidden style={{ opacity: glow }} className="absolute -inset-10 -z-10 rounded-[40px] bg-[radial-gradient(ellipse_at_center,rgba(255,217,160,0.16),transparent_65%)]" />
                 <div className="overflow-hidden rounded-xl border border-white/10 bg-[#090b12]/90 shadow-[0_40px_120px_rgba(0,0,0,0.6)]">
-                    <div className={cn(mono, "flex items-center justify-between border-b border-white/[0.07] px-4 py-2.5 text-[11px] tracking-[0.1em] text-[var(--text-dim)]")}>
+                    <div className={cn(mono, "flex items-center justify-between border-b border-white/[0.07] px-4 py-3 text-[11px] tracking-[0.1em] text-[var(--text-dim)]")}>
                         <span className="text-[#ffd9a0]">src/commands/echo.ts</span>
                         <span>{n} lines</span>
                     </div>
-                    <div className={cn(mono, "px-4 py-3 text-[10.5px] leading-[1.6] sm:overflow-x-auto sm:py-4 sm:text-[13px] sm:leading-[1.75]")}>
+                    <div className={cn(mono, "px-4 py-3 text-[11px] leading-[1.6] sm:overflow-x-auto sm:py-4 sm:text-[13px] sm:leading-[1.75]")}>
                         {lines.map((line, i) => (
                             <CodeLine key={i} line={line} p={p} at={0.14 + (i / n) * 0.56} />
                         ))}
                     </div>
                 </div>
-                <motion.div style={{ opacity: reply, y: replyY }} className="mt-3 flex sm:mt-5 items-center gap-3 rounded-xl border border-[#818cf8]/30 bg-[#0e1019]/95 p-3.5 shadow-[0_0_60px_rgba(129,140,248,0.18)]">
+                <motion.div style={{ opacity: reply, y: replyY }} className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-[#0e1019]/95 p-3 sm:mt-6">
                     <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--brand-indigo)]">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" fill="#05070d" /><ellipse cx="12" cy="12" rx="9" ry="3.8" stroke="#05070d" strokeWidth="1.6" transform="rotate(-20 12 12)" /></svg>
                     </span>
@@ -440,23 +440,23 @@ function CeremonyStage({ p, djs, boot }: { p: MotionValue<number>; djs: CodeLine
                     Leave the<br />ceremony behind
                 </h2>
                 <div className="flex flex-col items-start sm:items-end">
-                    <motion.span className="reveal-metal text-[clamp(64px,9vw,128px)] font-semibold leading-none tracking-[-0.05em] tabular-nums">{countText}</motion.span>
-                    <span className={cn(mono, "relative h-4 w-[22ch] text-[11px] tracking-[0.25em] text-[var(--text-dim)]")}>
-                        <motion.span style={{ opacity: labelOld }} className="absolute left-0 whitespace-nowrap sm:left-auto sm:right-0">LINES IN DISCORD.JS</motion.span>
-                        <motion.span style={{ opacity: label }} className="absolute left-0 whitespace-nowrap text-[#ffd9a0] sm:left-auto sm:right-0">LINES IN SEYFERT</motion.span>
+                    <motion.span className="text-[clamp(64px,9vw,128px)] text-[var(--core-white)] font-semibold leading-none tracking-[-0.05em] tabular-nums">{countText}</motion.span>
+                    <span className={cn(mono, "relative h-4 w-[22ch] text-[12px] tracking-[0.02em] text-[var(--text-dim)]")}>
+                        <motion.span style={{ opacity: labelOld }} className="absolute left-0 whitespace-nowrap sm:left-auto sm:right-0">Lines in discord.js</motion.span>
+                        <motion.span style={{ opacity: label }} className="absolute left-0 whitespace-nowrap text-[#ffd9a0] sm:left-auto sm:right-0">Lines in Seyfert</motion.span>
                     </span>
                 </div>
             </motion.div>
 
             <div className="relative min-h-[420px]">
                 <motion.div style={{ scale: djsScale, x: djsX, opacity: djsO }} className="absolute inset-x-0 top-0 origin-left overflow-hidden rounded-xl border border-white/10 bg-[#090b12]/90 lg:right-[22%]">
-                    <div className={cn(mono, "border-b border-white/[0.07] px-4 py-2.5 text-[11px] tracking-[0.1em] text-[var(--text-dim)]")}>discord.js v14 · index.js</div>
-                    <div className={cn(mono, "overflow-x-auto px-4 py-4 text-[11px] leading-[1.7] sm:text-[12.5px]")}>
+                    <div className={cn(mono, "border-b border-white/[0.07] px-4 py-3 text-[11px] tracking-[0.1em] text-[var(--text-dim)]")}>discord.js v14 · index.js</div>
+                    <div className={cn(mono, "overflow-x-auto px-4 py-4 text-[11px] leading-[1.7] sm:text-[12px]")}>
                         {djs.map((line, i) => <StruckLine key={i} line={line} p={p} at={0.15 + (i / nd) * 0.41} />)}
                     </div>
                 </motion.div>
-                <motion.div style={{ opacity: bootO, x: bootX }} className="absolute inset-x-0 top-10 overflow-hidden rounded-xl border border-[#ffd9a0]/35 bg-[#0b0806]/95 shadow-[0_0_80px_rgba(255,217,160,0.12),0_40px_120px_rgba(0,0,0,0.7)] lg:left-[18%] lg:right-0">
-                    <div className={cn(mono, "border-b border-white/[0.07] px-4 py-2.5 text-[11px] tracking-[0.1em] text-[#ffd9a0]")}>seyfert · the whole boot</div>
+                <motion.div style={{ opacity: bootO, x: bootX }} className="absolute inset-x-0 top-10 overflow-hidden rounded-xl border border-[#ffd9a0]/30 bg-[#0b0806]/95 shadow-[0_40px_120px_rgba(0,0,0,0.7)] lg:left-[18%] lg:right-0">
+                    <div className={cn(mono, "border-b border-white/[0.07] px-4 py-3 text-[11px] tracking-[0.1em] text-[#ffd9a0]")}>seyfert · the whole boot</div>
                     <div className={cn(mono, "overflow-x-auto px-4 py-4 text-[11px] leading-[1.75] sm:text-[13px]")}>
                         {boot.map((line, i) => (
                             <div key={i} className="whitespace-pre-wrap break-words pl-[2ch] -indent-[2ch] sm:whitespace-pre sm:pl-0 sm:indent-0">{line.length === 0 ? " " : line.map((t, k) => <span key={k} style={{ color: t.k }}>{t.c}</span>)}</div>
@@ -500,9 +500,9 @@ function MemoryStage({ p }: { p: MotionValue<number> }) {
                 ))}
             </svg>
 
-            <motion.span style={{ opacity: intro }} className={cn(mono, "relative h-4 w-full text-[12px] tracking-[0.35em] text-[var(--text-dim)]")}>
-                <motion.span style={{ opacity: nameOld }} className="absolute inset-x-0">DISCORD.JS · MEDIAN MEMORY</motion.span>
-                <motion.span style={{ opacity: nameNew }} className="absolute inset-x-0 text-[#ffd9a0]">SEYFERT · MEDIAN MEMORY</motion.span>
+            <motion.span style={{ opacity: intro }} className={cn(mono, "relative h-4 w-full text-[12px] tracking-[0.04em] text-[var(--text-dim)]")}>
+                <motion.span style={{ opacity: nameOld }} className="absolute inset-x-0">discord.js · median memory</motion.span>
+                <motion.span style={{ opacity: nameNew }} className="absolute inset-x-0 text-[#ffd9a0]">Seyfert · median memory</motion.span>
             </motion.span>
 
             <motion.div style={{ opacity: intro, color: heat }} className="relative flex items-baseline font-semibold leading-none tracking-[-0.06em]">
@@ -512,14 +512,17 @@ function MemoryStage({ p }: { p: MotionValue<number> }) {
 
             <motion.div style={{ opacity: intro }} className="relative h-2 w-full max-w-3xl bg-white/[0.05]">
                 <motion.div style={{ opacity: ghost, width: `${DISCORD_RSS / RSS_CEILING * 100}%` }} className="absolute inset-y-0 left-0 border-r border-white/30" />
-                <motion.div style={{ scaleX: bar }} className="absolute inset-0 origin-left bg-gradient-to-r from-[#b4683c] via-[#ffd9a0] to-[#fff4e2] shadow-[0_0_24px_rgba(255,217,160,0.45)]" />
+                <motion.div style={{ scaleX: bar }} className="absolute inset-0 origin-left bg-[var(--core-amber)]" />
             </motion.div>
 
             <motion.div style={{ opacity: tail }} className="relative flex flex-col items-center gap-3">
-                <p className="text-[clamp(20px,2.4vw,30px)] font-medium tracking-[-0.01em]">
-                    {(DISCORD_RSS / SEYFERT_RSS).toFixed(2)}× lighter under the same gateway load.
+                <p className="text-balance text-[clamp(20px,2.4vw,30px)] font-medium tracking-[-0.01em]">
+                    {(DISCORD_RSS / SEYFERT_RSS).toFixed(2)}× lighter under the same gateway load
                 </p>
-                <Link href="/benchmark" className={cn(mono, "inline-flex min-h-11 items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[11px] tracking-[0.25em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline")}>FULL MEASUREMENTS ↗</Link>
+                <Link href="/benchmark" className={cn(mono, "inline-flex min-h-11 items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[12px] tracking-[0.02em] text-[var(--text-dim)] underline-offset-4 hover:text-[var(--text-bright)] hover:underline")}>
+                    Full measurements
+                    <ArrowUpRight aria-hidden className="size-4" />
+                </Link>
             </motion.div>
         </div>
     );
@@ -549,7 +552,7 @@ function Orbit() {
     return (
         <section ref={ref} aria-label="Bots running on Seyfert" className="relative flex flex-col gap-10 overflow-hidden py-40">
             <div className="mx-auto w-full max-w-6xl px-5">
-                <span className={cn(mono, "text-[11px] tracking-[0.16em] text-[var(--text-dim)] sm:tracking-[0.35em]")}>IN ORBIT · BOTS RUNNING ON SEYFERT</span>
+                <span className={cn(mono, "text-[12px] tracking-[0.04em] text-[var(--text-dim)]")}>In orbit · bots running on Seyfert</span>
             </div>
             <motion.ul style={{ x: left }} className="flex w-max items-center gap-10 whitespace-nowrap">
                 {[...BOTS.slice(0, half), ...BOTS.slice(0, half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 0} duplicate={i >= half} />)}
@@ -558,7 +561,10 @@ function Orbit() {
                 {[...BOTS.slice(half), ...BOTS.slice(half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 1} duplicate={i >= BOTS.length - half} />)}
             </motion.ul>
             <div className="mx-auto w-full max-w-6xl px-5">
-                <a href="https://github.com/tiramisulabs/seyfert-web" target="_blank" className={cn(mono, "inline-flex min-h-11 items-center focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[11px] tracking-[0.25em] text-[var(--text-dim)] hover:text-[var(--text-bright)]")}>ADD YOURS — OPEN A PR ↗</a>
+                <a href="https://github.com/tiramisulabs/seyfert-web" target="_blank" className={cn(mono, "inline-flex min-h-11 items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[12px] tracking-[0.02em] text-[var(--text-dim)] hover:text-[var(--text-bright)]")}>
+                    Add yours, open a PR
+                    <ArrowUpRight aria-hidden className="size-4" />
+                </a>
             </div>
         </section>
     );
@@ -624,7 +630,6 @@ function Finale() {
     const photon = useTransform(draw, [0.94, 1], [0, 1]);
     return (
         <section ref={ref} aria-label="Get started" className="relative flex min-h-svh flex-col items-center justify-center gap-10 px-5 pb-28 text-center">
-            <div aria-hidden className="core-glow absolute left-1/2 top-[38%] size-[60vmin] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-25 blur-2xl" />
             {/* bookends the opening: the same drawn wordmark, now solid ground,
                 with its orbit around it */}
             <svg role="img" aria-label="Seyfert" viewBox={`0 0 ${WORD_W} ${CAP}`} className="relative my-12 h-auto w-[min(80vw,860px)] overflow-visible">
@@ -681,17 +686,18 @@ function Finale() {
             <div className="relative flex flex-col items-center gap-3">
                 <span className={cn(mono, "text-[11px] tracking-[0.35em] text-[var(--text-dim)]")}>START BUILDING</span>
                 <span className="flex items-center gap-4">
-                    <code translate="no" className={cn(mono, "reveal-metal text-[clamp(32px,6vw,80px)] font-medium tracking-[-0.03em]")}>npm i seyfert</code>
-                    <CopyButton text="npm i seyfert" label="copy install command" className="text-[18px]" />
+                    <code translate="no" className={cn(mono, "text-[clamp(32px,6vw,80px)] text-[var(--core-white)] font-medium tracking-[-0.03em]")}>npm i seyfert</code>
+                    <CopyButton text="npm i seyfert" label="copy install command" className="focus-visible:outline-[var(--core-white)] data-[copied]:text-[var(--core-amber)]" />
                 </span>
             </div>
-            <div className="relative flex flex-wrap items-center justify-center gap-3.5">
-                <Link href="/docs/learn/getting-started" className="group inline-flex h-11 items-center gap-2 bg-[#f8f1e4] px-10 text-sm font-semibold text-[var(--space-void)] shadow-[0_0_34px_8px_rgba(240,206,142,0.25)] transition-[background-color,box-shadow] hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--brand-indigo)]">
+            <div className="relative flex flex-wrap items-center justify-center gap-4">
+                <Link href="/docs/learn/getting-started" className="group inline-flex h-11 items-center gap-2 bg-[var(--core-white)] px-8 text-sm font-semibold text-[var(--space-void)] transition-colors hover:bg-[var(--core-amber)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--core-white)]">
                     Get started
                     <ArrowRight aria-hidden className="size-4 transition-transform group-hover:translate-x-0.5" />
                 </Link>
-                <Link href="https://discord.gg/hEeJNaSqnS" target="_blank" className={cn(mono, "inline-flex h-11 items-center gap-2 border border-white/15 px-8 text-xs tracking-[0.22em] text-[var(--text-bright)] transition-colors hover:border-[var(--brand-indigo)] hover:bg-[var(--brand-indigo)]/10")}>
-                    DISCORD ↗
+                <Link href="https://discord.gg/hEeJNaSqnS" target="_blank" className={cn(mono, "inline-flex h-11 items-center gap-2 border border-white/15 px-8 text-[13px] text-[var(--text-bright)] transition-colors hover:border-white/30 hover:bg-white/5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--core-white)]")}>
+                    Discord
+                    <ArrowUpRight aria-hidden className="size-4" />
                 </Link>
             </div>
         </section>
