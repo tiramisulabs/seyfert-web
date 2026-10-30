@@ -1216,3 +1216,56 @@ html[data-reveal="compact"] .reveal-page .reveal-replay {
     min-height: 44px !important;
   }
 }
+
+/* ── 404: the address falls into the black hole (components/not-found) ──
+   --digit is the size of the 4s; the hole is the Reveal's mobile capture,
+   cropped square on the shadow (centre at 32% of its height) and sized so
+   the shadow is about as tall as a 4. */
+.nf-scene {
+  --digit: clamp(100px, min(24vw, 22svh), 200px);
+  --hole: calc(var(--digit) * 1.8);
+}
+.nf-digits {
+  font-size: var(--digit);
+  /* room for the address line under the hole */
+  margin-bottom: calc(var(--hole) * 0.06 + 40px);
+}
+.nf-hole {
+  width: var(--hole);
+  height: var(--hole);
+  margin-inline: calc(var(--hole) * -0.2);
+}
+.nf-hole-photo {
+  background: url("/reveal/scene-mobile.webp") center 32% / 100% auto no-repeat;
+  -webkit-mask-image: radial-gradient(closest-side, #000 72%, transparent);
+  mask-image: radial-gradient(closest-side, #000 72%, transparent);
+  /* lighten: the capture's sky and shadow give way to the page's grain */
+  mix-blend-mode: lighten;
+}
+/* the line of the address, under the hole; each character starts there.
+   The scene stacks above the hole so the 4s stay in front of its glow */
+.nf-path { width: 0; height: 0; }
+.nf-char {
+  --y: calc(var(--hole) * 0.56);
+  position: absolute;
+  left: -0.3em;
+  top: -0.6em;
+  width: 0.6em;
+  text-align: center;
+  transform: translate(var(--x), var(--y));
+  animation: nf-fall 1.5s cubic-bezier(0.55, 0, 0.9, 0.45) var(--d) both;
+}
+@keyframes nf-fall {
+  from {
+    transform: rotate(atan2(var(--y), var(--x))) translateX(hypot(var(--x), var(--y))) scale(1, 1) rotate(calc(-1 * atan2(var(--y), var(--x))));
+    opacity: 1;
+  }
+  80% { opacity: 1; }
+  to {
+    transform: rotate(calc(atan2(var(--y), var(--x)) + 400deg)) translateX(0px) scale(2.6, 0.08) rotate(calc(-1 * atan2(var(--y), var(--x))));
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nf-char { animation: none; }
+}
