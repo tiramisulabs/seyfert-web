@@ -496,18 +496,19 @@ const DISCORD_RSS = medianMb(discordMemory.rss);
 const RSS_CEILING = Math.ceil((DISCORD_RSS * 1.05) / 10) * 10;
 
 function Memory() {
-    return <Pin height="270vh" label="Memory under load">{(p) => <MemoryStage p={p} />}</Pin>;
+    return <Pin height="210vh" label="Memory under load">{(p) => <MemoryStage p={p} />}</Pin>;
 }
 
 function MemoryStage({ p }: { p: MotionValue<number> }) {
-    const mb = useTransform(p, [0.19, 0.6], [DISCORD_RSS, SEYFERT_RSS], { clamp: true });
+    // one beat: the count and the trace below it share [SWEEP_FROM, SWEEP_TO]
+    const mb = useTransform(p, [SWEEP_FROM, SWEEP_TO], [DISCORD_RSS, SEYFERT_RSS], { clamp: true });
     const mbText = useTransform(mb, (v) => String(Math.round(v)));
-    const heat = useTransform(p, [0.4, 0.6], ["#fafafa", "#ffd9a0"]);
+    const heat = useTransform(p, [0.45, SWEEP_TO], ["#fafafa", "#ffd9a0"]);
     // each label only names a real measurement: discord.js before the count
     // starts, seyfert once it lands — mid-scrub numbers belong to nobody
-    const nameOld = useTransform(p, [0.19, 0.26], [1, 0]);
-    const nameNew = useTransform(p, [0.54, 0.6], [0, 1]);
-    const tail = useTransform(p, [0.86, 0.95], [0, 1]);
+    const nameOld = useTransform(p, [SWEEP_FROM, SWEEP_FROM + 0.07], [1, 0]);
+    const nameNew = useTransform(p, [SWEEP_TO - 0.06, SWEEP_TO], [0, 1]);
+    const tail = useTransform(p, [0.78, 0.9], [0, 1]);
     const intro = useTransform(p, [0, 0.11], [0, 1]);
 
     return (
@@ -545,11 +546,15 @@ function MemoryStage({ p }: { p: MotionValue<number> }) {
 }
 
 // The medians hold for the whole run. Both RSS series from the same twelve
-// hours (Node.js, one 30-minute average per point, as /benchmark plots them)
-// draw in with the count, then the scroll carries a hairline across them.
-// The readout is always the sample nearest the hairline, never a value in
-// between, so every figure on screen was measured. The still cut rests on the
-// last sample.
+// hours (Node.js, one 30-minute average per point, as /benchmark plots them):
+// discord.js is on the plot before the count starts, and as the median
+// counts down the scroll carries a hairline across the run, drawing Seyfert's
+// line behind it. One beat, so the chapter stays as short as the bar it
+// replaced. The readout is always the sample nearest the hairline, never a
+// value in between, so every figure on screen was measured. The still cut
+// rests on the last sample.
+const SWEEP_FROM = 0.2;
+const SWEEP_TO = 0.72;
 const SEYFERT_TRACE = seyfertMemory.rss;
 const DISCORD_TRACE = discordMemory.rss;
 const TRACE_LAST = SEYFERT_TRACE.length - 1;
@@ -572,13 +577,14 @@ const traceAt = (series: readonly number[], f: number) => {
 };
 
 function MemoryTrace({ p }: { p: MotionValue<number> }) {
-    // discord.js draws as the count leaves it, Seyfert as the count lands
-    const drawOld = useTransform(p, [0.15, 0.32], [100, 0], { clamp: true });
-    const drawNew = useTransform(p, [0.4, 0.6], [100, 0], { clamp: true });
+    // discord.js is drawn by the time the count starts; Seyfert's line is
+    // drawn up to the hairline, which sweeps the run while the count lands
+    const drawOld = useTransform(p, [0.06, SWEEP_FROM], [100, 0], { clamp: true });
+    const f = useTransform(p, [SWEEP_FROM, SWEEP_TO], [0, 1], { clamp: true });
+    const drawNew = useTransform(f, (v) => (1 - v) * 100);
     const clipOld = useMotionTemplate`inset(-8px ${drawOld}% -8px 0)`;
     const clipNew = useMotionTemplate`inset(-8px ${drawNew}% -8px 0)`;
-    const scrub = useTransform(p, [0.64, 0.68], [0, 1]);
-    const f = useTransform(p, [0.66, 0.88], [0, 1], { clamp: true });
+    const scrub = useTransform(p, [SWEEP_FROM - 0.03, SWEEP_FROM + 0.02], [0, 1]);
     const left = useTransform(f, (v) => `${v * 100}%`);
     const topOld = useTransform(f, (v) => `${(traceY(traceAt(DISCORD_TRACE, v)) / TRACE_H) * 100}%`);
     const topNew = useTransform(f, (v) => `${(traceY(traceAt(SEYFERT_TRACE, v)) / TRACE_H) * 100}%`);
