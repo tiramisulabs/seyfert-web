@@ -3,7 +3,7 @@ title: Cooldown
 description: Per-command cooldowns for Seyfert bots, scoped per user, guild, channel, or globally.
 ---
 
-`@slipher/cooldown` adds per-command cooldowns to Seyfert bots. Declare a cooldown with a decorator, let the optional middleware gate commands automatically, or call the manager directly when you need custom behavior. It rate-limits a command per user, guild, channel, or globally, and shared groups let several commands draw from one bucket.
+`@slipher/cooldown` adds per-command cooldowns to Seyfert bots. Declare a cooldown with a decorator, then enforce it with the optional middleware or by calling the manager directly when you need custom behavior. It rate-limits a command per user, guild, channel, or globally, and shared groups let several commands draw from one bucket.
 
 <Callout type="info">
 Requires Seyfert v5. The plugin keeps `seyfert` as a peer dependency.
@@ -48,14 +48,16 @@ import { Command, type CommandContext, Declare } from 'seyfert';
 import { Cooldown } from '@slipher/cooldown';
 
 @Declare({ name: 'ping', description: 'Ping' })
-// rate-limit this command to 1 use per user every 5s
-@Cooldown.user(5_000) // 1 use per user every 5s
+// declare 1 use per user every 5s
+@Cooldown.user(5_000)
 export default class PingCommand extends Command {
     async run(ctx: CommandContext) {
         await ctx.write({ content: 'Pong!' });
     }
 }
 ```
+
+The decorator only declares the bucket. Nothing is rate-limited until the [middleware](#middleware) runs for the command or the command consumes the bucket through the [manager](#manager-api).
 
 The full set of shortcuts:
 
@@ -103,7 +105,7 @@ For subcommands the manager uses `subcommand.cooldown ?? parent.cooldown`, so a 
 
 ## Middleware
 
-The middleware is the simplest path: with `cooldown({ middleware: true })` the plugin registers the default `cooldown` middleware at runtime and contributes its type through Seyfert's plugin registry. A decorated command is gated automatically. You can also assign the middleware explicitly by name:
+The middleware is the simplest path: with `cooldown({ middleware: true })` the plugin registers the default `cooldown` middleware at runtime and contributes its type through Seyfert's plugin registry. Registering it doesn't attach it to any command, so assign it by name to each command it should gate, or [register it globally](#global-middleware):
 
 ```ts
 import { Command, type CommandContext, Declare, Middlewares } from 'seyfert';
@@ -122,19 +124,35 @@ export default class PingCommand extends Command {
 
 When the middleware allows a command it calls `next(result)`, so the command can read the result from `ctx.metadata.cooldown`.
 
-Register it globally when every command should pass through cooldown handling, and customize the denied message with `middleware.message` (a string, or a callback that receives the blocked result and context):
+### Global middleware
+
+Register it globally when every command should pass through cooldown handling. Commands without a declared cooldown pass straight through. Customize the denied message with `middleware.message`, either a string or a callback that receives the blocked result and context:
 
 ```ts
 const plugins = definePlugins(
     cooldown({
         middleware: {
             global: true, // run cooldown handling on every command
-            // customize the message shown when a command is blocked
+            // customize the message passed to onMiddlewaresError when a command is blocked
             message: (result, ctx) =>
                 `${ctx.author.username}, try again in ${Math.ceil(result.remainingMs / 1000)}s.`,
         },
     }),
 );
+```
+
+A blocked command stops the middleware chain with that message, like any other middleware `stop`. Seyfert hands it to the command's `onMiddlewaresError`, whose default only logs it. To show it to the user, reply from your handler, as in [Handling errors](/docs/learn/commands/handling-errors):
+
+```ts
+const client = new Client({
+    plugins,
+    commands: {
+        defaults: {
+            // reply with the cooldown message (or any other middleware stop)
+            onMiddlewaresError: (context, error) => context.editOrReply({ content: error }),
+        },
+    },
+});
 ```
 
 <Callout type="warn">
