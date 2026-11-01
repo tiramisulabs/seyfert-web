@@ -5,6 +5,10 @@ import { Tabs, Tab } from 'fumadocs-ui/components/tabs';
 
 Options in Discord commands are required to have a description. Additionally, for all options, we can set whether they are required and include a function to transform their value.
 
+Whatever you declare is what `ctx.options` holds, typed: a required option is always there, an optional one may be `undefined`.
+
+<OptionInferenceDemo />
+
 ## Option Types
 
 The possible types of options in a command are as follows:

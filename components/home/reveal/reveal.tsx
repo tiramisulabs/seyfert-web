@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, RotateCcw } from "lucide-react";
 import { GeistMono } from "geist/font/mono";
+import { GeistSans } from "geist/font/sans";
 import {
     motion,
     useMotionTemplate,
@@ -17,6 +18,7 @@ import {
 } from "motion/react";
 import GalaxyCanvas from "@/components/home/galaxy/galaxy-canvas";
 import GalaxyLite from "@/components/home/galaxy/galaxy-lite";
+import DiscordEcho from "@/components/stage-demos/discord-echo";
 import { CopyButton } from "@/components/home/galaxy/copy-button";
 import { cn } from "@/lib/utils";
 import { medianMb } from "@/lib/benchmark";
@@ -106,7 +108,7 @@ function useWide() {
     return useSyncExternalStore(subscribeWide, () => window.matchMedia(WIDE).matches, () => true);
 }
 
-export function RevealPage({ echo, djs, boot }: { echo: CodeLines; djs: CodeLines; boot: CodeLines }) {
+export function RevealPage({ echo, source, djs, boot }: { echo: CodeLines; source: CodeLines; djs: CodeLines; boot: CodeLines }) {
     const reduce = useReduce();
     const compact = useCompact();
     const still = reduce || compact;
@@ -119,6 +121,7 @@ export function RevealPage({ echo, djs, boot }: { echo: CodeLines; djs: CodeLine
             <div className="spiral-page reveal-page relative overflow-x-clip">
                 <Opening />
                 <OneFile lines={echo} />
+                <InDiscord source={source} />
                 <Ceremony djs={djs} boot={boot} />
                 <Memory />
                 <Orbit />
@@ -351,8 +354,6 @@ function OneFileStage({ p, lines }: { p: MotionValue<number>; lines: CodeLines }
     const h1a = useTransform(p, [0.02, 0.1], [0, 1]);
     const h1b = useTransform(p, [0.08, 0.16], [0, 1]);
     const h1y = useTransform(p, [0.02, 0.16], [30, 0]);
-    const reply = useTransform(p, [0.78, 0.88], [0, 1]);
-    const replyY = useTransform(p, [0.78, 0.9], [40, 0]);
     const n = lines.length;
     return (
         <div className="mx-auto grid h-full max-w-6xl content-center items-center gap-6 px-5 py-14 sm:gap-10 sm:py-20 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16">
@@ -378,17 +379,36 @@ function OneFileStage({ p, lines }: { p: MotionValue<number>; lines: CodeLines }
                         ))}
                     </div>
                 </div>
-                <motion.div style={{ opacity: reply, y: replyY }} className="mt-4 flex items-center gap-3 rounded-xl border border-white/10 bg-[#0e1019]/95 p-3 sm:mt-6">
-                    <span aria-hidden className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[var(--brand-indigo)]">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" fill="#05070d" /><ellipse cx="12" cy="12" rx="9" ry="3.8" stroke="#05070d" strokeWidth="1.6" transform="rotate(-20 12 12)" /></svg>
-                    </span>
-                    <div className="flex min-w-0 flex-col">
-                        <span className="text-sm"><span className="font-semibold">Echo</span> <span className="rounded-[3px] bg-[#5865f2] px-1 py-px text-[10px] font-semibold text-white">APP</span> <span className="text-xs text-[#8e95a8]">replying to /echo</span></span>
-                        <span className="text-[15px] text-[#e5e5e5]">hello from the core</span>
-                    </div>
-                </motion.div>
             </div>
         </div>
+    );
+}
+
+/* ── 1b · the reply lands ────────────────────────────────────────────── */
+
+// The command from the chapter above, used. Discord lists it with the
+// description it was declared with, shows its option's hint, and Echo
+// answers; the file rides along and lights the line each string came from.
+// Not a pinned chapter: it plays on its own clock once in view (the kit stops
+// it offscreen and restarts it on return), and the still cut gets its poster.
+function InDiscord({ source }: { source: CodeLines }) {
+    const still = useContext(StillContext);
+    return (
+        <section aria-label="The command, used in Discord" className={cn("relative mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 py-28 sm:gap-14 sm:py-36", GeistSans.variable, GeistMono.variable)}>
+            <div className="flex flex-wrap items-end justify-between gap-6">
+                <h2 className="text-[clamp(40px,6vw,88px)] font-semibold leading-[0.92] tracking-[-0.04em]">
+                    Discord
+                    <br />
+                    <span className="text-[var(--core-white)]" title="Nova still hasn't said thanks">already knows it</span>
+                </h2>
+                <p className="max-w-[36ch] text-[15px] leading-relaxed text-[var(--text-dim)] sm:text-[17px]">
+                    The name, the description, the option&apos;s hint: all from the file. Type the slash and Echo answers.
+                </p>
+            </div>
+            <div aria-hidden className="de-bleed">
+                <DiscordEcho code={source} still={still} fill />
+            </div>
+        </section>
     );
 }
 

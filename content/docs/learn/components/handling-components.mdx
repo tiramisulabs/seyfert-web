@@ -92,3 +92,7 @@ export default class HelloWorldButton extends ComponentCommand {
   }
 }
 ```
+
+`run` doesn't have to send a new message. `ctx.update` edits the message the component lives on, so a button can change its own message in place:
+
+<ComponentUpdateDemo />
