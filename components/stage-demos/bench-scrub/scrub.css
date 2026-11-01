@@ -1,0 +1,369 @@
+/* The /benchmark memory panel on the observatory page: the panel is the site's
+   own card (space-deep, white/10 hairline), its foot dissolving into the page
+   over filler. Seyfert is the one lit color; discord.js is a neutral gray. */
+
+.bs {
+  --bs-panel: #0a0e18;
+  --bs-rule: rgba(255, 255, 255, 0.08);
+  --bs-rule-faint: rgba(255, 255, 255, 0.05);
+  --bs-bright: #fafafa;
+  --bs-dim: #a3a3a3;
+  --bs-faint: #6b7080;
+  --bs-amber: #ffd9a0;
+  --bs-gray: #7c8291;
+}
+
+.bs .ss-stage {
+  overflow: hidden;
+  font-family: var(--ss-font);
+}
+
+/* ---- The panel: inset top and sides, fading out at its foot ---- */
+
+.bs-panel {
+  position: absolute;
+  top: 24px;
+  left: 40px;
+  width: 880px;
+  height: 406px;
+  box-sizing: border-box;
+  border-radius: 12px;
+  background: var(--bs-panel);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 72px), transparent calc(100% - 4px));
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 72px), transparent calc(100% - 4px));
+}
+
+.bs-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 28px 15px;
+  border-bottom: 1px solid var(--bs-rule);
+}
+
+.bs-head__copy {
+  display: grid;
+  gap: 3px;
+}
+
+.bs-title {
+  color: var(--bs-bright);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.01em;
+}
+
+.bs-sub {
+  color: var(--bs-dim);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* The runtime switch, as /benchmark draws it */
+.bs-seg {
+  display: flex;
+  flex: none;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px var(--bs-rule);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.bs-seg span {
+  padding: 5px 11px;
+  border-radius: 5px;
+  color: var(--bs-dim);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.bs-seg span[data-on] {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--bs-bright);
+}
+
+/* ---- The readout: the headline is what the hairline reads ---- */
+
+/* Wide: the readout as a column beside the plot */
+.bs-body {
+  display: grid;
+  grid-template-columns: 196px auto;
+  gap: 36px;
+  padding: 26px 28px 0;
+}
+
+.bs-read {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+}
+
+.bs-when {
+  color: var(--bs-dim);
+  font-family: var(--ss-mono);
+  font-size: 11.5px;
+  line-height: 16px;
+  letter-spacing: 0.02em;
+}
+
+.bs-figs {
+  display: grid;
+  gap: 18px;
+}
+
+.bs-fig {
+  display: grid;
+  gap: 4px;
+}
+
+.bs-fig__name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--bs-dim);
+  font-family: var(--ss-mono);
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+}
+
+.bs-swatch {
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 2px;
+  background: var(--bs-gray);
+}
+
+.bs-fig[data-lib="seyfert"] .bs-swatch {
+  background: var(--bs-amber);
+}
+
+.bs-fig__value {
+  color: var(--bs-dim);
+  font-size: 46px;
+  font-weight: 600;
+  line-height: 50px;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bs-fig[data-lib="seyfert"] .bs-fig__value {
+  color: var(--bs-amber);
+}
+
+.bs-fig__value .ss-count__unit {
+  margin-left: 6px;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  opacity: 0.7;
+}
+
+/* ---- The plot ---- */
+
+.bs-chart {
+  position: relative;
+  display: grid;
+  grid-template-columns: 52px auto;
+  padding-top: 8px;
+}
+
+.bs-grid {
+  position: relative;
+}
+
+.bs-grid__label {
+  position: absolute;
+  left: 0;
+  translate: 0 -50%;
+  color: var(--bs-faint);
+  font-family: var(--ss-mono);
+  font-size: 10.5px;
+  line-height: 14px;
+  white-space: nowrap;
+}
+
+.bs-plot {
+  position: relative;
+}
+
+.bs-rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--bs-rule-faint);
+}
+
+.bs-line {
+  position: absolute;
+  inset: 0;
+}
+
+.bs-line--discord {
+  --ss-accent: var(--bs-gray);
+}
+
+.bs-line--discord .ss-chart__line {
+  stroke-width: 1.75;
+}
+
+/* The sample under the pointer: a hairline, a dot on each line, and the
+   distance between them measured on the hairline itself */
+.bs-hair,
+.bs-span,
+.bs-tag,
+.bs-dot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.bs-hair[data-on],
+.bs-span[data-on],
+.bs-tag[data-on],
+.bs-dot[data-on] {
+  opacity: 1;
+}
+
+.bs-hair {
+  height: 100%;
+  width: 1px;
+  margin-left: -0.5px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.bs-span {
+  width: 1px;
+  margin-left: -0.5px;
+  background: linear-gradient(to bottom, rgba(124, 130, 145, 0.9), rgba(255, 217, 160, 0.9));
+}
+
+/* left of the hairline, in the empty band between the two lines */
+.bs-tag {
+  translate: calc(-100% - 10px) -50%;
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: rgba(255, 217, 160, 0.1);
+  box-shadow: inset 0 0 0 1px rgba(255, 217, 160, 0.22);
+  color: var(--bs-amber);
+  font-family: var(--ss-mono);
+  font-size: 11.5px;
+  line-height: 16px;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.bs-dot {
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  box-sizing: border-box;
+  border: 2px solid var(--bs-panel);
+  border-radius: 50%;
+  background: var(--bs-gray);
+}
+
+.bs-dot--seyfert {
+  background: var(--bs-amber);
+}
+
+.bs-axis {
+  position: relative;
+  grid-column: 2;
+  height: 14px;
+  margin-top: 10px;
+  color: var(--bs-faint);
+  font-family: var(--ss-mono);
+  font-size: 10.5px;
+  line-height: 14px;
+}
+
+.bs-axis span {
+  position: absolute;
+  translate: -50% 0;
+  white-space: nowrap;
+}
+
+.bs-axis span:first-child {
+  translate: 0 0;
+}
+
+.bs-axis span:last-child {
+  translate: -100% 0;
+}
+
+/* ---- The foot: the run's other figures, as filler, under the fade ---- */
+
+.bs-foot {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 26px;
+  padding: 16px 28px 0;
+  border-top: 1px solid var(--bs-rule);
+}
+
+.bs-foot__cell {
+  display: grid;
+  gap: 9px;
+  justify-items: start;
+}
+
+/* ---- Compact: the same panel, closer ---- */
+
+.bs .ss-stage[data-layout="compact"] .bs-panel {
+  top: 16px;
+  left: 16px;
+  width: 326px;
+  height: 454px;
+}
+
+.bs .ss-stage[data-layout="compact"] .bs-head {
+  padding: 14px 18px 13px;
+}
+
+.bs .ss-stage[data-layout="compact"] .bs-body {
+  display: block;
+  padding: 18px 18px 0;
+}
+
+.bs .ss-stage[data-layout="compact"] .bs-read {
+  gap: 12px;
+}
+
+.bs .ss-stage[data-layout="compact"] .bs-figs {
+  display: flex;
+  gap: 28px;
+}
+
+.bs .ss-stage[data-layout="compact"] .bs-fig__value {
+  font-size: 32px;
+  line-height: 36px;
+}
+
+.bs .ss-stage[data-layout="compact"] .bs-fig__value .ss-count__unit {
+  font-size: 16px;
+}
+
+.bs .ss-stage[data-layout="compact"] .bs-chart {
+  grid-template-columns: 36px auto;
+  margin-top: 22px;
+  padding-top: 0;
+}
+
+.bs .ss-stage[data-layout="compact"] .bs-grid__label {
+  font-size: 10px;
+}
+
+.bs .ss-stage[data-layout="compact"] .bs-foot {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 16px 18px 0;
+}

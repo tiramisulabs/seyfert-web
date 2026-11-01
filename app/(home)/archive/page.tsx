@@ -111,6 +111,28 @@ export default function Archive() {
                     </ol>
                 </section>
 
+                <section aria-labelledby="studies" className="mt-24">
+                    <div className="flex items-baseline justify-between border-t border-white/10 pt-4">
+                        <h2 id="studies" className={`${mono} text-[11px] uppercase tracking-[0.22em] text-white/55`}>
+                            Studies
+                        </h2>
+                        <span className={`${mono} text-[11px] text-white/60`}>2026</span>
+                    </div>
+                    <Link
+                        href="/stage"
+                        className="group mt-8 flex max-w-[46rem] flex-col gap-3 rounded-[6px] outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-4 focus-visible:ring-offset-background"
+                    >
+                        <span className="inline-flex items-center gap-1.5 text-[19px] font-semibold tracking-[-0.01em] text-white">
+                            Stage
+                            <ArrowUpRight className="size-4 text-white/60 transition-colors group-hover:text-white" aria-hidden />
+                        </span>
+                        <span className="text-[14.5px] leading-[1.55] text-white/70">
+                            Seyfert shown in its product: Discord, the editor, the terminal and the benchmark, each doing one thing. Every demo, including the ones that live on the home and in the guides.
+                        </span>
+                        <span className={`${mono} text-[11.5px] text-white/85`}>/stage</span>
+                    </Link>
+                </section>
+
             </div>
         </>
     );

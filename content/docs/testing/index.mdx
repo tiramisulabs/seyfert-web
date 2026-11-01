@@ -7,6 +7,8 @@ description: A complete, runner-agnostic testing suite for Seyfert bots — from
 
 Most Discord bots are hard to test at all — running one means opening a gateway connection to Discord, so commands, components, and events have nowhere to run in a plain unit test. Making a bot testable **entirely in-process**, without that requirement, is the primary idea behind this package. It's an active effort tackling that problem head-on, so expect the API to keep evolving across upcoming versions.
 
+<TestingRunDemo />
+
 ## How it works
 
 The **mock bot** is the core. It drives a real Seyfert client pipeline in-process — your actual commands, middlewares, and plugins — dispatching raw payloads through the same `HandleCommand` → resolver → middleware flow production uses, while capturing every outgoing REST call for assertions instead of sending it. You're testing the bot you ship, not a reimplementation of it.

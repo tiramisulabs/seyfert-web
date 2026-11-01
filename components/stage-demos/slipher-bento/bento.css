@@ -1,0 +1,640 @@
+/* The @slipher grid: one rounded container on the observatory page, 1px
+   rules between the cells (the container's color through 1px gaps), copy as
+   page type, each picture its own Stage pinned to its cell's bottom. Amber is
+   the one lit color; red only for the lint error, Discord's grays only inside
+   Discord. */
+
+.sb {
+  --pad: 28px;
+  --rule: #151a26;
+  --cell: #070a12;
+  --panel: #0e1220;
+  --panel-edge: rgba(255, 255, 255, 0.08);
+  --bright: #fafafa;
+  --dim: #a3a3a3;
+  --faint: #6b7080;
+  --amber: #ffd9a0;
+  --wire: #232a3a;
+  container-type: inline-size;
+  font-family: var(--font-geist-sans), "Geist", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+
+  & .sb-grid {
+    display: grid;
+    gap: 1px;
+    overflow: hidden;
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    background: var(--rule);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 400px 330px 310px 396px 270px;
+    grid-template-areas: "hero" "cool" "lint" "http" "rest";
+  }
+
+  /* A docs column or a tablet: the hero across, a pair, the HTTP band, the rest */
+  @container (min-width: 600px) {
+    & .sb-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: 390px 350px 290px 240px;
+      grid-template-areas: "hero hero" "cool lint" "http http" "rest rest";
+    }
+  }
+
+  /* The page: 2 + 1, 1 + 2, then the full-width band */
+  @container (min-width: 900px) {
+    & .sb-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-rows: 390px 320px 220px;
+      grid-template-areas: "hero hero cool" "lint http http" "rest rest rest";
+    }
+  }
+
+  @container (max-width: 599px) {
+    & .sb-grid {
+      --pad: 24px;
+    }
+  }
+
+  /* ---- The cell ---- */
+
+  & .sb-cell {
+    position: relative;
+    overflow: hidden;
+    background: var(--cell);
+  }
+
+  & .sb-cell--hero { grid-area: hero; }
+  & .sb-cell--cool { grid-area: cool; }
+  & .sb-cell--lint { grid-area: lint; }
+  & .sb-cell--http { grid-area: http; }
+  & .sb-cell--rest { grid-area: rest; }
+
+  & .sb-copy {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 8px;
+    max-width: 440px;
+    padding: 24px var(--pad) 0;
+  }
+
+  & .sb-cell--rest .sb-copy {
+    max-width: 760px;
+  }
+
+  & .sb-pkg {
+    color: var(--amber);
+    font-family: var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    line-height: 16px;
+    letter-spacing: 0.02em;
+  }
+
+  & .sb-pkg__name {
+    white-space: nowrap;
+  }
+
+  & .sb-line {
+    margin: 0;
+    color: var(--dim);
+    font-size: 17px;
+    line-height: 24px;
+    letter-spacing: -0.012em;
+    text-wrap: pretty;
+  }
+
+  & .sb-line b {
+    color: var(--bright);
+    font-weight: 600;
+  }
+
+  /* ---- Pictures: pinned to the cell's bottom ---- */
+
+  & .sb-picture {
+    position: absolute;
+    bottom: 0;
+  }
+
+  & .sb-picture--full {
+    left: 0;
+    width: 100%;
+  }
+
+  & .sb-picture--band {
+    /* a fixed strip centered on the band, softened into the cell at both sides */
+    --half: min(50cqw, 500px);
+    left: 50%;
+    width: 1200px;
+    margin-left: -600px;
+    -webkit-mask-image: linear-gradient(90deg, transparent calc(50% - var(--half)), #000 calc(50% - var(--half) + 80px), #000 calc(50% + var(--half) - 80px), transparent calc(50% + var(--half)));
+    mask-image: linear-gradient(90deg, transparent calc(50% - var(--half)), #000 calc(50% - var(--half) + 80px), #000 calc(50% + var(--half) - 80px), transparent calc(50% + var(--half)));
+  }
+
+  & .sb-stage .ss-stage {
+    overflow: hidden;
+    background: transparent;
+    font-family: var(--ss-font);
+  }
+
+  /* ---- Wires, shared by the two diagrams ---- */
+
+  & .sb-wire {
+    fill: none;
+    stroke: var(--wire);
+    stroke-width: 1;
+  }
+
+  & .sb-wire--lit {
+    stroke: var(--amber);
+    stroke-width: 1.25;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    opacity: 0;
+    transition: stroke-dashoffset 0s 0.5s, opacity 0.4s ease 0.1s;
+  }
+
+  & .sb-wire--lit[data-on] {
+    stroke-dashoffset: 0;
+    opacity: 1;
+    transition: stroke-dashoffset 0.55s cubic-bezier(0.45, 0, 0.2, 1), opacity 0.12s ease;
+  }
+
+  /* ---- Redis: three workers, one key list ---- */
+
+  & .sb-cache {
+    position: absolute;
+    inset: 0;
+  }
+
+  & .sb-cache__lines {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+
+  & .sb-worker {
+    position: absolute;
+    top: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    box-sizing: border-box;
+    height: 26px;
+    border-radius: 13px;
+    background: var(--panel);
+    box-shadow: inset 0 0 0 1px var(--panel-edge);
+    color: #c9ccd4;
+    font: 500 11.5px/1 var(--ss-mono);
+    white-space: nowrap;
+    translate: -50% 0;
+    transition: box-shadow 0.25s ease;
+  }
+
+  & .sb-worker[data-on] {
+    box-shadow: inset 0 0 0 1px rgba(255, 217, 160, 0.35);
+  }
+
+  & .sb-worker__dot {
+    width: 6px;
+    height: 6px;
+    flex: none;
+    border-radius: 3px;
+    background: #3a4152;
+    transition: background-color 0.25s ease;
+  }
+
+  & .sb-worker[data-on] .sb-worker__dot {
+    background: var(--amber);
+  }
+
+  & .sb-worker__shards {
+    color: var(--faint);
+  }
+
+  & .sb-keys {
+    position: absolute;
+    bottom: -40px;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+    background: var(--panel);
+    box-shadow: inset 0 0 0 1px var(--panel-edge);
+  }
+
+  & .sb-keys__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 38px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--panel-edge);
+    color: var(--faint);
+    font: 11.5px/16px var(--ss-mono);
+  }
+
+  & .sb-keys__ns {
+    color: var(--dim);
+  }
+
+  & .sb-key {
+    display: grid;
+    grid-template-columns: 6px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    height: 34px;
+    padding: 0 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    font: 12px/16px var(--ss-mono);
+    color: #c9ccd4;
+    white-space: nowrap;
+  }
+
+  & .sb-key__mark {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background: transparent;
+    transition: background-color 0.4s ease;
+  }
+
+  & .sb-key[data-fresh] .sb-key__mark {
+    background: var(--amber);
+  }
+
+  & .sb-key__id {
+    overflow: hidden;
+  }
+
+  & .sb-key__ns {
+    color: var(--faint);
+  }
+
+  & .sb-key__by {
+    color: var(--faint);
+    font-size: 11px;
+  }
+
+  & .sb-keys__type {
+    color: var(--faint);
+  }
+
+  & .sb-cache[data-layout="compact"] .sb-keys__type {
+    display: none;
+  }
+
+  & .sb-cache[data-layout="compact"] .sb-key {
+    grid-template-columns: 6px minmax(0, 1fr);
+    gap: 10px;
+    padding: 0 14px;
+    font-size: 11.5px;
+  }
+
+  & .sb-cache[data-layout="compact"] .sb-keys__head {
+    padding: 0 14px;
+  }
+
+  /* ---- Cooldown: the denied reply, in Discord ---- */
+
+  & .sb-dc {
+    position: absolute;
+    top: 0;
+    left: var(--pad);
+    right: -40px;
+    bottom: -40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    box-sizing: border-box;
+    /* the bled 40px plus the cell's inset on the right, so no word reaches the edge */
+    padding: 18px calc(40px + var(--pad)) 62px 18px;
+    border-radius: 12px 0 0 0;
+    background: #313338;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    color: #dbdee1;
+  }
+
+  & .sb-dc__older {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 18px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 70%);
+    mask-image: linear-gradient(to bottom, transparent, #000 70%);
+  }
+
+  & .sb-dc__disc {
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border-radius: 50%;
+    background: #3f4147;
+  }
+
+  & .sb-dc__bars {
+    display: grid;
+    align-content: center;
+    gap: 9px;
+  }
+
+  & .sb-dc__used {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 18px;
+    padding-left: 56px;
+    color: #949ba4;
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  & .sb-dc__spine {
+    position: absolute;
+    left: 20px;
+    top: 9px;
+    width: 30px;
+    height: 12px;
+    border-left: 2px solid #4e5058;
+    border-top: 2px solid #4e5058;
+    border-top-left-radius: 6px;
+  }
+
+  & .sb-dc__who {
+    color: #f2f3f5;
+    font-weight: 500;
+  }
+
+  & .sb-dc__cmd {
+    color: #00a8fc;
+  }
+
+  & .sb-dc__msg {
+    display: flex;
+    gap: 16px;
+    margin-top: 4px;
+  }
+
+  & .sb-dc__face {
+    display: grid;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 50%;
+    background: #05070d;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  }
+
+  & .sb-dc__face img {
+    width: 72%;
+    height: 72%;
+    object-fit: contain;
+  }
+
+  & .sb-dc__body {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  & .sb-dc__meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 22px;
+  }
+
+  & .sb-dc__name {
+    color: #f2f3f5;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  & .sb-dc__app {
+    display: inline-flex;
+    align-items: center;
+    height: 15px;
+    padding: 0 4px;
+    border-radius: 3px;
+    background: #5865f2;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  & .sb-dc__text {
+    margin: 0;
+    font-size: 15px;
+    line-height: 22px;
+  }
+
+  /* Discord's relative timestamp: a quiet pill that keeps counting */
+  & .sb-dc__time {
+    padding: 1px 3px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* ---- ESLint: one line flagged, its hover open ---- */
+
+  & .sb-lint {
+    position: absolute;
+    inset: 0;
+  }
+
+  & .sb-editor {
+    position: absolute;
+    top: 0;
+    left: var(--pad);
+    right: -40px;
+    bottom: -40px;
+    box-sizing: border-box;
+    padding: 16px 0 16px 8px;
+    border-radius: 12px 0 0 0;
+    background: #090b12;
+    box-shadow: inset 0 0 0 1px var(--panel-edge);
+    font: 12px/21px var(--ss-mono);
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 96px), transparent calc(100% - 40px));
+    mask-image: linear-gradient(90deg, #000 calc(100% - 96px), transparent calc(100% - 40px));
+  }
+
+  & .sb-editor__line {
+    display: flex;
+    white-space: pre;
+  }
+
+  & .sb-editor__no {
+    flex: none;
+    width: 36px;
+    padding-right: 16px;
+    box-sizing: border-box;
+    color: #3d4354;
+    text-align: right;
+  }
+
+  & .sb-squiggle {
+    text-decoration-line: underline;
+    text-decoration-style: wavy;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+    transition: text-decoration-color 0.3s ease;
+  }
+
+  & .sb-lint[data-on] .sb-squiggle {
+    text-decoration-color: #f0605a;
+  }
+
+  & .sb-hover {
+    position: absolute;
+    top: 92px;
+    left: calc(var(--pad) + 22px);
+    width: 252px;
+    box-sizing: border-box;
+    padding: 10px 12px 11px;
+    border-radius: 8px;
+    background: #141a2a;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1), 0 16px 40px -12px rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    translate: 0 4px;
+    will-change: translate;
+    transition: opacity 0.3s ease 0.45s, translate 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) 0.45s;
+  }
+
+  & .sb-lint[data-on] .sb-hover {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  & .sb-hover__msg {
+    margin: 0;
+    color: #d4d6dc;
+    font-size: 12.5px;
+    line-height: 18px;
+  }
+
+  & .sb-hover__msg code {
+    font-family: var(--ss-mono);
+    font-size: 11.5px;
+    color: var(--bright);
+  }
+
+  & .sb-hover__rule {
+    display: block;
+    margin-top: 2px;
+    color: var(--faint);
+    font: 11px/16px var(--ss-mono);
+  }
+
+  /* ---- HTTP: one request, either adapter, one client ---- */
+
+  & .sb-flow {
+    position: absolute;
+    inset: 0;
+  }
+
+  & .sb-flow__dots {
+    position: absolute;
+    inset: 0;
+    /* a quiet dot field for ground, fading toward the stage's edges */
+    background-image: radial-gradient(circle at center, #1a1f2b 1px, transparent 1.4px);
+    background-size: 12px 12px;
+    background-position: 4px 2px;
+    -webkit-mask-image: radial-gradient(64% 80% at 50% 50%, #000 40%, transparent 100%);
+    mask-image: radial-gradient(64% 80% at 50% 50%, #000 40%, transparent 100%);
+  }
+
+  & .sb-flow__lines {
+    position: absolute;
+    inset: 0;
+    overflow: visible;
+  }
+
+  & .sb-wire--flow {
+    stroke: #2c3446;
+  }
+
+  & .sb-node {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 30px;
+    padding: 0 12px;
+    border-radius: 8px;
+    background: var(--panel);
+    box-shadow: inset 0 0 0 1px var(--panel-edge);
+    color: #d4d6dc;
+    font: 500 12px/1 var(--ss-mono);
+    white-space: nowrap;
+    translate: -50% -50%;
+  }
+
+  & .sb-node__sub {
+    color: var(--faint);
+    font-weight: 400;
+  }
+
+  & .sb-node__verb {
+    color: var(--amber);
+  }
+
+  & .sb-node--req {
+    box-shadow: inset 0 0 0 1px rgba(255, 217, 160, 0.28);
+  }
+
+  & .sb-node--client {
+    color: var(--bright);
+  }
+
+  & .sb-flow[data-layout="compact"] .sb-node {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 11.5px;
+  }
+
+  /* ---- The rest: package names, drifting apart once ---- */
+
+  & .sb-rows {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 28px;
+  }
+
+  & .sb-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    transform: translateX(var(--off));
+    will-change: transform;
+    transition: transform 2.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  & .sb-rows[data-on] .sb-row {
+    transform: translateX(calc(var(--off) + var(--dir) * 48px));
+  }
+
+  & .sb-chip {
+    display: inline-flex;
+    align-items: center;
+    flex: none;
+    height: 36px;
+    padding: 0 14px;
+    border-radius: 9px;
+    background: var(--panel);
+    box-shadow: inset 0 0 0 1px var(--panel-edge);
+    color: #c9ccd4;
+    font: 500 12.5px/1 var(--ss-mono);
+    white-space: nowrap;
+  }
+
+  & .sb-chip__scope {
+    color: var(--faint);
+  }
+}

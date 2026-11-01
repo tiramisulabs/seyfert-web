@@ -1,0 +1,718 @@
+/* Discord's classic dark theme for the product, the site's own editor card
+   for the source. Blurple only where Discord itself puts it. */
+
+.de {
+  --dc-rail: #1e1f22;
+  --dc-side: #2b2d31;
+  --dc-chat: #313338;
+  --dc-input: #383a40;
+  --dc-pop: #2b2d31;
+  --dc-pop-row: #36373d;
+  --dc-active: #404249;
+  --dc-text: #dbdee1;
+  --dc-head: #f2f3f5;
+  --dc-muted: #949ba4;
+  --dc-faint: #6d6f78;
+  --dc-blurple: #5865f2;
+  --dc-line: rgba(255, 255, 255, 0.06);
+}
+
+.de .ss-stage {
+  overflow: hidden;
+  border-radius: 14px;
+  font-family: var(--ss-font);
+}
+
+.de-grow {
+  flex: 1;
+}
+
+.de svg {
+  display: block;
+  flex: none;
+}
+
+/* ---- Window ---- */
+
+.de-win {
+  position: absolute;
+  left: 228px;
+  top: 28px;
+  width: 904px;
+  height: 424px;
+  background: var(--dc-rail);
+  box-shadow: var(--ss-shadow-hero);
+}
+
+.de-win .ss-window__bar {
+  background: var(--dc-rail);
+  border-bottom: none;
+  color: var(--dc-muted);
+  padding-right: 12px;
+}
+
+.de-top__icon {
+  color: var(--dc-muted);
+}
+
+.de-win .ss-window__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.de-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  background: var(--dc-rail);
+}
+
+/* ---- Server rail ---- */
+
+.de-rail {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 64px;
+  padding-top: 4px;
+}
+
+.de-rail__home {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--dc-input);
+}
+
+.de-rail__sep {
+  width: 28px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--dc-active);
+}
+
+.de-rail__guild {
+  position: relative;
+  display: flex;
+  width: 64px;
+  justify-content: center;
+}
+
+.de-rail__pill {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 4px;
+  height: 0;
+  margin-top: 0;
+  border-radius: 0 4px 4px 0;
+  background: var(--dc-head);
+}
+
+.de-rail__guild[data-active] .de-rail__pill {
+  height: 32px;
+  margin-top: -16px;
+}
+
+.de-rail__disc {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2b2d31;
+}
+
+.de-rail__disc[data-tone="1"] {
+  border-radius: 12px;
+  background: #3b3f8f;
+}
+
+.de-rail__disc[data-tone="2"] {
+  background: #33363c;
+}
+
+.de-rail__add {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--dc-side);
+  color: #23a55a;
+}
+
+/* ---- Channel list ---- */
+
+.de-side {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: 200px;
+  border-top-left-radius: 8px;
+  border-left: 1px solid var(--dc-line);
+  border-top: 1px solid var(--dc-line);
+  background: var(--dc-side);
+}
+
+.de-side__head {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--dc-line);
+}
+
+.de-side__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 8px;
+}
+
+.de-side__group {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 8px 8px 0;
+}
+
+.de-side__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 4px;
+  color: var(--dc-faint);
+}
+
+.de-side__row[data-active] {
+  background: var(--dc-active);
+  color: var(--dc-head);
+}
+
+.de-side__name {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+/* ---- Channel ---- */
+
+.de-channel {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  width: 400px;
+  min-height: 0;
+  border-top: 1px solid var(--dc-line);
+  background: var(--dc-chat);
+}
+
+.de-channel__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--dc-line);
+  color: var(--dc-muted);
+}
+
+.de-channel__title {
+  color: var(--dc-head);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.de-channel__topic {
+  display: flex;
+  align-items: center;
+  height: 24px;
+  margin-left: 4px;
+  padding-left: 12px;
+  border-left: 1px solid var(--dc-active);
+}
+
+.de-feed {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  padding-bottom: 12px;
+  /* history scrolls up under the header as the reply lands */
+  mask-image: linear-gradient(to bottom, transparent, #000 28px);
+}
+
+.de-msg__bar {
+  display: flex;
+  align-items: center;
+  height: 22px;
+}
+
+.de-msg {
+  display: flex;
+  gap: 16px;
+  padding: 6px 16px;
+}
+
+.de-msg--reply {
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 10px;
+}
+
+.de-msg__row {
+  display: flex;
+  gap: 16px;
+}
+
+.de-msg__body {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 1px;
+}
+
+.de-msg__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 22px;
+}
+
+.de-msg__name {
+  color: var(--dc-head);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 22px;
+}
+
+.de-msg__name[data-who="nova"] {
+  color: #f0b232;
+}
+
+.de-msg__name--bot {
+  color: var(--dc-head);
+}
+
+.de-msg__time {
+  color: var(--dc-muted);
+  font-size: 12px;
+  line-height: 22px;
+}
+
+.de-msg__text {
+  margin: 0;
+  color: var(--dc-text);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.de-app {
+  display: inline-flex;
+  align-items: center;
+  height: 15px;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: var(--dc-blurple);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.de-bot {
+  display: grid;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #05070d;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.de-bot img {
+  width: 72%;
+  height: 72%;
+  object-fit: contain;
+}
+
+/* "kira used /echo": the interaction header over the bot's reply */
+.de-used {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 18px;
+  padding-left: 56px;
+  color: var(--dc-muted);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.de-used__spine {
+  position: absolute;
+  left: 36px;
+  top: 9px;
+  width: 30px;
+  height: 12px;
+  margin-left: -16px;
+  border-left: 2px solid #4e5058;
+  border-top: 2px solid #4e5058;
+  border-top-left-radius: 6px;
+}
+
+.de-used .ss-avatar {
+  margin-right: 2px;
+}
+
+.de-used__who {
+  color: var(--dc-head);
+  font-weight: 500;
+}
+
+.de-used__cmd {
+  color: #00a8fc;
+}
+
+/* ---- Composer and its suggestions ---- */
+
+.de-channel__foot {
+  position: relative;
+  padding: 0 16px 20px;
+}
+
+.de-compose {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 44px;
+  padding: 0 16px 0 10px;
+  border-radius: 8px;
+  background: var(--dc-input);
+}
+
+.de-compose__plus {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  background: #b5bac1;
+  color: var(--dc-input);
+}
+
+.de-compose__text {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  color: var(--dc-text);
+  overflow-x: clip;
+  font-size: 15px;
+  line-height: 22px;
+  white-space: pre;
+  transition: opacity 120ms;
+}
+
+.de-compose__text[data-clearing] > :not(.de-compose__placeholder) {
+  opacity: 0;
+  transition: opacity 120ms;
+}
+
+.de-compose__cmd,
+.de-compose__opt {
+  animation: de-in 160ms ease-out;
+}
+
+@keyframes de-in {
+  from { opacity: 0; }
+}
+
+.de-compose__placeholder {
+  position: absolute;
+  left: 0;
+  color: var(--dc-faint);
+  transition: opacity 120ms;
+}
+
+.de-compose__placeholder[data-hide] {
+  opacity: 0;
+}
+
+.de-compose__cmd {
+  color: var(--dc-head);
+  font-weight: 500;
+}
+
+.de-compose__opt {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 4px;
+  background: #4e5058;
+  color: var(--dc-head);
+  font-size: 14px;
+}
+
+.de-compose__opt::after {
+  content: ":";
+}
+
+.de-compose__draft:empty {
+  display: none;
+}
+
+.de-caret {
+  display: inline-block;
+  width: 1.5px;
+  height: 20px;
+  margin-left: -5px;
+  background: var(--dc-text);
+  opacity: 0;
+}
+
+.de-compose__draft:empty + .de-caret {
+  margin-left: 0;
+}
+
+.de-caret[data-show] {
+  animation: de-blink 1.05s steps(1) infinite;
+}
+
+.de-caret[data-typing] {
+  animation: none;
+  opacity: 1;
+}
+
+@keyframes de-blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.de-compose__tools {
+  display: flex;
+  gap: 16px;
+  color: #b5bac1;
+}
+
+.de-pop {
+  --ss-popover-bg: var(--dc-pop);
+  --ss-popover-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  /* above the composer, however tall it grows */
+  bottom: calc(100% + 8px);
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.de-pop.de-pop--hint {
+  padding: 4px 8px;
+}
+
+.de-pop__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 8px 4px;
+  color: var(--dc-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.de-pop__row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  height: 36px;
+  padding: 7px 8px 0;
+  border-radius: 4px;
+}
+
+.de-pop__row[data-active],
+.de-pop__row[data-hover] {
+  background: var(--dc-pop-row);
+}
+
+.de-pop__name {
+  color: var(--dc-head);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.de-pop__param {
+  color: var(--dc-muted);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.de-pop__param--on {
+  color: var(--dc-head);
+  font-weight: 600;
+}
+
+.de-pop__desc {
+  overflow: hidden;
+  margin-left: auto;
+  color: var(--dc-muted);
+  font-size: 14px;
+  line-height: 22px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.de-pop--hint .de-pop__desc {
+  margin-left: 0;
+}
+
+.de-pop__hint {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 8px;
+}
+
+/* ---- Members (only a sliver shows) ---- */
+
+.de-members {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 4px;
+  width: 220px;
+  padding: 20px 8px 0 16px;
+  border-top: 1px solid var(--dc-line);
+  background: var(--dc-side);
+}
+
+.de-members > .ss-bar {
+  margin: 0 0 8px;
+}
+
+.de-members__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 42px;
+}
+
+/* ---- The source ---- */
+
+.de-src {
+  position: absolute;
+  left: 28px;
+  top: 134px;
+  width: 404px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #090b12;
+  box-shadow: var(--ss-shadow-satellite);
+}
+
+.de-src__tab {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  font-family: var(--ss-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.de-src__file {
+  color: #ffd9a0;
+}
+
+.de-src__code {
+  position: relative;
+  padding: 12px 16px 14px;
+  font-family: var(--ss-mono);
+  font-size: 10.5px;
+  line-height: 17px;
+}
+
+.de-src__line {
+  position: relative;
+  white-space: pre;
+  transition: opacity 300ms;
+}
+
+.de-src__band {
+  position: absolute;
+  border-radius: 4px;
+  background: rgba(255, 217, 160, 0.1);
+  box-shadow: inset 2px 0 0 #ffd9a0;
+}
+
+/* ---- Compact: the channel on its own ---- */
+
+.de .ss-stage[data-layout="compact"] .de-win {
+  left: 16px;
+  top: 16px;
+  width: 326px;
+  height: 428px;
+}
+
+.de .ss-stage[data-layout="compact"] .de-channel {
+  width: 100%;
+  flex: 1;
+  border-left: 1px solid var(--dc-line);
+  border-top-left-radius: 8px;
+}
+
+.de .ss-stage[data-layout="compact"] .de-channel__topic {
+  display: none;
+}
+
+.de .ss-stage[data-layout="compact"] .de-compose {
+  height: auto;
+  min-height: 44px;
+  padding-top: 11px;
+  padding-bottom: 11px;
+  align-items: flex-start;
+}
+
+/* the composer grows a line rather than scroll, as Discord's does */
+.de .ss-stage[data-layout="compact"] .de-compose__text {
+  flex-wrap: wrap;
+  row-gap: 0;
+  white-space: normal;
+}
+
+.de .ss-stage[data-layout="compact"] .de-pop__row {
+  flex-wrap: wrap;
+  height: auto;
+  padding-bottom: 6px;
+}
+
+.de .ss-stage[data-layout="compact"] .de-pop__row .de-pop__desc {
+  flex-basis: 100%;
+  margin-left: 0;
+}
+
+/* On the home the stage has no plate, so its right edge would cut the window
+   mid-page: there the window recedes into the night instead, over filler
+   only (the member list). */
+.de-bleed .de .ss-stage[data-layout="wide"] {
+  mask-image: linear-gradient(to right, #000 calc(100% - 140px), transparent);
+}

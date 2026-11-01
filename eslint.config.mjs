@@ -23,6 +23,8 @@ export default tseslint.config(
       "dist/**",
       ".source/**",
       "public/**",
+      // vendored Stageshow kit, kept byte-for-byte with upstream
+      "components/stageshow/kit/**",
     ],
   }
 );

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { codeToTokens } from "shiki";
 import { RevealPage, type CodeLines } from "@/components/home/reveal/reveal";
 import { discordEmbedUrl } from "./discord-embed";
+import { ECHO_SOURCE } from "@/lib/stage-sources";
 
 export const metadata: Metadata = {
     title: "Seyfert | The TypeScript framework for Discord",
@@ -9,24 +10,13 @@ export const metadata: Metadata = {
     alternates: { canonical: "/" },
 };
 
+// the command the home types out, and the same file the Discord chapter
+// lights line by line
 const ECHO = `import {
   Declare, Options, Command, createStringOption, type CommandContext,
 } from 'seyfert';
 
-const options = {
-  message: createStringOption({
-    description: 'What should I echo back?',
-    required: true,
-  }),
-};
-
-@Declare({ name: 'echo', description: 'Repeat after me' })
-@Options(options)
-export default class EchoCommand extends Command {
-  async run(ctx: CommandContext<typeof options>) {
-    await ctx.write({ content: ctx.options.message });
-  }
-}`;
+${ECHO_SOURCE}`;
 
 // the discord.js v14 guide's boot, honestly: loader, dispatcher, and a
 // separate deploy script you still run by hand
@@ -69,11 +59,11 @@ async function tokens(code: string): Promise<CodeLines> {
 }
 
 export default async function Home() {
-    const [echo, djs, boot] = await Promise.all([tokens(ECHO), tokens(DJS), tokens(BOOT)]);
+    const [echo, source, djs, boot] = await Promise.all([tokens(ECHO), tokens(ECHO_SOURCE), tokens(DJS), tokens(BOOT)]);
     return (
         <>
             <link rel="discord:component-embed" type="application/json" href={discordEmbedUrl} />
-            <RevealPage echo={echo} djs={djs} boot={boot} />
+            <RevealPage echo={echo} source={source} djs={djs} boot={boot} />
         </>
     );
 }
