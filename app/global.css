@@ -1114,6 +1114,14 @@ html[data-reveal="compact"] .reveal-page .reveal-pin {
 html[data-reveal="compact"] .reveal-page .reveal-stage {
   position: relative;
   height: auto;
+  padding-block: 2.5rem;
+}
+@media (min-width: 40rem) {
+  html[data-reveal="compact"] .reveal-page .reveal-stage {
+    padding-block: 4rem;
+  }
+}
+html[data-reveal="compact"] .reveal-page .reveal-stage[data-full] {
   min-height: 100svh;
   padding-block: 6rem;
 }

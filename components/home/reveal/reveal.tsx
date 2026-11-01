@@ -136,8 +136,11 @@ export function RevealPage({ echo, source, djs, boot }: { echo: CodeLines; sourc
 
 // A chapter: `height` of scroll track, one viewport pinned inside it, and
 // the track's 0→1 progress handed to the stage. Reduced motion and the compact
-// cut get the final frame of every chapter, unpinned.
-function Pin({ height, label, children }: { height: string; label: string; children: (p: MotionValue<number>, still: boolean) => ReactNode }) {
+// cut get the final frame of every chapter, unpinned and as tall as what's in
+// it: a frame is centred in a pinned viewport, but unpinned a viewport-tall
+// chapter leaves its spare height as a gap under it. `full` keeps the opening
+// a whole screen there too.
+function Pin({ height, label, full = false, children }: { height: string; label: string; full?: boolean; children: (p: MotionValue<number>, still: boolean) => ReactNode }) {
     const ref = useRef<HTMLElement>(null);
     const still = useContext(StillContext);
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
@@ -157,7 +160,7 @@ function Pin({ height, label, children }: { height: string; label: string; child
     }, [still, progress, scrollYProgress]);
     return (
         <section ref={ref} aria-label={label} className="reveal-pin relative" style={{ height: still ? "auto" : height }}>
-            <div className={cn("reveal-stage overflow-hidden", still ? "relative min-h-svh py-24" : "sticky top-0 h-svh")}>
+            <div data-full={full || undefined} className={cn("reveal-stage overflow-hidden", still ? (full ? "relative min-h-svh py-24" : "relative py-10 sm:py-16") : "sticky top-0 h-svh")}>
                 {children(still ? done : progress, still)}
             </div>
         </section>
@@ -177,7 +180,7 @@ function useGlide(v: MotionValue<number>) {
 /* ── 0 · the opening: through the wordmark ──────────────────────────── */
 
 function Opening() {
-    return <Pin height="170vh" label="Seyfert">{(p, still) => <OpeningStage p={p} still={still} />}</Pin>;
+    return <Pin height="170vh" label="Seyfert" full>{(p, still) => <OpeningStage p={p} still={still} />}</Pin>;
 }
 
 // Everything the first frame needs is server HTML sized by CSS: the drawn
