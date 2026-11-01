@@ -131,6 +131,51 @@
   color: #c9ccd6;
 }
 
+/* The queued mark and the tick share one character cell */
+.tr-mark {
+  display: inline-grid;
+  width: 1ch;
+  justify-items: center;
+  vertical-align: top;
+}
+
+.tr-mark > * {
+  grid-area: 1 / 1;
+  transition: opacity 160ms ease;
+}
+
+.tr-mark__queued {
+  color: var(--tr-amber);
+}
+
+.tr-mark__tick {
+  opacity: 0;
+}
+
+.tr-mark[data-ok] .tr-mark__queued {
+  opacity: 0;
+}
+
+.tr-mark[data-ok] .tr-mark__tick {
+  opacity: 1;
+}
+
+/* "[queued]" gives way to the file's result in the same place */
+.tr-swap {
+  display: inline-grid;
+  vertical-align: top;
+}
+
+.tr-swap > * {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.tr-swap > [data-show] {
+  opacity: 1;
+}
+
 /* ---- Compact: one column at the phone's width, the file wrapping ---- */
 
 .tr-stack {

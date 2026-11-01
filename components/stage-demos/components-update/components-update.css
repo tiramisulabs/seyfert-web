@@ -306,6 +306,12 @@
     line-height: 22px;
   }
 
+  & .cu-edited {
+    color: var(--dc-muted);
+    font-size: 10px;
+    line-height: 22px;
+  }
+
   & .cu-app {
     display: inline-flex;
     align-items: center;

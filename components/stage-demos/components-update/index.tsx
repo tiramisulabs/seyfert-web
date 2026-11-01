@@ -165,8 +165,10 @@ function Counter({ s }: { s: S }) {
                     <span className="cu-app">APP</span>
                     <span className="cu-msg__time">Today at 21:06</span>
                 </div>
+                {/* 41 clicks in, Discord already marks the message as edited:
+                    an UPDATE_MESSAGE response edits it, like any other edit */}
                 <p className="cu-msg__text">
-                    <Count value={s.count} duration={520} /> clicks
+                    <Count value={s.count} duration={520} /> clicks <span className="cu-edited">(edited)</span>
                 </p>
                 <div className="cu-actions">
                     <span className="cu-button" data-target="plus" data-pending={s.pending || undefined}>

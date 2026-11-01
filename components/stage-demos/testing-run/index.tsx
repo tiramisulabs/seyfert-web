@@ -7,15 +7,18 @@ import "@/components/stageshow/seyfert.css";
 import "./testing.css";
 
 // The echo command's test, and the terminal that runs it. The test file is
-// on screen from the first frame; the command is typed, Vitest starts and its
-// summary lands under the header. No token, no gateway: the mock bot runs the
-// real command in-process, which is the whole point.
+// on screen from the first frame; the command is typed, Vitest queues the
+// file, the file and its test pass and the summary lands under them. No
+// token, no gateway: the mock bot runs the real command in-process, which is
+// the whole point.
 //
-// The report is Vitest 5.0.5's own, captured from a TTY run of this exact
-// test against seyfert 5.2.1 and @slipher/testing 1.0.0: with a single file
-// the default reporter prints the header and the summary, nothing per test.
-// The durations are that run's. Like a real terminal of this width, long
-// lines wrap at the column.
+// The report is Vitest 5.0.5's default reporter as a person's terminal shows
+// it, captured from a TTY run of this exact test against seyfert 5.2.1 and
+// @slipher/testing 1.0.0 (outside an agent: Vitest switches to its minimal
+// reporter when it detects one, which drops the file and test lines). While
+// it runs, the file's row reads "❯ … [queued]"; when it settles the same row
+// becomes the passed file. The durations are that run's. Like a real
+// terminal of this width, long lines wrap at the column.
 //
 // Wide, the terminal is a satellite straddling the editor's right edge, over
 // the margin the code never reaches; in a phone column the two stack at one
@@ -24,8 +27,10 @@ import "./testing.css";
 type S = {
     cmd: string;
     typing: boolean;
-    /** Vitest has started: the header prints */
+    /** Vitest has started: the header prints and the file is queued */
     ran: boolean;
+    /** the file and its test have passed */
+    passed: boolean;
     /** summary rows shown so far */
     summary: number;
 };
@@ -33,9 +38,10 @@ type S = {
 const COMMAND = "pnpm vitest run";
 const PROMPT = "~/echo-bot";
 const ROOT = "/Users/kira/echo-bot";
+const TEST_NAME = "echo repeats the message";
 
-const initial: S = { cmd: "", typing: false, ran: false, summary: 0 };
-const poster: S = { cmd: COMMAND, typing: false, ran: true, summary: 4 };
+const initial: S = { cmd: "", typing: false, ran: false, passed: false, summary: 0 };
+const poster: S = { cmd: COMMAND, typing: false, ran: true, passed: true, summary: 4 };
 
 async function script(a: Act<S>) {
     await a.wait(1000);
@@ -44,16 +50,31 @@ async function script(a: Act<S>) {
     await a.set({ typing: false });
     await a.wait(420);
 
-    // Enter: Vitest starts, runs the one file and reports
+    // Enter: Vitest starts and queues the one file
     a.mark("run");
     await a.set({ ran: true });
-    await a.wait(700);
+    await a.wait(900);
+
+    // It passes: the file's row settles, its test lists under it, then the summary
+    a.mark("pass");
+    await a.set({ passed: true });
+    await a.wait(320);
     await a.stagger([1, 2, 3, 4], (n) => a.set({ summary: n }), 90);
     a.mark("passed");
     await a.wait(2800);
 }
 
 const show = (on: boolean) => ({ "data-show": on || undefined });
+
+// One cell, one character wide: the queued mark until the tick takes its place
+function Mark({ ok }: { ok: boolean }) {
+    return (
+        <span className="tr-mark" data-ok={ok || undefined}>
+            <span className="tr-mark__queued">❯</span>
+            <span className="tr-mark__tick ok">✓</span>
+        </span>
+    );
+}
 
 function Terminal({ s }: { s: S }) {
     return (
@@ -66,6 +87,20 @@ function Terminal({ s }: { s: S }) {
                 {" "}
                 <span className="tr-run"> RUN </span> <span className="tr-ver">v5.0.5</span> <span className="dim">{ROOT}</span>
             </div>
+            <div className="tr-out tr-gap" {...show(s.ran)}>
+                {" "}
+                <Mark ok={s.passed} /> test/echo.test.ts{" "}
+                <span className="tr-swap">
+                    <span className="dim tr-swap__a" {...show(!s.passed)}>[queued]</span>
+                    <span className="tr-swap__b" {...show(s.passed)}>
+                        <span className="dim">(1 test)</span> 7ms
+                    </span>
+                </span>
+            </div>
+            <div className="tr-out" {...show(s.passed)}>
+                {"   "}
+                <span className="ok">✓</span> {TEST_NAME} <span className="dim">6ms</span>
+            </div>
             <div className="tr-out tr-gap" {...show(s.summary >= 1)}>
                 <span className="dim"> Test Files </span> <span className="ok">1 passed</span> <span className="dim">(1)</span>
             </div>
@@ -76,7 +111,7 @@ function Terminal({ s }: { s: S }) {
                 <span className="dim">{"   Start at "}</span> 21:04:12
             </div>
             <div className="tr-out" {...show(s.summary >= 4)}>
-                <span className="dim">{"   Duration "}</span> 106ms <span className="dim">(import 73%, transform 12%, tests 11%, worker 3%)</span>
+                <span className="dim">{"   Duration "}</span> 104ms <span className="dim">(import 67%, transform 20%, tests 11%, worker 2%)</span>
             </div>
         </Window>
     );
@@ -115,7 +150,7 @@ export default function TestingRun({ code, compactBelow = 640, still = false }: 
         <Stage
             width={868}
             height={400}
-            compact={{ below: compactBelow, width: 358, height: 572 }}
+            compact={{ below: compactBelow, width: 358, height: 604 }}
             initial={initial}
             poster={poster}
             script={still ? undefined : script}
