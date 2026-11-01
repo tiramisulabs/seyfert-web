@@ -18,7 +18,7 @@ import "./lockscreen-wink.css";
 //
 // Real strings: the date and clock, three senders, three messages.
 
-type Bot = { name: string; avatar: string; says: string };
+export type Bot = { name: string; avatar: string; says: string };
 
 // Quotes from the Orbit on the home (components/home/reveal/reveal.tsx)
 const BOTS: Bot[] = [
@@ -53,12 +53,12 @@ async function script(a: Act<S>) {
     await a.snap({ n: START });
 }
 
-const bot = (k: number) => BOTS[((k % BOTS.length) + BOTS.length) % BOTS.length];
+const cycle = (list: Bot[]) => (k: number) => list[((k % list.length) + list.length) % list.length];
 
 // The stack, in screen points: the newest card in front, two edges peeking
 // under it, one more fading out behind them, and the next one waiting above,
 // unseen, so every card arrives and leaves by moving
-function Stack({ n }: S) {
+function Stack({ n, bot }: S & { bot: (k: number) => Bot }) {
     const keys: number[] = [];
     for (let k = n; k >= n - 4; k--) keys.push(k);
     return (
@@ -82,14 +82,29 @@ function Stack({ n }: S) {
     );
 }
 
-export default function LockscreenWink() {
+// `arrivals`: the host drives the stack instead of the loop. Each new entry
+// lands on top as its own arrival (the home's Orbit adds the bot under the
+// pointer); the list is never shortened, so nothing rewinds in view.
+export default function LockscreenWink({ arrivals }: { arrivals?: Bot[] }) {
+    const controlled = arrivals !== undefined && arrivals.length > 0;
+    const bot = cycle(controlled ? arrivals : BOTS);
     return (
-        <Stage width={400} height={320} compact={{ below: 400, width: 358, height: 296 }} initial={initial} poster={poster} script={script} play="loop" theme="dark" className="sy lw">
+        <Stage
+            width={400}
+            height={320}
+            compact={{ below: 400, width: 358, height: 296 }}
+            initial={controlled ? { n: arrivals.length } : initial}
+            poster={controlled ? { n: arrivals.length } : poster}
+            script={controlled ? undefined : script}
+            play="loop"
+            theme="dark"
+            className="sy lw"
+        >
             {(s, _rect, layout) => (
                 <div className="lw-device">
                     <Phone width={layout === "compact" ? 326 : 364} frame="pro" time="3:14" dark wallpaper="var(--lw-wall)">
                         <LockScreen size="satellite" date="Saturday, October 31" time="3:14">
-                            <Stack n={s.n} />
+                            <Stack n={controlled ? arrivals.length : s.n} bot={bot} />
                         </LockScreen>
                     </Phone>
                 </div>

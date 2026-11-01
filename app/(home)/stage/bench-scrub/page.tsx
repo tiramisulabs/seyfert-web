@@ -17,7 +17,7 @@ const data: BenchSeries = {
 
 export default function Page() {
     return (
-        <DemoFrame id="bench-scrub" index={4} title="Memory you can scrub" where="study · /benchmark already has the real chart">
+        <DemoFrame id="bench-scrub" index={4} title="Memory you can scrub" where="live · home, Memory chapter (the scroll moves the hairline)">
             <BenchScrub data={data} />
         </DemoFrame>
     );

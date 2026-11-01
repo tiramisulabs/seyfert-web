@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useRef, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState, useSyncExternalStore, type CSSProperties, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, RotateCcw } from "lucide-react";
@@ -19,6 +19,7 @@ import {
 import GalaxyCanvas from "@/components/home/galaxy/galaxy-canvas";
 import GalaxyLite from "@/components/home/galaxy/galaxy-lite";
 import DiscordEcho from "@/components/stage-demos/discord-echo";
+import LockscreenWink, { type Bot as WinkBot } from "@/components/stage-demos/lockscreen-wink";
 import { CopyButton } from "@/components/home/galaxy/copy-button";
 import { cn } from "@/lib/utils";
 import { medianMb } from "@/lib/benchmark";
@@ -495,20 +496,18 @@ const DISCORD_RSS = medianMb(discordMemory.rss);
 const RSS_CEILING = Math.ceil((DISCORD_RSS * 1.05) / 10) * 10;
 
 function Memory() {
-    return <Pin height="225vh" label="Memory under load">{(p) => <MemoryStage p={p} />}</Pin>;
+    return <Pin height="270vh" label="Memory under load">{(p) => <MemoryStage p={p} />}</Pin>;
 }
 
 function MemoryStage({ p }: { p: MotionValue<number> }) {
-    const mb = useTransform(p, [0.19, 0.71], [DISCORD_RSS, SEYFERT_RSS], { clamp: true });
+    const mb = useTransform(p, [0.19, 0.6], [DISCORD_RSS, SEYFERT_RSS], { clamp: true });
     const mbText = useTransform(mb, (v) => String(Math.round(v)));
-    const bar = useTransform(p, [0.19, 0.71], [DISCORD_RSS / RSS_CEILING, SEYFERT_RSS / RSS_CEILING], { clamp: true });
-    const ghost = useTransform(p, [0.19, 0.32], [0, 1]);
-    const heat = useTransform(p, [0.43, 0.71], ["#fafafa", "#ffd9a0"]);
+    const heat = useTransform(p, [0.4, 0.6], ["#fafafa", "#ffd9a0"]);
     // each label only names a real measurement: discord.js before the count
     // starts, seyfert once it lands — mid-scrub numbers belong to nobody
     const nameOld = useTransform(p, [0.19, 0.26], [1, 0]);
-    const nameNew = useTransform(p, [0.64, 0.71], [0, 1]);
-    const tail = useTransform(p, [0.77, 0.9], [0, 1]);
+    const nameNew = useTransform(p, [0.54, 0.6], [0, 1]);
+    const tail = useTransform(p, [0.86, 0.95], [0, 1]);
     const intro = useTransform(p, [0, 0.11], [0, 1]);
 
     return (
@@ -526,14 +525,11 @@ function MemoryStage({ p }: { p: MotionValue<number> }) {
             </motion.span>
 
             <motion.div style={{ opacity: intro, color: heat }} className="relative flex items-baseline font-semibold leading-none tracking-[-0.06em]">
-                <motion.span className="text-[clamp(120px,24vw,340px)] tabular-nums">{mbText}</motion.span>
+                <motion.span className="text-[clamp(96px,min(24vw,30vh),340px)] tabular-nums">{mbText}</motion.span>
                 <span className="ml-3 text-[clamp(28px,4vw,56px)] tracking-[-0.02em]">MB</span>
             </motion.div>
 
-            <motion.div style={{ opacity: intro }} className="relative h-2 w-full max-w-3xl bg-white/[0.05]">
-                <motion.div style={{ opacity: ghost, width: `${DISCORD_RSS / RSS_CEILING * 100}%` }} className="absolute inset-y-0 left-0 border-r border-white/30" />
-                <motion.div style={{ scaleX: bar }} className="absolute inset-0 origin-left bg-[var(--core-amber)]" />
-            </motion.div>
+            <MemoryTrace p={p} />
 
             <motion.div style={{ opacity: tail }} className="relative flex flex-col items-center gap-3">
                 <p className="text-balance text-[clamp(20px,2.4vw,30px)] font-medium tracking-[-0.01em]">
@@ -545,6 +541,89 @@ function MemoryStage({ p }: { p: MotionValue<number> }) {
                 </Link>
             </motion.div>
         </div>
+    );
+}
+
+// The medians hold for the whole run. Both RSS series from the same twelve
+// hours (Node.js, one 30-minute average per point, as /benchmark plots them)
+// draw in with the count, then the scroll carries a hairline across them.
+// The readout is always the sample nearest the hairline, never a value in
+// between, so every figure on screen was measured. The still cut rests on the
+// last sample.
+const SEYFERT_TRACE = seyfertMemory.rss;
+const DISCORD_TRACE = discordMemory.rss;
+const TRACE_LAST = SEYFERT_TRACE.length - 1;
+const TRACE_W = 1000;
+const TRACE_H = 160;
+const traceY = (mb: number) => TRACE_H - (mb / RSS_CEILING) * TRACE_H;
+const tracePath = (series: readonly number[]) =>
+    series.map((v, i) => `${i ? "L" : "M"}${((i / TRACE_LAST) * TRACE_W).toFixed(1)} ${traceY(v).toFixed(1)}`).join(" ");
+// a sample's time from the start of the run, as /benchmark labels it
+const traceClock = (i: number) => {
+    const minutes = i * 30;
+    return `${Math.floor(minutes / 60)}h ${String(minutes % 60).padStart(2, "0")}m`;
+};
+// the line's height at a fraction of the run, between its two samples, so
+// the dots ride the drawn segments exactly
+const traceAt = (series: readonly number[], f: number) => {
+    const x = f * TRACE_LAST;
+    const i = Math.min(TRACE_LAST - 1, Math.floor(x));
+    return series[i] + (series[i + 1] - series[i]) * (x - i);
+};
+
+function MemoryTrace({ p }: { p: MotionValue<number> }) {
+    // discord.js draws as the count leaves it, Seyfert as the count lands
+    const drawOld = useTransform(p, [0.15, 0.32], [100, 0], { clamp: true });
+    const drawNew = useTransform(p, [0.4, 0.6], [100, 0], { clamp: true });
+    const clipOld = useMotionTemplate`inset(-8px ${drawOld}% -8px 0)`;
+    const clipNew = useMotionTemplate`inset(-8px ${drawNew}% -8px 0)`;
+    const scrub = useTransform(p, [0.64, 0.68], [0, 1]);
+    const f = useTransform(p, [0.66, 0.88], [0, 1], { clamp: true });
+    const left = useTransform(f, (v) => `${v * 100}%`);
+    const topOld = useTransform(f, (v) => `${(traceY(traceAt(DISCORD_TRACE, v)) / TRACE_H) * 100}%`);
+    const topNew = useTransform(f, (v) => `${(traceY(traceAt(SEYFERT_TRACE, v)) / TRACE_H) * 100}%`);
+    const near = useTransform(f, (v) => Math.round(v * TRACE_LAST));
+    const when = useTransform(near, (i) => `At ${traceClock(i)}`);
+    const oldMb = useTransform(near, (i) => `${Math.round(DISCORD_TRACE[i])} MB`);
+    const newMb = useTransform(near, (i) => `${Math.round(SEYFERT_TRACE[i])} MB`);
+    const shown = useTransform(p, [0.08, 0.15], [0, 1]);
+    const line = "absolute inset-0 h-full w-full overflow-visible";
+    return (
+        <motion.div style={{ opacity: shown }} className="relative flex w-full max-w-3xl flex-col gap-3">
+            <div className="relative h-[clamp(96px,16vh,170px)]">
+                <svg aria-hidden viewBox={`0 0 ${TRACE_W} ${TRACE_H}`} preserveAspectRatio="none" className={line}>
+                    {[100, 200].map((g) => (
+                        <line key={g} x1={0} x2={TRACE_W} y1={traceY(g)} y2={traceY(g)} stroke="#fff" strokeOpacity={0.07} strokeDasharray="2 6" vectorEffect="non-scaling-stroke" />
+                    ))}
+                    <line x1={0} x2={TRACE_W} y1={TRACE_H} y2={TRACE_H} stroke="#fff" strokeOpacity={0.12} vectorEffect="non-scaling-stroke" />
+                </svg>
+                <motion.svg aria-hidden viewBox={`0 0 ${TRACE_W} ${TRACE_H}`} preserveAspectRatio="none" style={{ clipPath: clipOld }} className={line}>
+                    <path d={tracePath(DISCORD_TRACE)} fill="none" stroke="#a3a3a3" strokeOpacity={0.6} strokeWidth={1.5} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+                </motion.svg>
+                <motion.svg aria-hidden viewBox={`0 0 ${TRACE_W} ${TRACE_H}`} preserveAspectRatio="none" style={{ clipPath: clipNew }} className={line}>
+                    <path d={tracePath(SEYFERT_TRACE)} fill="none" stroke="#ffd9a0" strokeWidth={2} strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+                </motion.svg>
+                {/* both grid labels sit in the empty band between the lines */}
+                <span className={cn(mono, "absolute right-0 pt-1 text-[10px] tracking-[0.04em] text-white/35")} style={{ top: `${(traceY(200) / TRACE_H) * 100}%` }}>200 MB</span>
+                <span className={cn(mono, "absolute right-0 -translate-y-full pb-1 text-[10px] tracking-[0.04em] text-white/35")} style={{ top: `${(traceY(100) / TRACE_H) * 100}%` }}>100 MB</span>
+                <motion.div aria-hidden style={{ left, opacity: scrub }} className="absolute inset-y-0 w-px -translate-x-1/2 bg-white/25" />
+                <motion.span aria-hidden style={{ left, top: topOld, opacity: scrub }} className="absolute size-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#a3a3a3]" />
+                <motion.span aria-hidden style={{ left, top: topNew, opacity: scrub }} className="absolute size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ffd9a0] shadow-[0_0_0_3px_#05070d]" />
+            </div>
+            <div className={cn(mono, "-mt-1 flex justify-between text-[10px] tracking-[0.04em] text-white/35")}>
+                <span>0h</span>
+                <span>{traceClock(TRACE_LAST)}</span>
+            </div>
+            <motion.div style={{ opacity: scrub }} className={cn(mono, "flex flex-wrap items-baseline justify-center gap-x-5 gap-y-1 text-[11px] tracking-[0.04em] text-white/40 tabular-nums")}>
+                <motion.span className="text-[var(--text-dim)]">{when}</motion.span>
+                <span>
+                    discord.js <motion.span className="text-[var(--text-bright)]">{oldMb}</motion.span>
+                </span>
+                <span>
+                    Seyfert <motion.span className="text-[#ffd9a0]">{newMb}</motion.span>
+                </span>
+            </motion.div>
+        </motion.div>
     );
 }
 
@@ -569,16 +648,17 @@ function Orbit() {
     const left = useTransform(scrollYProgress, [0, 1], reduce ? ["0%", "0%"] : ["4%", "-46%"]);
     const right = useTransform(scrollYProgress, [0, 1], reduce ? ["-30%", "-30%"] : ["-52%", "0%"]);
     const half = BOTS.length / 2;
+    const { arrivals, shown, wink, rest } = useOrbitWink();
     return (
-        <section ref={ref} aria-label="Bots running on Seyfert" className="relative flex flex-col gap-10 overflow-hidden py-40">
+        <section ref={ref} aria-label="Bots running on Seyfert" onMouseLeave={rest} className="relative flex flex-col gap-10 overflow-hidden py-40">
             <div className="mx-auto w-full max-w-6xl px-5">
                 <span className={cn(mono, "text-[12px] tracking-[0.04em] text-[var(--text-dim)]")}>In orbit · bots running on Seyfert</span>
             </div>
             <motion.ul style={{ x: left }} className="flex w-max items-center gap-10 whitespace-nowrap">
-                {[...BOTS.slice(0, half), ...BOTS.slice(0, half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 0} duplicate={i >= half} />)}
+                {[...BOTS.slice(0, half), ...BOTS.slice(0, half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 0} duplicate={i >= half} onHover={wink} />)}
             </motion.ul>
             <motion.ul style={{ x: right }} className="flex w-max items-center gap-10 whitespace-nowrap">
-                {[...BOTS.slice(half), ...BOTS.slice(half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 1} duplicate={i >= BOTS.length - half} />)}
+                {[...BOTS.slice(half), ...BOTS.slice(half)].map((b, i) => <OrbitItem key={`${b.name}-${i}`} bot={b} solid={i % 2 === 1} duplicate={i >= BOTS.length - half} onHover={wink} />)}
             </motion.ul>
             <div className="mx-auto w-full max-w-6xl px-5">
                 <a href="https://github.com/tiramisulabs/seyfert-web" target="_blank" className={cn(mono, "inline-flex min-h-11 items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-current text-[12px] tracking-[0.02em] text-[var(--text-dim)] hover:text-[var(--text-bright)]")}>
@@ -586,13 +666,54 @@ function Orbit() {
                     <ArrowUpRight aria-hidden className="size-4" />
                 </a>
             </div>
+            {/* the wink: hover a bot and its message lands on a phone at 3:14.
+                A bonus for a fine pointer only; the quotes are already on the page */}
+            {arrivals.length > 0 && (
+                <div
+                    aria-hidden
+                    data-shown={shown || undefined}
+                    className={cn(
+                        "pointer-events-none absolute bottom-0 right-[max(20px,calc((100vw-72rem)/2+20px))] z-10 hidden w-[300px] translate-y-3 [mask-image:linear-gradient(to_bottom,#000_calc(100%-16px),transparent)] opacity-0 transition-[opacity,translate] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] data-[shown]:translate-y-0 data-[shown]:opacity-100 motion-reduce:transition-none [@media(hover:hover)_and_(pointer:fine)]:block",
+                        GeistSans.variable,
+                    )}
+                >
+                    <LockscreenWink arrivals={arrivals} />
+                </div>
+            )}
         </section>
     );
 }
 
-function OrbitItem({ bot, solid, duplicate }: { bot: (typeof BOTS)[number]; solid: boolean; duplicate: boolean }) {
+// Each bot the pointer reaches posts its quote to the phone, on top of the
+// stack. The stack starts with two other bots already in it, so the first
+// hover lands on a lived-in lock screen; hovering the same bot again doesn't
+// post twice. Leaving the Orbit fades the phone out after a beat, keeping its
+// stack for the next visit.
+function useOrbitWink() {
+    const [arrivals, setArrivals] = useState<WinkBot[]>([]);
+    const [shown, setShown] = useState(false);
+    const timer = useRef(0);
+    const wink = useCallback((b: (typeof BOTS)[number]) => {
+        window.clearTimeout(timer.current);
+        setShown(true);
+        setArrivals((list) => {
+            const next = { name: b.name, avatar: b.avatar, says: b.quote };
+            if (list.at(-1)?.name === b.name) return list;
+            const seed = list.length ? list : BOTS.filter((o) => o.name !== b.name).slice(0, 2).map((o) => ({ name: o.name, avatar: o.avatar, says: o.quote }));
+            return [...seed, next];
+        });
+    }, []);
+    const rest = useCallback(() => {
+        window.clearTimeout(timer.current);
+        timer.current = window.setTimeout(() => setShown(false), 700);
+    }, []);
+    useEffect(() => () => window.clearTimeout(timer.current), []);
+    return { arrivals, shown, wink, rest };
+}
+
+function OrbitItem({ bot, solid, duplicate, onHover }: { bot: (typeof BOTS)[number]; solid: boolean; duplicate: boolean; onHover: (bot: (typeof BOTS)[number]) => void }) {
     return (
-        <li aria-hidden={duplicate || undefined} className="flex items-center gap-6">
+        <li aria-hidden={duplicate || undefined} onMouseEnter={() => onHover(bot)} className="flex items-center gap-6">
             <Image src={bot.avatar} alt="" width={88} height={88} unoptimized={bot.avatar.endsWith(".gif")} className="size-16 rounded-2xl ring-1 ring-white/15 sm:size-[88px]" />
             <span className={cn("text-[clamp(56px,9vw,136px)] font-semibold leading-none tracking-[-0.04em]", solid ? "text-[var(--text-bright)]" : "reveal-outline")}>{bot.name}</span>
             <span className={cn(mono, "max-w-[18ch] whitespace-normal text-[12px] leading-snug tracking-[0.08em] text-[var(--text-dim)]")}>“{bot.quote}”</span>
