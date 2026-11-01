@@ -1,0 +1,300 @@
+/* A generic dark editor in the site's own editor colors: the page's ground
+   around it, #090b12 for the code, amber only on the file's tab and the
+   caret. Everything is drawn at design size inside .tc-zoom and scaled. */
+
+.tc {
+  --tc-ed: #090b12;
+  --tc-chrome: #0c0f18;
+  --tc-line: rgba(255, 255, 255, 0.08);
+  --tc-faint: #4b5062;
+  --tc-dim: #6b7080;
+  --tc-amber: #ffd9a0;
+}
+
+.tc .ss-stage {
+  overflow: hidden;
+  border-radius: 14px;
+  font-family: var(--ss-font);
+}
+
+.tc svg {
+  display: block;
+  flex: none;
+}
+
+/* The whole window at 1.4x, one gutter on the top and sides, off the bottom */
+.tc-zoom {
+  position: absolute;
+  top: 36px;
+  left: 36px;
+  transform-origin: 0 0;
+}
+
+.tc-win {
+  width: 577px;
+  height: 420px;
+  background: var(--tc-ed);
+  box-shadow: var(--ss-shadow-hero);
+}
+
+.tc-win .ss-window__title {
+  color: #9da1ad;
+}
+
+.tc-win .ss-window__bar {
+  background: var(--tc-chrome);
+  border-bottom: 1px solid var(--tc-line);
+  color: var(--tc-dim);
+}
+
+.tc-win .ss-window__body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.tc-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ---- Activity bar ---- */
+
+.tc-activity {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 44px;
+  padding-top: 6px;
+  border-right: 1px solid var(--tc-line);
+  background: var(--tc-chrome);
+}
+
+.tc-activity__item {
+  position: relative;
+  display: grid;
+  width: 44px;
+  height: 40px;
+  place-items: center;
+  color: var(--tc-faint);
+}
+
+.tc-activity__item[data-active] {
+  color: #c9ccd6;
+}
+
+.tc-activity__item[data-active]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: #c9ccd6;
+}
+
+/* ---- Editor ---- */
+
+.tc-editor {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.tc-tabs {
+  display: flex;
+  flex: none;
+  height: 34px;
+  border-bottom: 1px solid var(--tc-line);
+  background: var(--tc-chrome);
+}
+
+.tc-tab {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 0 16px;
+  border-right: 1px solid var(--tc-line);
+  /* the open tab is the editor's own surface, joined to the code under it */
+  margin-bottom: -1px;
+  background: var(--tc-ed);
+  color: var(--tc-amber);
+  font-family: var(--ss-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.tc-code {
+  position: relative;
+  flex: 1;
+  padding: 12px 0;
+  font-family: var(--ss-mono);
+  font-size: 12px;
+  line-height: 18px;
+  font-variant-ligatures: none;
+}
+
+.tc-row {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  column-gap: 18px;
+}
+
+.tc-row[data-active] {
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.tc-ln {
+  color: var(--tc-faint);
+  font-size: 11px;
+  text-align: right;
+  user-select: none;
+}
+
+.tc-row[data-active] .tc-ln {
+  color: #9da1ad;
+}
+
+.tc-text {
+  min-width: 0;
+  padding-right: 16px;
+  white-space: pre;
+}
+
+/* ---- The edited value and its caret ---- */
+
+.tc-flag {
+  position: relative;
+  display: inline-block;
+  /* the wrapped line's hanging indent is for its rows, not for this word */
+  text-indent: 0;
+}
+
+.tc-flag__text[data-sel] {
+  border-radius: 2px;
+  background: rgba(255, 217, 160, 0.24);
+  box-shadow: 0 0 0 1px rgba(255, 217, 160, 0.24);
+}
+
+.tc-caret {
+  position: absolute;
+  top: 1px;
+  right: -1px;
+  width: 1.5px;
+  height: 16px;
+  background: var(--tc-amber);
+  opacity: 0;
+}
+
+.tc-caret[data-show] {
+  animation: tc-blink 1.06s steps(1) 0.5s infinite;
+  opacity: 1;
+}
+
+.tc-caret[data-typing] {
+  animation: none;
+}
+
+@keyframes tc-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---- The hover ---- */
+
+.tc-hover {
+  position: absolute;
+  z-index: 2;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  background: #121725;
+  box-shadow: 0 10px 28px -6px rgba(0, 0, 0, 0.7);
+  font-family: var(--ss-mono);
+  font-size: 12px;
+  line-height: 18px;
+  white-space: pre;
+  opacity: 0;
+  transition: opacity 90ms ease;
+  pointer-events: none;
+}
+
+.tc-hover[data-show] {
+  opacity: 1;
+  transition-duration: 140ms;
+}
+
+/* The widest the hover gets, measured and never seen */
+.tc-hover--ghost {
+  top: 0;
+  left: 0;
+  visibility: hidden;
+}
+
+.tc-hover__more {
+  vertical-align: bottom;
+}
+
+/* ---- Compact: the editor alone, wrapping its long lines ---- */
+
+.tc .ss-stage[data-layout="compact"] .tc-zoom {
+  top: 16px;
+  left: 16px;
+}
+
+.tc-card {
+  display: flex;
+  width: 326px;
+  height: 480px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--tc-ed);
+  box-shadow: var(--ss-shadow-hero);
+}
+
+.tc-card .tc-tab {
+  border-top-left-radius: 12px;
+}
+
+.tc .ss-stage[data-layout="compact"] .tc-tab {
+  padding: 0 12px;
+}
+
+.tc .ss-stage[data-layout="compact"] .tc-code {
+  font-size: 11px;
+  line-height: 17px;
+}
+
+.tc .ss-stage[data-layout="compact"] .tc-row {
+  padding-left: 12px;
+  grid-template-columns: 14px 1fr;
+  column-gap: 10px;
+}
+
+.tc .ss-stage[data-layout="compact"] .tc-ln {
+  font-size: 10px;
+}
+
+/* Word wrap, as an editor does it: continuation rows keep the line's indent */
+.tc .ss-stage[data-layout="compact"] .tc-text {
+  padding-right: 10px;
+  padding-left: calc(var(--ind) * 1ch);
+  text-indent: calc(var(--ind) * -1ch);
+  white-space: pre-wrap;
+}
+
+.tc .ss-stage[data-layout="compact"] .tc-hover {
+  padding: 4px 8px;
+  font-size: 11px;
+  line-height: 17px;
+}
+
+.tc .ss-stage[data-layout="compact"] .tc-caret {
+  height: 15px;
+}

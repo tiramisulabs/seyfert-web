@@ -1,0 +1,113 @@
+/* A lock screen at night on the observatory page: a deep blue-black
+   wallpaper, iOS's dark notification material, the Discord stack growing. */
+
+.lw {
+  /* Night sky: a little blue left at the top, black by the clock's foot, and
+     the faintest warm light low down, out of the crop */
+  --lw-wall: radial-gradient(90% 40% at 50% 104%, rgba(255, 196, 128, 0.16), transparent 70%),
+    radial-gradient(110% 45% at 30% 0%, rgba(120, 146, 205, 0.22), transparent 72%),
+    linear-gradient(180deg, #121a31 0%, #0b1022 34%, #080b17 62%, #0a0e1c 100%);
+
+  & .ss-stage {
+    overflow: hidden;
+    border-radius: 14px;
+  }
+
+  /* The phone pinned a gutter from the top, centered, off the bottom */
+  & .lw-device {
+    position: absolute;
+    left: 18px;
+    top: 22px;
+  }
+
+  /* Narrow, the phone keeps a 16px gutter, as the Dynamic Island gold does */
+  & .ss-stage[data-layout="compact"] .lw-device {
+    left: 16px;
+    top: 16px;
+  }
+
+  /* ---- The stack, in screen points ---- */
+
+  & .lw-stack {
+    position: relative;
+    /* one card: a 38pt icon in 14pt of padding */
+    height: 66px;
+  }
+
+  /* iOS's dark material. Opaque, so the cards under it never show through */
+  & .lw-note {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 4;
+    background: #252833;
+    backdrop-filter: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+    color: #fff;
+    transform-origin: 50% 100%;
+    /* solid within a fifth of a second, so it slides over the card it
+       covers rather than fading through it */
+    transition:
+      transform 640ms cubic-bezier(0.25, 0.8, 0.25, 1),
+      opacity 200ms ease-out,
+      background-color 420ms ease;
+  }
+
+  & .lw-note .ss-notification__icon {
+    border-radius: 50%;
+    background: #1b1e27;
+  }
+
+  /* words arrive once the card is solid, and leave first as it sinks */
+  & .lw-note .ss-notification__icon,
+  & .lw-note .ss-notification__text {
+    transition: opacity 220ms ease-out 60ms;
+  }
+
+  & .lw-note:not([data-depth="0"]) .ss-notification__icon,
+  & .lw-note:not([data-depth="0"]) .ss-notification__text {
+    opacity: 0;
+    transition: opacity 120ms ease-in;
+  }
+
+  & .lw-note .ss-notification__time {
+    color: rgba(235, 235, 245, 0.6);
+  }
+
+  & .lw-note .ss-notification__body {
+    color: rgba(255, 255, 255, 0.86);
+  }
+
+  /* Waiting above, unseen */
+  & .lw-note[data-depth="-1"] {
+    z-index: 5;
+    opacity: 0;
+    transform: translateY(-26px) scale(0.97);
+    transition: none;
+  }
+
+  /* Under the front card: an edge each, narrower and darker, no words */
+  & .lw-note[data-depth="1"] {
+    z-index: 3;
+    background: #1d2029;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.24);
+    transform: translateY(9px) scale(0.94);
+  }
+
+  & .lw-note[data-depth="2"],
+  & .lw-note[data-depth="3"] {
+    z-index: 2;
+    background: #171a22;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    transform: translateY(17px) scale(0.88);
+  }
+
+  /* The oldest slips under the last edge and is gone */
+  & .lw-note[data-depth="3"] {
+    z-index: 1;
+    opacity: 0;
+    transform: translateY(17px) scale(0.84);
+  }
+
+}
