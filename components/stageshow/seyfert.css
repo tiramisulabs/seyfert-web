@@ -1,0 +1,30 @@
+/* The kit's dark theme, retuned to the observatory page it sits on: stages
+   are transparent on --space-void, surfaces step up from there, and the one
+   lit color is the Reveal's amber. Only tokens; each demo styles its product. */
+.sy .ss-stage[data-theme="dark"] {
+  --ss-canvas: #0a0e18;
+  --ss-surface: #0e1220;
+  --ss-chrome: #0c101b;
+  --ss-raised: #141a2a;
+  --ss-well: transparent;
+  --ss-line: rgba(255, 255, 255, 0.08);
+  --ss-line-faint: rgba(255, 255, 255, 0.05);
+  --ss-text: #a3a3a3;
+  --ss-text-strong: #fafafa;
+  --ss-text-faint: #6b7080;
+  --ss-accent: #ffd9a0;
+  --ss-accent-soft: rgba(255, 217, 160, 0.14);
+  --ss-accent-text: #ffd9a0;
+  --ss-font: var(--font-geist-sans), "Geist", system-ui, sans-serif;
+  --ss-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
+  --ss-shadow-hero: 0 0 0 1px rgba(255, 255, 255, 0.09), 0 40px 120px -20px rgba(0, 0, 0, 0.75);
+  --ss-shadow-satellite: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 24px 60px -12px rgba(0, 0, 0, 0.8);
+  background: transparent;
+}
+
+/* In the docs the page may be light: an embedded stage brings its own night
+   and fills its plate edge to edge. */
+.sy-plate .sy .ss-stage[data-theme="dark"] {
+  background: #05070d;
+  border-radius: 14px;
+}
