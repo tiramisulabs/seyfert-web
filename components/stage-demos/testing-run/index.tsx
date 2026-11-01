@@ -7,38 +7,35 @@ import "@/components/stageshow/seyfert.css";
 import "./testing.css";
 
 // The echo command's test, and the terminal that runs it. The test file is
-// on screen from the first frame; the command is typed, Vitest starts, the
-// file and its one test spin in their own character cell and turn into
-// ticks, and the summary lands under them. No token, no gateway: the mock
-// bot runs the real command in-process, which is the whole point.
+// on screen from the first frame; the command is typed, Vitest starts and its
+// summary lands under the header. No token, no gateway: the mock bot runs the
+// real command in-process, which is the whole point.
+//
+// The report is Vitest 5.0.5's own, captured from a TTY run of this exact
+// test against seyfert 5.2.1 and @slipher/testing 1.0.0: with a single file
+// the default reporter prints the header and the summary, nothing per test.
+// The durations are that run's. Like a real terminal of this width, long
+// lines wrap at the column.
 //
 // Wide, the terminal is a satellite straddling the editor's right edge, over
 // the margin the code never reaches; in a phone column the two stack at one
-// width, 12px apart, the terminal off the bottom. The terminal is a character
-// grid: each line owns a 1ch cell where its spinner turns and its tick lands,
-// so nothing beside it moves.
-//
-// Real strings: the file's path and the file, the command, Vitest's report.
+// width, 12px apart, the terminal off the bottom.
 
 type S = {
     cmd: string;
     typing: boolean;
     /** Vitest has started: the header prints */
     ran: boolean;
-    /** the file and its test are listed, spinning */
-    listed: boolean;
-    testOk: boolean;
-    fileOk: boolean;
     /** summary rows shown so far */
     summary: number;
 };
 
 const COMMAND = "pnpm vitest run";
-const TEST_NAME = "echo repeats the message";
-const PATH = "~/echo-bot";
+const PROMPT = "~/echo-bot";
+const ROOT = "/Users/kira/echo-bot";
 
-const initial: S = { cmd: "", typing: false, ran: false, listed: false, testOk: false, fileOk: false, summary: 0 };
-const poster: S = { cmd: COMMAND, typing: false, ran: true, listed: true, testOk: true, fileOk: true, summary: 3 };
+const initial: S = { cmd: "", typing: false, ran: false, summary: 0 };
+const poster: S = { cmd: COMMAND, typing: false, ran: true, summary: 4 };
 
 async function script(a: Act<S>) {
     await a.wait(1000);
@@ -47,33 +44,13 @@ async function script(a: Act<S>) {
     await a.set({ typing: false });
     await a.wait(420);
 
-    // Enter: Vitest starts and lists the file and its test, running
+    // Enter: Vitest starts, runs the one file and reports
     a.mark("run");
     await a.set({ ran: true });
-    await a.wait(220);
-    await a.set({ listed: true });
-    await a.wait(1250);
-
-    // The test passes, then its file
-    a.mark("pass");
-    await a.set({ testOk: true });
-    await a.wait(160);
-    await a.set({ fileOk: true });
-    await a.wait(320);
-    await a.stagger([1, 2, 3], (n) => a.set({ summary: n }), 90);
+    await a.wait(700);
+    await a.stagger([1, 2, 3, 4], (n) => a.set({ summary: n }), 90);
     a.mark("passed");
     await a.wait(2800);
-}
-
-// One cell, one character wide: the spinner turns in it until the tick
-// takes its place
-function Mark({ ok }: { ok: boolean }) {
-    return (
-        <span className="tr-mark" data-ok={ok || undefined}>
-            <span className="tr-mark__spin" aria-hidden />
-            <span className="tr-mark__tick ok">✓</span>
-        </span>
-    );
 }
 
 const show = (on: boolean) => ({ "data-show": on || undefined });
@@ -81,28 +58,13 @@ const show = (on: boolean) => ({ "data-show": on || undefined });
 function Terminal({ s }: { s: S }) {
     return (
         <Window chrome="terminal" lights="grey" title="echo-bot — zsh" className="tr-term">
-            <Prompt path={PATH}>
+            <Prompt path={PROMPT}>
                 {s.cmd}
                 {!s.ran && <Caret still={s.typing} />}
             </Prompt>
             <div className="tr-out tr-gap" {...show(s.ran)}>
-                <span className="tr-run">RUN</span> <span className="dim">v3.2.4 {PATH}</span>
-            </div>
-            <div className="tr-out tr-gap" {...show(s.listed)}>
                 {" "}
-                <Mark ok={s.fileOk} /> test/echo.test.ts <span className="dim">(1 test)</span>
-                <span className="tr-time" {...show(s.fileOk)}>
-                    {" "}
-                    14ms
-                </span>
-            </div>
-            <div className="tr-out" {...show(s.listed)}>
-                {"   "}
-                <Mark ok={s.testOk} /> {TEST_NAME}
-                <span className="tr-time" {...show(s.testOk)}>
-                    {" "}
-                    12ms
-                </span>
+                <span className="tr-run"> RUN </span> <span className="tr-ver">v5.0.5</span> <span className="dim">{ROOT}</span>
             </div>
             <div className="tr-out tr-gap" {...show(s.summary >= 1)}>
                 <span className="dim"> Test Files </span> <span className="ok">1 passed</span> <span className="dim">(1)</span>
@@ -111,7 +73,10 @@ function Terminal({ s }: { s: S }) {
                 <span className="dim">{"      Tests "}</span> <span className="ok">1 passed</span> <span className="dim">(1)</span>
             </div>
             <div className="tr-out" {...show(s.summary >= 3)}>
-                <span className="dim">{"   Duration "}</span> 486ms
+                <span className="dim">{"   Start at "}</span> 21:04:12
+            </div>
+            <div className="tr-out" {...show(s.summary >= 4)}>
+                <span className="dim">{"   Duration "}</span> 106ms <span className="dim">(import 73%, transform 12%, tests 11%, worker 3%)</span>
             </div>
         </Window>
     );

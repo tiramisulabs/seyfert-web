@@ -22,6 +22,12 @@ import "./bento.css";
 // docs), the reply is @slipher/cooldown's default middleware message, the
 // lint message and rule id are require-declare's, and the adapter names and
 // /interactions path are the ones the setup guide and uws-adapter use.
+//
+// The cooldown reply only reaches Discord through an onMiddlewaresError that
+// sends it: Seyfert's default just logs. With the handler from Handling
+// errors (`context.editOrReply({ content: error })`) @slipher/cooldown 1.0.0
+// answers a blocked /ping with exactly this text, not ephemeral (checked with
+// @slipher/testing's mock bot).
 
 const STEP = 110;
 const LEAD = 450;

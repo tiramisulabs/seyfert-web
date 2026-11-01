@@ -115,68 +115,20 @@
 }
 
 .tr-run {
-  padding: 0 4px;
   border-radius: 3px;
   background: #1b2131;
   color: #c9ccd6;
   font-weight: 600;
 }
 
-.tr-time {
-  color: var(--ss-term-dim);
-  opacity: 0;
-  transition: opacity 160ms ease;
+/* A terminal wraps at the column, mid-word if it has to */
+.tr-term .ss-term > .tr-out {
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
-.tr-time[data-show] {
-  opacity: 1;
-}
-
-/* The spinner and the tick share one character cell */
-.tr-mark {
-  display: inline-grid;
-  width: 1ch;
-  justify-items: center;
-  vertical-align: top;
-}
-
-.tr-mark > * {
-  grid-area: 1 / 1;
-  transition: opacity 160ms ease;
-}
-
-.tr-mark__spin {
-  color: var(--tr-amber);
-}
-
-.tr-mark__spin::before {
-  content: "⠋";
-  animation: tr-spin 0.8s steps(1) infinite;
-}
-
-.tr-mark__tick {
-  opacity: 0;
-}
-
-.tr-mark[data-ok] .tr-mark__spin {
-  opacity: 0;
-}
-
-.tr-mark[data-ok] .tr-mark__tick {
-  opacity: 1;
-}
-
-@keyframes tr-spin {
-  0% { content: "⠋"; }
-  10% { content: "⠙"; }
-  20% { content: "⠹"; }
-  30% { content: "⠸"; }
-  40% { content: "⠼"; }
-  50% { content: "⠴"; }
-  60% { content: "⠦"; }
-  70% { content: "⠧"; }
-  80% { content: "⠇"; }
-  90% { content: "⠏"; }
+.tr-ver {
+  color: #c9ccd6;
 }
 
 /* ---- Compact: one column at the phone's width, the file wrapping ---- */
