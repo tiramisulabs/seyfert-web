@@ -1,8 +1,9 @@
 "use client";
 
-import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { Bar, Collapse, Count, Stage, type Act } from "@/components/stageshow/kit";
+import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Collapse, Count, Stage, type Act } from "@/components/stageshow/kit";
 import { CodeRow, type CodeLines } from "../code";
+import { SLOT } from "./source";
 import "@/components/stageshow/seyfert.css";
 import "./bento.css";
 
@@ -11,15 +12,20 @@ import "./bento.css";
 // each picture its own Stage at 1:1, pinned to its cell's bottom.
 //
 //   Tile      Span   Kind        The one thing                                 Moves
-//   Redis     2 × 1  Diagram+UI  three workers writing into one key list       keys arrive, the writer's line lights (leads)
-//   Cooldown  1 × 1  Component   the plugin's denied reply in Discord          the relative timestamp ticks
+//   Redis     2 × 1  Diagram+UI  three workers writing into one key list       keys keep arriving, the writer's line lights (leads)
+//   Cooldown  1 × 1  Component   the plugin's denied reply in Discord          /ping after /ping: Pong!, a denial counting down, Pong!
 //   ESLint    1 × 1  Component   a command class without @Declare, flagged     the squiggle and its hover arrive
 //   HTTP      2 × 1  Diagram     POST /interactions into either HTTP adapter    still
-//   The rest  3 × 1  Collection  the other @slipher packages, bleeding off      the rows drift apart
+//   The rest  3 × 1  Collection  the other @slipher packages, bleeding off      the rows glide past, opposite ways
+//
+// Two more for the docs' Utilities section only, outside the grid:
+//
+//   Testing   Editor+terminal  the echo test and Vitest's rows    reruns on one message after another
+//   Watcher   Editor+terminal  ping.ts and the watcher's log      edit, save, change detected, built
 //
 // Every string is the packages' own: the Redis keys are the cache's dotted
-// keys under the adapter's default `seyfert` namespace (IDs from the cache
-// docs), the reply is @slipher/cooldown's default middleware message, the
+// keys under the adapter's default `seyfert` namespace (IDs from the docs'
+// examples), the reply is @slipher/cooldown's default middleware message, the
 // lint message and rule id are require-declare's, and the adapter names and
 // /interactions path are the ones the setup guide and uws-adapter use.
 //
@@ -30,7 +36,7 @@ import "./bento.css";
 // @slipher/testing's mock bot).
 
 const STEP = 110;
-const LEAD = 450;
+export const LEAD = 450;
 
 type Beat = { on: boolean };
 const before: Beat = { on: false };
@@ -41,7 +47,7 @@ const beat = (i: number) => async (a: Act<Beat>) => {
 };
 
 // Measure the tile, not the page: a wide page can still hold a narrow tile.
-function usePictureWidth(initial = 340) {
+export function usePictureWidth(initial = 340) {
     const ref = useRef<HTMLDivElement>(null);
     // null until measured: the server can't know the tile's width, and a
     // guessed design shown for one frame would swap to the real one in view
@@ -58,7 +64,7 @@ function usePictureWidth(initial = 340) {
     return [ref, width ?? initial, width !== null] as const;
 }
 
-function Tile({ area, pkg, title, children, picture }: { area: string; pkg: string[]; title: ReactNode; children: ReactNode; picture: ReactNode }) {
+export function Tile({ area, pkg, title, children, picture }: { area: string; pkg: string[]; title: ReactNode; children: ReactNode; picture: ReactNode }) {
     return (
         <section className={`sb-cell sb-cell--${area}`}>
             <div className="sb-copy">
@@ -84,33 +90,58 @@ function Tile({ area, pkg, title, children, picture }: { area: string; pkg: stri
 
 type Key = { id: string; by: number };
 const NAMESPACE = "seyfert:";
-const OLDER: Key[] = [{ id: "guild.1003825077969764412", by: 0 }];
-// newest last; the member key is too long for a phone column, so compact starts one write later
+// The writes, oldest first, as a conveyor: they repeat forever, the newest
+// lands on top and the oldest slides out under the tile's bottom edge. Each
+// resource writes under its own key shape (Seyfert's hashId / hashGuildId):
+// member is guild-scoped, the rest are one id. Seven distinct keys, more than
+// the panel ever shows, so no key is on screen twice. The member key is too
+// long for a phone column, so compact leaves it out. No worker writes twice in
+// a row, across the lap's seam too, so every write lights a new line.
 const WRITES: Key[] = [
     { id: "member.1003825077969764412.366779196975874049", by: 0 },
     { id: "user.366779196975874049", by: 2 },
+    { id: "channel.1003825079328702529", by: 1 },
+    { id: "guild.1003825077969764412", by: 0 },
+    { id: "role.1115437277846458388", by: 1 },
+    { id: "message.1529923192402088189", by: 2 },
     { id: "user.576805413148688424", by: 1 },
 ];
+const COMPACT_WRITES = WRITES.filter((key) => !key.id.startsWith("member."));
+// Rows kept mounted under the newest: more than the panel shows
+const DEPTH = 6;
 
-type Cache = { n: number; lit: number | null };
+// n counts the writes so far; the stream starts a full lap in, so the list is
+// full on the first frame, and each lap ends by snapping n back one lap: the
+// same picture with smaller numbers.
+type Cache = { n: number; lit: number };
+const startOf = (writes: Key[]) => writes.length * 2;
+const keyAt = (writes: Key[], k: number) => writes[k % writes.length];
+const cacheStart = (writes: Key[]): Cache => ({ n: startOf(writes), lit: keyAt(writes, startOf(writes) - 1).by });
 
 function cacheScript(writes: Key[]) {
     return async (a: Act<Cache>) => {
-        await a.wait(LEAD);
-        for (let k = 0; k < writes.length; k++) {
+        const start = startOf(writes);
+        // The same 880ms beat between writes, the seam included: the last key
+        // finishes landing (its drop takes 800ms), the snap, then the rest.
+        for (let n = start; n < start + writes.length; n++) {
+            await a.wait(n === start ? 80 : 880);
             // the writer's line carries the write, then the key lands on top of the list
-            await a.set({ lit: writes[k].by });
+            await a.set({ lit: keyAt(writes, n).by });
             await a.wait(520);
-            await a.set({ n: k + 1 });
-            await a.wait(k === writes.length - 1 ? 300 : 900);
+            await a.set({ n: n + 1 });
         }
+        await a.wait(800);
+        await a.snap({ n: start });
     };
 }
 
-function Redis() {
+export function Redis() {
     const [ref, width, ready] = usePictureWidth(660);
     const compact = width < 520;
-    const writes = compact ? WRITES.slice(1) : WRITES;
+    const writes = compact ? COMPACT_WRITES : WRITES;
+    // one script and start per layout: a new one restarts the stage
+    const script = useMemo(() => cacheScript(writes), [writes]);
+    const initial = useMemo(() => cacheStart(writes), [writes]);
     const height = compact ? 228 : 262;
     const pad = compact ? 24 : 28;
     // three workers across the top, their lines fanning into the panel's one entry
@@ -132,10 +163,9 @@ function Redis() {
                         width={width}
                         height={height}
                         theme="dark"
-                        initial={{ n: 0, lit: null }}
-                        poster={{ n: writes.length, lit: writes[writes.length - 1].by }}
-                        play="once"
-                        script={cacheScript(writes)}
+                        initial={initial}
+                        play="loop"
+                        script={script}
                         className="sy sb-stage"
                     >
                         {(s) => (
@@ -162,17 +192,15 @@ function Redis() {
                                         </span>
                                         <span className="sb-keys__type">hash</span>
                                     </div>
-                                    {writes
-                                        .map((key, k) => ({ key, k }))
-                                        .reverse()
-                                        .map(({ key, k }) => (
-                                            <Collapse key={key.id} open={k < s.n} reveal="drop">
+                                    {/* the next write waits closed on top; the rest are open, newest first */}
+                                    {Array.from({ length: DEPTH + 1 }, (_, i) => s.n - i).map((k) => {
+                                        const key = keyAt(writes, k);
+                                        return (
+                                            <Collapse key={k} open={k < s.n} reveal="drop">
                                                 <KeyRow id={key.id} by={key.by} fresh={k === s.n - 1} compact={compact} />
                                             </Collapse>
-                                        ))}
-                                    {OLDER.map((key) => (
-                                        <KeyRow key={key.id} id={key.id} by={key.by} compact={compact} />
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
@@ -200,16 +228,82 @@ function KeyRow({ id, by, fresh, compact }: { id: string; by: number; fresh?: bo
 
 /* ---------------- Cooldown ---------------- */
 
-type Tick = { left: number };
+// kira keeps running /ping, a conveyor of two replies that never rewinds in
+// view. A lap is six seconds on a clock t: Pong! at t = 5 starts a 5s user
+// cooldown, so it runs out at t = 4 of the next lap; the /ping at t = 1 is
+// denied with 3 seconds left, and the one at t = 5 gets Pong! again. Replies
+// land at the foot as Discord's do and the oldest leave over the top.
+//
+// Each denial's timestamp is Discord's relative one, read against the clock:
+// "in 3 seconds" counting down, then "1 second ago", "2 seconds ago" as it
+// rises out of view. The snap at the end of a lap moves the clock and every
+// reply back by one lap together, so each label reads the same across it.
+//
+// "Pong!" is the reply of the ping command in the cooldown guide.
+type Reply = "pong" | "denied";
+const REPLIES: Reply[] = ["denied", "pong"];
+const LAP = 6;
+// Within the lap a denial arrives in: when it comes, and when its cooldown ends
+const DENIED_AT = 1;
+const EXPIRES_AT = 4;
+const PONG_AT = 5;
 
-const cooldown = async (a: Act<Tick>) => {
-    await a.wait(LEAD + STEP + 700);
-    await a.set({ left: 4 });
+// n counts the replies so far (the newest is n - 1); t is the lap's clock
+type Chat = { n: number; t: number };
+const CHAT_START = REPLIES.length * 2;
+const chatStart: Chat = { n: CHAT_START, t: 0 };
+// The still: the newest reply is the denial, as it arrives
+const chatPoster: Chat = { n: CHAT_START + 1, t: DENIED_AT };
+const replyAt = (k: number) => REPLIES[k % REPLIES.length];
+// Replies kept mounted above the newest: more than the panel shows
+const CHAT_DEPTH = 3;
+
+// Seconds from the clock to denial k's expiry, against the lap that started
+// at CHAT_START (denials are the even replies, one a lap). Not yet arrived,
+// it reads as it will when it lands.
+function untilExpiry(k: number, s: Chat) {
+    const lap = Math.floor((k - CHAT_START) / REPLIES.length);
+    const expires = EXPIRES_AT + lap * LAP;
+    return k >= s.n ? expires - (DENIED_AT + lap * LAP) : expires - s.t;
+}
+
+const cooldown = async (a: Act<Chat>) => {
+    // one tick a second, the seam included: the snap is the sixth
+    for (let t = 1; t < LAP; t++) {
+        await a.wait(1000);
+        if (t === DENIED_AT) await a.set({ n: CHAT_START + 1, t });
+        else if (t === PONG_AT) await a.set({ n: CHAT_START + 2, t });
+        else await a.set({ t });
+    }
     await a.wait(1000);
-    await a.set({ left: 3 });
+    await a.snap({ n: CHAT_START, t: 0 });
 };
 
-function Cooldown() {
+const seconds = (n: number) => `${n} ${n === 1 ? "second" : "seconds"}`;
+
+// Discord's relative timestamp, ahead or behind. At the second it runs out
+// it still reads "in 1 second", as Discord's updates trail the clock.
+function Relative({ until }: { until: number }) {
+    const ahead = until >= 0;
+    return (
+        <span className="sb-dc__time">
+            {ahead && "in "}
+            <Count value={ahead ? Math.max(until, 1) : -until} format={seconds} duration={420} />
+            {!ahead && " ago"}
+        </span>
+    );
+}
+
+function ReplyBody({ reply, until }: { reply: Reply; until: number }) {
+    if (reply === "pong") return <p className="sb-dc__text">Pong!</p>;
+    return (
+        <p className="sb-dc__text">
+            This command is cooling down. Try again <Relative until={until} />.
+        </p>
+    );
+}
+
+export function Cooldown() {
     const [ref, width, ready] = usePictureWidth(330);
     return (
         <Tile
@@ -218,38 +312,33 @@ function Cooldown() {
             title="Cooldowns from a decorator."
             picture={
                 <div ref={ref} className="sb-picture sb-picture--full" style={ready ? undefined : { visibility: "hidden" }}>
-                    <Stage<Tick> width={width} height={214} theme="dark" initial={{ left: 5 }} poster={{ left: 3 }} play="once" script={cooldown} className="sy sb-stage">
+                    <Stage<Chat> width={width} height={214} theme="dark" initial={chatStart} poster={chatPoster} play="loop" script={cooldown} className="sy sb-stage">
                         {(s) => (
                             <div className="sb-dc">
-                                {/* the channel's history above, pinned to the foot as Discord pins it */}
-                                <div className="sb-dc__older" aria-hidden>
-                                    <span className="sb-dc__disc" />
-                                    <span className="sb-dc__bars">
-                                        <Bar w={58} h={8} tone={3} />
-                                        <Bar w={148} h={7} tone={2} />
-                                    </span>
-                                </div>
-                                <div className="sb-dc__used">
-                                    <span className="sb-dc__spine" />
-                                    <span className="sb-dc__who">kira</span> used <span className="sb-dc__cmd">/ping</span>
-                                </div>
-                                <div className="sb-dc__msg">
-                                    <span className="sb-dc__face">
-                                        <img src="/logo.svg" alt="" />
-                                    </span>
-                                    <div className="sb-dc__body">
-                                        <div className="sb-dc__meta">
-                                            <span className="sb-dc__name">Orbit</span>
-                                            <span className="sb-dc__app">APP</span>
-                                        </div>
-                                        <p className="sb-dc__text">
-                                            This command is cooling down. Try again{" "}
-                                            <span className="sb-dc__time">
-                                                in <Count value={s.left} format={(n) => `${n} seconds`} duration={420} />
-                                            </span>
-                                            .
-                                        </p>
-                                    </div>
+                                <div className="sb-dc__feed">
+                                    {/* oldest first, pinned to the foot as Discord pins it; the next reply waits closed below */}
+                                    {Array.from({ length: CHAT_DEPTH + 1 }, (_, i) => s.n - CHAT_DEPTH + i).map((k) => (
+                                        <Collapse key={k} open={k < s.n} reveal="drop" from="below" className="sb-dc__turn">
+                                            <div className="sb-dc__group">
+                                                <div className="sb-dc__used">
+                                                    <span className="sb-dc__spine" />
+                                                    <span className="sb-dc__who">kira</span> used <span className="sb-dc__cmd">/ping</span>
+                                                </div>
+                                                <div className="sb-dc__msg">
+                                                    <span className="sb-dc__face">
+                                                        <img src="/logo.svg" alt="" />
+                                                    </span>
+                                                    <div className="sb-dc__body">
+                                                        <div className="sb-dc__meta">
+                                                            <span className="sb-dc__name">Orbit</span>
+                                                            <span className="sb-dc__app">APP</span>
+                                                        </div>
+                                                        <ReplyBody reply={replyAt(k)} until={untilExpiry(k, s)} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </Collapse>
+                                    ))}
                                 </div>
                             </div>
                         )}
@@ -264,7 +353,7 @@ function Cooldown() {
 
 /* ---------------- ESLint ---------------- */
 
-function Lint({ code }: { code: CodeLines }) {
+export function Lint({ code }: { code: CodeLines }) {
     const [ref, width, ready] = usePictureWidth(330);
     return (
         <Tile
@@ -315,12 +404,197 @@ function Lint({ code }: { code: CodeLines }) {
     );
 }
 
+/* ---------------- Editor + terminal (testing, watcher) ---------------- */
+
+// A code line with the slot's text set in place, in the slot token's color.
+// The text is keyed by `slot`, so a new string arrives (and the same one
+// across a lap's seam doesn't).
+export function SlotRow({ line, text, slot }: { line: CodeLines[number]; text: string; slot: number }) {
+    if (line.length === 0) return <> </>;
+    return (
+        <>
+            {line.map((t, i) => {
+                const at = t.c.indexOf(SLOT);
+                if (at < 0) return <span key={i} style={{ color: t.k }}>{t.c}</span>;
+                return (
+                    <span key={i} style={{ color: t.k }}>
+                        {t.c.slice(0, at)}
+                        <span key={slot} className="sb-slot">
+                            {text}
+                        </span>
+                        {t.c.slice(at + SLOT.length)}
+                    </span>
+                );
+            })}
+        </>
+    );
+}
+
+// The editor pane over its integrated terminal, bleeding off the tile's
+// right and bottom like the ESLint editor
+export function Ide({ file, dirty, code, from, to, text, slot, children }: { file: string; dirty?: boolean; code: CodeLines; from: number; to: number; text: string; slot: number; children: ReactNode }) {
+    return (
+        <div className="sb-ide">
+            <div className="sb-ide__tab">
+                {file}
+                <span className="sb-ide__dirty" data-on={dirty || undefined} />
+            </div>
+            <div className="sb-ide__code">
+                {code.slice(from, to).map((line, i) => (
+                    <div key={from + i} className="sb-editor__line">
+                        <span className="sb-editor__no">{from + i + 1}</span>
+                        <span className="sb-editor__code">
+                            <SlotRow line={line} text={text} slot={slot} />
+                        </span>
+                    </div>
+                ))}
+            </div>
+            <div className="sb-ide__term">{children}</div>
+        </div>
+    );
+}
+
+/* ---------------- Testing ---------------- */
+
+// The echo test reruns on one message after another: the file's row goes
+// back to queued, then passes, its test listed under it. The rows are
+// TestingRun's (Vitest 5.0.5's default reporter, that run's durations). The
+// first message is the docs' own; a lap is the three, then a snap back to
+// the same picture.
+const MESSAGES = ["hello from the core", "no token needed", "no gateway either"];
+type Run = { n: number; passed: boolean };
+const RUN_START = MESSAGES.length;
+const runStart: Run = { n: RUN_START, passed: true };
+
+const testing = async (a: Act<Run>) => {
+    // 1.8s on each pass, split across the seam
+    await a.wait(900);
+    for (let n = RUN_START + 1; n <= RUN_START + MESSAGES.length; n++) {
+        await a.set({ n, passed: false });
+        await a.wait(700);
+        await a.set({ passed: true });
+        await a.wait(n === RUN_START + MESSAGES.length ? 900 : 1800);
+    }
+    await a.snap({ n: RUN_START });
+};
+
+export function Testing({ code }: { code: CodeLines }) {
+    const [ref, width, ready] = usePictureWidth(330);
+    return (
+        <Tile
+            area="test"
+            pkg={["@slipher/testing"]}
+            title="Commands under test."
+            picture={
+                <div ref={ref} className="sb-picture sb-picture--full" style={ready ? undefined : { visibility: "hidden" }}>
+                    <Stage<Run> width={width} height={236} theme="dark" initial={runStart} play="loop" script={testing} className="sy sb-stage">
+                        {(s) => (
+                            <Ide file="test/echo.test.ts" code={code} from={8} to={14} text={MESSAGES[s.n % MESSAGES.length]} slot={s.n % MESSAGES.length}>
+                                <div className="sb-term__row">
+                                    {s.passed ? <span className="sb-ok">✓</span> : <span className="sb-dim">❯</span>} test/echo.test.ts{" "}
+                                    {s.passed ? (
+                                        <>
+                                            <span className="sb-dim">(1 test)</span> 7ms
+                                        </>
+                                    ) : (
+                                        <span className="sb-dim">[queued]</span>
+                                    )}
+                                </div>
+                                <div className="sb-term__row sb-term__row--sub" data-on={s.passed || undefined}>
+                                    {"  "}
+                                    <span className="sb-ok">✓</span> echo repeats the message <span className="sb-dim">6ms</span>
+                                </div>
+                            </Ide>
+                        )}
+                    </Stage>
+                </div>
+            }
+        >
+            A mock bot runs the real command in-process, no token or gateway.
+        </Tile>
+    );
+}
+
+/* ---------------- Watcher ---------------- */
+
+// The ping reply edited back and forth, saved each time: Chokidar reports the
+// change, the watcher rebuilds and swaps the worker in, the gateway stays up.
+// The log lines are @slipher/watcher's (its Logger named "[Watcher]", debug
+// then info) without the RAM and clock prefix Seyfert's Logger puts first,
+// which would differ on every line and break the lap's seam.
+const REPLY_EDITS = ["Pong!", "Pong! 🏓"];
+// Saves so far, whether the newest has built, and an edit not yet saved
+type Saves = { n: number; built: boolean; dirty: boolean };
+const SAVE_START = 4;
+const saveStart: Saves = { n: SAVE_START, built: true, dirty: false };
+// Saves kept mounted above the newest: more than the terminal shows
+const SAVE_DEPTH = 3;
+
+const watching = async (a: Act<Saves>) => {
+    for (let n = SAVE_START + 1; n <= SAVE_START + REPLY_EDITS.length; n++) {
+        await a.wait(n === SAVE_START + 1 ? 700 : 1400);
+        // the edit, then the save a beat later
+        await a.set({ dirty: true });
+        await a.wait(700);
+        await a.set({ n, built: false, dirty: false });
+        await a.wait(600);
+        await a.set({ built: true });
+    }
+    await a.wait(700);
+    await a.snap({ n: SAVE_START });
+};
+
+export function Watch({ code }: { code: CodeLines }) {
+    const [ref, width, ready] = usePictureWidth(330);
+    return (
+        <Tile
+            area="watch"
+            pkg={["@slipher/watcher"]}
+            title="Save, and it's live."
+            picture={
+                <div ref={ref} className="sb-picture sb-picture--full" style={ready ? undefined : { visibility: "hidden" }}>
+                    <Stage<Saves> width={width} height={236} theme="dark" initial={saveStart} play="loop" script={watching} className="sy sb-stage">
+                        {(s) => {
+                            // an unsaved edit shows the next reply already
+                            const edit = (s.n + (s.dirty ? 1 : 0)) % REPLY_EDITS.length;
+                            return (
+                                <Ide file="src/commands/ping.ts" dirty={s.dirty} code={code} from={4} to={7} text={REPLY_EDITS[edit]} slot={edit}>
+                                    <div className="sb-term__feed">
+                                        {Array.from({ length: SAVE_DEPTH + 1 }, (_, i) => s.n - SAVE_DEPTH + i).map((k) => (
+                                            <Collapse key={k} open={k < s.n} className="sb-term__save">
+                                                <div className="sb-term__row">
+                                                    <span className="sb-debug">DEBUG</span>{" [Watcher] > change event detected, building"}
+                                                </div>
+                                                <Collapse open={k < s.n - 1 || s.built}>
+                                                    <div className="sb-term__row">
+                                                        <span className="sb-info">INFO</span>{" [Watcher] > Builded"}
+                                                    </div>
+                                                </Collapse>
+                                            </Collapse>
+                                        ))}
+                                    </div>
+                                </Ide>
+                            );
+                        }}
+                    </Stage>
+                </div>
+            }
+        >
+            The watcher keeps the gateway connected while it rebuilds and restarts the bot.
+        </Tile>
+    );
+}
+
 /* ---------------- HTTP adapters ---------------- */
 
-function Http() {
+// `wideHeight`: a taller cell (the docs' adapters frame, sized for Redis)
+// gives the wide diagram more room, its nodes kept centered in it
+export function Http({ wideHeight = 186 }: { wideHeight?: number }) {
     const [ref, width, ready] = usePictureWidth(660);
     const compact = width < 520;
-    const height = compact ? 250 : 186;
+    const height = compact ? 250 : wideHeight;
+    // the request's row, a little above the middle as the stage bleeds below
+    const row = wideHeight / 2 - 11;
     // node centers; the adapters sit on either side of the request's line
     const n = compact
         ? {
@@ -332,10 +606,10 @@ function Http() {
         : (() => {
               const left = Math.max(28, (width - 610) / 2);
               return {
-                  req: { x: left + 78, y: 82 },
-                  uws: { x: left + 324, y: 40 },
-                  gen: { x: left + 324, y: 124 },
-                  http: { x: left + 556, y: 82 },
+                  req: { x: left + 78, y: row },
+                  uws: { x: left + 324, y: row - 42 },
+                  gen: { x: left + 324, y: row + 42 },
+                  http: { x: left + 556, y: row },
               };
           })();
     const curve = (a: { x: number; y: number }, b: { x: number; y: number }) =>
@@ -398,13 +672,22 @@ function Rest() {
                         {(s) => (
                             <div className="sb-rows" data-on={s.on || undefined}>
                                 {REST.map((row, r) => (
-                                    <div key={r} className="sb-row" style={{ ["--dir" as string]: r % 2 ? 1 : -1, ["--off" as string]: `${[-60, 40][r]}px` }}>
-                                        {row.map((name, k) => (
-                                            <span key={`${name}-${k}`} className="sb-chip">
-                                                <span className="sb-chip__scope">@slipher/</span>
-                                                {name}
-                                            </span>
-                                        ))}
+                                    <div
+                                        key={r}
+                                        className="sb-row"
+                                        style={{ ["--off" as string]: `${[-60, 40][r]}px`, ["--way" as string]: r % 2 ? "reverse" : "normal", ["--lap" as string]: `${row.length * 6}s` }}
+                                    >
+                                        {/* four copies: the track is wider than the band for a full lap either way */}
+                                        <div className="sb-track">
+                                            {Array.from({ length: 4 }, (_, c) =>
+                                                row.map((name) => (
+                                                    <span key={`${c}-${name}`} className="sb-chip" aria-hidden={c > 0 || undefined}>
+                                                        <span className="sb-chip__scope">@slipher/</span>
+                                                        {name}
+                                                    </span>
+                                                )),
+                                            )}
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -415,6 +698,16 @@ function Rest() {
         >
             Voice, queues, tracing and tests, maintained by the Seyfert team.
         </Tile>
+    );
+}
+
+// The same tiles split by the official packages page's sections: each section
+// opens with its own stack of tiles, one per row, instead of the whole grid.
+export function SlipherSection({ children }: { children: ReactNode }) {
+    return (
+        <div className="sb">
+            <div className="sb-grid sb-grid--section">{children}</div>
+        </div>
     );
 }
 

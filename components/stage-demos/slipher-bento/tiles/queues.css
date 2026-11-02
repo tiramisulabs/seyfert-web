@@ -1,0 +1,126 @@
+/* @slipher/queues: a producer line over a three-column job board. Cards glide
+   between the columns; amber marks the job running, green the finished. */
+
+.sb {
+  & .sb-queue {
+    position: absolute;
+    inset: 0;
+  }
+
+  & .sb-queue__producer {
+    position: absolute;
+    top: 4px;
+    color: #c9ccd4;
+    font: 12px/18px var(--ss-mono);
+    white-space: nowrap;
+  }
+
+  /* a phone column can't hold the whole call: it fades out at the edge */
+  & .sb-queue[data-layout="compact"] .sb-queue__producer {
+    right: 0;
+    overflow: hidden;
+    font-size: 11px;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 48px), transparent);
+  }
+
+  & .sb-queue__dim {
+    color: var(--dim);
+  }
+
+  & .sb-queue__str {
+    color: #99ffe4;
+  }
+
+  /* the job name just added lands in place */
+  & .sb-queue__added {
+    display: inline-block;
+    animation: sb-queue-added 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  & .sb-queue__head {
+    position: absolute;
+    top: 42px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    color: var(--faint);
+    font: 500 11px/16px var(--ss-mono);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  & .sb-queue__note {
+    color: #3d4354;
+    font-weight: 400;
+  }
+
+  & .sb-queue__slot {
+    position: absolute;
+    height: var(--card-h);
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px dashed #1c2232;
+  }
+
+  & .sb-queue__card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: var(--card-h);
+    box-sizing: border-box;
+    padding: 0 10px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: var(--panel);
+    box-shadow: inset 0 0 0 1px var(--panel-edge);
+    color: #c9ccd4;
+    font: 12px/1 var(--ss-mono);
+    white-space: nowrap;
+    will-change: transform;
+    transition:
+      transform 0.6s cubic-bezier(0.45, 0, 0.2, 1),
+      opacity 0.4s ease,
+      box-shadow 0.3s ease;
+  }
+
+  & .sb-queue[data-layout="compact"] .sb-queue__card {
+    gap: 6px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+
+  & .sb-queue__card[data-state="active"] {
+    box-shadow: inset 0 0 0 1px rgba(255, 217, 160, 0.4);
+    color: var(--bright);
+  }
+
+  & .sb-queue__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  & .sb-queue__data {
+    margin-left: auto;
+    overflow: hidden;
+    color: var(--faint);
+    font-size: 11px;
+    text-overflow: ellipsis;
+  }
+
+  & .sb-queue__card[data-state="completed"] {
+    color: var(--dim);
+  }
+
+  & .sb-queue__done {
+    flex: none;
+    color: #6ee7a8;
+  }
+}
+
+@keyframes sb-queue-added {
+  from { opacity: 0; transform: translateY(-4px); }
+}

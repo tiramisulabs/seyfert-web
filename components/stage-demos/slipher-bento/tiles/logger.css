@@ -1,0 +1,96 @@
+/* @slipher/logger: the bot's console, the newest entry on the floor, and the
+   wide event building in place as an amber card until it prints. Colors are
+   prettyRenderer()'s ANSI 256 ones. */
+
+.sb {
+  & .sb-log {
+    position: absolute;
+    top: 0;
+    left: var(--pad);
+    right: -40px;
+    bottom: -40px;
+    overflow: hidden;
+    border-radius: 12px 0 0 0;
+    background: #090b12;
+    box-shadow: inset 0 0 0 1px var(--panel-edge);
+    color: #c9ccd4;
+    font: 11.5px/18px var(--ss-mono);
+    white-space: pre;
+    /* long values run off the right, faded like the editors' lines */
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 96px), transparent calc(100% - 40px));
+    mask-image: linear-gradient(90deg, #000 calc(100% - 96px), transparent calc(100% - 40px));
+  }
+
+  & .sb-log[data-layout="compact"] {
+    font-size: 11px;
+    line-height: 17px;
+  }
+
+  /* the stream, newest at the foot; what leaves over the top fades out */
+  & .sb-log__stream {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 12px 16px 52px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 48px);
+    mask-image: linear-gradient(to bottom, transparent, #000 48px);
+  }
+
+  & .sb-log__entry {
+    flex: none;
+  }
+
+  & .sb-log__level {
+    font-weight: 600;
+  }
+
+  & .sb-log__level--info { color: #5fafff; }
+  & .sb-log__level--debug { color: #af87ff; font-weight: 400; }
+  & .sb-log__tag { color: #87afd7; }
+
+  & .sb-log__key {
+    display: inline-block;
+    color: #5fafaf;
+  }
+
+  /* A wide event: the same box building and printed, so nothing shifts when
+     it prints; only its dashed amber edge and wash go */
+  & .sb-log__wide {
+    margin: 3px -9px;
+    padding: 2px 8px;
+    border: 1px dashed rgba(255, 217, 160, 0.5);
+    border-radius: 6px;
+    background: rgba(255, 217, 160, 0.05);
+    transition: border-color 0.45s ease, background-color 0.45s ease;
+  }
+
+  & .sb-log__wide[data-printed] {
+    border-color: transparent;
+    background: transparent;
+  }
+
+  /* the card's label and the entry's head share one row, crossfading */
+  & .sb-log__swap {
+    display: grid;
+  }
+
+  & .sb-log__swap > * {
+    grid-area: 1 / 1;
+    transition: opacity 0.35s ease;
+  }
+
+  & .sb-log__card-head {
+    color: var(--amber);
+  }
+
+  & .sb-log__hint {
+    color: var(--faint);
+  }
+
+  & .sb-log__wide[data-printed] .sb-log__card-head,
+  & .sb-log__wide:not([data-printed]) .sb-log__entry-head {
+    opacity: 0;
+  }
+}
