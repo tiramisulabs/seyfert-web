@@ -1,0 +1,84 @@
+/* @slipher/chartjs: the render call beside the channel its images land in.
+   Discord's grays inside Discord; the chart is Chart.js's own white PNG. */
+
+.sb {
+  & .sb-chart {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* The call, bleeding off the foot like the editors, its right edge
+     softened where long lines run on */
+  & .sb-chart__code {
+    position: absolute;
+    top: 0;
+    bottom: -40px;
+    left: var(--pad);
+    width: 40%;
+    box-sizing: border-box;
+    padding: 14px 0 0 16px;
+    border-radius: 12px 12px 0 0;
+    background: #090b12;
+    box-shadow: inset 0 0 0 1px var(--panel-edge);
+    font: 11.5px/20px var(--ss-mono);
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 64px), transparent calc(100% - 8px));
+    mask-image: linear-gradient(90deg, #000 calc(100% - 64px), transparent calc(100% - 8px));
+  }
+
+  /* while the image renders, the numbers that go into it glow */
+  & .sb-chart__code .sb-slot {
+    transition: text-shadow 0.3s ease;
+  }
+
+  & .sb-chart__code[data-rendering] .sb-slot {
+    text-shadow: 0 0 12px rgba(153, 255, 228, 0.45);
+  }
+
+  /* The channel: Discord's ground, replies pinned to the foot, the older
+     ones fading out over the top */
+  & .sb-chart__channel {
+    position: absolute;
+    top: 0;
+    right: -40px;
+    bottom: -40px;
+    left: calc(var(--pad) + 40% + 20px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    box-sizing: border-box;
+    padding: 0 calc(40px + var(--pad)) 54px 16px;
+    overflow: hidden;
+    border-radius: 12px 0 0 0;
+    background: #313338;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    color: #dbdee1;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 40px);
+    mask-image: linear-gradient(to bottom, transparent, #000 40px);
+  }
+
+  & .sb-chart[data-layout="compact"] .sb-chart__channel {
+    left: var(--pad);
+  }
+
+  & .sb-chart__turn {
+    flex: none;
+  }
+
+  & .sb-chart__group {
+    padding-top: 16px;
+  }
+
+  /* the attachment: Discord's rounded image, the 800 × 400 PNG scaled down */
+  & .sb-chart__img {
+    display: block;
+    width: min(100%, 300px);
+    height: auto;
+    margin-top: 4px;
+    border-radius: 8px;
+  }
+
+  & .sb-chart__tick {
+    fill: #666;
+    font: 12px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+}

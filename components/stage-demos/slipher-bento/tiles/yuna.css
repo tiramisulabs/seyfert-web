@@ -1,0 +1,71 @@
+/* yunaforseyfert: kira's prefix commands in Discord, each parsed as it
+   lands. The panel, feed and message rows are the cooldown tile's (.sb-dc);
+   only the parse marks and the options strip are new. */
+
+.sb {
+  & .sb-yuna__face {
+    display: grid;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    place-items: center;
+    border-radius: 50%;
+    background: #6d5fd6;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  /* a user mention as Discord draws it */
+  & .sb-yuna__mention {
+    padding: 0 2px;
+    border-radius: 3px;
+    background: rgba(88, 101, 242, 0.3);
+    color: #c9cdfb;
+    font-weight: 500;
+  }
+
+  /* parsed: the option names light, the values they take are underlined */
+  & .sb-yuna__text [data-role] {
+    transition: color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  & .sb-yuna__text[data-parsed] [data-role="name"] {
+    color: var(--amber);
+  }
+
+  & .sb-yuna__text[data-parsed] [data-role="value"] {
+    box-shadow: 0 1.5px 0 rgba(255, 217, 160, 0.55);
+  }
+
+  /* what the command receives */
+  & .sb-yuna__options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 12px;
+    margin-top: 5px;
+    color: #dbdee1;
+    font: 11.5px/16px var(--ss-mono);
+    opacity: 0;
+    translate: 0 3px;
+    transition: opacity 0.3s ease 0.15s, translate 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+  }
+
+  & .sb-yuna__options[data-parsed] {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  & .sb-yuna__label {
+    color: #949ba4;
+  }
+
+  & .sb-yuna__option {
+    white-space: nowrap;
+  }
+
+  & .sb-yuna__name {
+    color: var(--amber);
+  }
+}

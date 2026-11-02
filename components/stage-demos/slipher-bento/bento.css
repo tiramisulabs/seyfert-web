@@ -55,6 +55,36 @@
     }
   }
 
+  /* A section's stack: one tile per row at the docs column's width, each row
+     as tall as its tile needs (the pictures are pinned, so rows can't size
+     themselves) */
+  & .sb-grid--section {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: none;
+    grid-template-areas: none;
+    grid-auto-rows: auto;
+  }
+
+  & .sb-grid--section .sb-cell {
+    grid-area: auto;
+  }
+
+  & .sb-grid--section .sb-cell--hero { height: 390px; }
+  & .sb-grid--section .sb-cell--cool { height: 340px; }
+  & .sb-grid--section .sb-cell--lint { height: 300px; }
+  & .sb-grid--section .sb-cell--http { height: 290px; }
+  & .sb-grid--section .sb-cell--test { height: 350px; }
+  & .sb-grid--section .sb-cell--watch { height: 350px; }
+
+  @container (max-width: 599px) {
+    & .sb-grid--section .sb-cell--hero { height: 400px; }
+    & .sb-grid--section .sb-cell--cool { height: 330px; }
+    & .sb-grid--section .sb-cell--lint { height: 310px; }
+    & .sb-grid--section .sb-cell--http { height: 396px; }
+    & .sb-grid--section .sb-cell--test { height: 384px; }
+    & .sb-grid--section .sb-cell--watch { height: 384px; }
+  }
+
   /* ---- The cell ---- */
 
   & .sb-cell {
@@ -313,26 +343,27 @@
     color: #dbdee1;
   }
 
-  & .sb-dc__older {
+  /* The replies, oldest first: the feed scrolls up as one lands, and what
+     leaves over the top fades out under the panel's edge */
+  & .sb-dc__feed {
     display: flex;
-    gap: 16px;
-    margin-bottom: 18px;
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 70%);
-    mask-image: linear-gradient(to bottom, transparent, #000 70%);
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 0;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 36px);
+    mask-image: linear-gradient(to bottom, transparent, #000 36px);
   }
 
-  & .sb-dc__disc {
-    width: 40px;
-    height: 40px;
+  & .sb-dc__turn {
     flex: none;
-    border-radius: 50%;
-    background: #3f4147;
   }
 
-  & .sb-dc__bars {
-    display: grid;
-    align-content: center;
-    gap: 9px;
+  /* Discord's gap between two message groups, inside the collapsing box so
+     a closed reply takes no room */
+  & .sb-dc__group {
+    padding-top: 17px;
   }
 
   & .sb-dc__used {
@@ -529,6 +560,106 @@
     font: 11px/16px var(--ss-mono);
   }
 
+  /* ---- Testing and watcher: an editor over its terminal ---- */
+
+  & .sb-ide {
+    position: absolute;
+    top: 0;
+    left: var(--pad);
+    right: -40px;
+    bottom: -40px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: 12px 0 0 0;
+    background: #090b12;
+    box-shadow: inset 0 0 0 1px var(--panel-edge);
+    font: 12px/21px var(--ss-mono);
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 96px), transparent calc(100% - 40px));
+    mask-image: linear-gradient(90deg, #000 calc(100% - 96px), transparent calc(100% - 40px));
+  }
+
+  & .sb-ide__tab {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 8px;
+    height: 34px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--panel-edge);
+    color: var(--amber);
+    font-size: 11.5px;
+  }
+
+  /* the unsaved dot, as an editor marks its tab */
+  & .sb-ide__dirty {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--dim);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  & .sb-ide__dirty[data-on] {
+    opacity: 1;
+  }
+
+  & .sb-ide__code {
+    flex: none;
+    padding: 10px 0 10px 8px;
+  }
+
+  /* a new string lands in place */
+  & .sb-slot {
+    display: inline-block;
+    animation: sb-slot-in 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* the integrated terminal fills the rest, its newest line on the floor;
+     the bled 40px under it plus some air */
+  & .sb-ide__term {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 0;
+    padding: 8px 16px 52px;
+    border-top: 1px solid var(--panel-edge);
+    color: #c9ccd4;
+    font: 11.5px/19px var(--ss-mono);
+    white-space: pre;
+  }
+
+  & .sb-term__feed {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 0;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 24px);
+    mask-image: linear-gradient(to bottom, transparent, #000 24px);
+  }
+
+  & .sb-term__save {
+    flex: none;
+  }
+
+  & .sb-term__row--sub {
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+
+  & .sb-term__row--sub[data-on] {
+    opacity: 1;
+  }
+
+  & .sb-ok { color: #6ee7a8; }
+  & .sb-dim { color: var(--faint); }
+  /* Seyfert's Logger: debug in gray, info in cyan */
+  & .sb-debug { color: var(--faint); }
+  & .sb-info { color: #67d4e6; }
+
   /* ---- HTTP: one request, either adapter, one client ---- */
 
   & .sb-flow {
@@ -596,7 +727,7 @@
     font-size: 11.5px;
   }
 
-  /* ---- The rest: package names, drifting apart once ---- */
+  /* ---- The rest: package names gliding past, the rows opposite ways ---- */
 
   & .sb-rows {
     position: absolute;
@@ -610,14 +741,28 @@
   & .sb-row {
     display: flex;
     justify-content: center;
-    gap: 10px;
     transform: translateX(var(--off));
-    will-change: transform;
-    transition: transform 2.4s cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
-  & .sb-rows[data-on] .sb-row {
-    transform: translateX(calc(var(--off) + var(--dir) * 48px));
+  /* A row's names repeated in identical copies, each chip carrying its own
+     gap, so a shift of exactly one copy (a quarter of the track) lands on the
+     same picture and the loop has no seam. Held until the beat, then endless. */
+  & .sb-track {
+    display: flex;
+    flex: none;
+    width: max-content;
+    will-change: transform;
+    animation: sb-glide var(--lap) linear infinite;
+    animation-direction: var(--way);
+    animation-play-state: paused;
+  }
+
+  & .sb-rows[data-on] .sb-track {
+    animation-play-state: running;
+  }
+
+  & .sb-track .sb-chip {
+    margin-right: 10px;
   }
 
   & .sb-chip {
@@ -637,4 +782,13 @@
   & .sb-chip__scope {
     color: var(--faint);
   }
+}
+
+@keyframes sb-glide {
+  from { transform: translateX(0); }
+  to { transform: translateX(-25%); }
+}
+
+@keyframes sb-slot-in {
+  from { opacity: 0; filter: blur(3px); transform: translateY(3px); }
 }

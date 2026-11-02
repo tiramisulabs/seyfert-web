@@ -1,0 +1,193 @@
+/* @slipher/player: the guild player as a panel (its state, the current item,
+   the queue), bleeding off the bottom, and its events beside it. Amber marks
+   what is playing; the rest stays in the panel's grays. */
+
+.sb {
+  & .sb-player {
+    position: absolute;
+    inset: 0;
+  }
+
+  & .sb-player__deck {
+    position: absolute;
+    top: 0;
+    left: var(--pad);
+    bottom: -40px;
+    width: min(330px, calc(100% - var(--pad) * 2));
+    box-sizing: border-box;
+    padding: 0 16px;
+    border-radius: 12px 12px 0 0;
+    background: var(--panel);
+    box-shadow: inset 0 0 0 1px var(--panel-edge);
+  }
+
+  & .sb-player[data-layout="compact"] .sb-player__deck {
+    width: calc(100% - var(--pad) * 2);
+  }
+
+  & .sb-player__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 38px;
+    margin: 0 -16px;
+    padding: 0 16px;
+    border-bottom: 1px solid var(--panel-edge);
+    font: 11.5px/16px var(--ss-mono);
+  }
+
+  & .sb-player__var {
+    color: var(--faint);
+  }
+
+  & .sb-player__state {
+    color: var(--amber);
+  }
+
+  & .sb-player__state[data-loading] {
+    color: var(--dim);
+  }
+
+  /* ---- The current item ---- */
+
+  & .sb-player__now {
+    display: grid;
+    gap: 10px;
+    padding: 14px 0 12px;
+    border-bottom: 1px solid var(--panel-edge);
+  }
+
+  & .sb-player__title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  & .sb-player__now .sb-player__name {
+    color: var(--bright);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  & .sb-player__name {
+    overflow: hidden;
+    color: #c9ccd4;
+    font-size: 13px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  & .sb-player__provider {
+    flex: none;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--dim);
+    font: 10.5px/15px var(--ss-mono);
+  }
+
+  & .sb-player__bar {
+    position: relative;
+    height: 4px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: var(--wire);
+  }
+
+  & .sb-player__fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: 2px;
+    background: var(--amber);
+  }
+
+  & .sb-player__fill[data-run] {
+    transition: width var(--play) linear;
+  }
+
+  /* a radio track has no length: it is live */
+  & .sb-player__live {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    height: 4px;
+    color: var(--faint);
+    font: 11px/1 var(--ss-mono);
+  }
+
+  & .sb-player__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--faint);
+    transition: background-color 0.3s ease;
+  }
+
+  & .sb-player__live[data-on] {
+    color: var(--amber);
+  }
+
+  & .sb-player__live[data-on] .sb-player__dot {
+    background: var(--amber);
+    animation: sb-player-pulse 1.2s ease-in-out infinite;
+  }
+
+  /* ---- What waits ---- */
+
+  & .sb-player__label {
+    padding: 12px 0 4px;
+    color: var(--faint);
+    font: 11px/16px var(--ss-mono);
+  }
+
+  & .sb-player__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    height: 30px;
+  }
+
+  /* ---- The events, beside the panel ---- */
+
+  & .sb-player__events {
+    position: absolute;
+    top: 0;
+    bottom: 22px;
+    left: calc(var(--pad) + 330px + 28px);
+    right: var(--pad);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    overflow: hidden;
+    color: #c9ccd4;
+    font: 11.5px/21px var(--ss-mono);
+    white-space: nowrap;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 48px);
+    mask-image: linear-gradient(to bottom, transparent, #000 48px);
+  }
+
+  & .sb-player__handover {
+    flex: none;
+  }
+
+  & .sb-player__event {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  & .sb-player__ev {
+    color: var(--dim);
+  }
+
+  & .sb-player__arg {
+    color: var(--amber);
+  }
+}
+
+@keyframes sb-player-pulse {
+  50% { opacity: 0.35; }
+}

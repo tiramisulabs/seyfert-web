@@ -1,0 +1,128 @@
+/* @slipher/opentelemetry: a waterfall per trace, newest at the foot. Each
+   span's bar grows from its start for as long as it lasted (25x slower),
+   and its duration shows once it ends. */
+
+.sb {
+  & .sb-otel {
+    position: absolute;
+    top: 0;
+    left: var(--pad);
+    right: -40px;
+    bottom: -40px;
+    overflow: hidden;
+    border-radius: 12px 0 0 0;
+    background: #090b12;
+    box-shadow: inset 0 0 0 1px var(--panel-edge);
+    color: #c9ccd4;
+    font: 11.5px/1 var(--ss-mono);
+  }
+
+  /* the traces, oldest leaving over the top; the bled 40px kept clear */
+  & .sb-otel__feed {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 calc(40px + var(--pad)) 52px 16px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 56px);
+    mask-image: linear-gradient(to bottom, transparent, #000 56px);
+  }
+
+  & .sb-otel__slot {
+    flex: none;
+  }
+
+  & .sb-otel__trace {
+    padding-top: 14px;
+  }
+
+  & .sb-otel__head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    height: 26px;
+    white-space: nowrap;
+  }
+
+  & .sb-otel__service {
+    color: var(--amber);
+  }
+
+  & .sb-otel__root {
+    color: var(--bright);
+  }
+
+  & .sb-otel__meta {
+    margin-left: auto;
+    color: var(--faint);
+    font-size: 11px;
+  }
+
+  & .sb-otel__span {
+    display: grid;
+    grid-template-columns: minmax(0, 46%) minmax(0, 1fr) 44px;
+    align-items: center;
+    gap: 10px;
+    height: 22px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  & .sb-otel[data-layout="compact"] .sb-otel__span {
+    grid-template-columns: minmax(0, 52%) minmax(0, 1fr) 38px;
+    gap: 8px;
+  }
+
+  & .sb-otel__name {
+    overflow: hidden;
+    padding-left: calc(var(--depth) * 12px);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  & .sb-otel__span[data-kind="consumer"] .sb-otel__name {
+    color: #d4d6dc;
+  }
+
+  /* the timeline: a faint lane, the span's bar on it */
+  & .sb-otel__track {
+    position: relative;
+    height: 8px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.03);
+  }
+
+  & .sb-otel__bar {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--l);
+    width: 0;
+    border-radius: 2px;
+    background: var(--sb-otel-kind);
+    transition: width var(--d) linear var(--s);
+  }
+
+  & .sb-otel__trace[data-drawn] .sb-otel__bar {
+    width: var(--w);
+  }
+
+  & .sb-otel__ms {
+    color: var(--faint);
+    font-size: 11px;
+    text-align: right;
+    opacity: 0;
+    transition: opacity 0.25s ease var(--e);
+  }
+
+  & .sb-otel__trace[data-drawn] .sb-otel__ms {
+    opacity: 1;
+  }
+
+  /* span kinds: the interaction and its lifecycle (CONSUMER), REST
+     (CLIENT), cache (INTERNAL), the app's own span */
+  & .sb-otel__span[data-kind="consumer"] { --sb-otel-kind: #ffd9a0; }
+  & .sb-otel__span[data-kind="client"] { --sb-otel-kind: #67d4e6; }
+  & .sb-otel__span[data-kind="internal"] { --sb-otel-kind: #af87ff; }
+  & .sb-otel__span[data-kind="app"] { --sb-otel-kind: #5fafaf; }
+}

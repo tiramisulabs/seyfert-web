@@ -12,7 +12,7 @@ import { Callout } from '@/components/docs/callout';
 import { Mermaid } from '@/components/docs/mermaid';
 import { MdxLink } from '@/components/docs/mdx-link';
 import { TocRail } from '@/components/docs/toc-rail';
-import { ComponentUpdateDemo, OptionInferenceDemo, SlipherEcosystemDemo, TestingRunDemo } from '@/components/docs/stage-demos';
+import { ComponentUpdateDemo, OptionInferenceDemo, SlipherMapDemo, TestingRunDemo } from '@/components/docs/stage-demos';
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
 }) {
@@ -50,7 +50,7 @@ export default async function Page(props: {
           OptionInferenceDemo,
           ComponentUpdateDemo,
           TestingRunDemo,
-          SlipherEcosystemDemo,
+          SlipherMapDemo,
           a: MdxLink,
         }} />
       </DocsBody>

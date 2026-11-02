@@ -1,0 +1,151 @@
+/* @slipher/cache-integrity: an age axis over a lookup log. Amber is the lit
+   lookup; green and gray say whether the persisted value is reused. */
+
+.sb {
+  & .sb-ci {
+    position: absolute;
+    inset: 0;
+    --ci-hit: #6ee7a8;
+    --ci-miss: #8a8f9c;
+  }
+
+  /* ---- The age axis ---- */
+
+  & .sb-ci__axis {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 84px;
+  }
+
+  /* the maxAge window, shaded at the fresh end */
+  & .sb-ci__fresh {
+    position: absolute;
+    top: 14px;
+    height: 40px;
+    border-radius: 8px;
+    background: rgba(110, 231, 168, 0.07);
+    box-shadow: inset 0 0 0 1px rgba(110, 231, 168, 0.18);
+  }
+
+  & .sb-ci__window {
+    position: absolute;
+    top: 6px;
+    left: 10px;
+    color: var(--ci-hit);
+    font: 500 11px/1 var(--ss-mono);
+    white-space: nowrap;
+  }
+
+  & .sb-ci__rule {
+    position: absolute;
+    top: 44px;
+    height: 1px;
+    background: var(--wire);
+  }
+
+  & .sb-ci__tick {
+    position: absolute;
+    top: 60px;
+    color: var(--faint);
+    font: 11px/1 var(--ss-mono);
+    white-space: nowrap;
+    translate: -50% 0;
+  }
+
+  & .sb-ci__tick--start {
+    translate: 0 0;
+  }
+
+  & .sb-ci__tick--end {
+    translate: -100% 0;
+  }
+
+  & .sb-ci__dot {
+    position: absolute;
+    top: 44px;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #3a4152;
+    box-shadow: 0 0 0 3px var(--cell);
+    translate: -50% -50%;
+    transition: background-color 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  & .sb-ci__dot[data-on] {
+    background: var(--amber);
+    box-shadow: 0 0 0 3px var(--cell), 0 0 0 5px rgba(255, 217, 160, 0.35);
+  }
+
+  /* the lit lookup's line, from its dot down into the log */
+  & .sb-ci__drop {
+    position: absolute;
+    top: 50px;
+    height: 46px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--amber), rgba(255, 217, 160, 0));
+    transition: left 0.45s cubic-bezier(0.45, 0, 0.2, 1);
+  }
+
+  /* ---- The lookup log ---- */
+
+  & .sb-ci__log {
+    position: absolute;
+    top: 92px;
+    left: var(--pad);
+    right: var(--pad);
+    bottom: -40px;
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+    background: var(--panel);
+    box-shadow: inset 0 0 0 1px var(--panel-edge);
+  }
+
+  & .sb-ci__row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 14px;
+    height: 34px;
+    padding: 0 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: #c9ccd4;
+    font: 12px/16px var(--ss-mono);
+    white-space: nowrap;
+  }
+
+  & .sb-ci[data-layout="compact"] .sb-ci__row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 0 14px;
+    font-size: 11.5px;
+  }
+
+  & .sb-ci__op {
+    color: var(--faint);
+  }
+
+  & .sb-ci__row[data-fresh] .sb-ci__op {
+    color: var(--amber);
+  }
+
+  & .sb-ci__key {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  & .sb-ci__age {
+    color: var(--faint);
+    font-size: 11px;
+  }
+
+  & .sb-ci__result {
+    min-width: 34px;
+    color: var(--ci-miss);
+    text-align: right;
+  }
+
+  & .sb-ci__result[data-hit] {
+    color: var(--ci-hit);
+  }
+}
