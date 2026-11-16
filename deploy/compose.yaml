@@ -1,0 +1,33 @@
+name: seyfert-deploy
+
+services:
+  router:
+    image: nginxinc/nginx-unprivileged:stable-alpine@sha256:f5116ed4606f3eb015dd4a8e28cb9b351476dc0ad4bc6e9f93b19cec130cdf03
+    container_name: seyfert-router
+    entrypoint: [nginx]
+    command: [-g, "daemon off;"]
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    sysctls:
+      net.ipv4.ip_forward: 0
+    tmpfs:
+      - /tmp:size=64m
+    volumes:
+      - ./nginx:/etc/nginx:ro
+    networks:
+      - toor-proxy
+      - previews
+    healthcheck:
+      test: [CMD, wget, -qO-, http://127.0.0.1:8080/healthz]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+networks:
+  toor-proxy:
+    external: true
+  previews:
+    name: seyfert-previews
+    internal: true

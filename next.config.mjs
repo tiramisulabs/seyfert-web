@@ -5,6 +5,7 @@ const withMDX = createMDX();
 
 /** @type {import('next').NextConfig} */
 const config = {
+  output: "standalone",
   reactStrictMode: true,
   serverExternalPackages: ["typescript", "twoslash"],
   productionBrowserSourceMaps: false,
@@ -21,6 +22,7 @@ const config = {
     },
   },
   experimental: {
+    cpus: 2,
     optimizePackageImports: ["@hugeicons/react"],
     serverSourceMaps: false,
   },

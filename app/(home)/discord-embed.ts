@@ -1,4 +1,5 @@
 import type { APIContainerComponent } from "seyfert/lib/types";
+import { getSiteOrigin } from "@/lib/deployment";
 
 // Discord component embed for the landing — the link preview Discord shows
 // when seyfert.dev is pasted in chat. Linked rather than inlined because only
@@ -8,10 +9,7 @@ import type { APIContainerComponent } from "seyfert/lib/types";
 
 // The JSON href must live on the host Discord fetched (or a sub/parent
 // domain), so preview deployments point at themselves instead of production.
-const origin =
-    process.env.VERCEL_ENV === "preview" && process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : "https://www.seyfert.dev";
+const origin = getSiteOrigin("https://www.seyfert.dev");
 
 export const discordEmbedUrl = `${origin}/discord-embed.json`;
 

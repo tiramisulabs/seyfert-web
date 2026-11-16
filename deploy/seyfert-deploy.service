@@ -1,0 +1,9 @@
+[Unit]
+Description=Reconcile Seyfert production and PR deployments
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/services/seyfert-web/automation
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/usr/bin/python3 reconcile.py
+TimeoutStartSec=15min

@@ -1,0 +1,118 @@
+name: Build deployment
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+    inputs:
+      preview_pr:
+        description: Existing PR to preview (empty for the selected branch)
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deployment-${{ github.event.pull_request.number || inputs.preview_pr || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: >-
+      github.event_name != 'pull_request' ||
+      (github.event.pull_request.head.repo.full_name == github.repository &&
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.pull_request.author_association))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      packages: write
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Deployment target
+        id: target
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 deploy/build_target.py
+
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ steps.target.outputs.ref }}
+          persist-credentials: false
+
+      - name: Source revision
+        id: revision
+        env:
+          EXPECTED_HEAD: ${{ steps.target.outputs.head }}
+          DEPLOYMENT_ENV: ${{ steps.target.outputs.environment }}
+        run: |
+          if [ "$DEPLOYMENT_ENV" = preview ]; then
+            parent=$(git cat-file -p HEAD | sed -n 's/^parent //p' | tail -1)
+            test "$parent" = "$EXPECTED_HEAD"
+          fi
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Check deployment controller
+        run: python3 -m unittest discover -s deploy -p 'test_*.py'
+
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+        with:
+          driver-opts: |
+            cpuset-cpus=0-1
+            memory=10g
+            memory-swap=10g
+
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: ghcr.io/tiramisulabs/seyfert-web:${{ steps.target.outputs.tag }}
+          build-args: |
+            SITE_URL=${{ steps.target.outputs.origin }}
+            DEPLOYMENT_ENV=${{ steps.target.outputs.environment }}
+            GIT_SHA=${{ steps.revision.outputs.sha }}
+          labels: |
+            dev.seyfert.head=${{ steps.target.outputs.head }}
+          cache-from: type=gha,scope=seyfert-web
+          cache-to: type=gha,mode=max,scope=seyfert-web
+
+      - name: Check the standalone image
+        env:
+          IMAGE: ghcr.io/tiramisulabs/seyfert-web:${{ steps.target.outputs.tag }}
+        run: |
+          docker run --detach --name ci-site --memory 1g --cpus 2 --pids-limit 128 \
+            --user 1000:1000 --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --tmpfs /tmp:rw,size=64m --tmpfs /app/.next/cache:rw,uid=1000,gid=1000,size=128m "$IMAGE"
+          for _ in {1..45}; do
+            status=$(docker inspect --format='{{.State.Health.Status}}' ci-site)
+            if [ "$status" = healthy ]; then break; fi
+            sleep 2
+          done
+          test "$status" = healthy
+          docker exec -i ci-site node --input-type=module < deploy/smoke.mjs
+
+      - name: Publish the checked image
+        env:
+          IMAGE: ghcr.io/tiramisulabs/seyfert-web:${{ steps.target.outputs.tag }}
+        run: docker push "$IMAGE"
+
+      - name: Preview URL
+        if: steps.target.outputs.environment == 'preview'
+        env:
+          PREVIEW_URL: ${{ steps.target.outputs.origin }}
+        run: |
+          echo "Preview after Toor finishes deploying: $PREVIEW_URL" >> "$GITHUB_STEP_SUMMARY"

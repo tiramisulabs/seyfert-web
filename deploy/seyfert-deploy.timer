@@ -1,0 +1,10 @@
+[Unit]
+Description=Check Seyfert deployment images every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitInactiveSec=1min
+Unit=seyfert-deploy.service
+
+[Install]
+WantedBy=timers.target

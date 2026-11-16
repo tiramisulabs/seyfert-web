@@ -2,10 +2,12 @@ import { RootProvider } from "fumadocs-ui/provider/next";
 import { Metadata } from "next";
 import type { ReactNode } from "react";
 import { REVEAL_MODE_SCRIPT } from "@/components/home/reveal/seen";
+import { getSiteOrigin, isPreviewDeployment } from "@/lib/deployment";
 import "./global.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://seyfert.dev'),
+  metadataBase: new URL(getSiteOrigin()),
+  ...(isPreviewDeployment ? { robots: { index: false, follow: false } } : {}),
   title: "Seyfert | The TypeScript framework for Discord",
   description: "Build TypeScript Discord bots with fully typed commands, less boilerplate and a faster way to get started.",
   openGraph: {

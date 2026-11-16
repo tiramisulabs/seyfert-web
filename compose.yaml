@@ -1,0 +1,14 @@
+name: seyfert-web
+
+services:
+  web:
+    image: seyfert-web:${SEYFERT_IMAGE_TAG:-local}
+    build: .
+    container_name: seyfert-web
+    restart: unless-stopped
+    networks:
+      - toor-proxy
+
+networks:
+  toor-proxy:
+    external: true
