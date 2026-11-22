@@ -8,7 +8,7 @@ description: Traces and metrics for Seyfert interactions, events, Discord REST, 
 The plugin is backend-neutral. Point it at Jaeger while developing, an OpenTelemetry Collector in production, or any vendor that accepts OTLP.
 
 <Callout type="info">
-The plugin requires Seyfert v5. Its SDK supports OTLP export through environment variables; custom exporters and readers remain optional.
+The plugin requires Seyfert 5.1.0 or later. The SDK supports OTLP export through environment variables and accepts custom exporters and readers.
 </Callout>
 
 ## Installation
@@ -131,7 +131,7 @@ Errors are recorded on their active spans and rethrown to Seyfert. HTTP `4xx` an
 
 ### Middleware spans
 
-With builds that include [Seyfert's middleware wrapper API](https://github.com/tiramisulabs/seyfert/pull/480) and [OpenTelemetry support for it](https://github.com/tiramisulabs/extra/pull/60), each traced invocation gets a `middleware <name>` span. The spans are siblings under `Middlewares`, so a global plugin middleware such as `cooldown` and a middleware registered by the bot each have their own duration.
+With Seyfert `6.0.0` or later and an OpenTelemetry build that includes [middleware wrapper support](https://github.com/tiramisulabs/extra/pull/60), each traced invocation gets a `middleware <name>` span. The spans are siblings under `Middlewares`, so a global plugin middleware such as `cooldown` and a middleware registered by the bot each have their own duration.
 
 With that OpenTelemetry build on older Seyfert versions, bot middleware registered through `client.setServices({ middlewares })` still gets individual spans, and plugin middleware contributes to the `Middlewares` phase duration.
 
