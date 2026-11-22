@@ -138,6 +138,8 @@ export const authPlugin: SeyfertPlugin<{}, {}, readonly [], { auth: AuthMiddlewa
 
 When the app includes that plugin in the tuple registered via `SeyfertRegistry`, `Middlewares(['auth'])` and `ctx.metadata.auth` are typed.
 
+To observe or time existing middleware, use a [middleware wrapper](/docs/plugins/building/runtime-hooks#middleware-wrappers).
+
 ## Option Fragments
 
 `api.options.set(...)` contributes partial client options.

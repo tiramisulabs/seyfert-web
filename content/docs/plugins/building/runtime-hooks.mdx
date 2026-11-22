@@ -38,6 +38,40 @@ export const metricsPlugin = createPlugin({
 
 Wrappers compose around the original autocomplete handler. Call `next()` when the original autocomplete logic should continue.
 
+## Middleware Wrappers
+
+`api.middlewares.wrap(...)` runs around each global or local middleware invocation, including middleware registered by the bot or another plugin. Seyfert keeps the original handler in its registry across contribution reloads.
+
+<Callout type="info">
+This hook requires a Seyfert build that includes [middleware invocation wrappers](https://github.com/tiramisulabs/seyfert/pull/480).
+</Callout>
+
+```ts
+import { createPlugin } from 'seyfert';
+
+export const middlewareTiming = createPlugin({
+    name: 'middleware-timing',
+    register(api) {
+        api.middlewares.wrap(async (invocation, run) => {
+            const startedAt = performance.now();
+
+            try {
+                await run(invocation);
+            } finally {
+                const durationMs = performance.now() - startedAt;
+                invocation.context.client.logger.info(
+                    `${invocation.scope} middleware ${invocation.name}: ${durationMs.toFixed(1)} ms`,
+                );
+            }
+        });
+    },
+});
+```
+
+Return or await `run(invocation)` exactly once. It runs the next wrapper or the handler and settles with that call. The handler still advances or stops the chain through `invocation.next()` and `invocation.stop()`.
+
+Wrappers compose in plugin order and accept the optional `{ order }` argument. The method returns a disposer. Closing the client deactivates wrappers registered in `register` and removes wrappers added during `setup`.
+
 ## Gateway Intents
 
 Plugins can contribute gateway intents.

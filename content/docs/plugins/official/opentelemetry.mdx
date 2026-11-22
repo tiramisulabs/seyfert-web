@@ -129,6 +129,12 @@ opentelemetry({
 
 Errors are recorded on their active spans and rethrown to Seyfert. HTTP `4xx` and `5xx` responses are marked as errors, while Seyfert `502`/`503` retries remain part of one logical REST span with `http.request.resend_count` updated.
 
+### Middleware spans
+
+With builds that include [Seyfert's middleware wrapper API](https://github.com/tiramisulabs/seyfert/pull/480) and [OpenTelemetry support for it](https://github.com/tiramisulabs/extra/pull/60), each traced invocation gets a `middleware <name>` span. The spans are siblings under `Middlewares`, so a global plugin middleware such as `cooldown` and a middleware registered by the bot each have their own duration.
+
+With that OpenTelemetry build on older Seyfert versions, bot middleware registered through `client.setServices({ middlewares })` still gets individual spans, and plugin middleware contributes to the `Middlewares` phase duration.
+
 ### Collector and modal flows
 
 Collector buttons and awaited modal submits continue the trace that created them while keeping a separate, short span per Discord interaction; no span stays open while waiting. Every span in that UI flow carries the same `seyfert.flow_id`.
