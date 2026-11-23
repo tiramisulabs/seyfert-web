@@ -1,0 +1,140 @@
+---
+title: "Seyfert v6.0.0: Hot Reload, Middleware Wrappers, and Cache Queries"
+description: "Per-invocation middleware wrappers, rolling worker hot reload with lifecycle hooks, multi-export handler reloads, cache pagination and opt-in guild member counts, and runtime support focused on Node.js and Bun."
+date: 2026-11-23
+---
+
+![Seyfert 6.0.0. A little dinosaur and a gravestone orbit a black hole. The caption reads RIP Deno support.](/blog/seyfert-6-rip-deno.png)
+
+**Seyfert v6.0.0** is out. Most of this release is about running bots in production without hating every deploy: rolling worker hot reloads with real lifecycle hooks, per-invocation middleware wrappers for plugins, file-level command and component reloads that don't leave handlers half-broken, cache-backed pagination and member prefix search, and opt-in live guild member counts.
+
+Since it's a major version, there are breaking changes too. I'm retiring Deno support to focus on Node.js and Bun, `reloadAll()` now goes straight through the file-level reload path, and there are a couple of addon versions to check. Check the upgrade notes at the bottom before you deploy.
+
+---
+
+## Middleware Invocation Wrappers
+
+Plugins could already register middleware, but wrapping every middleware call for timing, tracing, or logging was still awkward. `api.middlewares.wrap()` fixes that: a plugin can now wrap every global and command middleware call, whether the middleware came from your app or another plugin. Seyfert also keeps the original handler identity intact in its registry across contribution reloads, so wrapping doesn't break reload tracking.
+
+```ts
+import { createPlugin } from 'seyfert';
+
+export const middlewareTiming = createPlugin({
+  name: 'middleware-timing',
+  register(api) {
+    api.middlewares.wrap(async (invocation, run) => {
+      const startedAt = performance.now();
+
+      try {
+        await run(invocation);
+      } finally {
+        const durationMs = performance.now() - startedAt;
+        invocation.context.client.logger.info(
+          `${invocation.scope} middleware ${invocation.name}: ${durationMs.toFixed(1)} ms`,
+        );
+      }
+    });
+  },
+});
+```
+
+Wrappers compose in plugin order, and you can pass an optional `{ order }` argument if you care about placement. Return or `await run(invocation)` once to advance through the next wrapper and the middleware itself—`invocation.next()` and `invocation.stop()` stay in charge of the command chain. `wrap()` also returns a disposer so you can detach the wrapper early if needed.
+
+Lifecycle details are in the [middleware wrappers section in the runtime hooks guide](/docs/plugins/building/runtime-hooks#middleware-wrappers). If you use `@slipher/opentelemetry` and want individual middleware spans, upgrade to `@slipher/opentelemetry@2.1.0` or newer (`2.0.0` didn't have the middleware wrapper integration).
+
+---
+
+## Rolling Worker Hot Reload and Lifecycle Hooks
+
+Restarting the whole manager process just to ship a worker change gets old fast. `WorkerManager.hotReload()` replaces running workers one at a time with fresh instances loaded from disk, keeping the manager alive across deploys. A worker can trigger the same flow itself through `WorkerClient.requestHotReload()`.
+
+By default, each replacement identifies fresh Gateway sessions through the connect queue and warms its cache on standby while the old worker keeps handling events. Once the replacement's shards are ready, traffic switches over and the old worker drains in-flight work before closing its sessions and exiting. I'm not going to pretend the handoff is lossless: because the old and new workers hold independent Gateway sessions, events can be missed or delivered twice while they swap. On the bright side, if a replacement fails to start or misses `readyTimeout`, Seyfert discards it and leaves the existing worker running.
+
+There's also an experimental `resumeSession: true` option for manager-initiated reloads. It only works with native workers (`'threads'` or `'clusters'`), one shard per worker (`shardsPerWorker: 1`), and a shared cache through `WorkerAdapter`. Even with all of that lined up, Discord still decides whether the resumed session and event replay succeed.
+
+To keep background jobs and state from duplicating or getting cut off mid-flight, `WorkerClient` exposes `hotReloadState`, `isHotReloadReplacement`, and four lifecycle hooks (`onStandby`, `onActivate`, `onStop`, and `onDrain`) that behave the same across worker modes:
+
+```ts
+import { WorkerClient } from 'seyfert';
+
+declare const jobs: { start(): void; stop(): void };
+declare const players: { saveAll(): Promise<void> };
+
+const client = new WorkerClient({
+  hotReload: {
+    onActivate: () => jobs.start(),
+    onStop: () => jobs.stop(),
+    onDrain: () => players.saveAll(),
+  },
+});
+
+if (!client.isHotReloadReplacement) {
+  jobs.start();
+}
+```
+
+`onDrain` runs alongside in-flight work up to `drainTimeout` while REST is still available, before plugin teardown and shard shutdown. One cluster-mode gotcha: check `client.hotReloadState === 'stopped'` in process-level `SIGTERM` handlers so a hot-reload exit doesn't fire off your shutdown announcements for nothing. See the [sharding guide](/docs/learn/scaling/sharding) for worker topology setup.
+
+---
+
+## Handler-File Reloads
+
+Command and component reloads now read each module through `onFile`, matching `load()`. If a file exports multiple commands or components, all of its exports reload together in place.
+
+When an import fails or a file exports no loadable handlers, Seyfert keeps the existing handlers active instead of wiping them out. `reloadFiles(stopIfFail?)` returns a `{ reloaded, failed }` report for the files it tried. Under the default `stopIfFail = true`, `reloadAll()` and `reloadFiles()` throw `RELOAD_FAILED` when a file fails to import or exports nothing.
+
+Because `reloadAll()` now goes straight through the file-level reload path, subclasses that previously customized `reloadAll()` by overriding `reload()` need to move that logic to a file-level hook such as `onFile`. See the [hot reload recipe](/docs/recipes/hot-reload) for standard command and component reload patterns.
+
+---
+
+## Cache Queries and Guild Member Counts
+
+`members.list()`, `bans.list()`, `guilds.list()`, and `members.search()` now evaluate pagination and member prefix search against the cache when cached entries can actually answer the query, falling back to Discord REST when they can't. `threads.listGuildActive()` returns unarchived cached threads in Discord's order and falls back to REST when the guild has no cached channels. Requests that ask for guild counts (`with_counts: true` on `guilds.fetch()` or `guilds.list()`) go straight to Discord because the cache doesn't have those counts.
+
+Cache query evaluation is on by default. You can toggle it globally via `client.setServices({ cache: { queries } })` or bypass it per call with `{ cacheQuery: false }` or `{ force: true }`.
+
+Live cached guild member count tracking is opt-in so you don't pay for it unless you want it. Turn it on before connecting, along with both the `Guilds` and `GuildMembers` intents, so `GUILD_CREATE` seeds each guild count and member join/leave dispatches keep it current:
+
+```ts
+import { Client } from 'seyfert';
+
+const client = new Client();
+
+client.setServices({
+  cache: {
+    trackMemberCount: true,
+  },
+});
+
+await client.start({
+  connection: {
+    intents: ['Guilds', 'GuildMembers'],
+  },
+});
+```
+
+If you maintain a custom cache adapter that supports atomic numeric updates, you can implement the optional `Adapter.increment(key, field, delta, options)` method so count updates stay serialized with other writes to the same key. See the [cache recipe](/docs/recipes/cache) for the custom adapter contract.
+
+---
+
+## Gateway and Discord API Additions
+
+A few smaller improvements that still matter in day-to-day runs: Gateway dispatches now hydrate missing users and members into cache payloads, and automatic resharding checks handle errors instead of crashing the process. The API surface also adds Discord's computed permission endpoints, content-scanning metadata, and the channel-obfuscation flag.
+
+---
+
+## Upgrading to 6.0.0
+
+```bash
+pnpm add seyfert@6.0.0
+```
+
+Check these breaking changes and addon minimums before you deploy:
+
+- **Node.js and Bun only**: Deno support has been retired, and `SeyfertErrorMessages.DENO_FILE_API_UNSUPPORTED` was removed. I'm focusing runtime support on Node.js and Bun going forward—move Deno deployments over before upgrading, or stay on Seyfert 5.x.
+- **`reloadAll()` changes**: Empty exports now keep the previous handlers active and throw `RELOAD_FAILED` under the default `stopIfFail`. Subclasses that customized `reloadAll()` through a `reload()` override need to move that logic to a file-level hook such as `onFile`.
+- **Addon minimum versions**: Both updates are tracked in [Extra #62](https://github.com/tiramisulabs/extra/pull/62). Check npm for availability before upgrading a bot that depends on them.
+  - **`@slipher/scaler`**: upgrade to at least **`0.0.2`** (`0.0.1` declares a `seyfert` `^5.0.0` peer dependency).
+  - **`@slipher/opentelemetry`**: upgrade to at least **`2.1.0`** for per-middleware spans and the startup fix for plugin middleware. With `2.0.0`, combining OpenTelemetry with a plugin such as `cooldown` can make `client.start()` fail on Seyfert 6.
+
+That's v6. Fewer restarts, smarter cache reads, cleaner plugin hooks, and one less runtime to juggle.

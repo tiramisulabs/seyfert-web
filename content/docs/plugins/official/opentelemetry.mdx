@@ -131,7 +131,7 @@ Errors are recorded on their active spans and rethrown to Seyfert. HTTP `4xx` an
 
 ### Middleware spans
 
-With Seyfert `6.0.0` or later and an OpenTelemetry build that includes [middleware wrapper support](https://github.com/tiramisulabs/extra/pull/60), each traced invocation gets a `middleware <name>` span. The spans are siblings under `Middlewares`, so a global plugin middleware such as `cooldown` and a middleware registered by the bot each have their own duration.
+With Seyfert `6.0.0` or later and OpenTelemetry `2.1.0` or later, each traced invocation gets a `middleware <name>` span. The spans are siblings under `Middlewares`, so a global plugin middleware such as `cooldown` and a middleware registered by the bot each have their own duration.
 
 With that OpenTelemetry build on older Seyfert versions, bot middleware registered through `client.setServices({ middlewares })` still gets individual spans, and plugin middleware contributes to the `Middlewares` phase duration.
 
