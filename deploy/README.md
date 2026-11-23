@@ -4,8 +4,9 @@ Pushes to `main` build production. Open PRs targeting `main` build previews at
 `https://pr-<number>.seyfert.dev`. The workflow checks out the PR's merge ref,
 so previews include the current base branch as well as the PR changes.
 
-GitHub Actions builds Linux/amd64 images with two available CPU cores and a
-10 GiB memory limit. It starts each standalone image and checks pages, search,
+GitHub Actions builds Linux/amd64 images on its hosted runner with a 10 GiB
+BuildKit memory limit. Only pushes to `main` export the GitHub Actions build
+cache; preview builds can read it but do not upload a cache. It starts each standalone image and checks pages, search,
 redirects, embeds, image optimization, and JavaScript/CSS before publishing to
 `ghcr.io/tiramisulabs/seyfert-web`. Tags are `main-<commit>` and
 `pr-<number>-<head-commit>`; the OCI revision label records the actual checked-out

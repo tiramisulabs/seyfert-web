@@ -65,7 +65,6 @@ jobs:
       - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
         with:
           driver-opts: |
-            cpuset-cpus=0-1
             memory=10g
             memory-swap=10g
 
@@ -88,7 +87,7 @@ jobs:
           labels: |
             dev.seyfert.head=${{ steps.target.outputs.head }}
           cache-from: type=gha,scope=seyfert-web
-          cache-to: type=gha,mode=max,scope=seyfert-web
+          cache-to: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' && 'type=gha,mode=max,scope=seyfert-web' || '' }}
 
       - name: Check the standalone image
         env:
