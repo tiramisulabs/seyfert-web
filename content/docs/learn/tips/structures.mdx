@@ -46,6 +46,31 @@ perms.has(['Administrator']);                       // boolean
 perms.missings(['SendMessages', 'EmbedLinks']);     // return missings permisions, empty array if not
 ```
 
+#### Permissions computed by Discord
+
+`member.fetchPermissions()` computes the result in Seyfert from the member's roles. From Seyfert 6.0.0, four shorters ask Discord for its own computed result instead. They always make a request and return a `PermissionsBitField`:
+
+```ts twoslash
+import { type UsingClient } from 'seyfert';
+const client = {} as UsingClient;
+const guildId = '1003825077969764412';
+const channelId = '1003825079328702529';
+const memberId = '406184197405802497';
+const roleId = '1115437277846458388';
+// ---cut---
+// Guild-level permissions of a member or a role
+await client.members.fetchPermissions(guildId, memberId);
+await client.roles.fetchPermissions(guildId, roleId);
+
+// Permissions in one channel, with its overwrites applied
+const inChannel = await client.channels.fetchMemberPermissions(channelId, memberId);
+await client.channels.fetchRolePermissions(channelId, roleId);
+
+inChannel.has(['SendMessages']);
+```
+
+The role variants combine the role with `@everyone` and ignore other roles and member-specific overwrites. The channel variants take a third `implicit` argument: Discord defaults it to `true`, which clears every permission when `ViewChannel` (or `Connect` in voice and stage channels) is missing. Discord never applies it to bots.
+
 ### Actions
 
 ```ts twoslash
@@ -68,10 +93,13 @@ const guild = await ctx.guild();
 
 guild.id;                                           // Guild ID
 guild.name;                                         // Guild name
-guild.memberCount;                                  // Approximate member count
+guild.memberCount;                                  // Member count sent when the shard connected
 await guild.members.fetch('406184197405802497');    // Fetch Deivid
-await guild.members.list({ limit: 100 });          // List members
+await guild.members.list();                         // Every cached member
+await guild.members.list({ limit: 100 });           // The first 100 members by id
 ```
+
+`memberCount` comes from the `GUILD_CREATE` payload and does not change afterwards unless [`trackMemberCount`](/docs/recipes/cache#guild-member-counts) is enabled. From Seyfert 6.0.0, a list call with a query returns the page that query asks for instead of the whole cache; see [cache queries](/docs/recipes/cache#cache-queries).
 
 ## Channel
 

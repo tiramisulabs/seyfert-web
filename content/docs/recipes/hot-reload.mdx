@@ -4,6 +4,10 @@ title: Hot Reload
 
 During development, Seyfert allows you to reload commands, events, components, and language files without restarting the bot.
 
+<Callout type="info">
+This recipe reloads handler files inside a running process. To replace whole workers with freshly loaded code in production, see [Rolling worker hot reload](/docs/learn/scaling/hot-reload).
+</Callout>
+
 ## Reloading Commands
 
 ```ts
@@ -13,6 +17,10 @@ await client.commands.reloadAll();
 // Reload a specific command by name
 await client.commands.reload('ping');
 ```
+
+From Seyfert 6.0.0, a reload reads the file through `onFile`, the same hook `load()` uses. Every command the file exports is replaced in place, so a file that exports several commands gets all of them back. A file that fails to import, or that no longer exports a command, keeps its previous commands.
+
+The directory of an `@AutoLoad` command is not scanned again, so a reloaded parent command comes back without its auto-loaded subcommands.
 
 ## Reloading Events
 
@@ -24,6 +32,50 @@ await client.events.reloadAll();
 
 ```ts
 await client.components.reloadAll();
+```
+
+Components and modals follow the same per-file rules as commands.
+
+## Reload Reports
+
+`reloadAll()` resolves without a value. From Seyfert 6.0.0, `commands.reloadFiles()` and `components.reloadFiles()` run the same reload and return what happened to each file:
+
+```ts twoslash
+import type { UsingClient } from 'seyfert';
+
+declare const client: UsingClient;
+// ---cut---
+const { reloaded, failed } = await client.commands.reloadFiles(false);
+
+client.logger.info(`Reloaded ${reloaded.length} command file(s)`);
+
+for (const { path, error } of failed) {
+    client.logger.warn('Kept the previous commands for', path, error);
+}
+```
+
+Both methods take a `stopIfFail` argument, which defaults to `true`:
+
+| `stopIfFail` | A file fails to import or exports nothing loadable |
+| --- | --- |
+| `true` | The reload stops at that file and throws `RELOAD_FAILED`. The report is in `error.metadata` and the original error in `error.cause`. |
+| `false` | The file is added to `failed`, a warning is logged, and the reload continues with the next file. |
+
+In both cases the failed file keeps the handlers it had before.
+
+```ts twoslash
+import { type HandlerReloadResult, SeyfertError, type UsingClient } from 'seyfert';
+
+declare const client: UsingClient;
+// ---cut---
+try {
+    await client.components.reloadAll();
+} catch (error) {
+    if (!SeyfertError.is(error, 'RELOAD_FAILED')) throw error;
+
+    const { failed } = error.metadata as unknown as HandlerReloadResult;
+    client.logger.error('Reload stopped at', failed[0]?.path, error.cause);
+}
 ```
 
 ## Reloading Language Files
@@ -40,7 +92,15 @@ await client.langs.reload('es');
 
 A practical pattern is to create a developer-only command for hot reloading:
 
-```ts
+```ts twoslash
+import type { Client, ParseClient } from 'seyfert';
+
+declare module 'seyfert' {
+    interface SeyfertRegistry {
+        client: ParseClient<Client<true>>;
+    }
+}
+// ---cut---
 import {
     Command,
     Declare,
@@ -71,16 +131,29 @@ const options = {
 export default class ReloadCommand extends Command {
     async run(ctx: CommandContext<typeof options>) {
         const target = ctx.options.target;
+        const failed: string[] = [];
 
-        if (target === 'all' || target === 'commands') await ctx.client.commands.reloadAll();
+        if (target === 'all' || target === 'commands') {
+            const report = await ctx.client.commands.reloadFiles(false);
+            failed.push(...report.failed.map(file => file.path));
+        }
         if (target === 'all' || target === 'events') await ctx.client.events?.reloadAll();
-        if (target === 'all' || target === 'components') await ctx.client.components.reloadAll();
+        if (target === 'all' || target === 'components') {
+            const report = await ctx.client.components.reloadFiles(false);
+            failed.push(...report.failed.map(file => file.path));
+        }
         if (target === 'all' || target === 'langs') await ctx.client.langs?.reloadAll();
 
-        await ctx.editOrReply({ content: `Reloaded **${target}** successfully.` });
+        await ctx.editOrReply({
+            content: failed.length
+                ? `Reloaded **${target}**, but ${failed.length} file(s) kept their previous handlers.`
+                : `Reloaded **${target}** successfully.`,
+        });
     }
 }
 ```
+
+`reloadFiles(false)` keeps going when a file is broken, so one bad edit does not stop the rest of the reload. The paths in `failed` are also logged by the handler.
 
 ## Automatic Reload with @slipher/watcher
 

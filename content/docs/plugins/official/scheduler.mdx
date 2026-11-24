@@ -11,7 +11,7 @@ description: Cron and interval task scheduling for Seyfert bots, in-process or c
 pnpm add @slipher/scheduler
 ```
 
-Requires Seyfert v5. The persistent driver uses BullMQ job schedulers, so install BullMQ only when you need cluster-aware, restart-surviving schedules:
+Requires Seyfert v5 or newer. The persistent driver uses BullMQ job schedulers, so install BullMQ only when you need cluster-aware, restart-surviving schedules:
 
 ```sh
 pnpm add bullmq

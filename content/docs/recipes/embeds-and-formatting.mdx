@@ -77,13 +77,34 @@ export default createEvent({
 
 The getter returns `ContainerComponent` structures when containers are present, or `undefined` when the embed has none. These received website previews are separate from top-level `message.components`. For outgoing messages, use the `Embed` builder or top-level [Components v2](/docs/learn/components/v2).
 
+### Content scanning flags
+
+From Seyfert 6.0.0, a received embed exposes the flags Discord sets on it, including the results of its content scanning:
+
+```ts twoslash
+import { createEvent, EmbedFlags } from 'seyfert';
+
+export default createEvent({
+    data: { name: 'messageCreate' },
+    run(message) {
+        for (const embed of message.embeds) {
+            if ((embed.flags ?? 0) & EmbedFlags.ContainsExplicitContent) {
+                console.log('Discord flagged this embed as explicit');
+            }
+        }
+    },
+});
+```
+
+`AttachmentFlags` has the matching `ContainsExplicitContent`, `ContainsGoreContent` and `ContainsSelfHarmContent` flags for attachments. Media inside received components reports them through `content_scan_metadata.flags` and `UnfurledMediaItemContentScanFlags`.
+
 ## Formatter Utilities
 
 Seyfert provides a `Formatter` class with static methods for Discord markdown formatting:
 
 ```ts twoslash
 import { Formatter } from 'seyfert';
-import { TimestampStyle } from 'seyfert/lib/common';
+import { TimestampStyle } from 'seyfert';
 
 // Text formatting
 Formatter.bold('text');                     // **text**
@@ -95,8 +116,11 @@ Formatter.codeBlock('const x = 1', 'ts'); // ```ts\nconst x = 1\n```
 Formatter.spoiler('text');                 // ||text||
 Formatter.quote('text');                   // > text
 Formatter.blockQuote('text');              // >>> text
+Formatter.subtext('text');                 // -# text
 Formatter.hyperlink('Click here', 'https://example.com'); // [Click here](https://example.com)
 ```
+
+`Formatter.subtext()` is available from Seyfert 6.0.0.
 
 ### Mentions
 
@@ -106,7 +130,13 @@ import { Formatter } from 'seyfert';
 Formatter.userMention('366779196975874049');            // <@366779196975874049>
 Formatter.channelMention('1003825079328702529');        // <#1003825079328702529>
 Formatter.roleMention('1115437277846458388');           // <@&1115437277846458388>
+
+// From Seyfert 6.0.0
+Formatter.commandMention('config set', '1210000000000000000'); // </config set:1210000000000000000>
+Formatter.guildNavigation('customize');                 // <id:customize>
 ```
+
+`commandMention()` takes the full command name, including the subcommand group and subcommand. `guildNavigation()` accepts `'customize'`, `'browse'`, `'guide'` or `'linked-roles'`.
 
 ### Timestamps
 
@@ -114,7 +144,7 @@ Discord renders timestamps in the user's local timezone:
 
 ```ts twoslash
 import { Formatter } from 'seyfert';
-import { TimestampStyle } from 'seyfert/lib/common';
+import { TimestampStyle } from 'seyfert';
 // ---cut---
 const date = new Date();
 
@@ -128,7 +158,7 @@ Formatter.timestamp(date, TimestampStyle.ShortTime);            // "16:20"
 
 ```ts twoslash
 import { Embed, Formatter, Command, Declare, type CommandContext } from 'seyfert';
-import { TimestampStyle } from 'seyfert/lib/common';
+import { TimestampStyle } from 'seyfert';
 
 @Declare({
     name: 'userinfo',

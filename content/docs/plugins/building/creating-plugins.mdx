@@ -142,7 +142,7 @@ export default class ProfileCommand extends Command {
 
 ## Package Metadata
 
-Third-party plugin packages should keep `seyfert` as a peer dependency. That avoids installing a second copy beside the app. Use the Seyfert release line your plugin targets; packages written against this v5 plugin contract should target the v5 range.
+Third-party plugin packages should keep `seyfert` as a peer dependency. That avoids installing a second copy beside the app. Use the Seyfert release line your plugin targets. Seyfert 6 keeps the v5 plugin contract, so a package written against it can accept both majors, as the official plugins do with `>=5.0.0`. Raise the lower bound when the plugin needs a newer hook, such as `api.middlewares.wrap()` from `6.0.0`.
 
 ```json title="package.json"
 {
