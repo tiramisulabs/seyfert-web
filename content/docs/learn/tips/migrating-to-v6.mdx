@@ -1,0 +1,410 @@
+---
+title: Migrating from v5 to v6
+description: What changes when a Seyfert 5 bot moves to Seyfert 6, with the code to update for each change.
+---
+
+Seyfert 6 is a small major. Most bots upgrade by changing the version; the rest of this page covers the cases where v5 code stops compiling or behaves differently. Each section says who is affected, so skip the ones that do not apply to your bot.
+
+```bash copy
+pnpm add seyfert@6
+```
+
+| Change | Affects |
+| --- | --- |
+| [Deno is no longer supported](#deno-is-no-longer-supported) | Bots that run on Deno |
+| [TypeScript 5.4 is the minimum](#typescript-54-is-the-minimum) | Projects on TypeScript 5.0 to 5.3 |
+| [Handler reloads work per file](#handler-reloads-work-per-file) | Code that calls `reloadAll()` or replaces `reload()` |
+| [List shorters apply their query to the cache](#list-shorters-apply-their-query-to-the-cache) | Calls to `members.list()`, `bans.list()`, `guilds.list()` or `members.search()` that pass a query |
+| [Permission names are type-checked](#permission-names-are-type-checked) | Code that passes a plain `string` where a permission is expected |
+| [Component builders keep only the media URL](#component-builders-keep-only-the-media-url) | Code that reads media metadata from a builder |
+| [Smaller behavior changes](#smaller-behavior-changes) | `user.tag`, `moderatable()`, `requestSpeak()`, `PollBuilder`, translations, emojis, cache contents |
+| [Workers and custom adapters](#workers-and-custom-adapters) | `WorkerManager` deployments, especially `mode: 'custom'` |
+| [Addon versions](#addon-versions) | Bots that install `@slipher/scaler`, `@slipher/opentelemetry` or `yunaforseyfert` |
+
+## Deno is no longer supported
+
+Seyfert 6 runs on Node.js and Bun. Move a Deno deployment to one of them before upgrading, or stay on the Seyfert 5 release line.
+
+The `DENO_FILE_API_UNSUPPORTED` entry was removed from `SeyfertErrorMessages`. Nothing in Seyfert threw it, so the only code to update is a check that names it:
+
+```ts twoslash title="v5"
+// @noErrors
+import { SeyfertError } from 'seyfert';
+
+declare const error: unknown;
+// ---cut---
+if (SeyfertError.is(error, 'DENO_FILE_API_UNSUPPORTED')) {
+    console.error('This file API is not available on Deno');
+}
+```
+
+In v6 the check still compiles, because error codes accept any string, but it never matches. Delete it.
+
+## TypeScript 5.4 is the minimum
+
+`createPlugin` now uses the `NoInfer` utility type, which TypeScript added in 5.4. On an older compiler the `register`, `setup` and `teardown` callbacks lose their types when `skipLibCheck` is on, and the build fails with `Cannot find name 'NoInfer'` when it is off.
+
+```json title="package.json"
+{
+    "devDependencies": {
+        "typescript": "^5.4.0"
+    }
+}
+```
+
+Seyfert itself is built with TypeScript 7. The [recommended `tsconfig.json`](/docs/learn/getting-started/setup-project) works on TypeScript 6 and 7.
+
+## Handler reloads work per file
+
+`commands.reloadAll()` and `components.reloadAll()` now reload each loaded file once and read it through `onFile`, the same hook `load()` uses. A file that exports several commands or components gets all of them back, in their original position.
+
+Two things change for existing code.
+
+### A file that fails to reload now throws
+
+In v5 a command file that imported but exported nothing loadable was skipped without an error, and a component file in the same state lost its component until the next restart. In v6 the previous handlers stay active, and with the default `stopIfFail = true` the call throws `RELOAD_FAILED` at the first file that fails to import or exports nothing loadable. An import error, which v5 rethrew as it was, is now the `cause` of that error.
+
+```ts twoslash title="v5"
+// @noErrors
+import type { UsingClient } from 'seyfert';
+
+declare const client: UsingClient;
+// ---cut---
+// Resolved even when a file exported nothing loadable.
+await client.commands.reloadAll();
+await client.components.reloadAll();
+```
+
+Use `reloadFiles()` when the caller should keep going and report what happened. It returns the files it reloaded and the ones it kept:
+
+```ts twoslash title="v6"
+import type { UsingClient } from 'seyfert';
+
+declare const client: UsingClient;
+// ---cut---
+const commands = await client.commands.reloadFiles(false);
+const components = await client.components.reloadFiles(false);
+
+for (const { path, error } of [...commands.failed, ...components.failed]) {
+    client.logger.warn('Kept the previous handlers for', path, error);
+}
+```
+
+To keep the throwing behavior, catch the error and read the same report from its metadata:
+
+```ts twoslash title="v6"
+import { type HandlerReloadResult, SeyfertError, type UsingClient } from 'seyfert';
+
+declare const client: UsingClient;
+// ---cut---
+try {
+    await client.commands.reloadAll();
+} catch (error) {
+    if (!SeyfertError.is(error, 'RELOAD_FAILED')) throw error;
+
+    const { failed } = error.metadata as unknown as HandlerReloadResult;
+    client.logger.error('Reload stopped at', failed[0]?.path, error.cause);
+}
+```
+
+`events.reloadAll()` and `langs.reloadAll()` are unchanged.
+
+### `reloadAll()` no longer calls `reload()`
+
+In v5 `reloadAll()` called `reload(name)` for every command, so replacing `reload()` also changed `reloadAll()`. In v6 `reloadAll()` goes through the file-level path and never calls `reload()`.
+
+```ts twoslash title="v5"
+// @noErrors
+import type { UsingClient } from 'seyfert';
+
+declare const client: UsingClient;
+// ---cut---
+const reload = client.commands.reload.bind(client.commands);
+
+// Ran once per command during reloadAll().
+client.commands.reload = async resolve => {
+    client.logger.info('Reloading', typeof resolve === 'string' ? resolve : resolve.name);
+    return reload(resolve);
+};
+```
+
+Move that logic to `onFile`, which runs for every file on `load()`, `reload()` and `reloadAll()`:
+
+```ts twoslash title="v6"
+import type { UsingClient } from 'seyfert';
+
+declare const client: UsingClient;
+// ---cut---
+const onFile = client.commands.onFile.bind(client.commands);
+
+client.commands.onFile = file => {
+    const commands = onFile(file);
+    client.logger.info(`Read ${commands?.length ?? 0} command(s) from a file`);
+    return commands;
+};
+```
+
+See the [hot reload recipe](/docs/recipes/hot-reload) for the full reload API.
+
+## List shorters apply their query to the cache
+
+In v5, `members.list()`, `bans.list()` and `guilds.list()` returned every cached entry as soon as the cache held any, and ignored the query. In v6 they select the page the query asks for, in Discord's order and with Discord's default page size.
+
+The call that changes most is a member list with a `limit`:
+
+```ts twoslash title="v5"
+// @noErrors
+import type { UsingClient } from 'seyfert';
+
+declare const client: UsingClient;
+declare const guildId: string;
+// ---cut---
+// Returned every cached member; the limit only applied to a REST request.
+const members = await client.members.list(guildId, { limit: 100 });
+```
+
+```ts twoslash title="v6"
+import type { UsingClient } from 'seyfert';
+
+declare const client: UsingClient;
+declare const guildId: string;
+// ---cut---
+// The 100 cached members with the lowest ids.
+const page = await client.members.list(guildId, { limit: 100 });
+
+// Every cached member, as before: do not pass a query.
+const everyone = await client.members.list(guildId);
+```
+
+A query without `limit` uses Discord's default, which is `1` for members, `1000` for bans and `200` for guilds. Review calls such as `members.list(guildId, { after })`: they returned the whole cache in v5 and return one member in v6.
+
+`members.search()` always requested Discord in v5. In v6 it first matches the query as a case-insensitive prefix of cached usernames and nicknames, and requests Discord when nothing matches.
+
+To keep the v5 behavior, turn cache queries off for the client or for one call:
+
+```ts twoslash title="v6"
+import { Client } from 'seyfert';
+
+declare const guildId: string;
+// ---cut---
+const client = new Client();
+
+// For every list and search call of this client.
+client.setServices({ cache: { queries: false } });
+
+// For one call: skip the cached query, or skip the cache entirely.
+await client.members.search(guildId, { query: 'soc', limit: 10 }, { cacheQuery: false });
+await client.members.list(guildId, { limit: 100 }, { force: true });
+```
+
+The third argument still accepts the `force` boolean, so `client.members.list(guildId, query, true)` keeps working. The [cache recipe](/docs/recipes/cache#cache-queries) describes which queries the cache can answer.
+
+Two related reads also changed:
+
+- `guilds.fetch(id, { query: { with_counts: true } })` always requests Discord. In v5 a cached guild was returned without the counts.
+- `threads.listGuildActive()` returns only unarchived threads, newest first, and requests Discord when the guild has no cached channels. In v5 it included archived threads from the cache.
+
+## Permission names are type-checked
+
+`BitFieldResolvable` accepted any `string` in v5, so a misspelled permission name compiled and failed at runtime. In v6 it accepts a permission name, a `number`, a `bigint` or a numeric string. A value typed as plain `string` no longer compiles:
+
+```ts twoslash title="v5"
+// @noErrors
+import type { GuildMember } from 'seyfert';
+
+declare const member: GuildMember;
+// ---cut---
+const required: string[] = ['ManageMessages', 'KickMembers'];
+
+const permissions = await member.fetchPermissions();
+const allowed = permissions.has(required);
+```
+
+Type the names with `PermissionStrings`, or with `keyof typeof PermissionFlagsBits` for a single name:
+
+```ts twoslash title="v6"
+import type { GuildMember, PermissionStrings } from 'seyfert';
+
+declare const member: GuildMember;
+// ---cut---
+const required: PermissionStrings = ['ManageMessages', 'KickMembers'];
+
+const permissions = await member.fetchPermissions();
+const allowed = permissions.has(required);
+```
+
+A stored bitfield, such as the `permissions` string Discord sends, converts with `BigInt()`:
+
+```ts twoslash title="v6"
+import type { GuildMember } from 'seyfert';
+
+declare const member: GuildMember;
+declare const storedBits: string;
+// ---cut---
+const permissions = await member.fetchPermissions();
+const allowed = permissions.has(BigInt(storedBits));
+```
+
+Runtime behavior is the same as in v5.
+
+## Component builders keep only the media URL
+
+`Thumbnail`, `File`, `MediaGallery`, `Section` and `Container` are now typed with the new `RESTAPI*Component` payloads, where a media item is `{ url }`. Their `toJSON()` drops the fields Discord fills in on received components, such as `proxy_url`, `width` and `height`, so a received component can be edited and sent back without them.
+
+The builders still accept received `API*Component` data, and message bodies still accept builders. The type-level break is reading that metadata from a builder:
+
+```ts twoslash title="v5"
+// @noErrors
+import { Thumbnail, type APIThumbnailComponent } from 'seyfert';
+
+declare const received: APIThumbnailComponent;
+// ---cut---
+const thumbnail = new Thumbnail(received);
+const width = thumbnail.data.media?.width;
+```
+
+Read it from the received payload, which keeps the full `APIUnfurledMediaItem` type:
+
+```ts twoslash title="v6"
+import { Thumbnail, type APIThumbnailComponent } from 'seyfert';
+
+declare const received: APIThumbnailComponent;
+// ---cut---
+const thumbnail = new Thumbnail(received);
+const width = received.media.width;
+
+// Serializes as { type, media: { url }, ... }.
+const payload = thumbnail.toJSON();
+```
+
+Raw message bodies (`RESTPostAPIChannelMessageJSONBody`, `RESTPatchAPIChannelMessageJSONBody` and `RESTPostAPIWebhookWithTokenJSONBody`) declare `components` as `RESTAPITopLevelComponent[]`. Received `APITopLevelComponent[]` values remain assignable.
+
+## Smaller behavior changes
+
+These are fixes. They need attention only when code depended on the old result.
+
+### `user.tag` drops the `#0` discriminator
+
+Accounts on Discord's unique username system carry the placeholder discriminator `0`. For a user without a global name, `tag` returned `username#0` in v5 and returns `username` in v6. Update code that parses the tag or compares it with a stored value.
+
+### `moderatable()` checks `ModerateMembers`
+
+`GuildMember.moderatable()` checked the bot's `KickMembers` permission in v5. It now checks `ModerateMembers`, the permission Discord requires for timeouts. A bot that had `KickMembers` without `ModerateMembers` gets `false` where v5 returned `true`.
+
+### `requestSpeak()` rejects with a `SeyfertError`
+
+An invalid date rejected with the string `'Invalid date'` in v5:
+
+```ts twoslash title="v5"
+// @noErrors
+import type { VoiceState } from 'seyfert';
+
+declare const voiceState: VoiceState;
+declare const input: string;
+// ---cut---
+try {
+    await voiceState.requestSpeak(input);
+} catch (error) {
+    if (error === 'Invalid date') console.error('Pick a valid date');
+}
+```
+
+```ts twoslash title="v6"
+import { SeyfertError, type VoiceState } from 'seyfert';
+
+declare const voiceState: VoiceState;
+declare const input: string;
+// ---cut---
+try {
+    await voiceState.requestSpeak(input);
+} catch (error) {
+    if (SeyfertError.is(error, 'INVALID_DATE')) console.error('Pick a valid date');
+}
+```
+
+### `PollBuilder` copies its input
+
+The constructor wrote into the object it received and always reset `layout_type`. In v6 it copies the data and keeps a `layout_type` you pass:
+
+```ts twoslash title="v6"
+import { PollBuilder } from 'seyfert';
+
+const template = { question: { text: 'Lunch?' }, duration: 24 };
+
+const poll = new PollBuilder(template).setQuestion({ text: 'Dinner?' });
+
+template.question.text; // 'Lunch?' in v6, 'Dinner?' in v5
+```
+
+### Translations fall back when only the last key is missing
+
+With a default locale set through `client.setServices({ langs: { default } })`, a translation whose final key was missing in the user's locale resolved to `undefined` in v5. It now resolves from the default locale, as a missing locale or a missing intermediate key already did. Code that used `undefined` to detect an untranslated key needs another signal.
+
+### Emojis
+
+- An emoji passed as an object without an id, such as `{ name: '👍' }`, did not resolve in v5, so builders such as `Button.setEmoji()` threw `INVALID_EMOJI`. It now resolves as a unicode emoji.
+- A percent-encoded emoji string is decoded instead of being encoded a second time.
+
+### More users and members reach the cache
+
+Gateway payloads now write the users and members they carry: interaction users and resolved users, message authors and mentions on `MESSAGE_CREATE` and `MESSAGE_UPDATE`, and the member on reactions, typing and voice state updates. In v5 message authors were cached only while the `messages` resource was enabled.
+
+Expect the `users` and `members` resources to hold more entries. Bots that limit memory through `disabledCache` or `LimitedMemoryAdapter` keep those limits.
+
+### Other fixes
+
+- Creating a component collector on a message that already has one clears the previous collector and its timers.
+- `EmbedColors.Random` can now produce white (`0xFFFFFF`).
+- A failed automatic resharding check is logged and retried on the next interval. In v5 a rejected `getInfo()` ended the process.
+
+## Workers and custom adapters
+
+Upgrade the manager process and its workers together. A v6 `WorkerClient` using `WorkerAdapter` asks the manager for its cache capabilities during `start()`. A v5 manager answers that request with an error, and the worker fails to start.
+
+A custom worker adapter keeps working without changes. To support [rolling worker hot reload](/docs/learn/scaling/hot-reload), it has to route by worker instance:
+
+```ts twoslash title="v6"
+import type { WorkerManagerOptions } from 'seyfert';
+
+declare const transport: {
+    start(workerId: number, generation: number, env: Record<string, unknown>): Promise<void>;
+    send(workerId: number, generation: number, body: unknown): Promise<void>;
+    stop(workerId: number, generation: number): Promise<void>;
+};
+// ---cut---
+type CustomAdapter = Extract<WorkerManagerOptions, { mode: 'custom' }>['adapter'];
+
+const adapter: CustomAdapter = {
+    spawn: (workerData, env) => transport.start(workerData.workerId, workerData.generation ?? 0, env),
+    // `generation` is 0 for a worker spawned normally.
+    postMessage: (workerId, body, generation = 0) => transport.send(workerId, generation, body),
+    // New in v6, and required for hot reload.
+    terminate: (workerId, generation) => transport.stop(workerId, generation),
+};
+```
+
+## Addon versions
+
+Check these packages before deploying:
+
+| Package | Use with Seyfert 6 |
+| --- | --- |
+| `@slipher/scaler` | `0.0.2` or newer. `0.0.1` declares a `seyfert` `^5.0.0` peer dependency. |
+| `@slipher/opentelemetry` | `2.1.0` or newer. With `2.0.0`, combining it with a plugin that registers middleware, such as `@slipher/cooldown`, can make `client.start()` fail. |
+| `yunaforseyfert` | `1.2.4` declares a `seyfert` `^5.1.0` peer dependency. Wait for a release that accepts Seyfert 6 before upgrading a bot that depends on it. |
+
+The other `@slipher/*` packages declare `seyfert` `>=5.0.0` or `>=5.1.0` and install with Seyfert 6 unchanged.
+
+## New in v6
+
+None of these require changes. They are the reason to upgrade:
+
+- [Rolling worker hot reload](/docs/learn/scaling/hot-reload) replaces workers one at a time without restarting the manager.
+- [Middleware wrappers](/docs/plugins/building/runtime-hooks#middleware-wrappers) let a plugin wrap every middleware call.
+- [`reloadFiles()`](/docs/recipes/hot-reload#reload-reports) reports which handler files reloaded.
+- [Cache queries](/docs/recipes/cache#cache-queries) and opt-in [guild member counts](/docs/recipes/cache#guild-member-counts).
+- [Permissions computed by Discord](/docs/learn/tips/structures#permissions-computed-by-discord) for members and roles, in a guild or a channel.
+- [`Formatter.subtext()`, `commandMention()` and `guildNavigation()`](/docs/recipes/embeds-and-formatting#formatter-utilities).
+- Discord API additions: content scanning flags (`EmbedFlags`, `AttachmentFlags`, `UnfurledMediaItemFlags`), the `obfuscated` getter on guild channels, the `shard` query of `guilds.list()`, audit log position events, and an audit log `reason` on `editPositions()`.
+
+The [6.0.0 release post](/blog/v6.0.0) walks through the headline features.

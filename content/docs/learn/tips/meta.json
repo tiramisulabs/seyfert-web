@@ -3,6 +3,7 @@
     "icon": "Lightbulb",
     "defaultOpen": true,
     "pages": [
-        "structures"
+        "structures",
+        "migrating-to-v6"
     ]
 }
