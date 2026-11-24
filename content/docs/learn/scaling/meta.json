@@ -5,6 +5,7 @@
     "pages": [
         "index",
         "sharding",
+        "hot-reload",
         "distributed",
         "operations"
     ]

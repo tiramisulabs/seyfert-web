@@ -38,6 +38,7 @@ A **shard** is a Discord Gateway connection responsible for a deterministic subs
 | Run a typical bot with Discord's recommended topology | `Client` | Seyfert manages gateway shards in the current runtime. |
 | Isolate work across CPU threads on one machine | `WorkerManager` with `mode: 'threads'` | Runs `WorkerClient` instances in worker threads. |
 | Isolate work across processes on one machine | `WorkerManager` with `mode: 'clusters'` | Runs `WorkerClient` instances in Node.js cluster processes. |
+| Ship new code without restarting the manager | `WorkerManager.hotReload()` | Replaces workers one at a time with freshly loaded code. |
 | Place and recover workers across several machines | `@slipher/scaler` | Adds a master and host agents around vanilla `WorkerClient` processes. |
 
 More workers can improve isolation and concurrency, but do not reduce Discord's shard count. More shards split gateway traffic, but do not make CPU-heavy handlers parallel inside a single runtime. A shared cache or database is a separate decision based on which state must be visible across workers or survive a move.
@@ -47,6 +48,9 @@ More workers can improve isolation and concurrency, but do not reduce Discord's 
 <Cards>
     <Card title="Understanding sharding" href="/docs/learn/scaling/sharding">
         Learn what Discord shards are, how `Client` manages them, and when to introduce `WorkerManager`.
+    </Card>
+    <Card title="Rolling worker hot reload" href="/docs/learn/scaling/hot-reload">
+        Replace `WorkerManager` workers one at a time with freshly loaded code.
     </Card>
     <Card title="Distributed scaling" href="/docs/learn/scaling/distributed">
         Configure the `@slipher/scaler` master and agents for several hosts.
