@@ -6,6 +6,7 @@
         "voice",
         "player",
         "cache-integrity",
+        "cache-reconciler",
         "cooldown",
         "scheduler",
         "logger",
