@@ -6,7 +6,7 @@ description: Resolve local and remote media, transcode it when needed, and manag
 `@slipher/player` adds media sources and one playback queue per guild on top of [`@slipher/voice`](/docs/plugins/official/voice). It opens local files, URLs, radio streams, and in-memory media; uses FFmpeg when conversion is necessary; and leaves Opus pacing, RTP, encryption, and Discord voice state to the voice connection.
 
 <Callout type="info">
-Requires Seyfert v5 and the `@slipher/voice` plugin. Node.js 22.13 or newer is the primary runtime. Bun and Deno are supported through their Node.js compatibility layers.
+Requires Seyfert v5 or newer and the `@slipher/voice` plugin. Node.js 22.13 or newer is the primary runtime. Bun and Deno are supported through their Node.js compatibility layers. Seyfert 6 itself runs on Node.js and Bun only, so a Deno deployment needs the Seyfert 5 release line.
 </Callout>
 
 ## Installation
@@ -17,7 +17,7 @@ pnpm add @slipher/player @slipher/voice seyfert
 
 [FFmpeg](https://ffmpeg.org/) must be available for MP3, WAV, AAC, FLAC, unknown containers, radio, seeking, and other media that cannot go directly to the Opus demuxers. Compatible Ogg Opus and WebM Opus sources can play without starting FFmpeg.
 
-For Deno, grant read access for local files, network access for remote media, and run access when FFmpeg is needed.
+For Deno with Seyfert 5, grant read access for local files, network access for remote media, and run access when FFmpeg is needed.
 
 ## Configure the plugins
 

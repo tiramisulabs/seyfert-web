@@ -129,7 +129,7 @@ A few smaller improvements that still matter in day-to-day runs: Gateway dispatc
 pnpm add seyfert@6.0.0
 ```
 
-Check these breaking changes and addon minimums before you deploy:
+The [migration guide](/docs/learn/tips/migrating-to-v6) has before and after code for every change that can affect a v5 bot. Check these breaking changes and addon minimums before you deploy:
 
 - **Node.js and Bun only**: Deno support has been retired, and `SeyfertErrorMessages.DENO_FILE_API_UNSUPPORTED` was removed. I'm focusing runtime support on Node.js and Bun going forward—move Deno deployments over before upgrading, or stay on Seyfert 5.x.
 - **`reloadAll()` changes**: Empty exports now keep the previous handlers active and throw `RELOAD_FAILED` under the default `stopIfFail`. Subclasses that customized `reloadAll()` through a `reload()` override need to move that logic to a file-level hook such as `onFile`.

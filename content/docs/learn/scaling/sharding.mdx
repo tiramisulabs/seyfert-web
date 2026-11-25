@@ -238,11 +238,17 @@ The callback source and `vars` cross a worker boundary. Do not close over local 
 
 From Seyfert 5.2.0, pending worker requests are registered before asynchronous transport delivery can produce a reply. A transport failure rejects the pending request instead of leaving it to wait for its response timeout. Custom adapters can also return a promise from `spawn()`; the manager waits for it before registering the worker heartbeat.
 
+## Reload workers without a restart
+
+From Seyfert 6.0.0, `WorkerManager.hotReload()` replaces running workers one at a time with freshly loaded code while the manager stays up. Each old worker keeps handling events until its replacement is ready. See [Rolling worker hot reload](/docs/learn/scaling/hot-reload) for the lifecycle hooks and the limits of the handoff.
+
 ## Automatic resharding and process lifetime
 
 When a manager owns the full shard range, automatic resharding checks run every eight hours by default. Set `resharding.interval` to change the period, or to `0` to disable the checks.
 
 In 5.2.0, the periodic check no longer keeps an otherwise idle process running. It continues while sockets, worker transports, heartbeats or other application resources keep the event loop alive.
+
+From Seyfert 6.0.0, a check that fails, for example because Get Gateway Bot returned an error, is logged and the next check runs on schedule. In earlier versions the rejection was unhandled and could end the process. `WorkerManager` skips the check while a hot reload is running.
 
 ## Inspect a worker topology
 

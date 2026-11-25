@@ -74,6 +74,95 @@ client.cache.channels!.filter = (
 };
 ```
 
+### What gateway events write
+
+Gateway payloads fill the resources as they arrive. From Seyfert 6.0.0, the `users` and `members` resources also receive the users and members carried by interactions, messages and their mentions, reactions, typing and voice state updates, so a member who only ever ran a command can be read from the cache afterwards.
+
+## Cache queries
+
+`members.list()`, `bans.list()`, `guilds.list()` and `members.search()` can answer a query from the cache instead of requesting Discord. From Seyfert 6.0.0 this is on by default.
+
+```ts twoslash
+import type { UsingClient } from 'seyfert';
+
+declare const client: UsingClient;
+declare const guildId: string;
+// ---cut---
+// The 50 cached members with the lowest ids after the cursor.
+const page = await client.members.list(guildId, { limit: 50, after: '366779196975874049' });
+
+// Cached members whose username or nickname starts with "soc".
+const matches = await client.members.search(guildId, { query: 'soc', limit: 10 });
+```
+
+A list call without a query still returns every cached entry of that guild.
+
+| Call | The cache can answer | Default `limit` |
+| --- | --- | --- |
+| `members.list()` | `limit` and `after` | `1` |
+| `bans.list()` | `limit`, `before` and `after` | `1000` |
+| `guilds.list()` | `limit`, `before` and `after`; `with_counts: false` | `200` |
+| `members.search()` | `query` as a case-insensitive prefix of the username or nickname, and `limit` | `1` |
+
+Seyfert requests Discord instead when the cache cannot answer:
+
+- the resource is disabled or holds no entries to page through;
+- the query uses another parameter, such as `with_counts: true` or `shard` in `guilds.list()`, or a `limit` Discord would reject;
+- an id selected for the page is missing from the cache;
+- a member search matches nothing.
+
+<Callout type="warn" title="The cache answers from what it holds">
+A cached page is built from the entries currently in the cache. If a guild's members are only partly cached, the page comes from that part. Pass `{ force: true }` when the result has to be complete.
+</Callout>
+
+Turn the behavior off for the whole client, per resource, or for one call:
+
+```ts twoslash
+import { Client } from 'seyfert';
+
+declare const guildId: string;
+// ---cut---
+const client = new Client();
+
+// Every query goes to Discord.
+client.setServices({ cache: { queries: false } });
+
+// Only member search goes to Discord; omitted resources stay enabled.
+client.setServices({ cache: { queries: { memberSearch: false } } });
+
+// One call: skip the cached query, or skip the cache entirely.
+await client.bans.list(guildId, { limit: 100 }, { cacheQuery: false });
+await client.members.list(guildId, { limit: 100 }, { force: true });
+```
+
+`queries` also accepts a function that receives `'members'`, `'memberSearch'`, `'bans'` or `'guilds'` and returns a boolean. A per-call `cacheQuery: true` enables the cached query even when the client has it disabled.
+
+## Guild member counts
+
+Discord sends `member_count` only in `GUILD_CREATE`, so `guild.memberCount` normally stays at the value it had when the shard connected. From Seyfert 6.0.0, `trackMemberCount` keeps it current by adjusting the cached count on every member join and leave.
+
+It is off by default. Turn it on before connecting, with both the `Guilds` and `GuildMembers` intents:
+
+```ts twoslash
+import { Client } from 'seyfert';
+
+const client = new Client();
+
+client.setServices({
+    cache: {
+        trackMemberCount: true,
+    },
+});
+
+await client.start({
+    connection: {
+        intents: ['Guilds', 'GuildMembers'],
+    },
+});
+```
+
+`Guilds` delivers the `GUILD_CREATE` that seeds each count, and `GuildMembers` delivers the joins and leaves. While tracking is on, Seyfert applies the cache writes of one guild in the order its packets arrived, so a count change cannot land on a newer guild snapshot. That ordering is local to the client that receives the guild's events, including when its adapter stores data in shared storage such as Redis.
+
 ## Adapters
 
 Seyfert allows you to provide your own adapter for the cache, which you can think of as a driver to let Seyfert use an unsupported tool. By default, Seyfert includes `MemoryAdapter` and `LimitedMemoryAdapter`, both of which operate in RAM. Additionally, Seyfert has official Redis support through the [`Redis Adapter`](https://github.com/tiramisulabs/extra/tree/main/packages/redis-adapter).
@@ -286,6 +375,40 @@ class MyAdapter implements Adapter {
     }
 }
 ```
+
+#### Atomic increments
+
+`increment` is an optional method. Seyfert 6.0.0 uses it to update a guild's `member_count` when [`trackMemberCount`](#guild-member-counts) is enabled:
+
+```ts twoslash
+import type { Adapter, AdapterIncrementOptions } from 'seyfert';
+
+interface SeyfertDotDev {
+    // Adds `delta` to a numeric field in one atomic operation and returns the new value.
+    increment(key: string, field: string, delta: number, min?: number): Promise<number | undefined>;
+}
+// ---cut---
+// ---cut-start---
+class MyAdapter implements Pick<Adapter, 'increment'> {
+    declare storage: SeyfertDotDev;
+// ---cut-end---
+    // Inside MyAdapter
+    async increment(key: string, field: string, delta: number, options?: AdapterIncrementOptions) {
+        return this.storage.increment(key, field, delta, options?.min);
+    }
+// ---cut-start---
+}
+// ---cut-end---
+```
+
+Implement it only when the backend can do the whole update atomically. The method must:
+
+- add `delta` to an existing numeric field of an existing object value and return the new value, clamped to `options.min` when it is set;
+- return `undefined` without writing when the key is missing or expired, the value is not an object, or the field is missing or not a number;
+- keep the other fields and the relationship of the entry;
+- reject without writing when `delta`, `options.min` or the result is not a finite number.
+
+A `get` followed by a `patch` is not atomic, so leave `increment` out in that case. Seyfert then reads the guild and patches the new count itself, in the per-guild order described above. `MemoryAdapter` and `LimitedMemoryAdapter` implement it, and `WorkerAdapter` exposes it when the manager's backend does.
 
 #### The `scan` method
 
