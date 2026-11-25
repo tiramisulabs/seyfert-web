@@ -1,0 +1,261 @@
+---
+title: Cache Reconciler
+description: Reconcile a Seyfert cache with the Gateway's authoritative guild snapshots.
+---
+
+`@slipher/cache-reconciler` wraps your configured cache adapter so that, after a new Gateway `READY`, nothing cached earlier in that shard's guilds is served until the new session confirms it. It hides those guild entries immediately and removes the ones that startup guild snapshots prove stale.
+
+<Callout type="info">
+There is no warm guild cache after a restart. Unconfirmed entries are ordinary cache misses, and the plugin makes no REST calls.
+</Callout>
+
+## Why stale entries happen
+
+Stale entries build up in two situations:
+
+- **A new Gateway session in the same process.** Discord invalidates a session and sends a new `READY` with a fresh guild stream while the process and its cache stay intact. `READY` does not flush, and Seyfert applies guild snapshots with `guilds.patch()`, which writes what the payload lists and never removes what it leaves out. Anything deleted during the gap stays cached with any adapter, including Seyfert's in-memory `MemoryAdapter`.
+- **A cache that outlives the process.** A restart, deploy, or crash with a persistent adapter such as `RedisAdapter` keeps whatever Discord changed while the bot was offline — deleted roles, removed channels, or guilds the bot left.
+
+After any new `READY`, the plugin stops serving anything cached earlier in that shard's guilds until the new session writes or confirms it. Entries the session's guild snapshots prove stale are then removed physically.
+
+## How reconciliation works
+
+Hiding and deleting are separate steps. Hiding is immediate and happens on evidence alone: a `READY` hides every guild of its shard at once, before any snapshot arrives. Deleting follows in the background, only for entries a complete snapshot leaves out, and only while no later write or session superseded that snapshot.
+
+### Entry states
+
+Each reconciled entry is in one of three states:
+
+| State | Meaning | Reads | Physical deletion |
+| --- | --- | --- | --- |
+| `visible` | Written or confirmed in the current session of its shard, at or after its guild's snapshot. | Returned | Only by the usual cache removals |
+| `unknown-preserved` | Stored, but nothing in the current session confirmed it. | Miss | Not in this state: a complete snapshot that leaves it out, or the removal of its guild, makes it `hidden-pending` first |
+| `hidden-pending` | Authoritative evidence says it is gone; its removal is outstanding or failed. | Miss | Yes, while the evidence is still current |
+
+A **ghost** is an entry that is stored although Discord no longer has it. Before a session confirms anything, every stored entry is a potential ghost, so all of them start as `unknown-preserved`. A guild is **reconciled** once its startup snapshot was cached and the entries that snapshot proves stale were removed.
+
+### What happens over a session
+
+| Gateway event | Effect on the cache |
+| --- | --- |
+| `READY` | Starts a new session for its shard and makes everything in that shard's guilds unreadable. With `redisCoordinator()`, this happens when the new session acquires the shard, which waits for a previous owner that is still alive; see [Shard ownership and leases](#shard-ownership-and-leases). |
+| Startup guild snapshot | Makes that guild's entries readable again as Seyfert caches them. Entries of a replaceable resource that the snapshot does not list are deleted. |
+| Unavailable guild | Confirms nothing. Its entries stay stored and unreadable until the guild arrives. |
+| Startup complete | Once every guild listed in `READY` has an outcome, guilds the cache still holds that `READY` never listed are removed with everything under them — the bot left them while nobody was updating this cache. |
+| Guild removal | A real removal closes the guild and removes what is left of it. `unavailable: true` is an outage, never a removal. |
+| `RESUMED` | Continues the session for the process that saw its `READY`. See below for an unvalidated `RESUMED`. |
+
+A process that receives `RESUMED` for a session it never validated cannot tell which guilds that shard owns. Until the shard's next `READY`, it only serves the guilds of its other, validated shards, and `status()` reports the shard as `awaiting-ready`. Writes elsewhere in the meantime are stored but not served with `memoryCoordinator()`; with `redisCoordinator()`, writes and removals there are dropped without an error because another process may own those guilds.
+
+A write that follows a later Gateway packet wins over the cleanup of an earlier snapshot, in either completion order. Each write is stamped with the latest sequence its shard had seen when it was issued, and cleanup only removes entries stamped at or before the snapshot's own sequence. [Limits](#limits) lists the two cases this does not cover.
+
+An entry that could not be deleted is never served again, and `status()` reports the failure. With `memoryCoordinator()`, it stays hidden until a later snapshot or guild removal covering it deletes it. With `redisCoordinator()`, failed cleanup leaves entries unreadable as they were, and a removal Redis never answered runs again before that process does anything else with the cache; until Redis answers, its reconciled reads and writes fail rather than serve what was removed.
+
+### What a snapshot can prove
+
+Only a resource Discord lists completely in the startup guild payload can be deleted for being absent from it:
+
+| Resource | Startup snapshot | Absent entries |
+| --- | --- | --- |
+| Roles, emojis, stickers, voice states, stage instances | Complete when the field is present | Deleted |
+| Channels | Complete | Deleted |
+| Threads | Active threads only | Deleted when cached as active; archived threads are kept |
+| Permission overwrites | Per listed channel | Deleted with their channel, or when the channel lists none |
+| Members, presences | Partial | Kept, unreadable until written again |
+| Bans, messages | Not included | Kept, unreadable until written again |
+| Guilds | `READY` lists the shard's guilds | Removed with their descendants once startup completes |
+
+A field that is missing from the payload preserves what is cached; a field that is present and empty replaces it with nothing. Messages follow the guild of their channel, which the plugin knows from the channel being cached. A message whose channel it never saw cached — such as with the channels cache disabled — belongs to no guild.
+
+Users, DM channels, and application emojis belong to no guild, so no snapshot ever lists them. They are served once written through the plugin and are never swept: written by this process with `memoryCoordinator()`, or by any coordinated process with `redisCoordinator()`, which survives restarts.
+
+Resources of other plugins that live on the same adapter are not reconciled. Their reads and writes pass through untouched.
+
+## Installation and setup
+
+```sh
+pnpm add @slipher/cache-reconciler
+```
+
+Requires Seyfert 6. The Redis coordinator additionally requires `@redis/client` 6, `@slipher/redis-adapter` `0.0.9`, and Redis 8.0 or newer with a single writable keyspace; Redis Cluster is unsupported.
+
+```ts
+import { cacheReconciler, memoryCoordinator } from '@slipher/cache-reconciler';
+import { RedisAdapter } from '@slipher/redis-adapter';
+import { Client, definePlugins } from 'seyfert';
+
+const client = new Client({
+	plugins: definePlugins(cacheReconciler({ coordinator: memoryCoordinator() })),
+});
+
+client.setServices({
+	cache: {
+		adapter: new RedisAdapter({ redisOptions: { url: process.env.REDIS_URL }, namespace: 'bot-cache' }),
+	},
+});
+
+await client.start();
+```
+
+### Configuration order
+
+1. Create the client with the plugin in `definePlugins()`.
+2. Configure the adapter with `setServices({ cache: { adapter } })`.
+3. Call `client.start()`.
+
+The plugin replaces `client.cache.adapter` during plugin setup, which runs inside `client.start()` before the adapter is started, and restores the original adapter when the client closes. An adapter assigned after setup is not wrapped: `status().adapter` reports `replaced` and the plugin records a `cache-reconciler-adapter-replaced` diagnostic in `client.plugins.diagnostics`. A plugin instance serves one client start — create a new client, adapter, and `cacheReconciler()` to start again.
+
+The plugin adds the `Guilds` intent automatically because the startup guild stream is its evidence. It also requires Seyfert's cache to process Gateway packets and refuses to start when `disabledCache.onPacket` is enabled. To check this, it sends one synthetic `@slipher/cache-reconciler:probe` packet through every plugin's cache resources when plugins are ready.
+
+## Coordinators
+
+A coordinator stores only bookkeeping for the current Gateway session: which shard session is current, which guilds it delivered, and which keys it confirmed. Cached values always stay in the adapter.
+
+| Coordinator | Use when | Bookkeeping |
+| --- | --- | --- |
+| `memoryCoordinator()` | One process uses the cache, with any adapter except `WorkerAdapter` | Process memory |
+| `redisCoordinator()` | Several processes share one `RedisAdapter` cache | Redis |
+
+After any new `READY`, with either coordinator, nothing cached earlier in that shard's guilds is served until the new session writes or confirms it. Keeping bookkeeping in process memory with `memoryCoordinator()` therefore costs little in a crash because the next `READY` discards the guild part anyway. Users, DM channels, and application emojis are the exception and miss until the new process writes them again.
+
+### Sharing a Redis cache across workers
+
+When several processes share one `RedisAdapter` cache, every process must see the same session bookkeeping. Configure each process with `redisCoordinator()`, which stores shard ownership, open guilds, and key visibility in Redis instead of in one process.
+
+Like `memoryCoordinator()`, it gives no warm cache of a shard's guilds after that shard's owner restarts: their entries stay hidden until the new session writes or confirms them. Guilds of shards that other live processes own stay served. Entries outside any guild — users, DM channels, and application emojis written by any coordinated process — also stay served across restarts.
+
+```ts
+import { cacheReconciler } from '@slipher/cache-reconciler';
+import { redisCoordinator } from '@slipher/cache-reconciler/coordinators/redis';
+import { RedisAdapter } from '@slipher/redis-adapter';
+import { definePlugins, WorkerClient } from 'seyfert';
+
+const adapter = new RedisAdapter({ redisOptions: { url: process.env.REDIS_URL }, namespace: 'bot-cache' });
+
+const client = new WorkerClient({
+	plugins: definePlugins(
+		cacheReconciler({
+			coordinator: redisCoordinator({
+				client: adapter.client,
+				cacheNamespace: adapter.namespace,
+				namespace: 'bot-cache-reconciler',
+			}),
+		}),
+	),
+});
+
+client.setServices({ cache: { adapter } });
+
+await client.start();
+```
+
+`client` and `cacheNamespace` must be the adapter's own. `namespace` is the prefix of the coordinator's own keys, and every process sharing the cache must use the same one. It may sit under the cache namespace, though a raw `scan('*')` on the adapter will list the coordinator's keys too.
+
+The package root does not import Redis. Only the `@slipher/cache-reconciler/coordinators/redis` entry point loads `@redis/client` and `@slipher/redis-adapter`.
+
+### Redis storage contract
+
+`redisCoordinator()` checks ownership, applies the write fence, changes the cache, and commits visibility in one Lua script per mutation. Because the scripts must write the exact storage layout `RedisAdapter` uses — which is not a public API — the coordinator enforces strict constraints:
+
+- Only the `RedisAdapter` class itself is accepted; subclasses are refused. The peer dependency pins `@slipher/redis-adapter` `0.0.9`, enforced by your package manager rather than the coordinator.
+- At startup, it writes and removes one probe entry of an unreconciled resource and refuses to start if the adapter placed the value, relationship membership, owner entry, or typed fields somewhere other than what the scripts expect.
+- `ExpirableRedisAdapter` is refused because it owns key expiry and an in-process cache that the scripts would bypass. It works with `memoryCoordinator()` in a single process.
+
+Keys written through the coordinator never expire, matching `RedisAdapter`.
+
+### Read cost
+
+Every read of a reconciled resource asks Redis which keys are visible before returning anything. There is no local visibility mirror, because a mirror would bring back the staleness between workers that the coordinator exists to remove.
+
+- `get`, `bulkGet`, and `scan` cost one extra round trip, regardless of the number of keys.
+- `values`, `keys`, `count`, `contains`, and `getToRelationship` cost no extra round trip because a script replaces the adapter's listing command. That script reads the whole relationship and one visibility record per member while Redis runs nothing else, so `count` is no longer constant time; on a very large relationship, such as the members of a big guild, expect it to take as long as listing the relationship.
+
+The coordinator keeps one visibility record per reconciled key in Redis, in a single hash under its namespace. `memoryCoordinator()` keeps the equivalent record per key in process memory.
+
+### Shard ownership and leases
+
+Each coordinator instance has a unique identity and takes a lease per shard when the shard's `READY` arrives. The lease lasts 30 seconds and is renewed every 10 seconds.
+
+- **Ownership and shutdown.** A guild is served only while the instance that delivered it still holds its shard's lease. On graceful shutdown, its guilds stop being served to every other process at once; on a crash, they stop once the lease expires.
+- **After an owner stops.** Entries stay stored, and the next owner's snapshots make listed entries readable again, remove what they prove stale, and leave the rest unreadable until written again. Expect other processes to see cache misses for a shard's guilds while its owner restarts. A process already waiting for the shard notices a released lease on its next attempt, up to 10 seconds later.
+- **Lease contention.** While another instance holds a shard's lease, a new owner waits for it to be released or expire and keeps reading what the current owner maintains. Its cache writes, cleanup, and events for that shard wait with it because Seyfert caches a packet before running listeners; after a crash, a fast restart handles nothing on that shard until the old lease expires, while its other shards carry on. `status().failures` reports the wait once, and if the waiting process closes first, what it was waiting to write is dropped.
+- **Lost lease.** Losing a lease is terminal for that instance. It enters `failed`, reads of reconciled resources miss, reconciled writes and removals are dropped instead of applied unfenced, and it never takes the lease again. Resources of other plugins keep working; restart the process to recover.
+- **Same-instance reconnect.** A new session of the same instance replaces its previous one without giving up the lease.
+
+A process that owns no shard, such as an HTTP worker, can read and write normally. What it writes into a guild is served under that guild's current owner, and is stored without being served while the guild has none.
+
+### Transport ownership
+
+The Redis client is yours. The coordinator issues commands on it and never connects or closes it; the wrapped `RedisAdapter` starts it as before.
+
+When `client.close()` runs, the plugin stops taking on work, waits for running cleanup, stops renewing, releases the leases it still holds — which stops its guilds from being served — and restores the original adapter. Close the Redis client after `client.close()` resolves.
+
+<Callout type="warn">
+`client.close()` does not stop the Gateway. Packets that arrive afterwards are cached through the original adapter, outside every guarantee here, so stop the shards before or together with closing the client.
+</Callout>
+
+## Cache misses and `flow`
+
+The plugin never fetches. An entry it hides is a miss for whoever asked, and the mode of that call decides what happens next: `'cache'` returns nothing, and `'flow'` — Seyfert's default — falls back to REST and caches the fresh value.
+
+The same applies to `fetch()` helpers called without `force`. A value cached that way is readable if it was cached after its guild's snapshot arrived in the current session; one cached earlier is superseded by that snapshot. Expect more REST fallbacks right after a restart, mostly for members, until the Gateway repopulates the cache.
+
+## Guarantees by configuration
+
+| Configuration | Guarantee |
+| --- | --- |
+| One process, any adapter, `memoryCoordinator()` | Entries no current session confirmed are not served, and stale entries of replaceable resources are removed. |
+| Several `WorkerClient`s or processes, each with its own `RedisAdapter`, all with `redisCoordinator()` | The same, across processes: a key hidden by one worker is hidden for all, and a former owner cannot delete or overwrite what the new owner of a shard cached. |
+| Seyfert's RPC-backed `WorkerAdapter` | Unsupported; refused during setup. |
+| `WorkerManager.hotReload` replacement workers | Unsupported; refused during setup. |
+| A cache shared by several processes with `memoryCoordinator()`, or with the plugin missing in some of them | Unsupported and not detected. Each process only knows its own evidence, so one can serve or delete what another one maintains. |
+
+`WorkerAdapter` is refused because the real store lives in the `WorkerManager` process, where the plugin does not run. Give each `WorkerClient` a real adapter instead.
+
+`WorkerManager.hotReload` replacement workers are refused because a standby worker skips cache processing for its startup guild stream, so it would take over without a reconciled snapshot. A worker that hot reload stops keeps its process and stops being served the guilds of its shards.
+
+<Callout type="warn">
+Every process that writes to a shared cache must write through the plugin. A write that reaches Redis any other way is outside the guarantee: it is stored but not served, and cleanup may delete it.
+</Callout>
+
+## Status
+
+The plugin exposes observability only on `client.cacheReconciler`. It offers no way to change the cache.
+
+```ts
+const status = client.cacheReconciler.status();
+await client.cacheReconciler.waitForIdle();
+```
+
+`status()` returns:
+
+| Field | Values / meaning |
+| --- | --- |
+| `coordinator` | `'memory'` or `'redis'`. |
+| `adapter` | `'pending'`, `'installed'`, `'replaced'`, or `'restored'`. |
+| `lifecycle` | `'installing'`, `'active'`, `'closing'`, `'closed'`, or `'failed'`. `failed` is terminal, and `cause` holds the reason. |
+| `idle` and `pending` | `idle` reports whether reconciliation has no pending work. `pending` tracks guild packets not settled yet (`guilds`), keys hidden while their removal is outstanding (`deletions`, counted by `memoryCoordinator()` only), and background sweeps in flight (`tasks`). |
+| `shards` | Per shard: its session (`generation`, `sessionId`), startup state (`'awaiting-ready'`, `'awaiting-guilds'`, or `'committed'`), guild counts (`expectedGuilds`, `settledGuilds`), and `READY` guild outcomes (`'reconciled'`, `'unavailable-preserved'`, `'deleted'`, or `'failed'`). |
+| `failures` and `failureCount` | The last 50 recorded failures and the total count. |
+
+`waitForIdle()` resolves once no guild packet is being reconciled, no sweep is running, and every shard that received `READY` committed its startup snapshot. It resolves immediately before the first `READY` and never times out: a guild Discord never delivers keeps it pending, so race it with your own deadline when the wait must be bounded.
+
+## Other plugins that wrap the adapter
+
+The plugin wraps whatever adapter is installed when its setup runs, and other plugins may wrap the result. Order decides what each layer sees:
+
+- **Installed before `cacheReconciler()` (underneath it).** The earlier wrapper sees the reconciler's own reads, including the unfiltered ones cleanup uses, and sees entries the reconciler hides from callers. With `redisCoordinator()`, the adapter `cacheReconciler()` finds must be `RedisAdapter` itself, so a plugin that replaces the adapter object — as [`@slipher/cache-integrity`](/docs/plugins/official/cache-integrity) does — cannot come first; one that patches the adapter's methods in place can.
+- **Installed after `cacheReconciler()` (on top of it).** The later wrapper only sees what callers are served. Reconciliation keeps working as long as that wrapper delegates to the adapter it found. Because the plugin cannot verify delegation, once something else owns `client.cache.adapter`, `status().adapter` reports `replaced`, the plugin records a diagnostic, and teardown leaves the newer adapter in place instead of restoring the original over it.
+
+With `memoryCoordinator()`, every mutation still goes through the wrapped adapter's own methods. With `redisCoordinator()`, reconciled writes and removals run as Lua scripts on the Redis client, so a wrapper or instrumentation attached to `RedisAdapter`'s mutation methods never sees them. Instrumentation that must observe them has to sit on `client.cache.adapter` after the plugin is installed, or on the Redis client.
+
+## Limits
+
+- **Unattributed cache failures.** Cleanup trusts what Seyfert cached. If caching a guild packet fails in a way the plugin cannot tie to that guild, the guild stays pending — and `waitForIdle()` with it — until the shard's next `READY`.
+- **Unavailable startup guilds arriving later.** A guild that was unavailable during startup and arrives later is served from then on, but its stale entries are only removed at the next startup.
+- **Dropped startup guild packets.** A plugin whose Gateway interceptor runs before this one and drops a startup guild packet leaves that shard's startup uncommitted.
+- **Late writes from an old session.** A write issued by an old session after the new session's snapshot of the same guild arrived can make one stale entry readable until the shard's next `READY`.
+- **REST write racing a snapshot cleanup.** A value cached from REST at the same instant a snapshot is cleaned up can be deleted with it; the next read is a miss.
+- **Long shard overlap.** Two processes connected to the same shard at once are only meant to overlap briefly, as in a rolling restart. The second one waits for the first one's lease for as long as the first one lives.
+- **Resharding.** Change the shard count with the previous processes stopped. Guilds move between shards, and each one is unreadable until its new shard delivers it. Running processes with two different shard counts against the same cache at once is not supported: a new shard waits for the old shard with the same number, and a guild both receive is served by whichever delivered it last.
+- **`increment` with `redisCoordinator()`.** `increment` on a reconciled key checks that the key is readable and then increments through the adapter. It is the one change to a reconciled key that is not a single script.
